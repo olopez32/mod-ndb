@@ -1,0 +1,55 @@
+#!/bin/sh
+
+APXS=apxs
+MYSQLCFG=/Users/jdd/mysql-builds/5ndb/bin/mysql_config
+
+echo "Configuring with"
+echo "    apxs =         " $APXS
+echo "    mysql_config = " $MYSQLCFG
+echo
+
+if [ ! -x `which $APXS` -o ! -x `which $MYSQLCFG` ] 
+ then
+  echo "Edit this script, something is wrong." && exit
+fi
+
+
+## Check the Apache version
+HTTPD=`$APXS -q SBINDIR`/`$APXS -q TARGET`
+$HTTPD -v
+echo
+if $HTTPD -v | grep -q "Apache/1.3" 
+ then 
+  echo "Apache Version OK"
+ else 
+  echo "Sorry, this version of mod_ndb works only with Apache 1.3.x" && exit
+fi
+echo
+ 
+MY_INC=`$MYSQLCFG --include`
+MY_LIBS=`$MYSQLCFG --libs | sed s/-lmysqlclient//`
+
+(
+echo APXS=$APXS
+echo
+echo MY_INC1=$MY_INC
+echo MY_INC2=$MY_INC/ndb
+echo MY_INC3=$MY_INC/ndb/ndbapi
+echo MY_LIBS=$MY_LIBS
+echo 
+echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR`   
+echo APXS_SYSCONFDIR=`$APXS -q SYSCONFDIR`
+echo APXS_CC=`$APXS -q CC`   
+echo APXS_LD_SHLIB=`$APXS -q LD_SHLIB`
+echo APXS_CFLAGS=`$APXS -q CFLAGS`   
+echo APXS_CFLAGS_SHLIB=`$APXS -q CFLAGS_SHLIB`   
+echo APXS_LDFLAGS_SHLIB=`$APXS -q LDFLAGS_SHLIB`
+echo APXS_LIBS_SHLIB=`$APXS -q LIBS_SHLIB`
+
+) > Makefile
+
+
+cat make_file_tail >> Makefile
+
+echo "Created Makefile."
+

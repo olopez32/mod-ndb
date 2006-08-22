@@ -1,0 +1,33 @@
+OBJECTS=mod_ndb.o JSON.o Query.o MySQL_Field.o config.o read_http_post.o
+
+INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
+LIBS=$(APXS_LIBS_SHLIB) $(MY_LIBS) -lndbclient -lmystrings -lmysys -lstdc++
+
+mod_ndb.so: $(OBJECTS)
+	$(APXS_LD_SHLIB) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
+
+.cc.o:
+	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -o $@ $< 
+
+
+mod_ndb.o: mod_ndb.cc mod_ndb.h 
+read_http_post.o: read_http_post.cc
+JSON.o: JSON.cc mod_ndb.h MySQL_Field.h
+Query.o: Query.cc mod_ndb.h MySQL_Field.h
+MySQL_Field.o: MySQL_Field.cc MySQL_Field.h
+config.o: config.cc mod_ndb.h
+
+install: mod_ndb.so
+	$(APXS) -i -n 'ndb' mod_ndb.so
+
+clean:
+	-rm -f *.so *.o 
+
+stop:
+	sudo apachectl stop
+
+start:
+	sudo apachectl start
+
+restart: install
+	apachectl restart
