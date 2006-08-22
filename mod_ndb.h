@@ -55,7 +55,8 @@ typedef const char *(*CMD_HAND_TYPE) ();
 extern "C" module MODULE_VAR_EXPORT ndb_module;
 
 enum result_format { json = 1, raw, xml, ap_note };
-
+enum ndb_key_type  { primary, unique, ordered, filter };
+ 
 class JSON {
   public:
     static const char * new_array;
@@ -86,30 +87,50 @@ namespace log {
 
 namespace config {
 
-  /* Apache per-directory configuration
-  */
+  /* Apache per-server configuration  */
+  struct srv {
+    char *connect_string;
+  };
+  
+  
+  /* Apache per-directory configuration */
   struct dir {
     char *database;
     char *table;
     int allow_delete;
     result_format results;
-    array_header *columns;
+    char *format_param[2];
+    array_header *visible;
     array_header *updatable;
-    void *indexes;
+    array_header *indexes;
+    array_header *key_columns;
   };
   
-  /* Apache per-server configuration 
-  */
-  struct srv {
-    char *connect_string;
+  /* NDB Index */
+  class index {
+    public:
+      char *name;
+      ndb_key_type type;
+      short first_col;
   };
-
+  
+  /* Coulmn used in a query */
+  class key {
+    public:
+      char *name;
+      ndb_key_type type;
+      NdbScanFilter::BinaryCondition op;
+      short next_in_key;
+  };
+  
   void * init_dir(pool *, char *);
   void * init_srv(pool *, server_rec *);
   void * merge_dir(pool *, void *, void *);
   const char * build_column_list(cmd_parms *, void *, char *);
   const char * build_index_list(cmd_parms *, void *, char *, char *);
-  const char * set_result_format(cmd_parms *, void *, char *);
+  const char * set_result_format(cmd_parms *, void *, char *, char *, char *);
+  const char * pathinfo(cmd_parms *, void *, char *);
+  const char * filter(cmd_parms *, void *, char *, char *, char *);
 }
 
 
