@@ -1,0 +1,160 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXFileReference section */
+		651343640A91869800B041A0 /* read_http_post.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = read_http_post.cc; sourceTree = "<group>"; };
+		655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb.cc; sourceTree = "<group>"; };
+		655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_Field.cc; sourceTree = "<group>"; };
+		655CEC200A8C4C4200DB8284 /* JSON.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cc; sourceTree = "<group>"; };
+		655CEC210A8C4C4C00DB8284 /* Query.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Query.cc; sourceTree = "<group>"; };
+		655CEC220A8C4C6100DB8284 /* MySQL_Field.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MySQL_Field.h; sourceTree = "<group>"; };
+		655CEC230A8C4C6B00DB8284 /* mod_ndb.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mod_ndb.h; sourceTree = "<group>"; };
+		655CEC240A8C4C9500DB8284 /* configure */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
+		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; };
+		6561658E0A8E8A8800A664A0 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = httpd.conf; sourceTree = "<group>"; };
+		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
+		6583584E0A8CE6FD0023B465 /* mod_ndb.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = mod_ndb.rtf; sourceTree = "<group>"; };
+		65C47AB80A97978D00E338C5 /* sort.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = sort.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* mod_ndb */ = {
+			isa = PBXGroup;
+			children = (
+				656167AB0A8F78CB00A664A0 /* config.cc */,
+				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
+				655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */,
+				65C47AB80A97978D00E338C5 /* sort.h */,
+				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
+				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
+				655CEC210A8C4C4C00DB8284 /* Query.cc */,
+				651343640A91869800B041A0 /* read_http_post.cc */,
+				655CEC200A8C4C4200DB8284 /* JSON.cc */,
+				655CEC240A8C4C9500DB8284 /* configure */,
+				655CEC250A8C4CA400DB8284 /* make_file_tail */,
+				6561658E0A8E8A8800A664A0 /* httpd.conf */,
+				6583584E0A8CE6FD0023B465 /* mod_ndb.rtf */,
+			);
+			name = mod_ndb;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		D28A88AD04BDD90700651E21 /* mod_ndb */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 6583581D0A8CE1C40023B465 /* Build configuration list for PBXLegacyTarget "mod_ndb" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = mod_ndb;
+			passBuildSettingsInEnvironment = 1;
+			productName = mod_ndb;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 658358210A8CE1C40023B465 /* Build configuration list for PBXProject "mod_ndb" */;
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* mod_ndb */;
+			projectDirPath = "";
+			targets = (
+				D28A88AD04BDD90700651E21 /* mod_ndb */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		6583581E0A8CE1C40023B465 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = mod_ndb;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		6583581F0A8CE1C40023B465 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = mod_ndb;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		658358200A8CE1C40023B465 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = mod_ndb;
+			};
+			name = Default;
+		};
+		658358220A8CE1C40023B465 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Development;
+		};
+		658358230A8CE1C40023B465 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Deployment;
+		};
+		658358240A8CE1C40023B465 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6583581D0A8CE1C40023B465 /* Build configuration list for PBXLegacyTarget "mod_ndb" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6583581E0A8CE1C40023B465 /* Development */,
+				6583581F0A8CE1C40023B465 /* Deployment */,
+				658358200A8CE1C40023B465 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		658358210A8CE1C40023B465 /* Build configuration list for PBXProject "mod_ndb" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				658358220A8CE1C40023B465 /* Development */,
+				658358230A8CE1C40023B465 /* Deployment */,
+				658358240A8CE1C40023B465 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
