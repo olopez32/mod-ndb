@@ -8,6 +8,8 @@
 
 /* Begin PBXFileReference section */
 		651343640A91869800B041A0 /* read_http_post.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = read_http_post.cc; sourceTree = "<group>"; };
+		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
+		6528658E0A9B99D7000B9E9A /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb.cc; sourceTree = "<group>"; };
 		655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_Field.cc; sourceTree = "<group>"; };
 		655CEC200A8C4C4200DB8284 /* JSON.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cc; sourceTree = "<group>"; };
@@ -19,21 +21,21 @@
 		6561658E0A8E8A8800A664A0 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = httpd.conf; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6583584E0A8CE6FD0023B465 /* mod_ndb.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = mod_ndb.rtf; sourceTree = "<group>"; };
-		65C47AB80A97978D00E338C5 /* sort.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = sort.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		08FB7794FE84155DC02AAC07 /* mod_ndb */ = {
 			isa = PBXGroup;
 			children = (
-				656167AB0A8F78CB00A664A0 /* config.cc */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
+				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,
 				655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */,
-				65C47AB80A97978D00E338C5 /* sort.h */,
+				656167AB0A8F78CB00A664A0 /* config.cc */,
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
 				651343640A91869800B041A0 /* read_http_post.cc */,
+				6528658E0A9B99D7000B9E9A /* JSON.h */,
 				655CEC200A8C4C4200DB8284 /* JSON.cc */,
 				655CEC240A8C4C9500DB8284 /* configure */,
 				655CEC250A8C4CA400DB8284 /* make_file_tail */,

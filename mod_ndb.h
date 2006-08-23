@@ -36,8 +36,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* NDB headers */
 #include "NdbApi.hpp"
 
-/* mod_ndb headers */
-#include "MySQL_Field.h"
 
 #define MOD_NDB_DEBUG 1
 
@@ -55,25 +53,7 @@ typedef const char *(*CMD_HAND_TYPE) ();
 extern "C" module MODULE_VAR_EXPORT ndb_module;
 
 enum result_format { json = 1, raw, xml, ap_note };
-enum ndb_key_type  { primary, unique, ordered, filter };
- 
-class JSON {
-  public:
-    static const char * new_array;
-    static const char * end_array;
-    static const char * new_object;
-    static const char * end_object;
-    static const char * delimiter ;
-    static const char * is        ;
-    static char *value(const NdbRecAttr &rec, request_rec *r);
-    inline static char *member(const NdbRecAttr &rec, request_rec *r) {
-      return ap_pstrcat(r->pool, 
-                        rec.getColumn()->getName(), 
-                        JSON::is,
-                        JSON::value(rec,r),
-                        NULL);    
-    }
-};
+enum ndb_key_type  { primary, unique, ordered };
 
 namespace log {
 //debug, info, notice, warn, error, crit, alert, emerg.
@@ -83,55 +63,12 @@ namespace log {
     debug = APLOG_NOERRNO|APLOG_DEBUG
   };
 }
+ 
+/* Other mod_ndb headers */
+#include "MySQL_Field.h"
+#include "mod_ndb_config.h"
+#include "JSON.h"
 
-
-namespace config {
-
-  /* Apache per-server configuration  */
-  struct srv {
-    char *connect_string;
-  };
-  
-  
-  /* Apache per-directory configuration */
-  struct dir {
-    char *database;
-    char *table;
-    int allow_delete;
-    result_format results;
-    char *format_param[2];
-    array_header *visible;
-    array_header *updatable;
-    array_header *indexes;
-    array_header *key_columns;
-  };
-  
-  /* NDB Index */
-  class index {
-    public:
-      char *name;
-      ndb_key_type type;
-      short first_col;
-  };
-  
-  /* Coulmn used in a query */
-  class key {
-    public:
-      char *name;
-      ndb_key_type type;
-      NdbScanFilter::BinaryCondition op;
-      short next_in_key;
-  };
-  
-  void * init_dir(pool *, char *);
-  void * init_srv(pool *, server_rec *);
-  void * merge_dir(pool *, void *, void *);
-  const char * build_column_list(cmd_parms *, void *, char *);
-  const char * build_index_list(cmd_parms *, void *, char *, char *);
-  const char * set_result_format(cmd_parms *, void *, char *, char *, char *);
-  const char * pathinfo(cmd_parms *, void *, char *);
-  const char * filter(cmd_parms *, void *, char *, char *, char *);
-}
 
 
 /* The basic architecture of this module:

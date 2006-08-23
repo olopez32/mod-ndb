@@ -150,73 +150,73 @@ namespace config {
         "NDB Connection String" 
       },
       {
-        "Database",
+        "Database",         // inheritable
         (CMD_HAND_TYPE) ap_set_string_slot,
         (void *)XtOffsetOf(config::dir, database),
         ACCESS_CONF,    TAKE1, 
         "MySQL database schema" 
       },
       {
-        "Table",
+        "Table",            // inheritable
         (CMD_HAND_TYPE) ap_set_string_slot,
         (void *)XtOffsetOf(config::dir, table),
         ACCESS_CONF,    TAKE1, 
         "NDB Table"
       },            
       {
-        "Deletes",
+        "Deletes",          // NOT inheritable
         (CMD_HAND_TYPE) ap_set_flag_slot,
         (void *)XtOffsetOf(config::dir, allow_delete),
         ACCESS_CONF,     FLAG,
         "Allow DELETE over HTTP"
       },
       {
-        "Format",
+        "Format",           // inheritable
         (CMD_HAND_TYPE) config::set_result_format,
         NULL,
-        ACCESS_CONF,    TAKE1, 
+        ACCESS_CONF,    TAKE123, 
         "Result Set Format"
       },     
       {
-        "Columns",
+        "Columns",          // inheritable
         (CMD_HAND_TYPE) config::build_column_list,
         (void *) "R",
         ACCESS_CONF,    ITERATE,
         "List of attributes to include in result set"
       },
       {
-        "AllowUpdate",
+        "AllowUpdate",      // NOT inheritable
         (CMD_HAND_TYPE) config::build_column_list,
         (void *) "W",
         ACCESS_CONF,    ITERATE,
         "List of attributes that can be updated using HTTP"
       },
       {
-        "UniqueIndex",
+        "UniqueIndex",      // NOT inheritable
         (CMD_HAND_TYPE) config::build_index_list,
-        (void *) "U*",  // prefix
+        (void *) "U*",  
         ACCESS_CONF,    ITERATE2,
         "Allow unique key lookups, given index name and columns"
       },
       {
-        "OrderedIndex",
+        "OrderedIndex",      // NOT inheritable
         (CMD_HAND_TYPE) config::build_index_list,
-        (void *) "O*",  // prefix
+        (void *) "O*",  
         ACCESS_CONF,    ITERATE2,
         "Allow ordered index scan, given index name and columns"
       },
-      {
-        "PathInfo", // e.g. "PathInfo pk" or "PathInfo keypt1/keypt2"
-        (CMD_HAND_TYPE) 0, /*build an apache array right-to-left*/
+      {                      // inheritable
+        "PathInfo", // e.g. "PathInfo id" or "PathInfo keypt1/keypt2"
+        (CMD_HAND_TYPE) config::pathinfo, 
         NULL,
         ACCESS_CONF,    TAKE1, 
         "Schema for interpreting the rightmost URL path components"
       },
-      {
+      {                     // NOT inheritable
         "Filter",  // Filter col op keyword, e.g. "Filter id < min_id"
-        (CMD_HAND_TYPE) 0, // associate keyword to [op, col]
-        NULL,
-        ACCESS_CONF,    TAKE3, 
+        (CMD_HAND_TYPE) config::filter, 
+        (void *) "F*",
+        ACCESS_CONF,    TAKE13, 
         "NDB Table"
       }, 
     
@@ -309,10 +309,10 @@ int ndb_status_handler(request_rec *r) {
   }
   else
     ap_rprintf(r," ** Table does not exist.\n");
-  if( dir->columns) {
-    ap_rprintf(r,"%d visible columns: \n", dir->columns->nelts);
-    list = (char **) dir->columns->elts;
-    for(int n = 0; n < dir->columns->nelts ; n++) 
+  if( dir->visible) {
+    ap_rprintf(r,"%d visible columns: \n", dir->visible->nelts);
+    list = (char **) dir->visible->elts;
+    for(int n = 0; n < dir->visible->nelts ; n++) 
       ap_rprintf(r,"  %s\n", list[n]);
   }
   ap_rprintf(r,"Result format: %s\n",
