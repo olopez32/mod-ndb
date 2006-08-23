@@ -164,7 +164,7 @@ namespace config {
         "NDB Table"
       },            
       {
-        "Deletes",          // NOT inheritable
+        "Deletes",          // NOT inheritable, defaults to 0
         (CMD_HAND_TYPE) ap_set_flag_slot,
         (void *)XtOffsetOf(config::dir, allow_delete),
         ACCESS_CONF,     FLAG,
@@ -190,6 +190,13 @@ namespace config {
         (void *) "W",
         ACCESS_CONF,    ITERATE,
         "List of attributes that can be updated using HTTP"
+      },
+      {
+        "PrimaryKey",      // NOT inheritable
+        (CMD_HAND_TYPE) config::primary_key,
+        NULL,  
+        ACCESS_CONF,    ITERATE,
+        "Allow Primary Key lookups"
       },
       {
         "UniqueIndex",      // NOT inheritable
