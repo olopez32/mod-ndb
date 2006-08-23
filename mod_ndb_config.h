@@ -50,9 +50,10 @@ namespace config {
   };
   
   /* Coulmn used in a query */
-  class key {
+  class key_col {
     public:
       char *name;
+      bool is_in_pk;
       bool is_filter;
       NdbScanFilter::BinaryCondition filter_op;
       short index_id;
