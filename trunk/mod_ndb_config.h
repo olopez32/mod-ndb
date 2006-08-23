@@ -33,8 +33,10 @@ namespace config {
     char *format_param[2];
     array_header *visible;
     array_header *updatable;
+    array_header *pathinfo;
     array_header *indexes;
-    array_header *key_columns;
+    array_header *key_columns;      
+    void *index_map;
   };
   
   /* NDB Index */
@@ -42,16 +44,24 @@ namespace config {
     public:
       char *name;
       ndb_key_type type;
-      short first_col;
+      unsigned short n_columns;
+      short first_col_serial;
+      short first_col_idx;
   };
   
   /* Coulmn used in a query */
   class key {
     public:
       char *name;
-      ndb_key_type type;
-      NdbScanFilter::BinaryCondition op;
-      short next_in_key;
+      bool is_filter;
+      NdbScanFilter::BinaryCondition filter_op;
+      short index_id;
+      short serial_no;
+      short idx_map_bucket;
+      short filter_col_serial;
+      short filter_col_idx;
+      short next_in_key_serial;
+      short next_in_key_idx;      
   };
   
   void * init_dir(pool *, char *);
