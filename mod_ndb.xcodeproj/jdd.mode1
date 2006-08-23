@@ -314,7 +314,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>652867570A9C1E37000B9E9A</string>
+										<string>650390FC0A9C1EE70075672A</string>
 										<key>history</key>
 										<array>
 											<string>65FE96FC0A91B27D000AC3D1</string>
@@ -324,7 +324,6 @@
 											<string>652865C40A9B9CD8000B9E9A</string>
 											<string>652865C50A9B9CD8000B9E9A</string>
 											<string>6528662A0A9BC66E000B9E9A</string>
-											<string>652866A70A9BED11000B9E9A</string>
 											<string>652866AA0A9BED11000B9E9A</string>
 											<string>652866EC0A9C0092000B9E9A</string>
 											<string>652867260A9C115F000B9E9A</string>
@@ -333,7 +332,7 @@
 											<string>652867290A9C115F000B9E9A</string>
 											<string>6528673C0A9C135A000B9E9A</string>
 											<string>6528673D0A9C135A000B9E9A</string>
-											<string>652865BD0A9B9CD8000B9E9A</string>
+											<string>652867570A9C1E37000B9E9A</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -342,29 +341,15 @@
 											<string>65FE974C0A91B61A000AC3D1</string>
 											<string>652865C70A9B9CD8000B9E9A</string>
 											<string>652865C80A9B9CD8000B9E9A</string>
-											<string>652865CA0A9B9CD8000B9E9A</string>
 											<string>652865CC0A9B9CD8000B9E9A</string>
-											<string>652865CE0A9B9CD8000B9E9A</string>
-											<string>652865D00A9B9CD8000B9E9A</string>
 											<string>652865D80A9B9CD8000B9E9A</string>
-											<string>652865DB0A9B9CD8000B9E9A</string>
 											<string>652865DF0A9B9CD8000B9E9A</string>
-											<string>652865E30A9B9CD8000B9E9A</string>
 											<string>652865E40A9B9CD8000B9E9A</string>
-											<string>652865E50A9B9CD8000B9E9A</string>
-											<string>652866030A9BA437000B9E9A</string>
-											<string>6528662E0A9BC66E000B9E9A</string>
 											<string>652866AE0A9BED11000B9E9A</string>
-											<string>652866AF0A9BED11000B9E9A</string>
 											<string>652866B00A9BED11000B9E9A</string>
 											<string>652866B20A9BED11000B9E9A</string>
-											<string>652866B30A9BED11000B9E9A</string>
 											<string>652866EF0A9C0092000B9E9A</string>
-											<string>6528672A0A9C115F000B9E9A</string>
-											<string>6528672B0A9C115F000B9E9A</string>
-											<string>6528672C0A9C115F000B9E9A</string>
 											<string>6528672D0A9C115F000B9E9A</string>
-											<string>6528673F0A9C135A000B9E9A</string>
 											<string>652867400A9C135A000B9E9A</string>
 										</array>
 									</dict>
@@ -423,9 +408,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>6528652F0A9B88BD000B9E9A</string>
+				<string>650390FA0A9C1EC30075672A</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>652865300A9B88BD000B9E9A</string>
+				<string>650390FB0A9C1EC30075672A</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -561,12 +546,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1C530D57069F1CE1000CFCEE</string>
-		<string>65C47AF00A9ACC3100E338C5</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>652865B70A9B9CBD000B9E9A</string>
-		<string>658359730A8D3C510023B465</string>
-		<string>652866BA0A9BEDC3000B9E9A</string>
 		<string>/Users/jdd/Desktop/mod_ndb/mod_ndb/mod_ndb.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
