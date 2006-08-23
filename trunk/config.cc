@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace config {
   
   /* init_dir():
-  initialize the structure and its array of columns
+     initialize the per-directory configuration structure
   */
   void *init_dir(pool *p, char *path) {
     config::dir *dir;
@@ -36,7 +36,7 @@ namespace config {
     dir->updatable   = ap_make_array(p, 4, sizeof(char *));
     dir->pathinfo    = ap_make_array(p, 2, sizeof(char *));
     dir->indexes     = ap_make_array(p, 4, sizeof(config::index));
-    dir->key_columns = ap_make_array(p, 4, sizeof(config::key));
+    dir->key_columns = ap_make_array(p, 4, sizeof(config::key_col));
     dir->index_map   = ap_make_table(p, 4);
     dir->results = json;
     
@@ -148,7 +148,7 @@ namespace config {
   short add_key_column(array_header *a, char *keyname, bool &exists) {
     exists = 0;
     int list_size = a->nelts;
-    config::key **keys = (config::key **) a->elts;
+    config::key_col **keys = (config::key_col **) a->elts;
     register int n = 0, insertion_point = 0, c;
     
     for(n = 0; n < list_size; n++) {
@@ -170,16 +170,16 @@ namespace config {
     ap_push_array(a);
 
     // ap_push_array may have caused the whole array to get relocated */
-    keys = (config::key **) a->elts;
+    keys = (config::key_col **) a->elts;
     
     // All elements after the insertion point get shifted right one place
-    size_t len = (sizeof(config::key)) * (list_size - insertion_point);
+    size_t len = (sizeof(config::key_col)) * (list_size - insertion_point);
     if(len > 0) {
       void *src = (void *) keys[insertion_point];
       void *dst = (void *) keys[insertion_point + 1];
       memmove(dst, src, len);
       // clear out the previous value
-      bzero(src, sizeof(config::key));
+      bzero(src, sizeof(config::key_col));
     }
 
     return insertion_point;
@@ -214,7 +214,7 @@ namespace config {
     const int n_columns = dir->key_columns->nelts;
     const int n_indexes = dir->indexes->nelts;
   
-    config::key **cols = (config::key **) dir->key_columns->elts;
+    config::key_col **cols = (config::key_col **) dir->key_columns->elts;
     config::index **indexes = (config::index **) dir->indexes->elts;
 
     /* Build a map from serial_no to column id.
@@ -257,11 +257,11 @@ namespace config {
   {
     short index_id, col_id;
     config::index * index_rec;
-    config::key *this_col;
+    config::key_col *this_col;
     short i, j;
 
     config::dir *dir = (config::dir *) m;
-    config::key **cols = (config::key **) dir->key_columns->elts;
+    config::key_col **cols = (config::key_col **) dir->key_columns->elts;
     char *which = (char *) cmd->cmd->cmd_data;
     table *idxmap = (table *) dir->index_map;
     char *index_id_str = (char *) ap_table_get(idxmap,idx);
@@ -281,6 +281,7 @@ namespace config {
         index_rec->type = ordered;
       else 
         return "Unusual bug in build_index_list()";
+
       index_rec->n_columns = 0;                       // Set the rest
       index_rec->first_col_serial = -1;
       index_rec->first_col_idx = -1;
