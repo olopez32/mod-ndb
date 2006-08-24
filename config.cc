@@ -132,18 +132,59 @@ namespace config {
     }
     return 0;
   }
+
   
+  /* 
+    Every time a new column is added, the columns get reshuffled some,
+    so we have to fix all the mappings between serial numbers and 
+    actual column id numbers.
+  */  
+  void fix_all_columns(config::dir *dir, config::key_col **cols) {
+    short n, i, j;
+    
+    const int n_columns = dir->key_columns->nelts;
+    const int n_indexes = dir->indexes->nelts;
+    
+    config::index **indexes = (config::index **) dir->indexes->elts;
+    
+    /* Build a map from serial_no to column id.
+      (This is what the idx_map_bucket slot is for).
+      */
+    for(n = 0 ; n < n_columns ; n++) 
+      cols[(cols[n]->serial_no)]->idx_map_bucket = n;
+    
+    /* Fix the first_col_idx pointer in each index record
+      and the subsequent chain of next_in_key_idx pointers.
+      */
+    for(n = 0 ; n < n_indexes ; n++) {
+      i = cols[(indexes[n]->first_col_serial)]->idx_map_bucket;
+      indexes[n]->first_col_idx = i;
+      while(i != -1) {
+        j = cols[(cols[i]->next_in_key_serial)]->idx_map_bucket;
+        cols[i]->next_in_key_idx = j;
+        i = j;
+      }
+    } 
+    
+    /* Fix the filter_col_idx pointer in each filter column
+      */
+    for(n = 0 ; n < n_columns ; n++)
+      if(cols[n]->is_filter)
+        cols[n]->filter_col_idx =
+          cols[(cols[n]->filter_col_serial)]->idx_map_bucket;
+  }
+
   
-  /* While building the dir->key_columns array, we want to keep
-     it sorted on the key name.
-     
-     ap_push_array() allocates a new element at the end of the array and 
-     returns a pointer to it.  add_key_column() is a wrapper that shifts
-     items toward the end if necessary to make a hole for the new item 
-     in the appropriate place, and then returns the array index of the hole.
-     
-     If the new key already exists, "exists" is set to 1, no new element is
-     allocated, and the return value indicates the index of the column.
+  /*  While building the dir->key_columns array, we want to keep
+      it sorted on the key name.
+  
+      ap_push_array() allocates a new element at the end of the array and 
+      returns a pointer to it.  add_key_column() is a wrapper that shifts
+      items toward the end if necessary to make a hole for the new item 
+      in the appropriate place, and then returns the array index of the hole.
+      
+      If the new key already exists, "exists" is set to 1, no new element is
+      allocated, and the return value indicates the index of the column.
   */
   short add_key_column(array_header *a, char *keyname, bool &exists) {
     exists = 0;
@@ -164,14 +205,13 @@ namespace config {
         exists = 1;
         return n;
       }
-    }    
-
+    }        
     // ap_push_array returns a pointer, but ignore it.
     ap_push_array(a);
-
+    
     // ap_push_array may have caused the whole array to get relocated */
     keys = (config::key_col **) a->elts;
-    
+      
     // All elements after the insertion point get shifted right one place
     size_t len = (sizeof(config::key_col)) * (list_size - insertion_point);
     if(len > 0) {
@@ -181,69 +221,65 @@ namespace config {
       // clear out the previous value
       bzero(src, sizeof(config::key_col));
     }
-
+      
     return insertion_point;
   }
 
-
-  /* 
-    Every time a new column is added, the columns get reshuffled some,
-    so we have to fix all the mappings between serial numbers and 
-    actual column id numbers.
-    
-    The configuration API in Apache never gives the module a chance to 
-    "finalize" a configuration structure.  You never know when you're finished
-    with a particular directory.  So, we run fix_all_columns() every time we
-    create a new column, which, alas, does not scale too well.
-    
-    While processing the config file, the CPU time spent fixing columns grows 
-    with n-squared, the square of the number of columns.  This could be improved 
-    using config handling that was more complex (a container directive) or less
-    user-friendly (an explicit "end" token).
-    
-    On the other hand, the design is optimized for handling queries at runtime, 
-    where some operations (e.g. following the list of columns that belong to an 
-    index) are constant, and the worst (looking up a column name in the columns 
-    table) grows at log n.
-    
-  */
   
-  void fix_all_columns(config::dir *dir) {
-    short n, i, j;
-  
-    const int n_columns = dir->key_columns->nelts;
-    const int n_indexes = dir->indexes->nelts;
-  
-    config::key_col **cols = (config::key_col **) dir->key_columns->elts;
-    config::index **indexes = (config::index **) dir->indexes->elts;
-
-    /* Build a map from serial_no to column id.
-      (This is what the idx_map_bucket slot is for).
-    */
-    for(n = 0 ; n < n_columns ; n++) 
-      cols[(cols[n]->serial_no)]->idx_map_bucket = n;
+  short add_column_to_index(cmd_parms *cmd, config::dir *dir, char *col, 
+                            short index_id, bool & col_exists)
+  {
+    config::key_col **cols; 
+    config::key_col *this_col;
+    short col_id;
     
-    /* Fix the first_col_idx pointer in each index record
-       and the subsequent chain of next_in_key_idx pointers.
+    col_id = add_key_column(dir->key_columns, col, col_exists);
+    /* It's important not to dereference dir->key_columns->elts until
+       *after* calling add_key_column()
     */
-    for(n = 0 ; n < n_indexes ; n++) {
-      i = cols[(indexes[n]->first_col_serial)]->idx_map_bucket;
-      indexes[n]->first_col_idx = i;
-      while(i != -1) {
-        j = cols[(cols[i]->next_in_key_serial)]->idx_map_bucket;
-        cols[i]->next_in_key_idx = j;
-        i = j;
-      }
-    } 
-        
-    /* Fix the filter_col_idx pointer in each filter column
+    cols = (config::key_col **) dir->key_columns->elts;
+    this_col = cols[col_id];
+    
+    /* The column record already existed */
+    if(col_exists) {
+      if(this_col->index_id != -1) {
+        config::index **indexes = (config::index **)  dir->indexes->elts;
+        ap_log_error(APLOG_MARK, log::err, cmd->server,
+                     "Configuration error at %s associating column %s "
+                     "with index %s; it is already connected to index %s "
+                     "and mod_ndb does not allow you to associate a key column "
+                     "with multiple non-primary indexes.", cmd->path, col, 
+                     indexes[index_id]->name,indexes[this_col->index_id]->name);
+       }
+    }
+    else {
+      /* Initialize the column record */
+      this_col->name = col;
+      this_col->serial_no = dir->key_columns->nelts - 1;
+      this_col->next_in_key_serial = -1;
+      this_col->next_in_key_idx = -1;
+    }
+    /* Perform these initializations even if the column already existed
     */
-    for(n = 0 ; n < n_columns ; n++)
-      if(cols[n]->is_filter)
-        cols[n]->filter_col_idx =
-          cols[(cols[n]->filter_col_serial)]->idx_map_bucket;
+    this_col->index_id = index_id;
+    
+    fix_all_columns(dir, cols);
+    return col_id;
   }
+  
+  
+  const char *primary_key(cmd_parms *cmd, void *m, char *col) {
+    bool col_exists = 0;
+    config::key_col **cols;
 
+    config::dir *dir = (config::dir *) m;    
+    short col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
+    cols = (config::key_col **) dir->key_columns->elts;
+    cols[col_id]->is_in_pk = 1;
+    
+    return 0;
+  }
+  
     
   /* 
     Process Index directives:
@@ -256,12 +292,11 @@ namespace config {
   const char *build_index_list(cmd_parms *cmd, void *m, char *idx, char *col) 
   {
     short index_id, col_id;
-    config::index * index_rec;
-    config::key_col *this_col;
+    config::index *index_rec;
+    config::key_col **cols;
     short i, j;
 
     config::dir *dir = (config::dir *) m;
-    config::key_col **cols = (config::key_col **) dir->key_columns->elts;
     char *which = (char *) cmd->cmd->cmd_data;
     table *idxmap = (table *) dir->index_map;
     char *index_id_str = (char *) ap_table_get(idxmap,idx);
@@ -292,46 +327,24 @@ namespace config {
     
     /* Create a column record */
     bool col_exists = 0;
-    col_id = add_key_column(dir->key_columns, col, col_exists);
-    this_col = cols[col_id];
-    
-    /* The column record already existed */
-    if(col_exists) {
-      if(this_col->index_id != -1) {
-        index_rec = (config::index *) dir->indexes->elts[this_col->index_id];
-        return ap_pstrcat(cmd->pool,"Configuration error at ", cmd->path, 
-                          " -- cannot associate column ", col, " with index ", 
-                          idx, "; it is already connected to index",
-                          index_rec->name);
-      }
-      // how did we get here??
-      log_debug(cmd->server,"how did we get here? %s", col);
-    }
-    else {
-      /* Initialize the column record */
-      this_col->name = col;
-      this_col->index_id = index_id;
-      this_col->serial_no = dir->key_columns->nelts - 1;
-      this_col->next_in_key_serial = -1;
-      this_col->next_in_key_idx = -1;
-      fix_all_columns(dir);
-    }
-      
+    col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
+    cols = (config::key_col **) dir->key_columns->elts;
+
     /* Manage the chain of links from an index to its member columns */
     short first_key_part = index_rec->first_col_idx;
     if(first_key_part == -1) {
-      index_rec->first_col_serial = this_col->serial_no;
+      index_rec->first_col_serial = cols[col_id]->serial_no;
       index_rec->first_col_idx = col_id;
     }
     else {
       i = first_key_part;
       while((j = cols[i]->next_in_key_idx) != -1)
         i = j;
-     cols[i]->next_in_key_serial = this_col->serial_no;
-     cols[i]->next_in_key_idx = col_id;
+      cols[i]->next_in_key_serial = cols[col_id]->serial_no;
+      cols[i]->next_in_key_idx = col_id;
     }    
-  
   }
+
   
 }
   
