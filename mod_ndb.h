@@ -53,7 +53,6 @@ typedef const char *(*CMD_HAND_TYPE) ();
 extern "C" module MODULE_VAR_EXPORT ndb_module;
 
 enum result_format { json = 1, raw, xml, ap_note };
-enum ndb_key_type  { primary, unique, ordered };
 
 namespace log {
 //debug, info, notice, warn, error, crit, alert, emerg.
@@ -62,8 +61,27 @@ namespace log {
     warn = APLOG_NOERRNO|APLOG_WARNING,
     debug = APLOG_NOERRNO|APLOG_DEBUG
   };
-}
+};
+
+
+namespace config {
+  class key_col;
+  class index;
+};
  
+
+template <class T>
+class apache_array: public array_header {
+  public:
+    int size()    { return this->nelts; }
+    T *items()    { return (T*) this->elts; }
+    T *new_item() { return (T*) ap_push_array(this); }
+    void * operator new(size_t sz, ap_pool *p, int n) {
+      return ap_make_array(p, n, sz);
+    };
+};
+
+
 /* Other mod_ndb headers */
 #include "MySQL_Field.h"
 #include "mod_ndb_config.h"

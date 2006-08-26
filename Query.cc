@@ -143,7 +143,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       Q.ExecType = NdbTransaction::NoCommit;
       // Allocate an array of NdbRecAttrs for all desired columns 
       Q.result_cols = (NdbRecAttr **) 
-        ap_pcalloc(r->pool, dir->visible->nelts * sizeof(NdbRecAttr *));
+        ap_pcalloc(r->pool, dir->visible->size() * sizeof(NdbRecAttr *));
       Q.send_results = result_formatter[dir->results];
       break;
     case M_POST:
@@ -304,7 +304,7 @@ int Results_JSON(request_rec *r, config::dir *dir, struct QueryItems *q) {
   log_debug(r->server,"In Results formatter %s", "Results_JSON");
   ap_send_http_header(r); 
   ap_rputs(JSON::new_object,r);
-  for(int n = 0; n < dir->visible->nelts ; n++) {
+  for(int n = 0; n < dir->visible->size() ; n++) {
     if(n) ap_rputs(JSON::delimiter,r);
     ap_rputs(JSON::member(*q->result_cols[n],r),r);
   }
@@ -341,7 +341,7 @@ int Results_XML(request_rec *r, config::dir *dir, struct QueryItems *q) {
 int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
   
   log_debug(r->server,"In Results formatter %s", "Results_note");
-  for(int n = 0; n < dir->visible->nelts ; n++) {
+  for(int n = 0; n < dir->visible->size() ; n++) {
     register NdbRecAttr *rec =  q->result_cols[n];
     if(! rec->isNULL()) {
       register const NdbDictionary::Column* col = rec->getColumn();
@@ -434,8 +434,8 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
   char **column_list;
 
   // Call op->getValue() for each desired result column
-  column_list = (char **) dir->visible->elts;
-  for(int n = 0; n < dir->visible->nelts ; n++) {
+  column_list = dir->visible->items();
+  for(int n = 0; n < dir->visible->size() ; n++) {
     q->result_cols[n] = q->op->getValue(column_list[n], 0);
 
     /* If the result format is "raw", check for BLOBs */
@@ -459,9 +459,9 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
   const char *key, *val;
   
   
-  column_list = (char **) dir->updatable->elts;
+  column_list = dir->updatable->items();
   // iterate over the updatable columns
-  for(int n = 0; n < dir->updatable->nelts ; n++) {
+  for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
     // finding them in the posted form data
     val = ap_table_get(q->form_data, key);

@@ -214,14 +214,14 @@ namespace config {
       },
       {                      // inheritable
         "PathInfo", // e.g. "PathInfo id" or "PathInfo keypt1/keypt2"
-        (CMD_HAND_TYPE) config::pathinfo, 
+        (CMD_HAND_TYPE) /* config::pathinfo */ NULL, 
         NULL,
         ACCESS_CONF,    TAKE1, 
         "Schema for interpreting the rightmost URL path components"
       },
       {                     // NOT inheritable
         "Filter",  // Filter col op keyword, e.g. "Filter id < min_id"
-        (CMD_HAND_TYPE) config::filter, 
+        (CMD_HAND_TYPE) /* config::filter */ NULL, 
         (void *) "F*",
         ACCESS_CONF,    TAKE13, 
         "NDB Table"
@@ -273,79 +273,116 @@ int ndb_handler(request_rec *r) {
 }
 
 
-int ndb_status_handler(request_rec *r) {
-  table *param_tab, *idx;
+int ndb_config_check_handler(request_rec *r) {
+  table *param_tab;
   char **list;
+  config::index *indexes;
+  config::key_col *columns;
   
+  ndb_instance *i = my_instance(r);
+
   config::dir *dir = (config::dir *)
     ap_get_module_config(r->per_dir_config, &ndb_module);
-    
-  if(! (dir->database && dir->table))
-    return NOT_IMPLEMENTED;
-
   config::srv *srv = (config::srv *)
     ap_get_module_config(r->server->module_config, &ndb_module);
 
-  ndb_instance *i = my_instance(r);
-  if(i == (ndb_instance *) 0) 
-    return HTTP_SERVICE_UNAVAILABLE;
-
-  i->requests++;
-
   r->content_type = "text/plain";
   ap_send_http_header(r);
-
-  i->db->setDatabaseName(dir->database);
   
-  NdbDictionary::Dictionary *dict = i->db->getDictionary();
-  const NdbDictionary::Table *tab = dict->getTable(dir->table);
-  
+  if(! (dir->database && dir->table)) {
+    ap_rprintf(r,"No database or table configured at %s\n",r->uri);
+    return OK;
+  }
+    
   ap_rprintf(r,"Process ID: %d\n",getpid());
   ap_rprintf(r,"Connect string: %s\n",srv->connect_string);
-  ap_rprintf(r,"Node Id: %d\n",i->conn->connection->node_id());
-  ap_rprintf(r,"NDB Cluster Connections: %d\n",process.n_connections);
-  ap_rprintf(r,"Apache Threads: %d\n",process.n_threads);
-  ap_rprintf(r,"\n");
   ap_rprintf(r,"Database: %s\n",dir->database);
   ap_rprintf(r,"Table: %s\n",dir->table);
-  if(tab) {
-    ap_rprintf(r,"Primary key:");
-    for(int n = 0; n < tab->getNoOfPrimaryKeys() ; n++) 
-      ap_rprintf(r,"%s %s", (n ? "," : " ") , tab->getPrimaryKey(n));
-    ap_rprintf(r,"\n");
+  if(i == (ndb_instance *) 0) {
+    ap_rprintf(r, "Cannot access NDB instance. ");
+    ap_rprintf(r, process.conn.connected ? "\n" : "Not connected to cluster.\n");
   }
-  else
-    ap_rprintf(r," ** Table does not exist.\n");
+  else {
+    i->db->setDatabaseName(dir->database);
+    NdbDictionary::Dictionary *dict = i->db->getDictionary();
+    const NdbDictionary::Table *tab = dict->getTable(dir->table);
+    ap_rprintf(r,"Node Id: %d\n",i->conn->connection->node_id());
+    ap_rprintf(r,"\n");
+    if(tab) {
+      ap_rprintf(r,"Primary key according to NDB Dictionary:");
+      for(int n = 0; n < tab->getNoOfPrimaryKeys() ; n++) 
+        ap_rprintf(r,"%s %s", (n ? "," : " ") , tab->getPrimaryKey(n));
+      ap_rprintf(r,"\n");
+    }
+    else
+      if(i) ap_rprintf(r," ** Table does not exist in data dictionary.\n");
+  }
   if( dir->visible) {
-    ap_rprintf(r,"%d visible columns: \n", dir->visible->nelts);
-    list = (char **) dir->visible->elts;
-    for(int n = 0; n < dir->visible->nelts ; n++) 
-      ap_rprintf(r,"  %s\n", list[n]);
+    ap_rprintf(r,"%d visible column%s:  ", dir->visible->size(),
+               dir->visible->size() == 1 ? "" : "s");
+    list = dir->visible->items();
+    for(int n = 0; n < dir->visible->size() ; n++) 
+      ap_rprintf(r,"%s%s", (n ? ", " : ""), list[n]); 
+    ap_rprintf(r,"\n");
   }
   ap_rprintf(r,"Result format: %s\n",
              (char *[4]){ "[None]","JSON","Raw","XML" }[(int) dir->results]);
-  idx = (table *) dir->indexes;
-  if(idx) {
-    ap_rprintf(r,"Indexes: \n");    
-    ap_table_do(print_all_params,r,idx, NULL);
+
+  indexes = dir->indexes->items();
+  columns = dir->key_columns->items();
+  int n_indexes = dir->indexes->size();
+  ap_rprintf(r,"\n%d index%s ", n_indexes, n_indexes == 1 ? "" : "es");
+  ap_rprintf(r,"with %d associated column%s.\n", dir->key_columns->size(),
+             dir->key_columns->size() == 1 ? "" : "s");
+  for(int n = 0 ; n < n_indexes ; n++) {
+    config::index *idx = &indexes[n];
+    ap_rprintf(r,"%-30s type: %c   columns: %d   first_col: (%d,%d)\n",
+               idx->name, idx->type, idx->n_columns, 
+               idx->first_col, idx->first_col_serial);
+    int t = idx->first_col;
+    ap_rprintf(r,"  Columns:");
+    while(t != -1) {
+      ap_rprintf(r," %s (%d,%d)", columns[t].name, t, columns[t].serial_no);
+      t = columns[t].next_in_key;
+    }
+    ap_rprintf(r,"\n");
   }
+
   ap_rprintf(r,"\n");
   ap_rprintf(r,"args: %s\n",r->args);
   if(r->args) {
     param_tab = http_param_table(r, r->args);
     ap_table_do(print_all_params,r,param_tab,NULL);
-    if(idx && (! ap_is_empty_table(param_tab))) {
+    if(! ap_is_empty_table(param_tab)) {
       array_header *a = ap_table_elts(param_tab);
       table_entry *t1 = (table_entry *)a->elts;
       char *key1 = t1->key;
       ap_rprintf(r,"First arg: %s\n",key1);
     }
   }
+  return OK;
+}
+
+
+int ndb_status_handler(request_rec *r) {
+
+  config::srv *srv = 
+    (config::srv *) ap_get_module_config(r->server->module_config, &ndb_module);
+      
+  r->content_type = "text/plain";
+  ap_send_http_header(r);
   
-  
-  ap_rprintf(r,"path_info: %s\n",r->path_info); 
-  ap_rprintf(r,"filename: %s\n",r->filename); 
-  ap_rprintf(r,"uri: %s\n",r->uri); 
+  ap_rprintf(r,"Process ID: %d\n",getpid());
+  ap_rprintf(r,"Connect string: %s\n",srv->connect_string);
+  ap_rprintf(r,"NDB Cluster Connections: %d\n",process.n_connections);
+  ap_rprintf(r,"Apache Threads: %d\n",process.n_threads);
+  ndb_instance *i = my_instance(r);
+  if(i == (ndb_instance *) 0) {
+    ap_rprintf(r,"\n -- RUNTIME ERROR: Cannot retrieve an NDB instance.\n");
+    if(! process.conn.connected) ap_rprintf(r, "Not connected to NDB cluster.\n");
+    return OK;
+  }
+  ap_rprintf(r,"Node Id: %d\n",i->conn->connection->node_id());
   ap_rprintf(r,"\n");
   ap_rprintf(r,"Requests in:   %u\n", i->requests);
   ap_rprintf(r,"Row found:     %u\n", i->row_found);
@@ -406,7 +443,8 @@ int print_all_params(void *v, const char *key, const char *val) {
 /* HANDLER LIST */
 static const handler_rec mod_ndb_handlers[] = { 
     { "ndb-cluster", ndb_handler },
-    { "mod-ndb-status", ndb_status_handler },
+    { "ndb-status", ndb_status_handler },
+    { "ndb-config-check", ndb_config_check_handler },
     { NULL, NULL }
 };
 
