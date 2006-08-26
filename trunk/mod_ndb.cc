@@ -172,21 +172,21 @@ namespace config {
       },
       {
         "Format",           // inheritable
-        (CMD_HAND_TYPE) config::set_result_format,
+        (CMD_HAND_TYPE) config::result_format,
         NULL,
         ACCESS_CONF,    TAKE123, 
         "Result Set Format"
       },     
       {
         "Columns",          // inheritable
-        (CMD_HAND_TYPE) config::build_column_list,
+        (CMD_HAND_TYPE) config::non_key_column,
         (void *) "R",
         ACCESS_CONF,    ITERATE,
         "List of attributes to include in result set"
       },
       {
         "AllowUpdate",      // NOT inheritable
-        (CMD_HAND_TYPE) config::build_column_list,
+        (CMD_HAND_TYPE) config::non_key_column,
         (void *) "W",
         ACCESS_CONF,    ITERATE,
         "List of attributes that can be updated using HTTP"
@@ -200,29 +200,29 @@ namespace config {
       },
       {
         "UniqueIndex",      // NOT inheritable
-        (CMD_HAND_TYPE) config::build_index_list,
-        (void *) "U*",  
+        (CMD_HAND_TYPE) config::named_index,
+        (void *) "U",  
         ACCESS_CONF,    ITERATE2,
         "Allow unique key lookups, given index name and columns"
       },
       {
         "OrderedIndex",      // NOT inheritable
-        (CMD_HAND_TYPE) config::build_index_list,
-        (void *) "O*",  
+        (CMD_HAND_TYPE) config::named_index,
+        (void *) "O",  
         ACCESS_CONF,    ITERATE2,
         "Allow ordered index scan, given index name and columns"
       },
       {                      // inheritable
         "PathInfo", // e.g. "PathInfo id" or "PathInfo keypt1/keypt2"
-        (CMD_HAND_TYPE) /* config::pathinfo */ NULL, 
+        (CMD_HAND_TYPE) config::pathinfo,  
         NULL,
         ACCESS_CONF,    TAKE1, 
         "Schema for interpreting the rightmost URL path components"
       },
       {                     // NOT inheritable
         "Filter",  // Filter col op keyword, e.g. "Filter id < min_id"
-        (CMD_HAND_TYPE) /* config::filter */ NULL, 
-        (void *) "F*",
+        (CMD_HAND_TYPE) config::filter, 
+        NULL,
         ACCESS_CONF,    TAKE13, 
         "NDB Table"
       }, 
@@ -325,24 +325,24 @@ int ndb_config_check_handler(request_rec *r) {
       ap_rprintf(r,"%s%s", (n ? ", " : ""), list[n]); 
     ap_rprintf(r,"\n");
   }
-  ap_rprintf(r,"Result format: %s\n",
-             (char *[4]){ "[None]","JSON","Raw","XML" }[(int) dir->results]);
+  ap_rprintf(r,"Result format: %s\n",(char *[4]){"[None]","JSON","Raw","XML"}
+             [(int) dir->results]);
 
   indexes = dir->indexes->items();
   columns = dir->key_columns->items();
   int n_indexes = dir->indexes->size();
-  ap_rprintf(r,"\n%d index%s ", n_indexes, n_indexes == 1 ? "" : "es");
-  ap_rprintf(r,"with %d associated column%s.\n", dir->key_columns->size(),
-             dir->key_columns->size() == 1 ? "" : "s");
+  int n_kcols = dir->key_columns->size();
+  ap_rprintf(r,"\n%d key column%s:    ",n_kcols, n_kcols == 1 ? "" : "s");
+  for(int n = 0 ; n < dir->key_columns->size() ; n++)
+    ap_rprintf(r,"%s ",columns[n].name);
+  ap_rprintf(r,"\n%d index%s\n", n_indexes, n_indexes == 1 ? "" : "es");
   for(int n = 0 ; n < n_indexes ; n++) {
     config::index *idx = &indexes[n];
-    ap_rprintf(r,"%-30s type: %c   columns: %d   first_col: (%d,%d)\n",
-               idx->name, idx->type, idx->n_columns, 
-               idx->first_col, idx->first_col_serial);
+    ap_rprintf(r,"Type: %c | %-30s\n",idx->type, idx->name);
     int t = idx->first_col;
-    ap_rprintf(r,"  Columns:");
+    ap_rprintf(r," %d Columns:", idx->n_columns);
     while(t != -1) {
-      ap_rprintf(r," %s (%d,%d)", columns[t].name, t, columns[t].serial_no);
+      ap_rprintf(r," %s", columns[t].name);
       t = columns[t].next_in_key;
     }
     ap_rprintf(r,"\n");

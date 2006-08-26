@@ -76,8 +76,8 @@ class apache_array: public array_header {
     int size()    { return this->nelts; }
     T *items()    { return (T*) this->elts; }
     T *new_item() { return (T*) ap_push_array(this); }
-    void * operator new(size_t sz, ap_pool *p, int n) {
-      return ap_make_array(p, n, sz);
+    void * operator new(size_t, ap_pool *p, int n) {
+      return ap_make_array(p, n, sizeof(T));
     };
 };
 
