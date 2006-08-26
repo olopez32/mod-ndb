@@ -32,12 +32,11 @@ namespace config {
     // including an important explicit default:
     // dir->allow_delete = 0; 
 
-    dir->visible     = ap_make_array(p, 4, sizeof(char *));
-    dir->updatable   = ap_make_array(p, 4, sizeof(char *));
-    dir->pathinfo    = ap_make_array(p, 2, sizeof(char *));
-    dir->indexes     = ap_make_array(p, 4, sizeof(config::index));
-    dir->key_columns = ap_make_array(p, 4, sizeof(config::key_col));
-    dir->index_map   = ap_make_table(p, 4);
+    dir->visible     = new(p, 4) apache_array<char *>;
+    dir->updatable   = new(p, 4) apache_array<char *>;
+    dir->pathinfo    = new(p, 2) apache_array<char *>;
+    dir->indexes     = new(p, 2) apache_array<config::index>;
+    dir->key_columns = new(p, 4) apache_array<config::key_col>;
     dir->results = json;
     
     return (void *) dir;
@@ -80,7 +79,7 @@ namespace config {
   }
     
   /* Process a "Columns" or "AllowUpdates" directive
-  by adding the name of each column onto the APR array
+     by adding the name of each column onto the APR array
   */
   const char *build_column_list(cmd_parms *cmd, void *m, char *arg) {
     config::dir *dir;
@@ -91,10 +90,10 @@ namespace config {
     dir = (config::dir *) m;
     switch(*which) {
       case 'R':
-        str = (char **) ap_push_array(dir->visible);
+        str = dir->visible->new_item();
         break;
       case 'W':
-        str = (char **) ap_push_array(dir->updatable);
+        str = dir->updatable->new_item();
         do_sort = 1;
         break;
       default:
@@ -135,151 +134,176 @@ namespace config {
 
   
   /* 
-    Every time a new column is added, the columns get reshuffled some,
-    so we have to fix all the mappings between serial numbers and 
-    actual column id numbers.
+    The list of key columns is sorted, so, when a new column is 
+    added, some columns may get shuffled around --  
+    so we rebuild all of the links between columns.
   */  
-  void fix_all_columns(config::dir *dir, config::key_col **cols) {
-    short n, i, j;
+  void fix_all_columns(config::dir *dir) {
+    short n, serial, this_col, next_col;
     
-    const int n_columns = dir->key_columns->nelts;
-    const int n_indexes = dir->indexes->nelts;
-    
-    config::index **indexes = (config::index **) dir->indexes->elts;
-    
+    config::key_col *cols = dir->key_columns->items();
+    int n_columns = dir->key_columns->size();
+    config::index *indexes = dir->indexes->items();
+    int n_indexes = dir->indexes->size();
+        
     /* Build a map from serial_no to column id.
-      (This is what the idx_map_bucket slot is for).
-      */
+       (This is what the idx_map_bucket is for).
+    */
     for(n = 0 ; n < n_columns ; n++) 
-      cols[(cols[n]->serial_no)]->idx_map_bucket = n;
+      cols[cols[n].serial_no].idx_map_bucket = n;
     
-    /* Fix the first_col_idx pointer in each index record
-      and the subsequent chain of next_in_key_idx pointers.
-      */
+    /* For each index record, fix the first_col link
+       and the subsequent chain of next_in_key links.
+    */
     for(n = 0 ; n < n_indexes ; n++) {
-      i = cols[(indexes[n]->first_col_serial)]->idx_map_bucket;
-      indexes[n]->first_col_idx = i;
-      while(i != -1) {
-        j = cols[(cols[i]->next_in_key_serial)]->idx_map_bucket;
-        cols[i]->next_in_key_idx = j;
-        i = j;
+      serial = indexes[n].first_col_serial;
+      if(serial != -1) {
+        // Fix the head of the chain
+        this_col = cols[serial].idx_map_bucket;
+        indexes[n].first_col = this_col;
+        serial = cols[this_col].next_in_key_serial;
+        // Follow the chain, fixing every item
+        while(serial != -1) {
+          // Fix the column
+          next_col = cols[serial].idx_map_bucket;
+          cols[this_col].next_in_key = next_col;
+          // Advance the pointer
+          serial = cols[next_col].next_in_key_serial;
+          this_col = next_col;
+        }
+        // End of chain
       }
-    } 
+    }
     
-    /* Fix the filter_col_idx pointer in each filter column
-      */
+    /* Fix the filter_col pointer in each filter column
+    */
     for(n = 0 ; n < n_columns ; n++)
-      if(cols[n]->is_filter)
-        cols[n]->filter_col_idx =
-          cols[(cols[n]->filter_col_serial)]->idx_map_bucket;
+      if(cols[n].is_filter)
+        cols[n].filter_col =
+          cols[(cols[n].filter_col_serial)].idx_map_bucket;
   }
 
   
-  /*  While building the dir->key_columns array, we want to keep
+  /*  add_key_column():
+      While building the dir->key_columns array, we want to keep
       it sorted on the key name.
   
-      ap_push_array() allocates a new element at the end of the array and 
-      returns a pointer to it.  add_key_column() is a wrapper that shifts
-      items toward the end if necessary to make a hole for the new item 
-      in the appropriate place, and then returns the array index of the hole.
+      Add a new element to the end of the array, then shift itmes
+      toward the end if necessary to make a hole for the new item 
+      in the appropriate place. Return the array index of the hole.
       
-      If the new key already exists, "exists" is set to 1, no new element is
-      allocated, and the return value indicates the index of the column.
+      If the new key already exists, set "exists" to 1, and return
+      the index of the column.
   */
-  short add_key_column(array_header *a, char *keyname, bool &exists) {
+  short add_key_column(cmd_parms *cmd, config::dir *dir, 
+                       char *keyname, bool &exists) {
     exists = 0;
-    int list_size = a->nelts;
-    config::key_col **keys = (config::key_col **) a->elts;
-    register int n = 0, insertion_point = 0, c;
+    int list_size = dir->key_columns->size();
+    config::key_col *keys = dir->key_columns->items();
+    register int n = 0, c;
+    short insertion_point = 0;
     
     for(n = 0; n < list_size; n++) {
-      c = strcmp(keyname, keys[n]->name);
-      if(c < 0) 
-        /* keyname < item->name */
-        break;
-      if(c > 0) 
-        /* keyname > item->name */
-        insertion_point = n + 1;
-      else {
-        /* c == 0 */
+      ap_log_error(APLOG_MARK, log::debug, cmd->server, 
+                   "Comparing %s to %s",keyname, keys[n].name); 
+      c = strcmp(keyname, keys[n].name); 
+      if(c < 0) break;  // the new key sorts before this one 
+      if(c > 0) insertion_point = n + 1;  // the new key sorts after this one
+      else {  // the keys are the same 
         exists = 1;
         return n;
       }
     }        
-    // ap_push_array returns a pointer, but ignore it.
-    ap_push_array(a);
+
+    // Create a new key_col at the end of the array
+    dir->key_columns->new_item();
     
-    // ap_push_array may have caused the whole array to get relocated */
-    keys = (config::key_col **) a->elts;
+    // Expansion may have caused the whole array to be relocated
+    keys = dir->key_columns->items();
       
     // All elements after the insertion point get shifted right one place
     size_t len = (sizeof(config::key_col)) * (list_size - insertion_point);
+    void *src = (void *) &keys[insertion_point];
     if(len > 0) {
-      void *src = (void *) keys[insertion_point];
-      void *dst = (void *) keys[insertion_point + 1];
+      void *dst = (void *) &keys[insertion_point + 1];
+      ap_log_error(APLOG_MARK, log::debug, cmd->server, "Moving %d bytes "
+                   "(%d records) at record %hd", (int) len,
+                   list_size - insertion_point, insertion_point);
       memmove(dst, src, len);
-      // clear out the previous value
-      bzero(src, sizeof(config::key_col));
     }
-      
+    // clear out the previous contents and initialize the column.
+    bzero(src, sizeof(config::key_col));
+    keys[insertion_point].name = ap_pstrdup(cmd->pool, keyname);
+    keys[insertion_point].serial_no = list_size;
+
+    log_debug(cmd->server,"add_key_column(): created column at position %hd",
+              insertion_point);
     return insertion_point;
   }
 
   
-  short add_column_to_index(cmd_parms *cmd, config::dir *dir, char *col, 
+  short add_column_to_index(cmd_parms *cmd, config::dir *dir, char *col_name, 
                             short index_id, bool & col_exists)
   {
-    config::key_col **cols; 
-    config::key_col *this_col;
-    short col_id;
+    config::index *indexes = dir->indexes->items();
+    config::key_col *cols;   // do not initialize until after add_key_column()
+    short id;
     
-    col_id = add_key_column(dir->key_columns, col, col_exists);
-    /* It's important not to dereference dir->key_columns->elts until
-       *after* calling add_key_column()
-    */
-    cols = (config::key_col **) dir->key_columns->elts;
-    this_col = cols[col_id];
-    
-    /* The column record already existed */
+    log_debug(cmd->server,"Adding column %s to index",col_name);
+    id = add_key_column(cmd, dir, col_name, col_exists);
+    cols = dir->key_columns->items();
+
     if(col_exists) {
-      if(this_col->index_id != -1) {
-        config::index **indexes = (config::index **)  dir->indexes->elts;
+      log_debug(cmd->server,"Column %s already existed.",col_name);
+      if((cols[id].index_id != -1) && (index_id != -1)) {
         ap_log_error(APLOG_MARK, log::err, cmd->server,
                      "Configuration error at %s associating column %s "
                      "with index %s; it is already connected to index %s "
                      "and mod_ndb does not allow you to associate a key column "
-                     "with multiple non-primary indexes.", cmd->path, col, 
-                     indexes[index_id]->name,indexes[this_col->index_id]->name);
+                     "with multiple named indexes.", cmd->path, col_name, 
+                     indexes[index_id].name,indexes[cols[id].index_id].name);
        }
     }
-    else {
-      /* Initialize the column record */
-      this_col->name = col;
-      this_col->serial_no = dir->key_columns->nelts - 1;
-      this_col->next_in_key_serial = -1;
-      this_col->next_in_key_idx = -1;
+
+    cols[id].index_id = index_id; 
+    cols[id].next_in_key_serial = -1;  
+    cols[id].next_in_key = -1; 
+ 
+    /* If the column's serial number is the same as its id, then it was added
+       at the end of the array.  But if not, some columns were moved around, 
+       and all of the links need to be fixed. */     
+    if(id != cols[id].serial_no) {
+      log_debug(cmd->server,"Fixing links for %d resorted column(s).",
+                cols[id].serial_no - id);
+      fix_all_columns(dir); 
     }
-    /* Perform these initializations even if the column already existed
-    */
-    this_col->index_id = index_id;
-    
-    fix_all_columns(dir, cols);
-    return col_id;
+    ap_log_error(APLOG_MARK, log::debug, cmd->server,"Column %s created. "
+                 "Id: %hd.  Serial: %hd.  Index:  %hd.", 
+                 cols[id].name, id, cols[id].serial_no, cols[id].index_id);
+    return  id;
   }
   
   
   const char *primary_key(cmd_parms *cmd, void *m, char *col) {
     bool col_exists = 0;
-    config::key_col **cols;
 
+    log_debug(cmd->server,"Registering column %s to primary key",col);
     config::dir *dir = (config::dir *) m;    
-    short col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
-    cols = (config::key_col **) dir->key_columns->elts;
-    cols[col_id]->is_in_pk = 1;
+    short col_id = add_column_to_index(cmd, dir, col, -1, col_exists); // ??
+    dir->key_columns->items()[col_id].is_in_pk = 1;
     
     return 0;
   }
   
+  
+  short get_index_by_name(config::dir *dir, char *idx) {
+    int n;
+    for(n = 0 ; n < dir->indexes->size() ; n++) 
+      if(!strcmp(idx, dir->indexes->items()[n].name))
+        return n;
+    return -1;
+  }
+    
     
   /* 
     Process Index directives:
@@ -293,79 +317,53 @@ namespace config {
   {
     short index_id, col_id;
     config::index *index_rec;
-    config::key_col **cols;
-    short i, j;
+    config::key_col *cols, *new_col;
+    short i;
 
     config::dir *dir = (config::dir *) m;
     char *which = (char *) cmd->cmd->cmd_data;
-    table *idxmap = (table *) dir->index_map;
-    char *index_id_str = (char *) ap_table_get(idxmap,idx);
+    index_id = get_index_by_name(dir,idx);
 
-    if(index_id_str) {
-      index_id = atoi(index_id_str);
-      index_rec = (config::index *) dir->indexes->elts[index_id];
-    }
-    else {
+    if(index_id == -1) {
       /* Build the index record */
-      index_rec = (config::index *) ap_push_array(dir->indexes);
-      index_id = dir->indexes->nelts - 1;
-      index_rec->name = ap_pstrdup(cmd->pool, idx);   // Set the name
-      if(*which == 'U')                               // Set the type
-        index_rec->type = unique;
-      else if (*which == 'O')
-        index_rec->type = ordered;
-      else 
-        return "Unusual bug in build_index_list()";
-
-      index_rec->n_columns = 0;                       // Set the rest
+      log_debug(cmd->server,"Creating new index record %s",idx);
+      index_rec = dir->indexes->new_item();
+      bzero(index_rec, sizeof(config::index));
+      index_id = dir->indexes->size() - 1;
+      index_rec->name = ap_pstrdup(cmd->pool, idx);   // Set the name ...
+      index_rec->type = *which;                       
+      index_rec->n_columns = 0;                       
       index_rec->first_col_serial = -1;
-      index_rec->first_col_idx = -1;
-      
-      /* Create the map entry */
-      ap_table_set(idxmap, idx, ap_psprintf(cmd->pool,"%d",index_id));      
+      index_rec->first_col = -1;
     }
     
     /* Create a column record */
     bool col_exists = 0;
-    col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
-    cols = (config::key_col **) dir->key_columns->elts;
-
+    col_id = add_column_to_index(cmd, dir, col, index_id, col_exists);
+    new_col = & dir->key_columns->items()[col_id];
+    index_rec->n_columns++;
+    
     /* Manage the chain of links from an index to its member columns */
-    short first_key_part = index_rec->first_col_idx;
+    // 1: Find the end of the chain
+    short first_key_part = index_rec->first_col;
     if(first_key_part == -1) {
-      index_rec->first_col_serial = cols[col_id]->serial_no;
-      index_rec->first_col_idx = col_id;
+      // The chain ends at the index record;
+      // push the new column on to the chain.
+      index_rec->first_col_serial = new_col->serial_no;
+      index_rec->first_col = col_id;
     }
     else {
+      // Follow the chain to the end
+      cols = dir->key_columns->items();
       i = first_key_part;
-      while((j = cols[i]->next_in_key_idx) != -1)
-        i = j;
-      cols[i]->next_in_key_serial = cols[col_id]->serial_no;
-      cols[i]->next_in_key_idx = col_id;
-    }    
-  }
+      while(i != -1) 
+        i = cols[i].next_in_key;
 
-  
-}
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+      // 2: Push the new column on to the chain
+      cols[i].next_in_key_serial = new_col->serial_no; 
+      cols[i].next_in_key = col_id;
+    }
+        
+    return 0;
+  }
+}  

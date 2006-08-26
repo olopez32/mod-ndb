@@ -22,8 +22,7 @@ namespace config {
   struct srv {
     char *connect_string;
   };
-  
-  
+    
   /* Apache per-directory configuration */
   struct dir {
     char *database;
@@ -31,27 +30,24 @@ namespace config {
     int allow_delete;
     result_format results;
     char *format_param[2];
-    array_header *visible;
-    array_header *updatable;
-    array_header *pathinfo;
-    array_header *indexes;
-    array_header *key_columns;      
-    void *index_map;
+    apache_array<char*> *visible;
+    apache_array<char*> *updatable;
+    apache_array<char*> *pathinfo;
+    apache_array<config::index> *indexes;
+    apache_array<config::key_col> *key_columns;      
   };
   
   /* NDB Index */
-  class index {
-    public:
+  struct index {
       char *name;
-      ndb_key_type type;
+      char type;
       unsigned short n_columns;
       short first_col_serial;
-      short first_col_idx;
+      short first_col;
   };
   
   /* Coulmn used in a query */
-  class key_col {
-    public:
+  struct key_col {
       char *name;
       bool is_in_pk;
       bool is_filter;
@@ -60,9 +56,9 @@ namespace config {
       short serial_no;
       short idx_map_bucket;
       short filter_col_serial;
-      short filter_col_idx;
+      short filter_col;
       short next_in_key_serial;
-      short next_in_key_idx;      
+      short next_in_key; 
   };
   
   void * init_dir(pool *, char *);
@@ -73,5 +69,6 @@ namespace config {
   const char * set_result_format(cmd_parms *, void *, char *, char *, char *);
   const char * pathinfo(cmd_parms *, void *, char *);
   const char * filter(cmd_parms *, void *, char *, char *, char *);
+  const char * primary_key(cmd_parms *, void *, char *);
 }
 

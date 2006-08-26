@@ -22,15 +22,15 @@ mod_ndb.so: $(OBJECTS)
 	$(APXS_LD_SHLIB) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
 .cc.o:
-	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -o $@ $< 
+	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $< 
 
 
-mod_ndb.o: mod_ndb.cc mod_ndb.h 
+mod_ndb.o: mod_ndb.cc mod_ndb.h mod_ndb_config.h
 read_http_post.o: read_http_post.cc
-JSON.o: JSON.cc mod_ndb.h MySQL_Field.h
-Query.o: Query.cc mod_ndb.h MySQL_Field.h
+JSON.o: JSON.cc mod_ndb.h MySQL_Field.h JSON.h
+Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h JSON.h 
 MySQL_Field.o: MySQL_Field.cc MySQL_Field.h
-config.o: config.cc mod_ndb.h
+config.o: config.cc mod_ndb.h mod_ndb_config.h
 
 install: mod_ndb.so
 	$(APXS) -i -n 'ndb' mod_ndb.so

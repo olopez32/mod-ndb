@@ -28,8 +28,8 @@
 			isa = PBXGroup;
 			children = (
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
-				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,
 				655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */,
+				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,
 				656167AB0A8F78CB00A664A0 /* config.cc */,
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,

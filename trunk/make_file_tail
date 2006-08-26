@@ -7,7 +7,7 @@ mod_ndb.so: $(OBJECTS)
 	$(APXS_LD_SHLIB) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
 .cc.o:
-	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -o $@ $< 
+	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $< 
 
 
 mod_ndb.o: mod_ndb.cc mod_ndb.h mod_ndb_config.h
