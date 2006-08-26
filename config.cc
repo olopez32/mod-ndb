@@ -16,8 +16,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "mod_ndb.h"
-#include <stdlib.h>   
-
 
 namespace config {
   
@@ -29,14 +27,13 @@ namespace config {
     
     dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
     // Using ap_pcalloc(), everything is initialized at 0,
-    // including an important explicit default:
-    // dir->allow_delete = 0; 
+    // including an important explicit default, dir->allow_delete = 0; 
 
     dir->visible     = new(p, 4) apache_array<char *>;
     dir->updatable   = new(p, 4) apache_array<char *>;
     dir->pathinfo    = new(p, 2) apache_array<char *>;
     dir->indexes     = new(p, 2) apache_array<config::index>;
-    dir->key_columns = new(p, 4) apache_array<config::key_col>;
+    dir->key_columns = new(p, 3) apache_array<config::key_col>;
     dir->results = json;
     
     return (void *) dir;
@@ -50,9 +47,9 @@ namespace config {
   }
   
   
-  /* It is possible to merge directory configs;
-     If an item is "inhheritable" let the child config override the parent,
-     but if the item is not inheritable, ignore the parent config.
+  /* Merge directory configs;
+       if an item is "inhheritable" let the child config override the parent,
+       but if the item is not inheritable, ignore the parent config.
   */
   void *merge_dir(pool *p, void *v1, void *v2) {
     config::dir *dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
@@ -60,7 +57,6 @@ namespace config {
     config::dir *d2 = (config::dir *) v2;
 
     // Things that cannot be inherited:
-    dir->allow_delete = d2->allow_delete; 
     dir->indexes = d2->indexes;
     dir->key_columns = d2->key_columns;
     
@@ -78,13 +74,13 @@ namespace config {
     return (void *) dir;
   }
     
+    
   /* Process a "Columns" or "AllowUpdates" directive
      by adding the name of each column onto the APR array
   */
-  const char *build_column_list(cmd_parms *cmd, void *m, char *arg) {
+  const char *non_key_column(cmd_parms *cmd, void *m, char *arg) {
     config::dir *dir;
     char **str;
-    bool do_sort = 0;
     char *which = (char *) cmd->cmd->cmd_data;
     
     dir = (config::dir *) m;
@@ -94,10 +90,6 @@ namespace config {
         break;
       case 'W':
         str = dir->updatable->new_item();
-        do_sort = 1;
-        break;
-      default:
-        return "Unusual bug in build_column_list()";
     }
     *str = ap_pstrdup(cmd->pool, arg);
     
@@ -108,10 +100,9 @@ namespace config {
   /*  Process Format directives, e.g.   
       "Format JSON" 
   */
-
-  const char *set_result_format(cmd_parms *cmd, void *m, 
-                                char *fmt, char *arg0, char *arg1) {
-    
+  const char *result_format(cmd_parms *cmd, void *m, 
+                            char *fmt, char *arg0, char *arg1)
+  {    
     config::dir *dir = (config::dir *) m;
     
     /* Some formatters can take 1 or 2 extra parameters */
@@ -126,17 +117,17 @@ namespace config {
       dir->results = json;
       if(strcmp(fmt,"json")) 
         ap_log_error(APLOG_MARK, log::warn, cmd->server,
-                     "Invalid result format %s at %s. Using default JSON results.\n",
-                     fmt, cmd->path);
+                "Invalid result format %s at %s. Using default JSON results.\n",
+                fmt, cmd->path);
     }
     return 0;
   }
 
-  
-  /* 
-    The list of key columns is sorted, so, when a new column is 
-    added, some columns may get shuffled around --  
-    so we rebuild all of the links between columns.
+
+  /* fix_all_columns():
+     The list of key columns is sorted, so, when a new column is 
+     added, some columns may get shuffled around --  
+     so we rebuild all of the links between columns.
   */  
   void fix_all_columns(config::dir *dir) {
     short n, serial, this_col, next_col;
@@ -173,7 +164,7 @@ namespace config {
         }
         // End of chain
       }
-    }
+    }    
     
     /* Fix the filter_col pointer in each filter column
     */
@@ -204,8 +195,6 @@ namespace config {
     short insertion_point = 0;
     
     for(n = 0; n < list_size; n++) {
-      ap_log_error(APLOG_MARK, log::debug, cmd->server, 
-                   "Comparing %s to %s",keyname, keys[n].name); 
       c = strcmp(keyname, keys[n].name); 
       if(c < 0) break;  // the new key sorts before this one 
       if(c > 0) insertion_point = n + 1;  // the new key sorts after this one
@@ -222,22 +211,18 @@ namespace config {
     keys = dir->key_columns->items();
       
     // All elements after the insertion point get shifted right one place
-    size_t len = (sizeof(config::key_col)) * (list_size - insertion_point);
+    size_t len = (sizeof(config::key_col) * (list_size - insertion_point));
     void *src = (void *) &keys[insertion_point];
     if(len > 0) {
       void *dst = (void *) &keys[insertion_point + 1];
-      ap_log_error(APLOG_MARK, log::debug, cmd->server, "Moving %d bytes "
-                   "(%d records) at record %hd", (int) len,
-                   list_size - insertion_point, insertion_point);
       memmove(dst, src, len);
     }
     // clear out the previous contents and initialize the column.
     bzero(src, sizeof(config::key_col));
+    // The immutable column attributes: name and serial_no
     keys[insertion_point].name = ap_pstrdup(cmd->pool, keyname);
     keys[insertion_point].serial_no = list_size;
 
-    log_debug(cmd->server,"add_key_column(): created column at position %hd",
-              insertion_point);
     return insertion_point;
   }
 
@@ -254,17 +239,14 @@ namespace config {
     cols = dir->key_columns->items();
 
     if(col_exists) {
-      log_debug(cmd->server,"Column %s already existed.",col_name);
-      if((cols[id].index_id != -1) && (index_id != -1)) {
+      if((cols[id].index_id != -1) && (index_id != -1))
         ap_log_error(APLOG_MARK, log::err, cmd->server,
-                     "Configuration error at %s associating column %s "
-                     "with index %s; it is already connected to index %s "
-                     "and mod_ndb does not allow you to associate a key column "
-                     "with multiple named indexes.", cmd->path, col_name, 
-                     indexes[index_id].name,indexes[cols[id].index_id].name);
-       }
-    }
-
+            "Configuration error at %s associating column %s with index "
+            "%s; it is already connected to index %s and mod_ndb does not "
+            "allow you to associate a key column with multiple named indexes.",
+            cmd->path, col_name, indexes[index_id].name, 
+            indexes[cols[id].index_id].name);
+    }    
     cols[id].index_id = index_id; 
     cols[id].next_in_key_serial = -1;  
     cols[id].next_in_key = -1; 
@@ -272,14 +254,8 @@ namespace config {
     /* If the column's serial number is the same as its id, then it was added
        at the end of the array.  But if not, some columns were moved around, 
        and all of the links need to be fixed. */     
-    if(id != cols[id].serial_no) {
-      log_debug(cmd->server,"Fixing links for %d resorted column(s).",
-                cols[id].serial_no - id);
-      fix_all_columns(dir); 
-    }
-    ap_log_error(APLOG_MARK, log::debug, cmd->server,"Column %s created. "
-                 "Id: %hd.  Serial: %hd.  Index:  %hd.", 
-                 cols[id].name, id, cols[id].serial_no, cols[id].index_id);
+    if(id != cols[id].serial_no) 
+        fix_all_columns(dir); 
     return  id;
   }
   
@@ -287,37 +263,99 @@ namespace config {
   const char *primary_key(cmd_parms *cmd, void *m, char *col) {
     bool col_exists = 0;
 
-    log_debug(cmd->server,"Registering column %s to primary key",col);
     config::dir *dir = (config::dir *) m;    
-    short col_id = add_column_to_index(cmd, dir, col, -1, col_exists); // ??
-    dir->key_columns->items()[col_id].is_in_pk = 1;
+    short col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
+    config::key_col *columns = dir->key_columns->items();
+    columns[col_id].is_in_pk = 1;
     
     return 0;
   }
   
   
+  /* filter(), syntax "Filter column [operator pseudocolumn]"
+     as in (a) "Filter year" or (b) "Filter x > min_x".
+     Case (a) is an NdbScanFilter, where the query is a scan and "year" is not 
+     part of an index. 
+     Case (b) can also indicate a filter, but if x is part of an ordered index
+     then it defines a bound on the index scan.  
+  */
+  const char *filter(cmd_parms *cmd, void *m, char *base_col_name,
+                     char *filter_op, char *alias_col_name) {
+    bool col_exists = 0;
+    short filter_col, base_col_id = -1, alias_col_id = -1;
+    config::dir *dir = (config::dir *) m;
+
+    // This must correspond to items 0 -5 in NdbScanFilter::BinaryCondition 
+    char *valid_filter_ops[] = { "<=" , "<" , ">=" , ">" , "=" , "!=" , 0 };
+            
+    // Create the columns 
+    if(base_col_name)
+      base_col_id = add_key_column(cmd, dir, base_col_name, col_exists);    
+    if(alias_col_name) 
+      alias_col_id = add_key_column(cmd, dir, base_col_name, col_exists);
+
+    config::key_col *columns = dir->key_columns->items();
+
+    if(alias_col_name) {
+      // Three-argument syntax, e.g. "Filter x >= min_x"
+      if((columns[alias_col_id].index_id != -1) || columns[alias_col_id].is_in_pk) 
+        return ap_psprintf(cmd->pool,"Alias column %s must not be a real column.",
+                           alias_col_name);
+      // Use the alias column as the filter 
+      filter_col = alias_col_id;
+      
+      // Parse the operator
+      bool found_match = 0;
+      for(int n = 0 ; valid_filter_ops[n] ; n++) {
+        if(!strcmp(filter_op,valid_filter_ops[n])) {
+          columns[alias_col_id].filter_op = 
+            static_cast<NdbScanFilter::BinaryCondition> (n);
+          found_match = 1;
+        }
+      }
+      if(!found_match)
+        return ap_psprintf(cmd->pool,"Error: %s is not a valid filter operator",
+                          filter_op);
+    }
+    else {
+      // One-argument syntax, e.g. "Filter year." 
+      if((columns[base_col_id].index_id != -1) || columns[base_col_id].is_in_pk)
+        return ap_psprintf(cmd->pool,"Filter column %s cannot be part "
+                           "of any index",base_col_name);
+      // Use the base col as the filter
+      filter_col = base_col_id;
+      columns[base_col_id].filter_op = NdbScanFilter::COND_EQ; 
+    }
+
+    columns[filter_col].is_filter = 1;
+    columns[filter_col].filter_col = base_col_id;
+    columns[filter_col].filter_col_serial = columns[base_col_id].serial_no;
+    
+    return 0;
+  }
+
+
   short get_index_by_name(config::dir *dir, char *idx) {
-    int n;
-    for(n = 0 ; n < dir->indexes->size() ; n++) 
-      if(!strcmp(idx, dir->indexes->items()[n].name))
+    config::index *indexes = dir->indexes->items();
+    for(short n = 0 ; n < dir->indexes->size() ; n++) 
+      if(!strcmp(idx, indexes[n].name))
         return n;
     return -1;
   }
     
     
-  /* 
-    Process Index directives:
-    UniqueIndex index-name column [column ... ]
-    OrderedIndex index-name column [column ... ]
+  /* build_index_list():  process Index directives.
+     UniqueIndex index-name column [column ... ]
+     OrderedIndex index-name column [column ... ]
 
-    Create an index record for the index, and a key_column record 
-    for each column    
+     Create an index record for the index, and a key_column record 
+     for each column    
   */
-  const char *build_index_list(cmd_parms *cmd, void *m, char *idx, char *col) 
+  const char *named_index(cmd_parms *cmd, void *m, char *idx, char *col) 
   {
     short index_id, col_id;
     config::index *index_rec;
-    config::key_col *cols, *new_col;
+    config::key_col *cols;
     short i;
 
     config::dir *dir = (config::dir *) m;
@@ -328,11 +366,10 @@ namespace config {
       /* Build the index record */
       log_debug(cmd->server,"Creating new index record %s",idx);
       index_rec = dir->indexes->new_item();
-      bzero(index_rec, sizeof(config::index));
+      bzero(index_rec, dir->indexes->elt_size);
       index_id = dir->indexes->size() - 1;
-      index_rec->name = ap_pstrdup(cmd->pool, idx);   // Set the name ...
+      index_rec->name = ap_pstrdup(cmd->pool, idx);
       index_rec->type = *which;                       
-      index_rec->n_columns = 0;                       
       index_rec->first_col_serial = -1;
       index_rec->first_col = -1;
     }
@@ -340,30 +377,30 @@ namespace config {
     /* Create a column record */
     bool col_exists = 0;
     col_id = add_column_to_index(cmd, dir, col, index_id, col_exists);
-    new_col = & dir->key_columns->items()[col_id];
+    cols = dir->key_columns->items();
     index_rec->n_columns++;
     
     /* Manage the chain of links from an index to its member columns */
+    short head_col, tail_col;
     // 1: Find the end of the chain
-    short first_key_part = index_rec->first_col;
-    if(first_key_part == -1) {
+    head_col = index_rec->first_col;
+    if(head_col == -1) {
       // The chain ends at the index record;
       // push the new column on to the chain.
-      index_rec->first_col_serial = new_col->serial_no;
+      index_rec->first_col_serial = cols[col_id].serial_no;
       index_rec->first_col = col_id;
     }
     else {
       // Follow the chain to the end
-      cols = dir->key_columns->items();
-      i = first_key_part;
-      while(i != -1) 
+      i = head_col;
+      while(i != -1) {
+        tail_col = i;
         i = cols[i].next_in_key;
-
-      // 2: Push the new column on to the chain
-      cols[i].next_in_key_serial = new_col->serial_no; 
-      cols[i].next_in_key = col_id;
+      }
+      // 2: Push the new column onto the chain
+      cols[tail_col].next_in_key_serial = cols[col_id].serial_no; 
+      cols[tail_col].next_in_key = col_id;
     }
-        
     return 0;
   }
-}  
+} 
