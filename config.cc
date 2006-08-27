@@ -23,15 +23,11 @@ namespace config {
      initialize the per-directory configuration structure
   */
   void *init_dir(pool *p, char *path) {
-    config::dir *dir;
-    
-    dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
-    // Using ap_pcalloc(), everything is initialized at 0,
-    // including an important explicit default, dir->allow_delete = 0; 
+    // Initialize everything to zero with ap_pcalloc()
+    config::dir *dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
 
     dir->visible     = new(p, 4) apache_array<char *>;
     dir->updatable   = new(p, 4) apache_array<char *>;
-    dir->pathinfo    = new(p, 2) apache_array<char *>;
     dir->indexes     = new(p, 2) apache_array<config::index>;
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
     dir->results = json;
@@ -48,54 +44,28 @@ namespace config {
   
   
   /* Merge directory configs;
-       if an item is "inhheritable" let the child config override the parent,
-       but if the item is not inheritable, ignore the parent config.
+     d1 is a parent config, d2 is a child, and dir is a new one to return.
   */
   void *merge_dir(pool *p, void *v1, void *v2) {
-    config::dir *dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
+    config::dir *dir = (config::dir *) ap_palloc(p, sizeof(config::dir));
     config::dir *d1 = (config::dir *) v1;
     config::dir *d2 = (config::dir *) v2;
 
-    // Things that cannot be inherited:
-    dir->indexes = d2->indexes;
-    dir->key_columns = d2->key_columns;
-    
-    // Things that can be inherited:    
-    dir->database = d2->database ? d2->database : d1->database;
-    dir->table =    d2->table    ? d2->table    : d1->table;  
-    dir->visible =  d2->visible  ? d2->visible  : d1->visible;
-    dir->updatable= d2->updatable? d2->updatable: d1->updatable;
-    dir->results =  d2->results  ? d2->results  : d1->results;
-    dir->pathinfo=  d2->pathinfo ? d2->pathinfo : d1->pathinfo;
-    dir->format_param[0] = d2->format_param[0] ?
-                    d2->format_param[0] : d1->format_param[0];
-    dir->format_param[1] = d2->format_param[1] ?
-                    d2->format_param[1] : d1->format_param[1];    
+    // Start with a copy of d2
+    memcpy(dir,d2,sizeof(config::dir));
+
+    // These parts can be inherited from the parent.
+    if(! d2->database)  dir->database  = d1->database;
+    if(! d2->table)     dir->table     = d1->table;
+    if(! d2->visible)   dir->visible   = d1->visible;
+    if(! d2->updatable) dir->updatable = d1->updatable;
+    if(! d2->results)   dir->results   = d1->results;
+    if(! d2->format_param[0]) dir->format_param[0] = d1->format_param[0];
+    if(! d2->format_param[1]) dir->format_param[1] = d1->format_param[1];
+ 
     return (void *) dir;
   }
     
-    
-  /* Process a "Columns" or "AllowUpdates" directive
-     by adding the name of each column onto the APR array
-  */
-  const char *non_key_column(cmd_parms *cmd, void *m, char *arg) {
-    config::dir *dir;
-    char **str;
-    char *which = (char *) cmd->cmd->cmd_data;
-    
-    dir = (config::dir *) m;
-    switch(*which) {
-      case 'R':
-        str = dir->visible->new_item();
-        break;
-      case 'W':
-        str = dir->updatable->new_item();
-    }
-    *str = ap_pstrdup(cmd->pool, arg);
-    
-    return 0;
-  }    
-
 
   /*  Process Format directives, e.g.   
       "Format JSON" 
@@ -115,8 +85,7 @@ namespace config {
     else if(!strcmp(fmt,"apachenote")) dir->results = ap_note;
     else {
       dir->results = json;
-      if(strcmp(fmt,"json")) 
-        ap_log_error(APLOG_MARK, log::warn, cmd->server,
+      if(strcmp(fmt,"json")) ap_log_error(APLOG_MARK, log::warn, cmd->server,
                 "Invalid result format %s at %s. Using default JSON results.\n",
                 fmt, cmd->path);
     }
@@ -169,9 +138,15 @@ namespace config {
     /* Fix the filter_col pointer in each filter column
     */
     for(n = 0 ; n < n_columns ; n++)
-      if(cols[n].is_filter)
+      if(cols[n].is.filter)
         cols[n].filter_col =
           cols[(cols[n].filter_col_serial)].idx_map_bucket;
+    
+    /* Fix the pathinfo chain
+    */
+    for(n = 0 ; n < dir->pathinfo_size ; n++) 
+      dir->pathinfo[n] =
+        cols[dir->pathinfo[n+(dir->pathinfo_size)]].idx_map_bucket;
   }
 
   
@@ -185,6 +160,8 @@ namespace config {
       
       If the new key already exists, set "exists" to 1, and return
       the index of the column.
+      
+      add_key_column() allocates permanent space for the column name.
   */
   short add_key_column(cmd_parms *cmd, config::dir *dir, 
                        char *keyname, bool &exists) {
@@ -226,6 +203,74 @@ namespace config {
     return insertion_point;
   }
 
+
+  /* "Pathinfo col1/col2" 
+  */
+  const char *pathinfo(cmd_parms *cmd, void *m, char *arg) {
+    
+    /* The Representation of Pathinfo:
+    Pathinfo specifies how to interpret the rightmost components of a 
+    pathname. dir->pathinfo_size is n, the number of these components.
+    dir->pathinfo points to an array of 2n short integers. 
+    The first n array elements hold the column ids of the pathinfo 
+    columns, from right to left; the second n elements hold the 
+    corresponding serial numbers.
+    */
+    config::dir *dir = (config::dir *) m;
+    int pos_size=0, real_size=0;
+    char *c, *word, **items;
+    const char *path = arg;
+    short col_id;
+    bool col_exists;
+    
+    // Count the number of '/' characters
+    for(c = arg ; *c ; c++) if(*c == '/') pos_size++;
+    
+    // Allocate space for an array of strings
+    items = (char **) ap_pcalloc(cmd->temp_pool, pos_size * sizeof(char *));
+    
+    // Parse the spec into its components (L to R)
+    while(*path && (word = ap_getword(cmd->temp_pool, &path, '/')))
+      if(strlen(word)) 
+        items[real_size++] = word;
+    
+    // Initialize the dir->pathinfo array.
+    dir->pathinfo_size = real_size;
+    dir->pathinfo = (short *) 
+      ap_pcalloc(cmd->pool, 2 * real_size * sizeof(short));
+    
+    // Fetch the column IDs and serial numbers (R to L)
+    for(int n = 0 ; n < real_size ; n++) {
+      col_id = add_key_column(cmd, dir, items[real_size-(n+1)], col_exists);
+      dir->pathinfo[n] = col_id;
+      dir->pathinfo[real_size+n] = dir->key_columns->item(col_id).serial_no;
+    }
+    
+    /* Before returning from any function that calls add_key_column() you 
+      should call fix_all_columns().  (This is a design flaw). */
+    fix_all_columns(dir);
+        
+    return 0;
+  }
+  
+  
+  /* Process a "Columns" or "AllowUpdates" directive
+  by adding the name of each column onto the APR array
+  */
+  const char *non_key_column(cmd_parms *cmd, void *m, char *arg) {
+    char *which = (char *) cmd->cmd->cmd_data;
+    config::dir *dir = (config::dir *) m;
+    
+    switch(*which) {
+      case 'R':
+        *dir->visible->new_item() = ap_pstrdup(cmd->pool, arg);
+        break;
+      case 'W':
+        *dir->updatable->new_item() = ap_pstrdup(cmd->pool, arg);
+    }
+    return 0;
+  }    
+  
   
   short add_column_to_index(cmd_parms *cmd, config::dir *dir, char *col_name, 
                             short index_id, bool & col_exists)
@@ -247,7 +292,8 @@ namespace config {
             cmd->path, col_name, indexes[index_id].name, 
             indexes[cols[id].index_id].name);
     }    
-    cols[id].index_id = index_id; 
+    cols[id].index_id = index_id;
+    if(indexes[index_id].type == 'O') cols[id].is.in_ord_idx = 1;
     cols[id].next_in_key_serial = -1;  
     cols[id].next_in_key = -1; 
  
@@ -261,12 +307,12 @@ namespace config {
   
   
   const char *primary_key(cmd_parms *cmd, void *m, char *col) {
-    bool col_exists = 0;
+    bool col_exists;
 
     config::dir *dir = (config::dir *) m;    
     short col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
     config::key_col *columns = dir->key_columns->items();
-    columns[col_id].is_in_pk = 1;
+    columns[col_id].is.in_pk = 1;
     
     return 0;
   }
@@ -281,28 +327,30 @@ namespace config {
   */
   const char *filter(cmd_parms *cmd, void *m, char *base_col_name,
                      char *filter_op, char *alias_col_name) {
-    bool col_exists = 0;
+    bool base_col_exists, alias_col_exists;
     short filter_col, base_col_id = -1, alias_col_id = -1;
     config::dir *dir = (config::dir *) m;
 
-    // This must correspond to items 0 -5 in NdbScanFilter::BinaryCondition 
+    // This must correspond to items 0-5 in NdbScanFilter::BinaryCondition 
     char *valid_filter_ops[] = { "<=" , "<" , ">=" , ">" , "=" , "!=" , 0 };
             
     // Create the columns 
     if(base_col_name)
-      base_col_id = add_key_column(cmd, dir, base_col_name, col_exists);    
+      base_col_id = add_key_column(cmd, dir, base_col_name, base_col_exists);    
     if(alias_col_name) 
-      alias_col_id = add_key_column(cmd, dir, base_col_name, col_exists);
+      alias_col_id = add_key_column(cmd, dir, alias_col_name, alias_col_exists);
 
     config::key_col *columns = dir->key_columns->items();
 
     if(alias_col_name) {
       // Three-argument syntax, e.g. "Filter x >= min_x"
-      if((columns[alias_col_id].index_id != -1) || columns[alias_col_id].is_in_pk) 
+      if((alias_col_exists) &&
+         (columns[alias_col_id].index_id != -1 || columns[alias_col_id].is.in_pk))
         return ap_psprintf(cmd->pool,"Alias column %s must not be a real column.",
                            alias_col_name);
       // Use the alias column as the filter 
       filter_col = alias_col_id;
+      columns[alias_col_id].is.alias = 1;
       
       // Parse the operator
       bool found_match = 0;
@@ -319,7 +367,7 @@ namespace config {
     }
     else {
       // One-argument syntax, e.g. "Filter year." 
-      if((columns[base_col_id].index_id != -1) || columns[base_col_id].is_in_pk)
+      if((columns[base_col_id].index_id != -1) || columns[base_col_id].is.in_pk)
         return ap_psprintf(cmd->pool,"Filter column %s cannot be part "
                            "of any index",base_col_name);
       // Use the base col as the filter
@@ -327,10 +375,13 @@ namespace config {
       columns[base_col_id].filter_op = NdbScanFilter::COND_EQ; 
     }
 
-    columns[filter_col].is_filter = 1;
+    columns[filter_col].is.filter = 1;
     columns[filter_col].filter_col = base_col_id;
     columns[filter_col].filter_col_serial = columns[base_col_id].serial_no;
-    
+
+    /* Before returning from any function that calls add_key_column() you 
+       should call fix_all_columns().  (This is a design flaw). */
+    fix_all_columns(dir);
     return 0;
   }
 
