@@ -27,14 +27,16 @@ namespace config {
   struct dir {
     char *database;
     char *table;
+    int pathinfo_size;
+    short *pathinfo;
     int allow_delete;
     result_format results;
     char *format_param[2];
     apache_array<char*> *visible;
     apache_array<char*> *updatable;
-    apache_array<char*> *pathinfo;
     apache_array<config::index> *indexes;
-    apache_array<config::key_col> *key_columns;      
+    apache_array<config::key_col> *key_columns;
+  
   };
   
   /* NDB Index */
@@ -56,8 +58,13 @@ namespace config {
       short filter_col;
       short next_in_key_serial;
       short next_in_key; 
-      bool is_in_pk;
-      bool is_filter;
+      struct {
+        unsigned int in_pk       : 1;
+        unsigned int filter      : 1;
+        unsigned int alias       : 1;
+        unsigned int in_ord_idx  : 1;
+        unsigned int in_pathinfo : 1;
+      } is;
       NdbScanFilter::BinaryCondition filter_op;
   };
   

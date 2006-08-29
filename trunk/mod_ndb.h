@@ -75,6 +75,7 @@ class apache_array: public array_header {
   public:
     int size()    { return this->nelts; }
     T *items()    { return (T*) this->elts; }
+    T &item(int n){ return ((T*) this->elts)[n]; }
     T *new_item() { return (T*) ap_push_array(this); }
     void * operator new(size_t, ap_pool *p, int n) {
       return ap_make_array(p, n, sizeof(T));
@@ -99,13 +100,14 @@ class apache_array: public array_header {
    that contains an Ndb object plus some statistics
  */
 struct mod_ndb_instance {
-    Ndb *db;
-    struct mod_ndb_connection *conn;  
-    unsigned int requests;
-    unsigned int errors;
-    unsigned int declined;
-    unsigned int row_not_found;
-    unsigned int row_found;
+  struct mod_ndb_connection *conn;  
+  Ndb *db;
+  NdbTransaction *tx; 
+  unsigned int requests;
+  unsigned int errors;
+  unsigned int declined;
+  unsigned int row_not_found;
+  unsigned int row_found;
 };
 typedef struct mod_ndb_instance ndb_instance;
 

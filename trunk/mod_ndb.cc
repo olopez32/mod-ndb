@@ -275,7 +275,6 @@ int ndb_handler(request_rec *r) {
 
 int ndb_config_check_handler(request_rec *r) {
   table *param_tab;
-  char **list;
   config::index *indexes;
   config::key_col *columns;
   
@@ -298,6 +297,9 @@ int ndb_config_check_handler(request_rec *r) {
   ap_rprintf(r,"Connect string: %s\n",srv->connect_string);
   ap_rprintf(r,"Database: %s\n",dir->database);
   ap_rprintf(r,"Table: %s\n",dir->table);
+  ap_rprintf(r,"Size of configuration structures:");
+  ap_rprintf(r,"   dir: %lu.  index: %lu.  key_col: %lu.\n", sizeof(config::dir),
+             sizeof(config::index), sizeof(config::key_col));
   if(i == (ndb_instance *) 0) {
     ap_rprintf(r, "Cannot access NDB instance. ");
     ap_rprintf(r, process.conn.connected ? "\n" : "Not connected to cluster.\n");
@@ -317,13 +319,15 @@ int ndb_config_check_handler(request_rec *r) {
     else
       if(i) ap_rprintf(r," ** Table does not exist in data dictionary.\n");
   }
-  if( dir->visible) {
+  if(dir->visible) {
     ap_rprintf(r,"%d visible column%s:  ", dir->visible->size(),
                dir->visible->size() == 1 ? "" : "s");
-    list = dir->visible->items();
-    for(int n = 0; n < dir->visible->size() ; n++) 
-      ap_rprintf(r,"%s%s", (n ? ", " : ""), list[n]); 
-    ap_rprintf(r,"\n");
+    ap_rprintf(r,"%s \n",ap_array_pstrcat(r->pool,dir->visible,',')); 
+  } 
+  if(dir->updatable) {
+    ap_rprintf(r,"%d updatable column%s:  ", dir->updatable->size(),
+               dir->visible->size() == 1 ? "" : "s");
+    ap_rprintf(r,"%s \n",ap_array_pstrcat(r->pool,dir->updatable,','));  
   }
   ap_rprintf(r,"Result format: %s\n",(char *[4]){"[None]","JSON","Raw","XML"}
              [(int) dir->results]);
@@ -333,7 +337,7 @@ int ndb_config_check_handler(request_rec *r) {
   int n_indexes = dir->indexes->size();
   int n_kcols = dir->key_columns->size();
   ap_rprintf(r,"\n%d key column%s:    ",n_kcols, n_kcols == 1 ? "" : "s");
-  for(int n = 0 ; n < dir->key_columns->size() ; n++)
+  for(int n = 0 ; n < n_kcols ; n++)
     ap_rprintf(r,"%s ",columns[n].name);
   ap_rprintf(r,"\n%d index%s\n", n_indexes, n_indexes == 1 ? "" : "es");
   for(int n = 0 ; n < n_indexes ; n++) {
@@ -347,8 +351,11 @@ int ndb_config_check_handler(request_rec *r) {
     }
     ap_rprintf(r,"\n");
   }
+  ap_rprintf(r,"Pathinfo: ");
+  for(int n = 0 ; n < dir->pathinfo_size ; n++)
+    ap_rprintf(r,"%s ", columns[dir->pathinfo[n]].name);
 
-  ap_rprintf(r,"\n");
+  ap_rprintf(r,"\n\n");
   ap_rprintf(r,"args: %s\n",r->args);
   if(r->args) {
     param_tab = http_param_table(r, r->args);
