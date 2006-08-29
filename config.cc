@@ -92,71 +92,15 @@ namespace config {
     return 0;
   }
 
-
-  /* fix_all_columns():
-     The list of key columns is sorted, so, when a new column is 
-     added, some columns may get shuffled around --  
-     so we rebuild all of the links between columns.
-  */  
-  void fix_all_columns(config::dir *dir) {
-    short n, serial, this_col, next_col;
-    
-    config::key_col *cols = dir->key_columns->items();
-    int n_columns = dir->key_columns->size();
-    config::index *indexes = dir->indexes->items();
-    int n_indexes = dir->indexes->size();
-        
-    /* Build a map from serial_no to column id.
-       (This is what the idx_map_bucket is for).
-    */
-    for(n = 0 ; n < n_columns ; n++) 
-      cols[cols[n].serial_no].idx_map_bucket = n;
-    
-    /* For each index record, fix the first_col link
-       and the subsequent chain of next_in_key links.
-    */
-    for(n = 0 ; n < n_indexes ; n++) {
-      serial = indexes[n].first_col_serial;
-      if(serial != -1) {
-        // Fix the head of the chain
-        this_col = cols[serial].idx_map_bucket;
-        indexes[n].first_col = this_col;
-        serial = cols[this_col].next_in_key_serial;
-        // Follow the chain, fixing every item
-        while(serial != -1) {
-          // Fix the column
-          next_col = cols[serial].idx_map_bucket;
-          cols[this_col].next_in_key = next_col;
-          // Advance the pointer
-          serial = cols[next_col].next_in_key_serial;
-          this_col = next_col;
-        }
-        // End of chain
-      }
-    }    
-    
-    /* Fix the filter_col pointer in each filter column
-    */
-    for(n = 0 ; n < n_columns ; n++)
-      if(cols[n].is.filter)
-        cols[n].filter_col =
-          cols[(cols[n].filter_col_serial)].idx_map_bucket;
-    
-    /* Fix the pathinfo chain
-    */
-    for(n = 0 ; n < dir->pathinfo_size ; n++) 
-      dir->pathinfo[n] =
-        cols[dir->pathinfo[n+(dir->pathinfo_size)]].idx_map_bucket;
-  }
-
   
   /*  add_key_column():
       While building the dir->key_columns array, we want to keep
       it sorted on the key name.
   
       Add a new element to the end of the array, then shift itmes
-      toward the end if necessary to make a hole for the new item 
-      in the appropriate place. Return the array index of the hole.
+      toward the end if necessary to make a hole for the new items
+      in the appropriate place.  Fix every chain of column id links,
+      then return the array index of the hole.
       
       If the new key already exists, set "exists" to 1, and return
       the index of the column.
@@ -194,12 +138,61 @@ namespace config {
       void *dst = (void *) &keys[insertion_point + 1];
       memmove(dst, src, len);
     }
-    // clear out the previous contents and initialize the column.
+    // Clear out the previous contents and initialize the column.
     bzero(src, sizeof(config::key_col));
-    // The immutable column attributes: name and serial_no
+    
+    // Set the immutable column attributes: name and serial_no
     keys[insertion_point].name = ap_pstrdup(cmd->pool, keyname);
     keys[insertion_point].serial_no = list_size;
 
+    /* ==================================== fix all columns  */
+    if(len > 0) { 
+      /* The columns were reordered, so fix up all links */ 
+      short serial, this_col, next_col;
+      int n_columns = dir->key_columns->size();
+      int n_indexes = dir->indexes->size();
+      config::index *indexes = dir->indexes->items();
+
+      /* Build a map from serial_no to column id.
+         (This is what the idx_map_bucket is for).
+      */
+      for(n = 0 ; n < n_columns ; n++) 
+        keys[keys[n].serial_no].idx_map_bucket = n;
+      
+      /* For each index record, fix the first_col link
+         and the subsequent chain of next_in_key links.
+      */
+      for(n = 0 ; n < n_indexes ; n++) {
+        serial = indexes[n].first_col_serial;
+        if(serial != -1) {
+        // Fix the head of the chain
+          this_col = keys[serial].idx_map_bucket;
+          indexes[n].first_col = this_col;
+          serial = keys[this_col].next_in_key_serial;
+        // Follow the chain, fixing every item
+          while(serial != -1) {
+          // Fix the column
+            next_col = keys[serial].idx_map_bucket;
+            keys[this_col].next_in_key = next_col;
+          // Advance the pointer
+            serial = keys[next_col].next_in_key_serial;
+            this_col = next_col;
+          } /* End of chain */
+        }
+      } /* End of indexes */  
+      
+      // Fix the filter_col pointer in each filter alias column
+      for(n = 0 ; n < n_columns ; n++)
+        if(keys[n].is.filter)
+          keys[n].filter_col =
+            keys[(keys[n].filter_col_serial)].idx_map_bucket;
+      
+      // Fix the pathinfo chain
+      for(n = 0 ; n < dir->pathinfo_size ; n++) 
+        dir->pathinfo[n] =
+          keys[dir->pathinfo[n+(dir->pathinfo_size)]].idx_map_bucket;      
+    } /* ================================= end of fixing links */
+    
     return insertion_point;
   }
 
@@ -209,12 +202,11 @@ namespace config {
   const char *pathinfo(cmd_parms *cmd, void *m, char *arg) {
     
     /* The Representation of Pathinfo:
-    Pathinfo specifies how to interpret the rightmost components of a 
-    pathname. dir->pathinfo_size is n, the number of these components.
-    dir->pathinfo points to an array of 2n short integers. 
-    The first n array elements hold the column ids of the pathinfo 
-    columns, from right to left; the second n elements hold the 
-    corresponding serial numbers.
+       Pathinfo specifies how to interpret the rightmost components of a 
+       pathname. dir->pathinfo_size is n, the number of these components.
+       dir->pathinfo points to an array of 2n short integers. 
+       The first n array elements hold the column ids of the pathinfo 
+       columns; the second n elements hold the corresponding serial numbers.
     */
     config::dir *dir = (config::dir *) m;
     int pos_size=0, real_size=0;
@@ -229,7 +221,7 @@ namespace config {
     // Allocate space for an array of strings
     items = (char **) ap_pcalloc(cmd->temp_pool, pos_size * sizeof(char *));
     
-    // Parse the spec into its components (L to R)
+    // Parse the spec into its components
     while(*path && (word = ap_getword(cmd->temp_pool, &path, '/')))
       if(strlen(word)) 
         items[real_size++] = word;
@@ -239,23 +231,18 @@ namespace config {
     dir->pathinfo = (short *) 
       ap_pcalloc(cmd->pool, 2 * real_size * sizeof(short));
     
-    // Fetch the column IDs and serial numbers (R to L)
+    // Fetch the column IDs and serial numbers
     for(int n = 0 ; n < real_size ; n++) {
-      col_id = add_key_column(cmd, dir, items[real_size-(n+1)], col_exists);
+      col_id = add_key_column(cmd, dir, items[n], col_exists);
       dir->pathinfo[n] = col_id;
       dir->pathinfo[real_size+n] = dir->key_columns->item(col_id).serial_no;
     }
     
-    /* Before returning from any function that calls add_key_column() you 
-      should call fix_all_columns().  (This is a design flaw). */
-    fix_all_columns(dir);
-        
     return 0;
   }
   
   
   /* Process a "Columns" or "AllowUpdates" directive
-  by adding the name of each column onto the APR array
   */
   const char *non_key_column(cmd_parms *cmd, void *m, char *arg) {
     char *which = (char *) cmd->cmd->cmd_data;
@@ -297,11 +284,6 @@ namespace config {
     cols[id].next_in_key_serial = -1;  
     cols[id].next_in_key = -1; 
  
-    /* If the column's serial number is the same as its id, then it was added
-       at the end of the array.  But if not, some columns were moved around, 
-       and all of the links need to be fixed. */     
-    if(id != cols[id].serial_no) 
-        fix_all_columns(dir); 
     return  id;
   }
   
@@ -379,9 +361,6 @@ namespace config {
     columns[filter_col].filter_col = base_col_id;
     columns[filter_col].filter_col_serial = columns[base_col_id].serial_no;
 
-    /* Before returning from any function that calls add_key_column() you 
-       should call fix_all_columns().  (This is a design flaw). */
-    fix_all_columns(dir);
     return 0;
   }
 

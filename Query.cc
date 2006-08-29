@@ -41,15 +41,19 @@ enum AccessPlan {         // How to fetch the data:
   OrderedIndexScan = 5,   // Scan & UseIndex 
 };
 
+/* A runtime column is the "other half" of the config::key_col structure
+*/
+struct runtime_col {
+  char *value;
+
+};
 
 /* The main Query() function has a single instance of the QueryItems structure,
    which is used to pass essential data among the modules  
 */
 struct QueryItems {
   AccessPlan plan;
-  table *param_tab;
   table *form_data;
-  NdbTransaction *tx;
   NdbTransaction::ExecType ExecType;
   NdbOperation *op;
   const NdbDictionary::Table *tab;
@@ -167,9 +171,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       return DECLINED;
   }
 
-  /* Set up arguments and (maybe, TODO) pathinfo */
+  /* Set up arguments and pathinfo */
   if(!r->args) return HTTP_OK;
-  Q.param_tab = http_param_table(r, r->args);
+  // Q.param_tab = http_param_table(r, r->args);
 
 
   /* ===============================================================*/
@@ -214,7 +218,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
      This creates an obligation to close it later, 
      using tx->close().
   */    
-  if(!(Q.tx = i->db->startTransaction())) {
+  if(!(i->tx = i->db->startTransaction())) {
     log_err2(r->server,"db->startTransaction failed: %s",
               i->db->getNdbError().message);
     return NOT_FOUND;
@@ -226,7 +230,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   /* Now set the Query Items that depend on the  access plan.
   */
   if(Q.plan == PrimaryKey) {
-    Q.op = Q.tx->getNdbOperation(Q.tab);
+    Q.op = i->tx->getNdbOperation(Q.tab);
     Q.n_key_parts = Q.tab->getNoOfPrimaryKeys();
     Q.NextPart = next_pk_part;
     log_debug(r->server,"Using primary key lookup; key size %d",Q.n_key_parts);
@@ -236,11 +240,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     Q.NextPart = next_index_part;
     if(Q.plan == UniqueIndexAccess) {
       log_debug(r->server,"Using UniqueIndexAccess; key size %d",Q.n_key_parts);
-      Q.op = Q.tx->getNdbIndexOperation(Q.idx);
+      Q.op = i->tx->getNdbIndexOperation(Q.idx);
     }
     else if(Q.plan == OrderedIndexScan) {
       log_debug(r->server,"Using OrderedIndexScan; key size %d",Q.n_key_parts);
-      Q.op = Q.tx->getNdbIndexScanOperation(Q.idx);
+      Q.op = i->tx->getNdbIndexScanOperation(Q.idx);
     }
     log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
   }
@@ -253,7 +257,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   if(ap_table_elts(Q.param_tab)->nelts != Q.n_key_parts) {
     log_debug(r->server,"Returning 404 because query param count "
               "does not match key length %d", Q.n_key_parts);
-    Q.tx->close();
+    i->tx->close();
     return NOT_FOUND;
 }
 
@@ -261,7 +265,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   if(Q.op_setup(r, dir, & Q)) { // returns 0 on success
     log_debug(r->server,"Returning 404 because Q.setup() failed: %s",
               Q.op->getNdbError().message);
-    Q.tx->close();
+    i->tx->close();
     return NOT_FOUND;
   }
 
@@ -270,24 +274,24 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   response_code = Plan::Lookup(r, dir, & Q);
 
   if(response_code != OK) {
-    Q.tx->close();
+    i->tx->close();
     return response_code;
   }
  
   /* Execute the transaction */
-  if(Q.tx->execute(Q.ExecType,       // returns 0 on succes.
+  if(i->tx->execute(Q.ExecType,       // returns 0 on succes.
                    NdbTransaction::AbortOnError, 
                    i->conn->ndb_force_send)) {        
     log_debug(r->server,"Returning 404 because tx->execute failed: %s",
-              Q.tx->getNdbError().message);
-    Q.tx->close();
+              i->tx->getNdbError().message);
+    i->tx->close();
     return NOT_FOUND;
   }
      
   /* Deliver the result page */
   Q.send_results(r, dir, & Q);
   
-  Q.tx->close();
+  i->tx->close();
   return OK;
 }
 
@@ -469,7 +473,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
       log_debug(r->server,"Updating column %s",key);
       col = q->tab->getColumn(key);
       if(col) {
-        // Encode the HTTP ascii data in proper MySQL data types
+        // Encode the HTTP ASCII data in proper MySQL data types
         mval = MySQL::value(r->pool, col, val);
         // And call op->setValue
         mval_operation(r, q, key, setValue, mval);
