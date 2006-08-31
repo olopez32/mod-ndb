@@ -63,6 +63,7 @@ namespace config {
         unsigned int filter      : 1;
         unsigned int alias       : 1;
         unsigned int in_ord_idx  : 1;
+        unsigned int in_hash_idx : 1;
         unsigned int in_pathinfo : 1;
       } is;
       NdbScanFilter::BinaryCondition filter_op;
