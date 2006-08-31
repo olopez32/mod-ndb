@@ -1,16 +1,60 @@
 #!/bin/sh
 
-APXS=apxs
-MYSQLCFG=/Users/jdd/mysql-builds/5ndb/bin/mysql_config
+APXS=`which apxs`
+MYSQLCFG=`which mysql_config`
+
+usage() {
+  echo
+  echo "Building mod_ndb requires an installed copy of MySQL, including "
+  echo "NDB Cluster, libraries header files, and the mysql_config utility, "
+  echo "plus an installed copy of Apache including apxs. "
+  echo 
+  echo "Usage: $0  --mysql=/path/to/mysql_config --apxs=/path/to/apxs"
+  echo
+  echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS"
+  echo
+}
+
+while test $# != 0
+do
+  case $1 in
+   --*=*)
+    conf_option=`expr "x$1" : 'x\([^=]*\)='`
+    conf_arg=`expr "x$1" : 'x[^=]*=\(.*\)'`
+    shift
+    ;;
+   *)
+    conf_option=$1
+    shift
+    ;;
+  esac
+  
+  case $conf_option in 
+    --mysql)
+      MYSQLCFG=$conf_arg
+      ;;
+    --apxs)
+      APXS=$conf_arg 
+      ;;
+    --help)
+      usage
+      exit
+      ;;
+  esac
+done
 
 echo "Configuring with"
-echo "    apxs =         " $APXS
-echo "    mysql_config = " $MYSQLCFG
+echo "    apxs =         " $APXS 
+echo "    mysql_config = " $MYSQLCFG 
 echo
 
-if [ ! -x `which $APXS` -o ! -x `which $MYSQLCFG` ] 
+if [ ! -x "$APXS" ]
+ then 
+  echo "Error: apxs path is not valid."  && usage && exit 1
+fi
+if [ ! -x "$MYSQLCFG" ] 
  then
-  echo "Edit this script, something is wrong." && exit
+  echo "Error: mysql_config path is not valid." && usage && exit 1
 fi
 
 
