@@ -280,7 +280,10 @@ namespace config {
             indexes[cols[id].index_id].name);
     }    
     cols[id].index_id = index_id;
-    if(indexes[index_id].type == 'O') cols[id].is.in_ord_idx = 1;
+    if(index_id >= 0) {
+      if(indexes[index_id].type == 'O') cols[id].is.in_ord_idx = 1;
+      else if(indexes[index_id].type == 'U') cols[id].is.in_hash_idx = 1;
+    }
     cols[id].next_in_key_serial = -1;  
     cols[id].next_in_key = -1; 
  
