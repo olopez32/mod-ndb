@@ -29,8 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    to the "PlanMethod" typedef.
 */
 typedef int PlanMethod(request_rec *, config::dir *, struct QueryItems *);
-typedef char * NextKeyColumn(struct QueryItems *, int);
-
 
 enum AccessPlan {         // How to fetch the data:
   NoPlan = 0,             // (also a bitmap)
@@ -45,7 +43,7 @@ enum AccessPlan {         // How to fetch the data:
 */
 struct runtime_col {
   char *value;
-  const NdbDictionary::Column *ndb_col; 
+  int ndb_col_id;
   bool used;
 };
 
@@ -53,23 +51,21 @@ struct runtime_col {
    which is used to pass essential data among the modules  
 */
 struct QueryItems {
-  struct runtime_col *keys;
-  AccessPlan plan;
-  short active_index;
-  short index_parts;
-  short key_columns_used;
-  table *form_data;
-  NdbTransaction::ExecType ExecType;
-  NdbOperation *op;
   const NdbDictionary::Table *tab;
   const NdbDictionary::Index *idx;
-  NextKeyColumn *NextPart;
-  PlanMethod *op_setup;
-  PlanMethod *run_plan;
-  PlanMethod *op_action;
-  PlanMethod *send_results;
+  NdbTransaction::ExecType ExecType;
+  NdbOperation *op;
   NdbBlob *blob;
   NdbRecAttr **result_cols;
+  struct runtime_col *keys;
+  short active_index;
+  short key_columns_used;
+  AccessPlan plan;
+  table *form_data;
+  PlanMethod *run_plan;
+  PlanMethod *op_setup;
+  PlanMethod *op_action;
+  PlanMethod *send_results;
 };  
 
 /* Most modules are represented as PlanMethods
@@ -91,6 +87,10 @@ PlanMethod *result_formatter[5] = {
   Results_none , Results_JSON , Results_raw, Results_XML, Results_ap_note
 };
 
+/* Utility function declarations
+*/
+short key_col_bin_search(char *name, config::dir *dir);
+
 
 /* Some very simple modules are fully defined here:
 */
@@ -103,25 +103,36 @@ int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) {
 int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) { 
   return q->op->deleteTuple(); 
 }
-char * next_pk_part(struct QueryItems *q, int n) {
-  return (char *) q->tab->getPrimaryKey(n); 
-}
-char * next_index_part(struct QueryItems *q, int n) {
-  return (char *) q->idx->getColumn(n)->getName(); 
-}
 
-short key_col_bin_search(char *name, config::dir *dir);
 
-inline void set_key(short n, char *value, config::dir *dir, struct QueryItems *q) {
-  AccessPlan implied_plan;
-
+/* set_key() is the inlined code which processes both pathinfo 
+   and request params, sets the items in the Q.keys array, and
+   determines the access plan based on the indexes encountered
+   in the query parameters
+*/
+inline void set_key(short n, char *value, config::dir *dir, struct QueryItems *q) 
+{
+  const NdbDictionary::Column *column;
+  AccessPlan implied_plan = NoPlan;
+  
   q->keys[n].value = value;
-  q->keys[n].ndb_col = q->tab->getColumn(key);
-  if(dir->key_columns->item(n).is.in_pk) return;  
-  if(dir->key_columns->item(n).is.in_ord_idx)
-    implied_plan = OrderedIndexScan;
-  else if(dir->key_columns->item(n).is.in_hash_idx)
+  column = q->tab->getColumn(dir->key_columns->item(n).name);
+  if(column) 
+    q->keys[n].ndb_col_id = column->getColumnNo();
+  else return;
+  q->keys->used = TRUE;
+  q->key_columns_used++;
+
+  if(dir->key_columns->item(n).is.in_pk) {
+    if(! q->active_index) 
+      q->active_index = dir->key_columns->item(n).index_id;
+    return;
+  }
+  if(dir->key_columns->item(n).is.in_hash_idx)
     implied_plan = UniqueIndexAccess;
+  else if(dir->key_columns->item(n).is.in_ord_idx)
+    implied_plan = OrderedIndexScan;
+
   if(implied_plan > q->plan){
     q->plan = implied_plan;
     q->active_index = dir->key_columns->item(n).index_id;
@@ -138,13 +149,13 @@ inline void set_key(short n, char *value, config::dir *dir, struct QueryItems *q
 */
 int Query(request_rec *r, config::dir *dir, ndb_instance *i) 
 {
-  struct QueryItems Q ;
   const NdbDictionary::Dictionary *dict;
-  const char *idxentry;
+  struct QueryItems Q ;
   int response_code;
 
+  /* Initialize the data dictionary 
+  */
   i->db->setDatabaseName(dir->database);
-
   dict = i->db->getDictionary();
   Q.tab = dict->getTable(dir->table);
   if(Q.tab == 0) { 
@@ -156,6 +167,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     return NOT_FOUND; 
   }
   
+  
+  /* Initialize Q.keys, the runtime array of key columns which is used
+     in parallel with the configure-time array dir->key_columns
+  */
+  Q.keys = (struct runtime_col *) ap_pcalloc(r->pool, 
+           (dir->key_columns->size() * sizeof(struct runtime_col)));
+
 
   /* Many elements of the query plan depend on the HTTP operation --
      GET, POST, or DELETE.  Set these up here.
@@ -191,18 +209,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       return DECLINED;
   }
 
+
+  /* ===============================================================
+     Process pathinfo, and then arguments.  Determine an access plan.
+     The detailed work is done within the inlined function set_key().
+  */
   // The default plan is primary key access.
   Q.plan = PrimaryKey;
-  
-  /* Q.keys is an array of runtime key columns "parallel to" 
-     dir->key_columns
-  */
-  Q.keys = (struct runtime_col *) ap_pcalloc(r->pool, 
-           (dir->key_columns->size() * sizeof(struct runtime_col)));
-  
-
-  /* ===============================================================*/
-  /* Process pathinfo, and then arguments.  Determine an access plan.
 
   /* Pathinfo */
   if(dir->pathinfo_size) {
@@ -233,91 +246,83 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       ap_unescape_url(key);
       ap_unescape_url(val);
       n = key_col_bin_search(key, dir);
-      if(n >= 0) {   /* set_key() is an inline function */
+      if(n >= 0) { 
         set_key(n, val, dir, &Q);
       }
     }
-  }
-
-  
+  }  
   /* ===============================================================*/
 
 
   /* Open a transaction.
-     This creates an obligation to close it later, 
-     using tx->close().
+     This creates an obligation to close it later, using tx->close().
   */    
   if(!(i->tx = i->db->startTransaction())) {
     log_err2(r->server,"db->startTransaction failed: %s",
               i->db->getNdbError().message);
     return NOT_FOUND;
   }
-    
 
 
-
-  /* Now set the Query Items that depend on the  access plan.
+  /* Now set the Query Items that depend on the access plan.
   */
   if(Q.plan == PrimaryKey) {
     Q.op = i->tx->getNdbOperation(Q.tab);
-    Q.index_parts = Q.tab->getNoOfPrimaryKeys();
-    Q.NextPart = next_pk_part;
-    log_debug(r->server,"Using primary key lookup; key size %d",Q.index_parts);
+    log_debug(r->server,"Using primary key lookup; key %d",Q.active_index);
   }
   else {                                        /* Indexed Access */
-    Q.index_parts = Q.idx->getNoOfColumns();
-    Q.NextPart = next_index_part;
+    register const char * idxname = dir->indexes->item(Q.active_index).name;
+    Q.idx = dict->getIndex(idxname, dir->table);
+    if(! Q.idx) {
+      ap_log_error(APLOG_MARK, log::err, r->server,
+                   "mod_ndb: index %s does not exist (db: %s, table: %s)",
+                  idxname, dir->database, dir->table);
+      goto abort;
+    }
+    
     if(Q.plan == UniqueIndexAccess) {
-      log_debug(r->server,"Using UniqueIndexAccess; key size %d",Q.index_parts);
+      log_debug(r->server,"Using UniqueIndexAccess; key %d",Q.active_index);
       Q.op = i->tx->getNdbIndexOperation(Q.idx);
     }
     else if(Q.plan == OrderedIndexScan) {
-      log_debug(r->server,"Using OrderedIndexScan; key size %d",Q.index_parts);
+      log_debug(r->server,"Using OrderedIndexScan; key %d",Q.active_index);
       Q.op = i->tx->getNdbIndexScanOperation(Q.idx);
     }
-    log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
+    else
+      log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
   }
 
-
-  /* The parameter count must be equal to
-     the number of key parts + the number of filters.
-     (Filters are not yet implemented).
-  */
-  // CODE REMOVED
 
   // Query setup, e.g. Plan::SetupRead calls op->readTuple() 
   if(Q.op_setup(r, dir, & Q)) { // returns 0 on success
     log_debug(r->server,"Returning 404 because Q.setup() failed: %s",
               Q.op->getNdbError().message);
-    i->tx->close();
-    return NOT_FOUND;
+    goto abort;
   }
 
-  /* Run the plan */
-  // TO DO: This could be a scan
+  // Run the plan. (Scans are not implemented yet).
   response_code = Plan::Lookup(r, dir, & Q);
 
-  if(response_code != OK) {
-    i->tx->close();
-    return response_code;
+  if(response_code == OK) {
+    /* Execute the transaction.  tx->execute() returns 0 on success. */
+    if(i->tx->execute(Q.ExecType, NdbTransaction::AbortOnError, 
+                      i->conn->ndb_force_send))
+    {        
+      log_debug(r->server,"Returning 404 because tx->execute failed: %s",
+                i->tx->getNdbError().message);
+      response_code = NOT_FOUND;
+    }
+    else Q.send_results(r, dir, & Q);
   }
- 
-  /* Execute the transaction */
-  if(i->tx->execute(Q.ExecType,       // returns 0 on succes.
-                   NdbTransaction::AbortOnError, 
-                   i->conn->ndb_force_send)) {        
-    log_debug(r->server,"Returning 404 because tx->execute failed: %s",
-              i->tx->getNdbError().message);
-    i->tx->close();
-    return NOT_FOUND;
-  }
-     
-  /* Deliver the result page */
-  Q.send_results(r, dir, & Q);
   
   i->tx->close();
-  return OK;
+  return response_code;
+  
+  abort:
+  i->tx->close();
+  return NOT_FOUND;
 }
+
 
 
 /******** Result Page formatters *************/
@@ -392,7 +397,7 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
 enum ValueOp {  equal,    setValue  };
 
 int mval_operation(request_rec *r, struct QueryItems *q, 
-                   const char *key, ValueOp op, mvalue mval) {
+                   short ndb_col_id, ValueOp op, mvalue mval) {
                    
   if(mval.use_value == can_not_use) {
     ap_log_error(APLOG_MARK, log::err, r->server,
@@ -406,14 +411,14 @@ int mval_operation(request_rec *r, struct QueryItems *q,
   
   switch(op) {
     case equal:
-      if(!(q->op->equal(key, (const char *) &(mval.u.val_char)))) // 0 on succes
+      if(!(q->op->equal(ndb_col_id, (const char *) &(mval.u.val_char)))) // 0 on succes
         return OK;
       else { 
         log_debug(r->server,"op->equal failed: %s",q->op->getNdbError().message);
         return NOT_FOUND;
       }
     case setValue:
-      if(!(q->op->setValue(key, (const char *) &(mval.u.val_char)))) // 0 on success
+      if(!(q->op->setValue(ndb_col_id, (const char *) &(mval.u.val_char)))) // 0 on success
         return OK;
       else {
         log_debug(r->server,"op->setValue failed: %s",q->op->getNdbError().message);
@@ -424,34 +429,30 @@ int mval_operation(request_rec *r, struct QueryItems *q,
       return NOT_FOUND;
   }
 }
-      
+
 
 int Plan::Lookup(request_rec *r, config::dir *dir, struct QueryItems *q) {
-
-  const NdbDictionary::Column *col;
   mvalue mval;
-  const char *key, *val;
-  
-  // Call op->equal(column,value) for each part of the key
-  for(int n = 0 ; n < q->index_parts ; n++) {
-    key = q->NextPart(q,n); 
-    val = (char *) ap_table_get(q->param_tab, key);
-    if(val) {
-      log_debug(r->server,"Lookup key: %s",key);
-      log_debug(r->server,"Lookup value: %s",val);
-      col = q->tab->getColumn(key);
-      mval = MySQL::value(r->pool, col, val);
-      if(mval_operation(r, q, key, equal, mval) != OK)
-        return NOT_FOUND;
-    }
-    else {
-      log_debug(r->server,"Returning 404 because key %s was not in index.",key);
+  short idx = q->active_index;
+
+  if(idx < 0) return NOT_FOUND;
+  short col = dir->indexes->item(idx).first_col;
+
+  while (col >= 0) {
+    log_debug(r->server,"Lookup key: %s", dir->key_columns->item(col).name);
+    log_debug(r->server,"Lookup value: %s", q->keys[col].value);
+    
+    mval = MySQL::value(r->pool, q->tab->getColumn(q->keys[col].ndb_col_id), 
+                        q->keys[col].value);
+    if(mval_operation(r, q, q->keys[col].ndb_col_id, equal, mval) != OK)
       return NOT_FOUND;
-    }
+    
+    col = dir->key_columns->item(col).next_in_key;
   }
 
   return q->op_action(r, dir, q);
 }
+
 
 int Plan::Scan(request_rec *r, config::dir *dir, struct QueryItems *q) {
   log_debug(r->server,"In unimplemented function %s","Plan::Scan")
@@ -500,7 +501,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
         // Encode the HTTP ASCII data in proper MySQL data types
         mval = MySQL::value(r->pool, col, val);
         // And call op->setValue
-        mval_operation(r, q, key, setValue, mval);
+        mval_operation(r, q, col->getColumnNo(), setValue, mval);
       }
       else log_err2(r->server,"AllowUpdate includes invalid column name %s", key);
     }
@@ -508,8 +509,9 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
   return OK;
 }
 
+
 int Plan::Delete(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  log_debug(r->server,"Deleting Row %s","")
+  log_debug(r->server,"Deleting Row %s [not implemented!]","")
   return OK;
 }
 

@@ -281,7 +281,8 @@ namespace config {
     }    
     cols[id].index_id = index_id;
     if(index_id >= 0) {
-      if(indexes[index_id].type == 'O') cols[id].is.in_ord_idx = 1;
+      if(indexes[index_id].type == 'P') cols[id].is.in_pk = 1;
+      else if(indexes[index_id].type == 'O') cols[id].is.in_ord_idx = 1;
       else if(indexes[index_id].type == 'U') cols[id].is.in_hash_idx = 1;
     }
     cols[id].next_in_key_serial = -1;  
@@ -292,14 +293,7 @@ namespace config {
   
   
   const char *primary_key(cmd_parms *cmd, void *m, char *col) {
-    bool col_exists;
-
-    config::dir *dir = (config::dir *) m;    
-    short col_id = add_column_to_index(cmd, dir, col, -1, col_exists);
-    config::key_col *columns = dir->key_columns->items();
-    columns[col_id].is.in_pk = 1;
-    
-    return 0;
+    return named_index(cmd, m, "*Primary$Key*", col);
   }
   
   
@@ -329,8 +323,7 @@ namespace config {
 
     if(alias_col_name) {
       // Three-argument syntax, e.g. "Filter x >= min_x"
-      if((alias_col_exists) &&
-         (columns[alias_col_id].index_id != -1 || columns[alias_col_id].is.in_pk))
+      if((alias_col_exists) && (columns[alias_col_id].index_id >= 0))
         return ap_psprintf(cmd->pool,"Alias column %s must not be a real column.",
                            alias_col_name);
       // Use the alias column as the filter 
@@ -352,7 +345,7 @@ namespace config {
     }
     else {
       // One-argument syntax, e.g. "Filter year." 
-      if((columns[base_col_id].index_id != -1) || columns[base_col_id].is.in_pk)
+      if(columns[base_col_id].index_id >= 0)
         return ap_psprintf(cmd->pool,"Filter column %s cannot be part "
                            "of any index",base_col_name);
       // Use the base col as the filter
