@@ -45,20 +45,24 @@ enum AccessPlan {         // How to fetch the data:
 */
 struct runtime_col {
   char *value;
-
+  const NdbDictionary::Column *ndb_col; 
+  bool used;
 };
 
 /* The main Query() function has a single instance of the QueryItems structure,
    which is used to pass essential data among the modules  
 */
 struct QueryItems {
+  struct runtime_col *keys;
   AccessPlan plan;
+  short active_index;
+  short index_parts;
+  short key_columns_used;
   table *form_data;
   NdbTransaction::ExecType ExecType;
   NdbOperation *op;
   const NdbDictionary::Table *tab;
   const NdbDictionary::Index *idx;
-  int n_key_parts;
   NextKeyColumn *NextPart;
   PlanMethod *op_setup;
   PlanMethod *run_plan;
@@ -106,6 +110,23 @@ char * next_index_part(struct QueryItems *q, int n) {
   return (char *) q->idx->getColumn(n)->getName(); 
 }
 
+short key_col_bin_search(char *name, config::dir *dir);
+
+inline void set_key(short n, char *value, config::dir *dir, struct QueryItems *q) {
+  AccessPlan implied_plan;
+
+  q->keys[n].value = value;
+  q->keys[n].ndb_col = q->tab->getColumn(key);
+  if(dir->key_columns->item(n).is.in_pk) return;  
+  if(dir->key_columns->item(n).is.in_ord_idx)
+    implied_plan = OrderedIndexScan;
+  else if(dir->key_columns->item(n).is.in_hash_idx)
+    implied_plan = UniqueIndexAccess;
+  if(implied_plan > q->plan){
+    q->plan = implied_plan;
+    q->active_index = dir->key_columns->item(n).index_id;
+  }
+}
 
 // =============================================================
 
@@ -119,7 +140,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 {
   struct QueryItems Q ;
   const NdbDictionary::Dictionary *dict;
-  char *key1; 
   const char *idxentry;
   int response_code;
 
@@ -171,46 +191,55 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       return DECLINED;
   }
 
-  /* Set up arguments and pathinfo */
-  if(!r->args) return HTTP_OK;
-  // Q.param_tab = http_param_table(r, r->args);
-
-
-  /* ===============================================================*/
-  /* Determine an access plan.
-  
-     To do this, look at the first key in the parameter table. 
-     It names a column.  If this column has been configured in
-     httpd.conf as part of a UniqueIndex, then use that index.
-     If it is part of an ordered index, use an ordered index scan.
-     Otherwise use primary key access.
-  */
-
   // The default plan is primary key access.
   Q.plan = PrimaryKey;
+  
+  /* Q.keys is an array of runtime key columns "parallel to" 
+     dir->key_columns
+  */
+  Q.keys = (struct runtime_col *) ap_pcalloc(r->pool, 
+           (dir->key_columns->size() * sizeof(struct runtime_col)));
+  
 
-  // Get the first paramater from the query string.
-  key1 = ((table_entry *) (ap_table_elts(Q.param_tab)->elts))->key;
+  /* ===============================================================*/
+  /* Process pathinfo, and then arguments.  Determine an access plan.
 
-  // Was this parameter configured to use an index?
-  idxentry = ap_table_get((const table *) dir->indexes, key1);
-  if(idxentry) log_debug(r->server,"Found index %s",idxentry);
-
-  // If so, idxentry is the name of the NDB index, along with
-  // a prefix U* or O* denoting whether it is unique or ordered
-  if(idxentry && (strlen(idxentry) > 2)) {
-    char *idxname = (char *)(idxentry+2);
-    Q.idx = dict->getIndex(idxname, dir->table);
-    if(Q.idx) { 
-      // Set the access plan:
-      if(*idxentry == 'U') Q.plan = UniqueIndexAccess;
-      else if(*idxentry == 'O') Q.plan = OrderedIndexScan;
-      else log_debug(r->server,"mod_ndb: strange prefix in idxentry %s",idxentry);
+  /* Pathinfo */
+  if(dir->pathinfo_size) {
+    size_t item_len = 0;
+    short element = dir->pathinfo_size - 1;
+    register const char *s;
+    // Set s to the end of the string, then work backwards.
+    for(s = r->path_info ; *s; ++s); 
+    for(; s >= r->path_info && element >= 0; --s) {
+      if(*s == '/') {
+        set_key(dir->pathinfo[element--], 
+                ap_pstrndup(r->pool, s, item_len), 
+                dir, &Q);
+        item_len = 0;
+      }
+      else item_len++;
     }
-    else ap_log_error(APLOG_MARK, log::err, r->server,
-         "mod_ndb: index %s does not exist (db: %s, table: %s)",
-         (char *)idxentry+2, dir->database, dir->table);
   }
+  
+  /* Arguments */
+  if(r->args) {
+    register const char *c = r->args;
+    char *key, *val;
+    short n;
+      
+    while(*c && (val = ap_getword(r->pool, &c, '&'))) {
+      key = ap_getword(r->pool, (const char **) &val, '=');
+      ap_unescape_url(key);
+      ap_unescape_url(val);
+      n = key_col_bin_search(key, dir);
+      if(n >= 0) {   /* set_key() is an inline function */
+        set_key(n, val, dir, &Q);
+      }
+    }
+  }
+
+  
   /* ===============================================================*/
 
 
@@ -231,19 +260,19 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   */
   if(Q.plan == PrimaryKey) {
     Q.op = i->tx->getNdbOperation(Q.tab);
-    Q.n_key_parts = Q.tab->getNoOfPrimaryKeys();
+    Q.index_parts = Q.tab->getNoOfPrimaryKeys();
     Q.NextPart = next_pk_part;
-    log_debug(r->server,"Using primary key lookup; key size %d",Q.n_key_parts);
+    log_debug(r->server,"Using primary key lookup; key size %d",Q.index_parts);
   }
   else {                                        /* Indexed Access */
-    Q.n_key_parts = Q.idx->getNoOfColumns();
+    Q.index_parts = Q.idx->getNoOfColumns();
     Q.NextPart = next_index_part;
     if(Q.plan == UniqueIndexAccess) {
-      log_debug(r->server,"Using UniqueIndexAccess; key size %d",Q.n_key_parts);
+      log_debug(r->server,"Using UniqueIndexAccess; key size %d",Q.index_parts);
       Q.op = i->tx->getNdbIndexOperation(Q.idx);
     }
     else if(Q.plan == OrderedIndexScan) {
-      log_debug(r->server,"Using OrderedIndexScan; key size %d",Q.n_key_parts);
+      log_debug(r->server,"Using OrderedIndexScan; key size %d",Q.index_parts);
       Q.op = i->tx->getNdbIndexScanOperation(Q.idx);
     }
     log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
@@ -254,12 +283,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
      the number of key parts + the number of filters.
      (Filters are not yet implemented).
   */
-  if(ap_table_elts(Q.param_tab)->nelts != Q.n_key_parts) {
-    log_debug(r->server,"Returning 404 because query param count "
-              "does not match key length %d", Q.n_key_parts);
-    i->tx->close();
-    return NOT_FOUND;
-}
+  // CODE REMOVED
 
   // Query setup, e.g. Plan::SetupRead calls op->readTuple() 
   if(Q.op_setup(r, dir, & Q)) { // returns 0 on success
@@ -409,7 +433,7 @@ int Plan::Lookup(request_rec *r, config::dir *dir, struct QueryItems *q) {
   const char *key, *val;
   
   // Call op->equal(column,value) for each part of the key
-  for(int n = 0 ; n < q->n_key_parts ; n++) {
+  for(int n = 0 ; n < q->index_parts ; n++) {
     key = q->NextPart(q,n); 
     val = (char *) ap_table_get(q->param_tab, key);
     if(val) {
@@ -488,3 +512,31 @@ int Plan::Delete(request_rec *r, config::dir *dir, struct QueryItems *q) {
   log_debug(r->server,"Deleting Row %s","")
   return OK;
 }
+
+
+/* Based on Kernighan's C binsearch from TPOP pg. 31
+*/
+short key_col_bin_search(char *name, config::dir *dir) {
+  int low = 0;
+  int high = dir->key_columns->size() - 1;
+  int mid;
+  register int cmp;
+  
+  while ( low <= high ) {
+    mid = (low + high) / 2;
+    cmp = strcmp(name, dir->key_columns->item(mid).name);
+    if(cmp < 0) 
+      high = mid - 1;
+    else if (cmp > 0)
+      low = mid + 1;
+    else
+      return mid;
+  }
+  return -1;
+}
+  
+  
+  
+  
+  
+
