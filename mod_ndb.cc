@@ -194,7 +194,7 @@ namespace config {
       {
         "PrimaryKey",      // NOT inheritable
         (CMD_HAND_TYPE) config::primary_key,
-        NULL,  
+        (void *) "P",  
         ACCESS_CONF,    ITERATE,
         "Allow Primary Key lookups"
       },
