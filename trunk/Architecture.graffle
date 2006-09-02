@@ -82,7 +82,7 @@
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2006-08-31 14:32:16 -0700</string>
+	<string>2006-09-01 21:50:22 -0700</string>
 	<key>Modifier</key>
 	<string>John David Duncan</string>
 	<key>NotesVisible</key>
@@ -8602,9 +8602,9 @@ index_id\
 serial_no\
 idx_map_bucket\
 filter_col_serial\
-filter_col_idx\
+filter_col\
 next_in_key_serial\
-next_in_key_idx}</string>
+next_in_key}</string>
 							</dict>
 							<key>TextPlacement</key>
 							<integer>0</integer>
@@ -8787,7 +8787,7 @@ first_col_idx}</string>
 		<key>FitInWindow</key>
 		<false/>
 		<key>Frame</key>
-		<string>{{404, 8}, {638, 947}}</string>
+		<string>{{364, -3}, {608, 745}}</string>
 		<key>ShowRuler</key>
 		<false/>
 		<key>ShowStatusBar</key>
