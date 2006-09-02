@@ -74,6 +74,7 @@ template <class T>
 class apache_array: public array_header {
   public:
     int size()    { return this->nelts; }
+    T **handle()  { return (T**) &(this->elts); }
     T *items()    { return (T*) this->elts; }
     T &item(int n){ return ((T*) this->elts)[n]; }
     T *new_item() { return (T*) ap_push_array(this); }
