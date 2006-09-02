@@ -30,21 +30,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 typedef int PlanMethod(request_rec *, config::dir *, struct QueryItems *);
 
-enum AccessPlan {         // How to fetch the data:
-  NoPlan = 0,             // (also a bitmap)
-  UseIndex = 1,
-  PrimaryKey = 2,         // Lookup 
-  UniqueIndexAccess = 3,  // Lookup & UseIndex 
-  Scan = 4,               // Scan  
-  OrderedIndexScan = 5,   // Scan & UseIndex 
-};
 
 /* A runtime column is the "other half" of the config::key_col structure
 */
 struct runtime_col {
   char *value;
   int ndb_col_id;
-  bool used;
+  short next;
 };
 
 /* The main Query() function has a single instance of the QueryItems structure,
@@ -110,32 +102,25 @@ int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) {
    determines the access plan based on the indexes encountered
    in the query parameters
 */
-inline void set_key(short n, char *value, config::dir *dir, struct QueryItems *q) 
+inline void set_key(request_rec *r, short n, char *value, config::dir *dir, 
+                    struct QueryItems *q) 
 {
   const NdbDictionary::Column *column;
-  AccessPlan implied_plan = NoPlan;
+  const config::key_col &keycol = dir->key_columns->item(n);
   
-  q->keys[n].value = value;
-  column = q->tab->getColumn(dir->key_columns->item(n).name);
-  if(column) 
+  q->keys[n].value = value; 
+  column = q->tab->getColumn(keycol.name);
+  if(column) {
     q->keys[n].ndb_col_id = column->getColumnNo();
-  else return;
-  q->keys->used = TRUE;
-  q->key_columns_used++;
-
-  if(dir->key_columns->item(n).is.in_pk) {
-    if(! q->active_index) 
-      q->active_index = dir->key_columns->item(n).index_id;
-    return;
+    log_debug3(r->server, "Config column %s = NDB AttrID %d", 
+               keycol.name, q->keys[n].ndb_col_id);
   }
-  if(dir->key_columns->item(n).is.in_hash_idx)
-    implied_plan = UniqueIndexAccess;
-  else if(dir->key_columns->item(n).is.in_ord_idx)
-    implied_plan = OrderedIndexScan;
-
-  if(implied_plan > q->plan){
-    q->plan = implied_plan;
-    q->active_index = dir->key_columns->item(n).index_id;
+  else return; 
+  q->key_columns_used++;
+ 
+  if(keycol.implied_plan > q->plan) {
+    q->plan = keycol.implied_plan;
+    q->active_index = keycol.index_id;
   }
 }
 
@@ -150,7 +135,8 @@ inline void set_key(short n, char *value, config::dir *dir, struct QueryItems *q
 int Query(request_rec *r, config::dir *dir, ndb_instance *i) 
 {
   const NdbDictionary::Dictionary *dict;
-  struct QueryItems Q ;
+  struct QueryItems Q = 
+    { 0,0,NdbTransaction::NoCommit,0,0,0,0,0,0, NoPlan, 0,0,0,0,0 };
   int response_code;
 
   /* Initialize the data dictionary 
@@ -214,20 +200,19 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
      Process pathinfo, and then arguments.  Determine an access plan.
      The detailed work is done within the inlined function set_key().
   */
-  // The default plan is primary key access.
-  Q.plan = PrimaryKey;
 
-  /* Pathinfo */
+  /* Pathinfo.  Process r->path_info from right to left. */
   if(dir->pathinfo_size) {
     size_t item_len = 0;
     short element = dir->pathinfo_size - 1;
     register const char *s;
     // Set s to the end of the string, then work backwards.
-    for(s = r->path_info ; *s; ++s); 
+    for(s = r->path_info ; *s; ++s);
+    if(* (s-1) == '/') s -=2;   /* ignore a trailing slash */
     for(; s >= r->path_info && element >= 0; --s) {
       if(*s == '/') {
-        set_key(dir->pathinfo[element--], 
-                ap_pstrndup(r->pool, s, item_len), 
+        set_key(r, dir->pathinfo[element--], 
+                ap_pstrndup(r->pool, s+1, item_len), 
                 dir, &Q);
         item_len = 0;
       }
@@ -247,12 +232,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       ap_unescape_url(val);
       n = key_col_bin_search(key, dir);
       if(n >= 0) { 
-        set_key(n, val, dir, &Q);
+        set_key(r, n, val, dir, &Q);
       }
     }
   }  
   /* ===============================================================*/
-
+  if(! Q.key_columns_used) return NOT_FOUND;    /* no query */
 
   /* Open a transaction.
      This creates an obligation to close it later, using tx->close().
@@ -263,7 +248,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     return NOT_FOUND;
   }
 
-
   /* Now set the Query Items that depend on the access plan.
   */
   if(Q.plan == PrimaryKey) {
@@ -273,15 +257,16 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   else {                                        /* Indexed Access */
     register const char * idxname = dir->indexes->item(Q.active_index).name;
     Q.idx = dict->getIndex(idxname, dir->table);
-    if(! Q.idx) {
-      ap_log_error(APLOG_MARK, log::err, r->server,
-                   "mod_ndb: index %s does not exist (db: %s, table: %s)",
-                  idxname, dir->database, dir->table);
+    if(! Q.idx)
+    {
+      ap_log_error(APLOG_MARK, log::err, r->server, "mod_ndb: index %s "
+                   "does not exist (db: %s, table: %s)", idxname, 
+                   dir->database, dir->table);
       goto abort;
-    }
-    
+    }    
     if(Q.plan == UniqueIndexAccess) {
-      log_debug(r->server,"Using UniqueIndexAccess; key %d",Q.active_index);
+      log_debug3(r->server,"Using UniqueIndexAccess; key # %d - %s",
+                 Q.active_index, Q.idx->getName());
       Q.op = i->tx->getNdbIndexOperation(Q.idx);
     }
     else if(Q.plan == OrderedIndexScan) {
@@ -388,7 +373,7 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
 
 
 
-/* mval_operation() is a wrapper around 
+/* mval_ndb_operation() is a wrapper around 
    NdbOperation->equal() and ->setValue(),
    which takes mvalues (from MySQL_Field.h),
    logs some errors and debug messages, 
@@ -396,9 +381,9 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
 */
 enum ValueOp {  equal,    setValue  };
 
-int mval_operation(request_rec *r, struct QueryItems *q, 
-                   short ndb_col_id, ValueOp op, mvalue mval) {
-                   
+int mval_ndb_operation(request_rec *r, struct QueryItems *q, 
+                   const NdbDictionary::Column *col, ValueOp op, mvalue mval)
+{
   if(mval.use_value == can_not_use) {
     ap_log_error(APLOG_MARK, log::err, r->server,
                  "Cannot use MySQL column %s in query -- data type "
@@ -406,22 +391,24 @@ int mval_operation(request_rec *r, struct QueryItems *q,
     return NOT_FOUND;
   }
 
-  if(mval.use_value == use_char)
+  if(mval.use_value == use_char) /* delete this after it works properly */
     log_debug(r->server,"mval.u.val_char: %s", mval.u.val_char);
   
-  switch(op) {
+  switch(op) {  // crazy NDB bugs here!  Should use col->getColumnNo() instead of getName() !
     case equal:
-      if(!(q->op->equal(ndb_col_id, (const char *) &(mval.u.val_char)))) // 0 on succes
+      if(!(q->op->equal(col->getName(),                       // 0 on succes
+                        reinterpret_cast<const char *> (&(mval.u.val_char)))))
         return OK;
       else { 
         log_debug(r->server,"op->equal failed: %s",q->op->getNdbError().message);
         return NOT_FOUND;
       }
     case setValue:
-      if(!(q->op->setValue(ndb_col_id, (const char *) &(mval.u.val_char)))) // 0 on success
+      if(!(q->op->setValue(col->getName(),                   // 0 on success
+                           reinterpret_cast<const char *> (&(mval.u.val_char))))) 
         return OK;
       else {
-        log_debug(r->server,"op->setValue failed: %s",q->op->getNdbError().message);
+        log_debug(r->server,"op->setValue failed: %s", q->op->getNdbError().message);
         return NOT_FOUND;
       }
     default:
@@ -434,17 +421,18 @@ int mval_operation(request_rec *r, struct QueryItems *q,
 int Plan::Lookup(request_rec *r, config::dir *dir, struct QueryItems *q) {
   mvalue mval;
   short idx = q->active_index;
+  const NdbDictionary::Column *ndb_Column;
 
   if(idx < 0) return NOT_FOUND;
   short col = dir->indexes->item(idx).first_col;
-
-  while (col >= 0) {
-    log_debug(r->server,"Lookup key: %s", dir->key_columns->item(col).name);
-    log_debug(r->server,"Lookup value: %s", q->keys[col].value);
+  ndb_Column = q->tab->getColumn(q->keys[col].ndb_col_id);
+  
+  while (col >= 0 && q->key_columns_used-- > 0) {
+    log_debug3(r->server," ** Lookup key: %s -- value: %s", 
+              dir->key_columns->item(col).name, q->keys[col].value);
     
-    mval = MySQL::value(r->pool, q->tab->getColumn(q->keys[col].ndb_col_id), 
-                        q->keys[col].value);
-    if(mval_operation(r, q, q->keys[col].ndb_col_id, equal, mval) != OK)
+    mval = MySQL::value(r->pool, ndb_Column, q->keys[col].value);
+    if(mval_ndb_operation(r, q, ndb_Column, equal, mval) != OK)
       return NOT_FOUND;
     
     col = dir->key_columns->item(col).next_in_key;
@@ -487,7 +475,6 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
   mvalue mval;
   const char *key, *val;
   
-  
   column_list = dir->updatable->items();
   // iterate over the updatable columns
   for(int n = 0; n < dir->updatable->size() ; n++) {
@@ -498,12 +485,12 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
       log_debug(r->server,"Updating column %s",key);
       col = q->tab->getColumn(key);
       if(col) {
-        // Encode the HTTP ASCII data in proper MySQL data types
+        // Encode the HTTP ASCII data into proper MySQL data types
         mval = MySQL::value(r->pool, col, val);
         // And call op->setValue
-        mval_operation(r, q, col->getColumnNo(), setValue, mval);
+        mval_ndb_operation(r, q, col, setValue, mval);
       }
-      else log_err2(r->server,"AllowUpdate includes invalid column name %s", key);
+      else log_err2(r->server,"AllowUpdate list includes invalid column name %s", key);
     }
   }
   return OK;
@@ -511,7 +498,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
 
 
 int Plan::Delete(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  log_debug(r->server,"Deleting Row %s [not implemented!]","")
+  log_debug(r->server,"Deleting Row %s","")
   return OK;
 }
 
@@ -536,9 +523,4 @@ short key_col_bin_search(char *name, config::dir *dir) {
   }
   return -1;
 }
-  
-  
-  
-  
-  
 
