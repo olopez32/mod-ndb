@@ -44,8 +44,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define log_note(s,txt) ap_log_error(APLOG_MARK, log::warn, s, txt);
 #ifdef MOD_NDB_DEBUG 
 #define log_debug(s,txt,arg) ap_log_error(APLOG_MARK, log::debug, s, txt, arg);
+#define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,s,txt,arg1,arg2);
 #else
 #define log_debug(s,txt,arg) 
+#define log_debug3(s,txt,arg1,arg2)
 #endif
 
 typedef const char *(*CMD_HAND_TYPE) ();
@@ -81,6 +83,16 @@ class apache_array: public array_header {
     void * operator new(size_t, ap_pool *p, int n) {
       return ap_make_array(p, n, sizeof(T));
     };
+};
+
+
+enum AccessPlan {  /* Ways of executing an NDB query */
+  NoPlan = 0,             // (also a bitmap)
+  UseIndex = 1,
+  PrimaryKey = 2,         // Lookup 
+  UniqueIndexAccess = 3,  // Lookup & UseIndex 
+  Scan = 4,               // Scan  
+  OrderedIndexScan = 5,   // Scan & UseIndex 
 };
 
 
@@ -136,6 +148,7 @@ struct mod_ndb_process {
     unsigned short n_threads;
     struct mod_ndb_connection conn;  // not a pointer 
 };    
+
 
 ndb_instance *my_instance(request_rec *r);
 void connect_to_cluster(ndb_connection *c, server_rec *s, config::srv *srv);

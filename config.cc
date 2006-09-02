@@ -209,7 +209,7 @@ namespace config {
        columns; the second n elements hold the corresponding serial numbers.
     */
     config::dir *dir = (config::dir *) m;
-    int pos_size=0, real_size=0;
+    int pos_size=1, real_size=0;
     char *c, *word, **items;
     const char *path = arg;
     short col_id;
@@ -281,9 +281,18 @@ namespace config {
     }    
     cols[id].index_id = index_id;
     if(index_id >= 0) {
-      if(indexes[index_id].type == 'P') cols[id].is.in_pk = 1;
-      else if(indexes[index_id].type == 'O') cols[id].is.in_ord_idx = 1;
-      else if(indexes[index_id].type == 'U') cols[id].is.in_hash_idx = 1;
+      if(indexes[index_id].type == 'P') {
+        cols[id].is.in_pk = 1;
+        cols[id].implied_plan = PrimaryKey;
+      }
+      else if(indexes[index_id].type == 'U') {
+        cols[id].is.in_hash_idx = 1;
+        cols[id].implied_plan = UniqueIndexAccess;
+      }
+      else if(indexes[index_id].type == 'O') {
+        cols[id].is.in_ord_idx = 1;
+        cols[id].implied_plan = OrderedIndexScan;
+      }
     }
     cols[id].next_in_key_serial = -1;  
     cols[id].next_in_key = -1; 

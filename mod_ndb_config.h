@@ -67,6 +67,7 @@ namespace config {
         unsigned int in_pathinfo : 1;
       } is;
       NdbScanFilter::BinaryCondition filter_op;
+      AccessPlan implied_plan;
   };
   
   void * init_dir(pool *, char *);
