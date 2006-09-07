@@ -47,6 +47,7 @@ struct QueryItems {
   const NdbDictionary::Index *idx;
   NdbTransaction::ExecType ExecType;
   NdbOperation *op;
+  NdbIndexScanOperation *scanop;
   NdbBlob *blob;
   NdbRecAttr **result_cols;
   struct runtime_col *keys;
@@ -54,7 +55,6 @@ struct QueryItems {
   short key_columns_used;
   AccessPlan plan;
   table *form_data;
-  PlanMethod *run_plan;
   PlanMethod *op_setup;
   PlanMethod *op_action;
   PlanMethod *send_results;
@@ -63,12 +63,12 @@ struct QueryItems {
 /* Most modules are represented as PlanMethods
 */
 namespace Plan {
- PlanMethod Lookup;    PlanMethod Scan;                    // data access plans
  PlanMethod SetupRead; PlanMethod SetupWrite; PlanMethod SetupDelete; // setups
- PlanMethod Read;      PlanMethod Write;      PlanMethod Delete;     // actions
+ PlanMethod Read;      PlanMethod Write;      PlanMethod Delete;      // actions
 };  
 
-//  Result formatters:
+/*  Result formatters:
+*/
  PlanMethod Results_none;    PlanMethod Results_JSON;
  PlanMethod Results_raw;     PlanMethod Results_XML;
  PlanMethod Results_ap_note;
@@ -79,22 +79,31 @@ PlanMethod *result_formatter[5] = {
   Results_none , Results_JSON , Results_raw, Results_XML, Results_ap_note
 };
 
+
 /* Utility function declarations
 */
-short key_col_bin_search(char *name, config::dir *dir);
+enum ValueOp {  equal, setValue, setBound };
+int mval_ndb_operation(request_rec *, struct QueryItems *, 
+                       const NdbDictionary::Column *, ValueOp, mvalue);
+short key_col_bin_search(char *, config::dir *);
 
 
 /* Some very simple modules are fully defined here:
 */
 int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) { 
-  return q->op->readTuple(NdbOperation::LM_Read);
+  return q->plan == OrderedIndexScan ? 
+    q->scanop->readTuples(NdbOperation::LM_Read) :
+    q->op->readTuple(NdbOperation::LM_Read);
 }
+
 int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) { 
   return q->op->writeTuple(); 
 }
+
 int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) { 
   return q->op->deleteTuple(); 
 }
+
 
 
 /* set_key() is the inlined code which processes both pathinfo 
@@ -136,8 +145,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 {
   const NdbDictionary::Dictionary *dict;
   struct QueryItems Q = 
-    { 0,0,NdbTransaction::NoCommit,0,0,0,0,0,0, NoPlan, 0,0,0,0,0 };
+    { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0, NoPlan, 0, 
+      Plan::SetupRead, Plan::Read, 0 };
   int response_code;
+  short col;
+  ValueOp mval_op = equal;
+  mvalue mval;
+  const NdbDictionary::Column *ndb_Column;
 
   /* Initialize the data dictionary 
   */
@@ -166,9 +180,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   */
   switch(r->method_number) {
     case M_GET:
-      Q.op_setup = Plan::SetupRead;   
-      Q.op_action = Plan::Read;
-      Q.ExecType = NdbTransaction::NoCommit;
       // Allocate an array of NdbRecAttrs for all desired columns 
       Q.result_cols = (NdbRecAttr **) 
         ap_pcalloc(r->pool, dir->visible->size() * sizeof(NdbRecAttr *));
@@ -270,24 +281,45 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       Q.op = i->tx->getNdbIndexOperation(Q.idx);
     }
     else if(Q.plan == OrderedIndexScan) {
-      log_debug(r->server,"Using OrderedIndexScan; key %d",Q.active_index);
-      Q.op = i->tx->getNdbIndexScanOperation(Q.idx);
+      log_debug3(r->server,"Using OrderedIndexScan; key # %d - %s",
+                 Q.active_index, Q.idx->getName());
+      Q.op = Q.scanop = i->tx->getNdbIndexScanOperation(Q.idx);
+      mval_op = setBound;
     }
     else
       log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
   }
+  if(Q.active_index < 0) return NOT_FOUND;
 
 
   // Query setup, e.g. Plan::SetupRead calls op->readTuple() 
   if(Q.op_setup(r, dir, & Q)) { // returns 0 on success
-    log_debug(r->server,"Returning 404 because Q.setup() failed: %s",
+    log_debug(r->server,"Returning 404 because Q.op_setup() failed: %s",
               Q.op->getNdbError().message);
     goto abort;
   }
 
-  // Run the plan. (Scans are not implemented yet).
-  response_code = Plan::Lookup(r, dir, & Q);
 
+  // Traverse the index parts and build the query
+  col = dir->indexes->item(Q.active_index).first_col;
+  ndb_Column = Q.tab->getColumn(Q.keys[col].ndb_col_id);
+
+  while (col >= 0 && Q.key_columns_used-- > 0) {
+    log_debug3(r->server," ** Query key: %s -- value: %s", 
+               dir->key_columns->item(col).name, Q.keys[col].value);
+    
+    mval = MySQL::value(r->pool, ndb_Column, Q.keys[col].value);
+    if(mval_ndb_operation(r, & Q, ndb_Column, mval_op, mval) != OK)
+      goto abort;
+    
+    col = dir->key_columns->item(col).next_in_key;
+  }
+
+  // To do: set filters
+
+  // Perform the action; i.e. get the value of each column
+  response_code = Q.op_action(r, dir, &Q);
+  
   if(response_code == OK) {
     /* Execute the transaction.  tx->execute() returns 0 on success. */
     if(i->tx->execute(Q.ExecType, NdbTransaction::AbortOnError, 
@@ -317,16 +349,38 @@ int Results_none(request_rec *r, config::dir *dir, struct QueryItems *q) {
   return 0;
 }
 
-int Results_JSON(request_rec *r, config::dir *dir, struct QueryItems *q) {
 
-  log_debug(r->server,"In Results formatter %s", "Results_JSON");
-  ap_send_http_header(r); 
+inline void JSON_send_result_row(request_rec *r, config::dir *dir, 
+                                 struct QueryItems *q) {
   ap_rputs(JSON::new_object,r);
   for(int n = 0; n < dir->visible->size() ; n++) {
     if(n) ap_rputs(JSON::delimiter,r);
     ap_rputs(JSON::member(*q->result_cols[n],r),r);
   }
   ap_rputs(JSON::end_object,r);
+}
+  
+
+int Results_JSON(request_rec *r, config::dir *dir, struct QueryItems *q) {
+  log_debug(r->server,"In Results formatter %s", "Results_JSON");
+  ap_send_http_header(r); 
+  if(q->scanop) {
+    int nrows = 0, check;
+    /* Multi-row result set */
+    ap_rputs(JSON::new_array,r);
+    while((check = q->scanop->nextResult(true)) == 0) {
+      log_debug(r->server,"Results_JSON getting a batch of rows (row %d)", nrows);
+      do {
+        if(nrows++) ap_rputs(JSON::delimiter,r);
+        JSON_send_result_row(r, dir, q);
+      } while((check = q->scanop->nextResult(false)) == 0);
+    }
+    ap_rputs(JSON::end_array,r);
+    log_debug(r->server,"Results_JSON check = %d", check);
+  }
+  else /* Single row result set */
+    JSON_send_result_row(r, dir, q);
+
   return 0;
 }
 
@@ -379,7 +433,6 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
    logs some errors and debug messages, 
    and returns an HTTP status code.
 */
-enum ValueOp {  equal,    setValue  };
 
 int mval_ndb_operation(request_rec *r, struct QueryItems *q, 
                    const NdbDictionary::Column *col, ValueOp op, mvalue mval)
@@ -394,58 +447,27 @@ int mval_ndb_operation(request_rec *r, struct QueryItems *q,
   if(mval.use_value == use_char) /* delete this after it works properly */
     log_debug(r->server,"mval.u.val_char: %s", mval.u.val_char);
   
-  switch(op) {  // crazy NDB bugs here!  Should use col->getColumnNo() instead of getName() !
+  switch(op) {  // crazy NDB bug here!  Should use col->getColumnNo() instead of getName() !
     case equal:
       if(!(q->op->equal(col->getName(),                       // 0 on succes
-                        reinterpret_cast<const char *> (&(mval.u.val_char)))))
+                        reinterpret_cast<const char *> (&mval.u.val_char) )))
         return OK;
-      else { 
-        log_debug(r->server,"op->equal failed: %s",q->op->getNdbError().message);
-        return NOT_FOUND;
-      }
     case setValue:
       if(!(q->op->setValue(col->getName(),                   // 0 on success
-                           reinterpret_cast<const char *> (&(mval.u.val_char))))) 
+                           reinterpret_cast<const char *> (&mval.u.val_char) ))) 
         return OK;
-      else {
-        log_debug(r->server,"op->setValue failed: %s", q->op->getNdbError().message);
-        return NOT_FOUND;
-      }
+    case setBound:
+      if(!(q->scanop->setBound(col->getName(), NdbIndexScanOperation::BoundEQ,
+                               &mval.u.val_signed))) 
+        return OK;
     default:
       log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",op);
       return NOT_FOUND;
   }
+    log_debug3(r->server,"op->x (%d)  failed: %s", op, q->op->getNdbError().message);
+    return NOT_FOUND;
 }
 
-
-int Plan::Lookup(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  mvalue mval;
-  short idx = q->active_index;
-  const NdbDictionary::Column *ndb_Column;
-
-  if(idx < 0) return NOT_FOUND;
-  short col = dir->indexes->item(idx).first_col;
-  ndb_Column = q->tab->getColumn(q->keys[col].ndb_col_id);
-  
-  while (col >= 0 && q->key_columns_used-- > 0) {
-    log_debug3(r->server," ** Lookup key: %s -- value: %s", 
-              dir->key_columns->item(col).name, q->keys[col].value);
-    
-    mval = MySQL::value(r->pool, ndb_Column, q->keys[col].value);
-    if(mval_ndb_operation(r, q, ndb_Column, equal, mval) != OK)
-      return NOT_FOUND;
-    
-    col = dir->key_columns->item(col).next_in_key;
-  }
-
-  return q->op_action(r, dir, q);
-}
-
-
-int Plan::Scan(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  log_debug(r->server,"In unimplemented function %s","Plan::Scan")
-  return NOT_FOUND;
-}
 
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
   char **column_list;
@@ -461,7 +483,6 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
       if(isz) {   /* then the column is a blob... */
         log_debug(r->server,"Treating column %s as a blob",column_list[n])
         q->blob = q->op->getBlobHandle(column_list[n]);
-        
       }
     }
   }
