@@ -38,10 +38,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 #define MOD_NDB_DEBUG 1
+// #define CONFIG_DEBUG 1
 
 #define log_err(s,txt) ap_log_error(APLOG_MARK, log::err, s, txt);
 #define log_err2(s,txt,arg) ap_log_error(APLOG_MARK, log::err, s, txt,arg);
 #define log_note(s,txt) ap_log_error(APLOG_MARK, log::warn, s, txt);
+
 #ifdef MOD_NDB_DEBUG 
 #define log_debug(s,txt,arg) ap_log_error(APLOG_MARK, log::debug, s, txt, arg);
 #define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,s,txt,arg1,arg2);
@@ -49,6 +51,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define log_debug(s,txt,arg) 
 #define log_debug3(s,txt,arg1,arg2)
 #endif
+
+#ifdef CONFIG_DEBUG
+#define log_conf_debug(x,y,z) log_debug(x,y,z)
+#else
+#define log_conf_debug(x,y,z)
+#endif
+
 
 typedef const char *(*CMD_HAND_TYPE) ();
 
