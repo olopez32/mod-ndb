@@ -115,6 +115,7 @@ namespace config {
     register int n = 0, c;
     short insertion_point = 0;
     
+    // this could be a binary search instead of a linear search?
     for(n = 0; n < list_size; n++) {
       c = strcmp(keyname, keys[n].name); 
       if(c < 0) break;  // the new key sorts before this one 
@@ -266,18 +267,15 @@ namespace config {
     config::key_col *cols;   // do not initialize until after add_key_column()
     short id;
     
-    log_debug(cmd->server,"Adding column %s to index",col_name);
+    log_conf_debug(cmd->server,"Adding column %s to index",col_name);
     id = add_key_column(cmd, dir, col_name, col_exists);
     cols = dir->key_columns->items();
 
     if(col_exists) {
       if((cols[id].index_id != -1) && (index_id != -1))
         ap_log_error(APLOG_MARK, log::err, cmd->server,
-            "Configuration error at %s associating column %s with index "
-            "%s; it is already connected to index %s and mod_ndb does not "
-            "allow you to associate a key column with multiple named indexes.",
-            cmd->path, col_name, indexes[index_id].name, 
-            indexes[cols[id].index_id].name);
+            "Reassociating column %s with index %s", 
+            col_name, indexes[index_id].name);
     }    
     cols[id].index_id = index_id;
     if(index_id >= 0) {
@@ -330,6 +328,9 @@ namespace config {
 
     config::key_col *columns = dir->key_columns->items();
 
+    if(! base_col_exists)
+      columns[base_col_id].index_id = -1;  
+ 
     if(alias_col_name) {
       // Three-argument syntax, e.g. "Filter x >= min_x"
       if((alias_col_exists) && (columns[alias_col_id].index_id >= 0))
@@ -365,7 +366,7 @@ namespace config {
     columns[filter_col].is.filter = 1;
     columns[filter_col].filter_col = base_col_id;
     columns[filter_col].filter_col_serial = columns[base_col_id].serial_no;
-
+    
     return 0;
   }
 
@@ -379,7 +380,7 @@ namespace config {
   }
     
     
-  /* build_index_list():  process Index directives.
+  /* named_index():  process Index directives.
      UniqueIndex index-name column [column ... ]
      OrderedIndex index-name column [column ... ]
 
@@ -399,7 +400,7 @@ namespace config {
 
     if(index_id == -1) {
       /* Build the index record */
-      log_debug(cmd->server,"Creating new index record %s",idx);
+      log_conf_debug(cmd->server,"Creating new index record %s",idx);
       index_rec = dir->indexes->new_item();
       bzero(index_rec, dir->indexes->elt_size);
       index_id = dir->indexes->size() - 1;
