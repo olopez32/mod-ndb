@@ -18,13 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* 
    MySQL_Field.cc
+   
    This file has a different set of includes than other mod_ndb source files:
    it uses my_global.h to get MySQL's typedefs and macros like "sint3korr",
    but it does not include mod_ndb.h (because you can get trouble if you try 
    to combine mysql headers and apache headers in a single source file).
 */
    
-
+#include "mysql_version.h"
 #include "my_global.h"
 #include "NdbApi.hpp"
 #include "httpd.h"
@@ -33,6 +34,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Apache disabled this
 #undef strtoul
+
+// The NdbRecAttr interface changed between MySQL 5.0 and 5.1
+#if MYSQL_VERSION_ID < 50100
+#define Attr_Size(r) r.arraySize()
+#else 
+#define Attr_Size(r) r.get_size_in_bytes()
+#endif
+
 
 /* This is based on code from Field.cc 
    (which was also copied into NdbRecAttr.cpp)
@@ -162,13 +171,6 @@ char * MySQL::result(pool *p, const NdbRecAttr &rec) {
       
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
-      const NdbBlob::Head* h = (const NdbBlob::Head*) rec.aRef();
-      const unsigned char* x = (const unsigned char*)(h + 1);
-      unsigned n = rec.arraySize() - sizeof(*h);
-      
-      /* for (unsigned k = 0; k < n && k < h->length; k++)
-        out.print("%c", (int)x[k]); */
-
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
     case NdbDictionary::Column::Decimal:
@@ -194,7 +196,7 @@ char * MySQL::String(pool *p, const NdbRecAttr &rec,
 
   switch(packing) {
     case char_fixed:
-      sz = rec.arraySize();
+      sz = Attr_Size(rec);
       ref =rec.aRef();
       break;
     case char_var:
@@ -205,9 +207,7 @@ char * MySQL::String(pool *p, const NdbRecAttr &rec,
       sz = uint2korr(rec.aRef());
       ref = rec.aRef() + 2;
       break;
-    defualt:  /* SHOULD NEVER HAPPEN */
-      return 0;
-  }
+   }
   
   for (int i=sz-1; i >= 0; i--) {
     if (ref[i] == 0) sz--;
@@ -217,24 +217,27 @@ char * MySQL::String(pool *p, const NdbRecAttr &rec,
   return ap_pstrndup(p, ref, sz);  
 }
 
+
+/* MySQL::value:
+   take an ASCII value "val", and encode it properly for NDB so that it can be 
+   stored in (or compared against) column "col"
+*/
 mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val) 
 {
 
   mvalue m;
+  char len_header[3] = { 0 , 0 , 0 };
   
   switch(col->getType()) {
     case NdbDictionary::Column::Int:
-    case NdbDictionary::Column::Smallint:
-    case NdbDictionary::Column::Tinyint:
       m.use_value = use_signed;
       m.u.val_signed = atoi(val);
       return m;
           
     case NdbDictionary::Column::Varchar:
-      char *header = (char *) ap_pcalloc(p,2);
-      *header = (char) strlen(val);
-      m.u.val_char = ap_pstrcat(p,header,val,0);
-      m.use_value = use_char;
+      len_header[0] = (char) strlen(val);
+      m.u.val_char = ap_pstrcat(p, len_header, val, 0); 
+      m.use_value = use_char; 
       return m;
       
     case NdbDictionary::Column::Char:
@@ -245,8 +248,6 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       return m;
       
     case NdbDictionary::Column::Unsigned:
-    case NdbDictionary::Column::Smallunsigned:
-    case NdbDictionary::Column::Tinyunsigned:
     case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Timestamp:
       m.use_value = use_unsigned;
@@ -275,6 +276,10 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       
     /* not implemented */
 
+    case NdbDictionary::Column::Smallint:
+    case NdbDictionary::Column::Tinyint:
+    case NdbDictionary::Column::Smallunsigned:
+    case NdbDictionary::Column::Tinyunsigned:
     case NdbDictionary::Column::Longvarchar:
       // is like varchar but with a two-byte length (what byte order??)
     case NdbDictionary::Column::Date:
