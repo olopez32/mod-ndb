@@ -28,9 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   */
 
 const char * JSON::new_array    = "[\n";
-const char * JSON::end_array    = "]\n";
+const char * JSON::end_array    = "\n]";
 const char * JSON::new_object   = " { ";
-const char * JSON::end_object   = "}\n";
+const char * JSON::end_object   = " }";
 const char * JSON::delimiter    = " , ";
 const char * JSON::is           = " : ";
 
