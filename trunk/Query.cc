@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
+#define max_filters_in_query 20
 
 /* There are many varieties of query: 
    read, insert, update, and delete (e.g. HTTP GET, POST, and DELETE);
@@ -35,8 +36,8 @@ typedef int PlanMethod(request_rec *, config::dir *, struct QueryItems *);
 */
 struct runtime_col {
   char *value;
+  int filter_op;
   int ndb_col_id;
-  short next;
 };
 
 /* The main Query() function has a single instance of the QueryItems structure,
@@ -53,6 +54,8 @@ struct QueryItems {
   struct runtime_col *keys;
   short active_index;
   short key_columns_used;
+  int n_filters;
+  short *filter_list;
   AccessPlan plan;
   table *form_data;
   PlanMethod *op_setup;
@@ -115,7 +118,23 @@ inline void set_key(request_rec *r, short n, char *value, config::dir *dir,
                     struct QueryItems *q) 
 {
   const NdbDictionary::Column *column;
-  const config::key_col &keycol = dir->key_columns->item(n);
+  config::key_col &keycol = dir->key_columns->item(n);
+
+  if(q->n_filters < max_filters_in_query) {
+    if(keycol.is.alias) {  
+      /* "Filter real_col < col_alias" (ScanFilter or Bounds) */
+      n = keycol.filter_col;
+      q->keys[n].filter_op = keycol.filter_op;
+      keycol = dir->key_columns->item(n);
+      q->filter_list[q->n_filters++] = n;
+    }
+    else if(keycol.is.filter && keycol.index_id == -1) {  
+      /* "Filter real_col" (ScanFilter only) */
+      q->filter_list[q->n_filters++] = n;
+      q->keys[n].filter_op = keycol.filter_op;
+    }
+  }
+  else log_err(r->server, "Too many filter columns in query");
   
   q->keys[n].value = value; 
   column = q->tab->getColumn(keycol.name);
@@ -144,9 +163,10 @@ inline void set_key(request_rec *r, short n, char *value, config::dir *dir,
 int Query(request_rec *r, config::dir *dir, ndb_instance *i) 
 {
   const NdbDictionary::Dictionary *dict;
+  short filters_on_the_stack[max_filters_in_query];
   struct QueryItems Q = 
-    { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0, NoPlan, 0, 
-      Plan::SetupRead, Plan::Read, 0 };
+    { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0,0,
+      filters_on_the_stack, NoPlan, 0, Plan::SetupRead, Plan::Read, 0 };
   int response_code;
   short col;
   ValueOp mval_op = equal;
@@ -316,6 +336,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
 
   // To do: set filters
+  for(int n = 0 ; n < Q.n_filters ; n++) {
+    /* do stuff here */
+  }
 
   // Perform the action; i.e. get the value of each column
   response_code = Q.op_action(r, dir, &Q);
@@ -329,7 +352,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
                 i->tx->getNdbError().message);
       response_code = NOT_FOUND;
     }
-    else Q.send_results(r, dir, & Q);
+    else response_code = Q.send_results(r, dir, & Q);
   }
   
   i->tx->close();
@@ -362,27 +385,34 @@ inline void JSON_send_result_row(request_rec *r, config::dir *dir,
   
 
 int Results_JSON(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  log_debug(r->server,"In Results formatter %s", "Results_JSON");
-  ap_send_http_header(r); 
-  if(q->scanop) {
-    int nrows = 0, check;
-    /* Multi-row result set */
-    ap_rputs(JSON::new_array,r);
-    while((check = q->scanop->nextResult(true)) == 0) {
-      log_debug(r->server,"Results_JSON getting a batch of rows (row %d)", nrows);
-      do {
-        if(nrows++) ap_rputs(JSON::delimiter,r);
-        JSON_send_result_row(r, dir, q);
-      } while((check = q->scanop->nextResult(false)) == 0);
-    }
-    ap_rputs(JSON::end_array,r);
-    log_debug(r->server,"Results_JSON check = %d", check);
-  }
-  else /* Single row result set */
-    JSON_send_result_row(r, dir, q);
+  int nrows = 0;
 
-  return 0;
+  log_debug(r->server,"In Results formatter %s", "Results_JSON");
+  if(q->scanop) {
+    /* Multi-row result set */   
+    while((q->scanop->nextResult(true)) == 0) {
+      do {
+        if(nrows++) ap_rputs(",\n",r);
+        else {
+          ap_send_http_header(r); 
+          ap_rputs(JSON::new_array,r);
+        } 
+        JSON_send_result_row(r, dir, q);
+      } while((q->scanop->nextResult(false)) == 0);
+    }
+    if(nrows) ap_rputs(JSON::end_array,r);
+    else return NOT_FOUND;
+  }
+  else {
+    /* Single row result set */
+    ap_send_http_header(r); 
+    JSON_send_result_row(r, dir, q);
+  }
+  
+  ap_rputs("\n",r);
+  return OK;
 }
+
 
 int Results_raw(request_rec *r, config::dir *dir, struct QueryItems *q) {
   unsigned long long size64 = 0;
@@ -401,13 +431,13 @@ int Results_raw(request_rec *r, config::dir *dir, struct QueryItems *q) {
     ap_send_http_header(r); 
     ap_rwrite(buffer, size, r);
   }
-  return 0;
+  return OK;
 }
 
 int Results_XML(request_rec *r, config::dir *dir, struct QueryItems *q) {
   log_debug(r->server,"In Results formatter %s", "Results_XML");
 
-  return 0;
+  return NOT_FOUND;
 }
 
 int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
@@ -420,7 +450,7 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
       ap_table_set(r->notes, col->getName(), MySQL::result(r->pool, *rec));
     }
   }
-  return 0;
+  return OK;
 }
 
 /* ===============================================================*/
@@ -458,7 +488,7 @@ int mval_ndb_operation(request_rec *r, struct QueryItems *q,
         return OK;
     case setBound:
       if(!(q->scanop->setBound(col->getName(), NdbIndexScanOperation::BoundEQ,
-                               &mval.u.val_signed))) 
+                               &mval.u.val_signed)))  
         return OK;
     default:
       log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",op);
