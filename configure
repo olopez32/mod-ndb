@@ -79,6 +79,8 @@ echo
 echo MY_INC1=$MY_INC
 echo MY_INC2=$MY_INC/ndb
 echo MY_INC3=$MY_INC/ndb/ndbapi
+echo MY_INC4=$MY_INC/storage/ndb
+echo MY_INC5=$MY_INC/storage/ndb/ndbapi
 echo MY_LIBS=$MY_LIBS
 echo 
 echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR`   
