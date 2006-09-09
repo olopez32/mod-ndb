@@ -66,7 +66,7 @@ namespace config {
         unsigned int in_hash_idx : 1;
         unsigned int in_pathinfo : 1;
       } is;
-      NdbScanFilter::BinaryCondition filter_op;
+      int filter_op;
       AccessPlan implied_plan;
   };
   
