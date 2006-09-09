@@ -344,8 +344,7 @@ namespace config {
       bool found_match = 0;
       for(int n = 0 ; valid_filter_ops[n] ; n++) {
         if(!strcmp(filter_op,valid_filter_ops[n])) {
-          columns[alias_col_id].filter_op = 
-            static_cast<NdbScanFilter::BinaryCondition> (n);
+          columns[alias_col_id].filter_op = n;
           found_match = 1;
         }
       }
