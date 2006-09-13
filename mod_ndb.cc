@@ -198,6 +198,13 @@ namespace config {
         "Allow DELETE over HTTP"
       },
       {
+        "ETags",          // Inheritable, defaults to 1
+        (CMD_HAND_TYPE) ap_set_flag_slot,
+        (void *)XtOffsetOf(config::dir, use_etags),
+        ACCESS_CONF,     FLAG,
+        "Compute and set ETag header in response"
+      },    
+      {
         "Format",           // inheritable
         (CMD_HAND_TYPE) config::result_format,
         NULL,
@@ -243,7 +250,7 @@ namespace config {
         "PathInfo", // e.g. "PathInfo id" or "PathInfo keypt1/keypt2"
         (CMD_HAND_TYPE) config::pathinfo,  
         NULL,
-        ACCESS_CONF,    TAKE1, 
+        ACCESS_CONF,    TAKE12, 
         "Schema for interpreting the rightmost URL path components"
       },
       {                     // NOT inheritable

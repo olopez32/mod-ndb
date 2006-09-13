@@ -34,20 +34,17 @@ const char * JSON::end_object   = " }";
 const char * JSON::delimiter    = " , ";
 const char * JSON::is           = " : ";
 
-char * JSON::value(const NdbRecAttr &rec, request_rec *r) {
+void JSON::put_value(result_buffer &rbuf,const NdbRecAttr &rec,request_rec *r){
 
   const NdbDictionary::Column* col;
-  char *value;
 
   if (rec.isNULL())
-     return "null";
+     return rbuf.out("null");
 
   col = rec.getColumn();
-
   switch(rec.getType()) {
     
     /* Things that must be quoted in JSON: */
-    
     case NdbDictionary::Column::Varchar:
     case NdbDictionary::Column::Char:
     case NdbDictionary::Column::Longvarchar:
@@ -57,24 +54,13 @@ char * JSON::value(const NdbRecAttr &rec, request_rec *r) {
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Binary:
     case NdbDictionary::Column::Blob:
-      return ap_pstrcat(r->pool,
-                        "\"",  MySQL::result(r->pool,rec), "\""
-                        ,NULL);
-    
-    default:
-      value = MySQL::result(r->pool,rec);
-      if(value) return value;
+        return rbuf.out("\"%s\"", MySQL::result(r->pool,rec));
+
+    default:      
+        return rbuf.out(MySQL::result(r->pool,rec));
   }
-  return "\"unknown\"";
+  rbuf.out("\"unknown\"");
 }
 
-
-/* JSON::member() is an inline function defined in mod_ndb.h like this:
-    inline static char *member(const NdbRecAttr &rec, request_rec *r) {
-      return ap_pstrcat(r->pool, 
-                        rec.getColumn()->getName(), 
-                        JSON::is,
-                        JSON::value(rec,r),
-                        NULL);    
-    }
+/* Note: JSON::member() is an inline function defined in JSON.h 
 */

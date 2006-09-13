@@ -60,7 +60,8 @@ char * MySQL::Time(pool *p, const NdbRecAttr &rec) {
 char * MySQL::Date(pool *p, const NdbRecAttr &rec) {
   unsigned int tmp= ( unsigned int ) uint3korr(rec.aRef());
   int part;
-  char *buf = (char *) ap_pcalloc(p,40);
+  char xbuf[40];
+  char *buf = xbuf;
   char *pos=(char*) buf+10;
   *pos--=0;
   part=(int) (tmp & 31);
@@ -84,7 +85,8 @@ char * MySQL::Datetime(pool *p, const NdbRecAttr &rec) {
   long part1,part2,part3;
   part1=(long) (tmp / (long long) (1000000));
   part2=(long) (tmp - (unsigned long long) part1 * (long long)(1000000));
-  char *buf = (char *) ap_pcalloc(p,40);
+  char xbuf[40];
+  char *buf = xbuf;
   char* pos=(char*) buf+19;
   *pos--=0;
   *pos--= (char) ('0'+(char) (part2%10)); part2/=10; 
