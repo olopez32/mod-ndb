@@ -33,26 +33,29 @@ void result_buffer::out(const char *fmt, ... ) {
   size_t old_size = sz;
   char * old_buff;
   ap_pool *new_pool;
+  bool try_again;
 
   do {    
+    try_again = false;
     va_start(args,fmt);
     sz += vsnprintf((buff + sz), alloc_sz - sz, fmt, args);
     va_end(args);
     
     if(sz >= alloc_sz) {
+      try_again = true;
       // The write was truncated.  Get a bigger buffer and do it again
       alloc_sz *= 4;
       old_buff = buff;
+      sz = old_size;
       new_pool = ap_make_sub_pool(parent_pool);
       buff = (char *) ap_palloc(new_pool, alloc_sz);
       if(! buff) {
         ap_destroy_pool(new_pool);
         return;
       }      
-      memcpy(buff, old_buff, old_size); 
+      memcpy(buff, old_buff, sz); 
       ap_destroy_pool(pool);  /* Free the space used by the old buffer */
       pool = new_pool;
     }
-    else break;
-  } while( sz >= alloc_sz);
+  } while(try_again);
 }

@@ -449,7 +449,6 @@ int Results_JSON(request_rec *r, config::dir *dir, struct QueryItems *q) {
   int nrows = 0;
   q->results->init(r, 8192);
 
-  log_debug(r->server,"In Results formatter %s", "Results_JSON");
   if(q->scanop) {
     /* Multi-row result set */   
     while((q->scanop->nextResult(true)) == 0) {
