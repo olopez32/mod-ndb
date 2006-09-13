@@ -30,13 +30,17 @@ namespace config {
     int pathinfo_size;
     short *pathinfo;
     int allow_delete;
+    int use_etags;
     result_format results;
     char *format_param[2];
+    struct {
+      unsigned pathinfo_always : 1;
+      unsigned has_filters : 1;
+    } flag;
     apache_array<char*> *visible;
     apache_array<char*> *updatable;
     apache_array<config::index> *indexes;
     apache_array<config::key_col> *key_columns;
-  
   };
   
   /* NDB Index */
@@ -76,7 +80,7 @@ namespace config {
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
   const char * result_format(cmd_parms *, void *, char *, char *, char *);
-  const char * pathinfo(cmd_parms *, void *, char *);
+  const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * filter(cmd_parms *, void *, char *, char *, char *);
   const char * primary_key(cmd_parms *, void *, char *);
   

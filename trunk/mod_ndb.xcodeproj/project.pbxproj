@@ -11,6 +11,7 @@
 		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
 		6528658E0A9B99D7000B9E9A /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
+		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
 		655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb.cc; sourceTree = "<group>"; };
 		655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_Field.cc; sourceTree = "<group>"; };
 		655CEC200A8C4C4200DB8284 /* JSON.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cc; sourceTree = "<group>"; };
@@ -29,6 +30,7 @@
 			isa = PBXGroup;
 			children = (
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
+				65364EE40AB7899C00C355E4 /* result_buffer.cc */,
 				655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */,
 				65364C080AB25F5200C355E4 /* handlers.cc */,
 				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,

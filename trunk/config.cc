@@ -31,6 +31,7 @@ namespace config {
     dir->indexes     = new(p, 2) apache_array<config::index>;
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
     dir->results = json;
+    dir->use_etags = 1;
     
     return (void *) dir;
   }
@@ -43,8 +44,9 @@ namespace config {
   }
   
   
-  /* Merge directory configs;
-     d1 is a parent config, d2 is a child, and dir is a new one to return.
+  /* Merge directory configuration:
+     d2 is the current directory config exactly as specified in the conf file;
+     d1 is a parent directory config that it might inherit something from.
   */
   void *merge_dir(pool *p, void *v1, void *v2) {
     config::dir *dir = (config::dir *) ap_palloc(p, sizeof(config::dir));
@@ -200,7 +202,7 @@ namespace config {
 
   /* "Pathinfo col1/col2" 
   */
-  const char *pathinfo(cmd_parms *cmd, void *m, char *arg) {
+  const char *pathinfo(cmd_parms *cmd, void *m, char *arg1, char *arg2) {
     
     /* The Representation of Pathinfo:
        Pathinfo specifies how to interpret the rightmost components of a 
@@ -212,12 +214,12 @@ namespace config {
     config::dir *dir = (config::dir *) m;
     int pos_size=1, real_size=0;
     char *c, *word, **items;
-    const char *path = arg;
+    const char *path = arg1;
     short col_id;
     bool col_exists;
     
     // Count the number of '/' characters
-    for(c = arg ; *c ; c++) if(*c == '/') pos_size++;
+    for(c = arg1 ; *c ; c++) if(*c == '/') pos_size++;
     
     // Allocate space for an array of strings
     items = (char **) ap_pcalloc(cmd->temp_pool, pos_size * sizeof(char *));
@@ -237,6 +239,13 @@ namespace config {
       col_id = add_key_column(cmd, dir, items[n], col_exists);
       dir->pathinfo[n] = col_id;
       dir->pathinfo[real_size+n] = dir->key_columns->item(col_id).serial_no;
+    }
+
+    // Flags
+    if(arg2) {
+      ap_str_tolower(arg2);
+      if(! strcmp(arg2,"always"))
+        dir->flag.pathinfo_always = 1;
     }
     
     return 0;
@@ -290,6 +299,7 @@ namespace config {
       else if(indexes[index_id].type == 'O') {
         cols[id].is.in_ord_idx = 1;
         cols[id].implied_plan = OrderedIndexScan;
+        cols[id].filter_op = NdbIndexScanOperation::BoundEQ;
       }
     }
     cols[id].next_in_key_serial = -1;  
@@ -306,10 +316,6 @@ namespace config {
   
   /* filter(), syntax "Filter column [operator pseudocolumn]"
      as in (a) "Filter year" or (b) "Filter x > min_x".
-     Case (a) is an NdbScanFilter, where the query is a scan and "year" is not 
-     part of an index. 
-     Case (b) can also indicate a filter, but if x is part of an ordered index
-     then it defines a bound on the index scan.  
   */
   const char *filter(cmd_parms *cmd, void *m, char *base_col_name,
                      char *filter_op, char *alias_col_name) {
@@ -332,14 +338,23 @@ namespace config {
       columns[base_col_id].index_id = -1;  
  
     if(alias_col_name) {
-      // Three-argument syntax, e.g. "Filter x >= min_x"
+      // Three-argument syntax, e.g. "Filter x >= min_x".  This could be 
+      // either an NdbScanFilter or a boundary condition on an OrderedIndex.
       if((alias_col_exists) && (columns[alias_col_id].index_id >= 0))
         return ap_psprintf(cmd->pool,"Alias column %s must not be a real column.",
                            alias_col_name);
+
       // Use the alias column as the filter 
       filter_col = alias_col_id;
       columns[alias_col_id].is.alias = 1;
-      
+
+      /* Is the base column part of an ordered index?  (Because of this test, we
+         require the index to be defined before the filter in httpd.conf)
+      */
+      if(columns[base_col_id].implied_plan != OrderedIndexScan) {
+        dir->flag.has_filters = 1;
+        /* ?? columns[base_col_id].is.filter = 1; ?? */
+      }
       // Parse the operator
       bool found_match = 0;
       for(int n = 0 ; valid_filter_ops[n] ; n++) {
@@ -353,13 +368,17 @@ namespace config {
                           filter_op);
     }
     else {
-      // One-argument syntax, e.g. "Filter year." 
-      if(columns[base_col_id].index_id >= 0)
-        return ap_psprintf(cmd->pool,"Filter column %s cannot be part "
-                           "of any index",base_col_name);
-      // Use the base col as the filter
-      filter_col = base_col_id;
+      // One-argument syntax, e.g. "Filter year."   This is an NdbScanFilter.
+      if(columns[base_col_id].index_id >= 0) {
+        columns[base_col_id].implied_plan = NoPlan;
+        log_debug3(cmd->server,"Column %s is a filter, so including it in a req"
+                   "uest will NOT cause that request to use index %s", base_col_name, 
+                   dir->indexes->item(columns[base_col_id].index_id).name);
+      }
+      dir->flag.has_filters = 1;
+      filter_col = base_col_id;   // Use the base col as the filter 
       columns[base_col_id].filter_op = NdbScanFilter::COND_EQ; 
+      log_conf_debug(cmd->server,"Creating new filter %s",base_col_name);
     }
 
     columns[filter_col].is.filter = 1;

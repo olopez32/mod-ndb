@@ -95,6 +95,19 @@ class apache_array: public array_header {
 };
 
 
+class result_buffer {
+  private:
+    size_t alloc_sz;
+    ap_pool *pool, *parent_pool;
+  
+  public:
+    char *buff;
+    size_t sz; 
+    char *init(request_rec *r, size_t size);
+    void out(const char *fmt, ...);
+};
+
+
 enum AccessPlan {  /* Ways of executing an NDB query */
   NoPlan = 0,             // (also a bitmap)
   UseIndex = 1,

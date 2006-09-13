@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 char * result_buffer::init(request_rec *r, size_t size) {
   parent_pool = r->pool;
   alloc_sz = size;
+  sz = 0;
   pool = ap_make_sub_pool(parent_pool);
   buff = (char *) ap_palloc(pool,alloc_sz);
   if(!buff) log_err(r->server, "mod_ndb result_buffer::init() out of memory");
@@ -27,7 +28,7 @@ char * result_buffer::init(request_rec *r, size_t size) {
 }
 
 
-void result_buffer::out(char *fmt, ... ) {
+void result_buffer::out(const char *fmt, ... ) {
   va_list args;
   size_t old_size = sz;
   char * old_buff;

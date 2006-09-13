@@ -24,12 +24,10 @@ class JSON {
     static const char * end_object;
     static const char * delimiter ;
     static const char * is        ;
-    static char *value(const NdbRecAttr &rec, request_rec *r);
-    inline static char *member(const NdbRecAttr &rec, request_rec *r) {
-      return ap_pstrcat(r->pool, 
-                        rec.getColumn()->getName(), 
-                        JSON::is,
-                        JSON::value(rec,r),
-                        NULL);    
+    static void put_value(result_buffer &, const NdbRecAttr &, request_rec *);
+    inline static void put_member(result_buffer &rbuf, const NdbRecAttr &rec, 
+                            request_rec *r) {
+      rbuf.out("%s%s", rec.getColumn()->getName(), JSON::is);
+      JSON::put_value(rbuf, rec, r);
     }
 };
