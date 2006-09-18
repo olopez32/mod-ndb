@@ -18,12 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 
-/* This header describes the Apache 1.3 "proof of concept" version of mod_ndb.
-   It is not engineered for performance.  The preforking server model of Apache
-   1.3 does not map well with NDB, because each Apache worker proccess needs 
-   a node ID, and the total number of nodes in a cluster is very limited.
-*/
-
 /* Apache headers */
 #include "httpd.h"
 #include "http_config.h"
@@ -63,7 +57,7 @@ typedef const char *(*CMD_HAND_TYPE) ();
 
 extern "C" module MODULE_VAR_EXPORT ndb_module;
 
-enum result_format { json = 1, raw, xml, ap_note };
+enum result_format_type { no_results = 0, json, raw, xml, ap_note };
 
 namespace log {
 //debug, info, notice, warn, error, crit, alert, emerg.
