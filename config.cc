@@ -62,6 +62,7 @@ namespace config {
     if(! d2->visible)   dir->visible   = d1->visible;
     if(! d2->updatable) dir->updatable = d1->updatable;
     if(! d2->results)   dir->results   = d1->results;
+    if(! d2->sub_results) dir->sub_results = d1->sub_results;
     if(! d2->format_param[0]) dir->format_param[0] = d1->format_param[0];
     if(! d2->format_param[1]) dir->format_param[1] = d1->format_param[1];
  
@@ -72,6 +73,16 @@ namespace config {
   /*  Process Format directives, e.g.   
       "Format JSON" 
   */
+  result_format_type fmt_from_str(char *str) {
+
+    ap_str_tolower(str);   // Do all comparisons in lowercase 
+    if(!strcmp(str,"json")) return json;
+    else if(!strcmp(str,"raw")) return raw;
+    else if(!strcmp(str,"xml")) return xml;
+    else if(!strcmp(str,"apachenote")) return ap_note;
+    else return no_results;
+  }
+
   const char *result_format(cmd_parms *cmd, void *m, 
                             char *fmt, char *arg0, char *arg1)
   {    
@@ -80,17 +91,18 @@ namespace config {
     /* Some formatters can take 1 or 2 extra parameters */
     dir->format_param[0] = ap_pstrdup(cmd->pool, arg0);
     dir->format_param[1] = ap_pstrdup(cmd->pool, arg1);
-    
-    ap_str_tolower(fmt);   // Do all comparisons in lowercase 
-    if(!strcmp(fmt,"raw")) dir->results = raw;
-    else if(!strcmp(fmt,"xml")) dir->results = xml;
-    else if(!strcmp(fmt,"apachenote")) dir->results = ap_note;
-    else {
+
+    dir->results = fmt_from_str(fmt);
+    if(dir->results == no_results) {
       dir->results = json;
-      if(strcmp(fmt,"json")) ap_log_error(APLOG_MARK, log::warn, cmd->server,
-                "Invalid result format %s at %s. Using default JSON results.\n",
-                fmt, cmd->path);
+      ap_log_error(APLOG_MARK, log::warn, cmd->server,
+                   "Invalid result format %s at %s. Using default JSON results.\n",
+                   fmt, cmd->path);
     }
+    if(arg0 && dir->results == ap_note) 
+      dir->sub_results = fmt_from_str(arg0);    
+    else dir->sub_results = no_results;
+    
     return 0;
   }
 
