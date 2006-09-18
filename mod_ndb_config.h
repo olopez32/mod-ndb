@@ -31,7 +31,8 @@ namespace config {
     short *pathinfo;
     int allow_delete;
     int use_etags;
-    result_format results;
+    result_format_type results;
+    result_format_type sub_results;
     char *format_param[2];
     struct {
       unsigned pathinfo_always : 1;
