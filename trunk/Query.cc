@@ -78,7 +78,7 @@ namespace Plan {
  PlanMethod Results_raw;     PlanMethod Results_XML;
  
 
-/* This array corresponds to the four items in enum result_format:
+/* This array corresponds to the four items in enum result_format_type:
 */
 PlanMethod *result_formatter[5] = { 
   0 , Results_JSON , Results_raw, Results_XML, Results_ap_note
@@ -120,7 +120,7 @@ inline bool mval_is_usable(request_rec *r, mvalue &mval) {
 }
 
 
-/* Inlined code to set a bound in to an IndexScan 
+/* Inlined code to set a bound in an IndexScan 
 */
 inline int mval_set_bound(struct QueryItems *q, runtime_col &c, mvalue &mval) {
   return q->scanop->setBound(c.conf->name, c.conf->filter_op, &mval.u.val_char);
@@ -193,10 +193,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0,0,
       0, NoPlan, 0, Plan::SetupRead, Plan::Read, 0, &my_results, true };
   struct QueryItems *q = &Q;
-  int response_code;
-  short col;
   const NdbDictionary::Column *ndb_Column;
+  bool keep_tx_open = false;
+  int response_code;
   mvalue mval;
+  short col;
 
   /* Initialize the data dictionary 
   */
@@ -247,6 +248,16 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       break;
     default:
       return DECLINED;
+  }
+
+  /* Is this request an Apache sub-request? 
+  */
+  if(r->main) {
+    const char *note = ap_table_get(r->main->notes,"ndb_keep_tx_open");
+    if(note && *note == '1') {
+      keep_tx_open = true;
+      ap_table_unset(r->main->notes,"ndb_keep_tx_open");
+    }
   }
 
 
@@ -302,11 +313,15 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
   /* Open a transaction.
      This creates an obligation to close it later, using tx->close().
+     If a non-null i->tx already exists, then the transaction is open
+     because of keep_tx_open in a previous request.
   */    
-  if(!(i->tx = i->db->startTransaction())) {
-    log_err2(r->server,"db->startTransaction failed: %s",
-              i->db->getNdbError().message);
-    return NOT_FOUND;
+  if(i->tx == 0) {
+    if(!(i->tx = i->db->startTransaction())) {
+      log_err2(r->server,"db->startTransaction failed: %s",
+                i->db->getNdbError().message);
+      return NOT_FOUND;
+    }
   }
 
   /* Now set the Query Items that depend on the access plan.
@@ -359,13 +374,28 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     
     mval = MySQL::value(r->pool, ndb_Column, Q.keys[col].value);
     if(mval_is_usable(r, mval)) {
-      if(q->scanop) {
+      if(q->scanop) 
+      {
         if(mval_set_bound(q, Q.keys[col], mval)) 
           goto abort;
       }
-      else 
-        if(q->op->equal(ndb_Column->getName(), (const char *) (&mval.u.val_char)))
-          goto abort;
+      else {   /* what is going on here !?!?! */
+        if(Q.plan == PrimaryKey) 
+        { 
+          if(q->op->equal(Q.keys[col].ndb_col_id, (const char *) (&mval.u.val_char)))
+          {
+            log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
+            goto abort;
+          }
+        }
+        else { 
+          if(q->op->equal(ndb_Column->getName(), (const char *) (&mval.u.val_char)))
+          {
+            log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
+            goto abort; 
+          }
+        }
+      }
     }
     col = dir->key_columns->item(col).next_in_key;
   }
@@ -376,12 +406,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     filter.begin(NdbScanFilter::AND);
     for(int n = 0 ; n < Q.n_filters ; n++) {
       runtime_col * filter_col = & Q.keys[Q.filter_list[n]];
+      ndb_Column = q->tab->getColumn(filter_col->ndb_col_id);
       log_debug3(r->server," ** Filter : %s -- value: %s", 
                  filter_col->conf->name, filter_col->value);
-      mval = MySQL::value(r->pool, Q.tab->getColumn(filter_col->ndb_col_id),
-                          filter_col->value);
+      mval = MySQL::value(r->pool, ndb_Column, filter_col->value);
       filter.cmp( (NdbScanFilter::BinaryCondition) filter_col->conf->filter_op, 
-         filter_col->ndb_col_id, (&mval.u.val_char) );
+                 filter_col->ndb_col_id, (&mval.u.val_char) );
     }                    
     filter.end();
   }
@@ -421,11 +451,15 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     }
   };
   
-  i->tx->close();
+  if(! keep_tx_open) {
+    i->tx->close();
+    i->tx = 0;
+  }
   return response_code;
   
   abort:
   i->tx->close();
+  i->tx = 0;
   return NOT_FOUND;
 }
 
@@ -495,10 +529,15 @@ int Results_XML(request_rec *r, config::dir *dir, struct QueryItems *q) {
 
 int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
   log_debug(r->server,"In Results formatter %s", "Results_ap_note");
+  // If this is a subrequest, set the note for the parent:
+  request_rec *rr = r->main ? r->main : r;
   
-  if(!strcmp(dir->format_param[0],"JSON")) {
-    Results_JSON(r,dir,q);
-    ap_table_set(r->notes,"NDB_results",q->results->buff);
+  if(dir->sub_results != no_results && dir->sub_results != ap_note) {
+    /* Generate results in the sub_result format (e.g. JSON or raw) 
+       and save them as a note named "NDB_results" 
+    */
+    result_formatter[dir->sub_results](r,dir,q); 
+    ap_table_set(rr->notes,"NDB_results",q->results->buff);
     q->results_are_visible = false;
   }
   else {
@@ -506,7 +545,7 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
       register NdbRecAttr *rec =  q->result_cols[n];
       if(! rec->isNULL()) {
         register const NdbDictionary::Column* col = rec->getColumn();
-        ap_table_set(r->notes, col->getName(), MySQL::result(r->pool, *rec));
+        ap_table_set(rr->notes, col->getName(), MySQL::result(r->pool, *rec));
       }
     }
   }
