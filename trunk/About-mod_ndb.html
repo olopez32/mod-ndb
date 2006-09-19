@@ -1,7 +1,7 @@
 <h1 align="center">mod_ndb</h1>
 
 <h2>Introduction</h2>
-<P>mod_ndb is an Apache module that provides a REST Web Services API for MySQL Cluster.  This makes it possible to retrieve and modify of data using standard HTTP GET, POST, and DELETE methods.  An Apache web server running mod_ndb can join a MySQL Cluster as an API node and communicate directly with the cluster's data storage nodes.  The primary intent behind mod_ndb is to provide a means for basic create, update, and delete database operations that is both higher-performing than a MySQL server and significantly easier to use than the call-level NDB API.  mod_ndb is also designed to conform to the HTTP 1.1 standard, return appropriate response codes and headers, and correctly interact with caches and proxy servers.</p>
+<P>Mod_ndb is an Apache module that provides a REST Web Services API for MySQL Cluster, making it possible to retrieve and modify data using standard HTTP GET, POST, and DELETE requests.  An Apache web server running mod_ndb joins a MySQL Cluster as an API node, and communicates directly with the cluster's data storage nodes.  The primary intent behind mod_ndb is to provide a means for basic create, update, and delete database operations that is both higher-performing than a MySQL server and significantly easier to use than the call-level NDB API.  Mod_ndb is also designed to conform to the HTTP 1.1 standard by returning appropriate response codes and headers and correctly interacting with caches and proxy servers.</p>
 
 
 <h2>A Quick Example</h2>
@@ -74,7 +74,7 @@ ndb-connectstring = my_mgm_server
 
 <p>The LoadModule directive instructs Apache to load mod_ndb at runtime; the following directive, AddModule, is only needed with Apache 1.3.  The following  ndb-connectstring directive indicates the location of the cluster management server .</p>
 
-<p>The following sections create a hierarchy of URLs and describe how mod_ndb should generate response pages for them.  The directive <B>SetHandler ndb-cluster</B> applies to all URLs beginning with /ndb and directs them to mod_ndb.  The following <b>Database</b> and <strong>Table</strong> directives ensure that every URL under /ndb refers to tables in the database <em>mod_ndb_test</em>, and every location under /ndb/car will use the cars table.   </p>
+<p>The remaining sections create a hierarchy of URLs and describe how mod_ndb should generate response pages for them.  The directive <B>SetHandler ndb-cluster</B> applies to all URLs beginning with /ndb and directs them to mod_ndb.  The subsequent <b>Database</b> and <strong>Table</strong> directives ensure that every URL under /ndb refers to tables in the database <em>mod_ndb_test</em>, and every location under /ndb/car will use the cars table.   </p>
 
 <p>At any given URL, users do not have complete or arbitrary access to an NDB table, but only the access explicitly allowed in the configuration file.  The  <strong>PrimaryKey</strong>, <strong>UniqueIndex</strong>, and <strong>OrderedIndex</strong> directives enable queries using particular indexes.  The <strong>Columns</strong> directive defines the list of columns that will be returned in a GET request, while <strong>AllowUpdate</strong> specifies the columns that can be modified in an HTTP POST.  HTTP DELETE requests are allowed only if an explicit <strong>Deletes On</strong> directive enables them. </p>
 
@@ -91,11 +91,11 @@ ndb-connectstring = my_mgm_server
 <p>mod_ndb defines three possible request handlers which can be specified using Apache's SetHandler directive.
 	
 	<dl>
-	<dt>ndb-cluster</dt>
+	<dt><strong>ndb-cluster</strong></dt>
 	<dd>As illustrated above, <b>SetHandler ndb-cluster</b> enables mod_ndb to respond to HTTP requests by querying the NDB data nodes as specified in the Apache configuration file.</dd>
-	<dt>ndb-config-check</dt>
+	<dt><strong>ndb-config-check</strong></dt>
 	<dd>The ndb-config-check handler provides output that explains how mod_ndb has processed its configuration file, and can be useful for debugging configuration problems.</dd>
-	<dt>ndb-status</dt>
+	<dt><strong>ndb-status</strong></dt>
 	<dd>The ndb-status handler provides runtime statistics on mod_ndb's performance.
 	</dl>
 
@@ -149,7 +149,7 @@ ndb-connectstring = my_mgm_server
 	</dd>
 	
 	<dt><strong>UniqueIndex</strong><dt>
-	<dd>Allows access to a table using a specific unique index. Note that, in order to use this directive, you need to know NDB's internal name for a unique index.  This is usually key_name$unique, where <i>key_name</i> is the name of the index as it appears in MySQL (from a SHOW CREATE TABLE or SHOW INDEXES statement, for instance).  The command-line utility <em>ndb_desc</em> can be used to verify the index name.<br>
+	<dd>Allows access to a table using a specific unique index. Note that, in order to use this directive, you need to know NDB's internal name for the index.  This is usually key_name$unique, where <i>key_name</i> is the name of the index as it appears in MySQL (from a SHOW CREATE TABLE or SHOW INDEXES statement, for instance).  The command-line utility <em>ndb_desc</em> can be used to verify the index name.<br>
 		Format:  UniqueIndex <em>indexname key_part_1 key_part_2 ... </em><br>
 		Example: UniqueIndex name$unique name <br>
 	</dd>
