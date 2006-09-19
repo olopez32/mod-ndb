@@ -71,7 +71,7 @@ fi
 echo
  
 MY_INC=`$MYSQLCFG --include`
-MY_LIBS=`$MYSQLCFG --libs | sed s/-lmysqlclient//`
+MY_LIBS=`$MYSQLCFG --libs`
 
 (
 echo APXS=$APXS
