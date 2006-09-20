@@ -30,7 +30,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* NDB headers */
 #include "NdbApi.hpp"
 
+/* Compatibility between Apache 2 and Apache 1.3 */
+#ifdef STANDARD20_MODULE_STUFF
+typedef apr_table_t table;
+typedef apr_pool_t  ap_pool;
+#else 
+#define AP_MODULE_DECLARE_DATA MODULE_VAR_EXPORT
+#endif
 
+/* Macros for writing to error and debug logs */
 #define MOD_NDB_DEBUG 1
 // #define CONFIG_DEBUG 1
 
@@ -55,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 typedef const char *(*CMD_HAND_TYPE) ();
 
-extern "C" module MODULE_VAR_EXPORT ndb_module;
+extern "C" module AP_MODULE_DECLARE_DATA ndb_module;
 
 enum result_format_type { no_results = 0, json, raw, xml, ap_note };
 
