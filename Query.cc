@@ -94,7 +94,8 @@ short key_col_bin_search(char *, config::dir *);
 */
 int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) { 
   return q->plan == OrderedIndexScan ? 
-    q->scanop->readTuples(NdbOperation::LM_Read) :
+    q->scanop->readTuples(NdbOperation::LM_Read, 
+                          dir->indexes->item(q->active_index).flag) :
     q->op->readTuple(NdbOperation::LM_Read);
 }
 

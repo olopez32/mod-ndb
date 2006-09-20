@@ -439,6 +439,18 @@ namespace config {
       index_rec->first_col_serial = -1;
       index_rec->first_col = -1;
     }
+
+    /* Sometimes a column name is not actually a column, but a flag */
+    if(index_rec->type == 'O' && *col == '[') {
+      if(!strcmp(col,"[ASC]")) {
+        index_rec->flag = NdbScanOperation::SF_OrderBy;
+        return 0;
+      }
+      else if(!strcmp(col,"[DESC]")) {
+        index_rec->flag = NdbScanOperation::SF_Descending;
+        return 0;
+      }
+    }
     
     /* Create a column record */
     bool col_exists = 0;

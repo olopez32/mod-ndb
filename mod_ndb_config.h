@@ -47,10 +47,11 @@ namespace config {
   /* NDB Index */
   struct index {
       char *name;
-      char type;
+      unsigned int flag;
       unsigned short n_columns;
       short first_col_serial;
       short first_col;
+      char type;
   };
   
   /* Coulmn used in a query */
