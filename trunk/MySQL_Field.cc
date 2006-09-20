@@ -228,7 +228,10 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
 {
 
   mvalue m;
-  char len_header[3] = { 0 , 0 , 0 };
+  char len;
+  const unsigned short s_lo = 255;
+  const unsigned short s_hi = 65535 ^ 255; 
+  unsigned short s_len;
   
   switch(col->getType()) {
     case NdbDictionary::Column::Int:
@@ -236,16 +239,35 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       m.u.val_signed = atoi(val);
       return m;
           
-    case NdbDictionary::Column::Varchar:
-      len_header[0] = (char) strlen(val);
-      m.u.val_char = ap_pstrcat(p, len_header, val, 0); 
+  /* "If the attribute is of variable size, its value must start with
+      1 or 2 little-endian length bytes"   [ i.e. LSB first ]*/
+
+    case NdbDictionary::Column::Varchar:      
+      len = (char) strlen(val);
+      m.u.val_char = (char *) ap_palloc(p, len + 2);
+      * m.u.val_char = len;
+      strcpy(m.u.val_char+1, val);
+      m.use_value = use_char; 
+      return m;
+
+    case NdbDictionary::Column::Longvarchar:
+      s_len = strlen(val);
+      m.u.val_char = (char *) ap_palloc(p, len + 3);
+      * m.u.val_char     = (char) (s_len & s_lo);
+      * (m.u.val_char+1) = (char) (s_len & s_hi);
+      strcpy(m.u.val_char+2, val);
       m.use_value = use_char; 
       return m;
       
     case NdbDictionary::Column::Char:
-      // ap_pcalloc() fills the buffer with 0s
-      m.u.val_char = (char *) ap_pcalloc(p,col->getLength());
+      // Copy the value into the buffer, then right-pad with spaces
+      int len = strlen(val);
+      m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
       strcpy(m.u.val_char, val);
+      char *p = m.u.val_char + len;
+      char *q = m.u.val_char + col->getLength();
+      while (p < q) *p++ = ' ';
+      *q = 0;      
       m.use_value = use_char;
       return m;
       
@@ -282,8 +304,6 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
     case NdbDictionary::Column::Tinyint:
     case NdbDictionary::Column::Smallunsigned:
     case NdbDictionary::Column::Tinyunsigned:
-    case NdbDictionary::Column::Longvarchar:
-      // is like varchar but with a two-byte length (what byte order??)
     case NdbDictionary::Column::Date:
       // can use http or rfc822 dates via apache utility functions
     case NdbDictionary::Column::Time:

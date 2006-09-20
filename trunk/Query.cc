@@ -374,29 +374,41 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     
     mval = MySQL::value(r->pool, ndb_Column, Q.keys[col].value);
     if(mval_is_usable(r, mval)) {
-      if(q->scanop) 
-      {
+      if(q->scanop) {
         if(mval_set_bound(q, Q.keys[col], mval)) 
           goto abort;
       }
-      else {   /* what is going on here !?!?! */
-        if(Q.plan == PrimaryKey) 
-        { 
-          if(q->op->equal(Q.keys[col].ndb_col_id, (const char *) (&mval.u.val_char)))
-          {
-            log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
-            goto abort;
+      else {   
+        /* For some reason, PK must specify column id, but unique index must
+           specify column name
+        */
+        int eqr = 0;
+
+        if(Q.plan == PrimaryKey) {
+          switch(mval.use_value) {
+            case use_char:
+              eqr = q->op->equal(Q.keys[col].ndb_col_id, mval.u.val_char);
+              break;
+            default:
+              eqr = q->op->equal(Q.keys[col].ndb_col_id, (const char *) (&mval.u.val_char));
           }
         }
-        else { 
-          if(q->op->equal(ndb_Column->getName(), (const char *) (&mval.u.val_char)))
-          {
-            log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
-            goto abort; 
+        else {  /* UniqueIndex */
+          switch(mval.use_value) {
+            case use_char:
+              eqr = q->op->equal(ndb_Column->getName(), mval.u.val_char);
+              break;
+            default:
+              eqr = q->op->equal(ndb_Column->getName(), (const char *) (&mval.u.val_char));
           }
         }
-      }
-    }
+        if(eqr) {
+          log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
+          goto abort;
+        }
+      } /* PrimaryKey or UniqueIndex */
+    } /* if(mval_is_usable) */
+    
     col = dir->key_columns->item(col).next_in_key;
   }
 
