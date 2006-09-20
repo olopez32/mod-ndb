@@ -156,8 +156,10 @@ ndb-connectstring = my_mgm_server
 		
 		
 	<dt><strong>OrderedIndex</strong><dt>
-	<dd>Allows access to a table using a specific ordered index.  Unlike lookups on primary keys and unique indexes, an ordered index scan can return multiple result rows.<br>
-		Format:  OrderedIndex <em>indexname key_part_1 key_part_2 ... </em><br>
+	<dd>Allows access to a table using a specific ordered index.  Unlike lookups on primary keys and unique indexes, an ordered index scan can return multiple result rows. The column list can also include a sort flag, one of <tt>[ASC]</tt>
+or <tt>[DESC]</tt>, which will cause results to be returned in sorted order.  (Note that unsorted scans can perform faster than sorted ones).
+		<br>
+		Format:  OrderedIndex <em>indexname key_part_1 key_part_2 sort_flag ... </em><br>
 		Example: OrderedIndex license_tag license_tag <br> 
 	</dd>
 	
