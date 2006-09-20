@@ -228,10 +228,12 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
 {
 
   mvalue m;
-  char len;
   const unsigned short s_lo = 255;
   const unsigned short s_hi = 65535 ^ 255; 
+  char len;
   unsigned short s_len;
+  unsigned int l_len;
+  char *s, *q;
   
   switch(col->getType()) {
     case NdbDictionary::Column::Int:
@@ -261,12 +263,12 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       
     case NdbDictionary::Column::Char:
       // Copy the value into the buffer, then right-pad with spaces
-      int len = strlen(val);
+      l_len = strlen(val);
       m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
       strcpy(m.u.val_char, val);
-      char *p = m.u.val_char + len;
-      char *q = m.u.val_char + col->getLength();
-      while (p < q) *p++ = ' ';
+      s = m.u.val_char + l_len;
+      q = m.u.val_char + col->getLength();
+      while (s < q) *s++ = ' ';
       *q = 0;      
       m.use_value = use_char;
       return m;
