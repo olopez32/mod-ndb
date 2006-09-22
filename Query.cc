@@ -60,7 +60,7 @@ struct QueryItems {
   table *form_data;
   PlanMethod *op_setup;
   PlanMethod *op_action;
-  PlanMethod *send_results;
+  PlanMethod *build_results;
   result_buffer *results;
   bool results_are_visible;
 };  
@@ -228,7 +228,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       // Allocate an array of NdbRecAttrs for all desired columns 
       Q.result_cols = (NdbRecAttr **) 
         ap_pcalloc(r->pool, dir->visible->size() * sizeof(NdbRecAttr *));
-      Q.send_results = result_formatter[dir->results];
+      Q.build_results = result_formatter[dir->results];
       break;
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
@@ -442,13 +442,16 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       response_code = HTTP_GONE;
     }
     else 
-      if(Q.results_are_visible && Q.send_results)
-        response_code = Q.send_results(r, dir, q);
+      if(Q.results_are_visible && Q.build_results)
+        response_code = Q.build_results(r, dir, q);
   }
-  
-  if(response_code == OK && q->results->buff && q->results_are_visible) {
-    /* Set the content length and ETag headers 
-    */
+
+  // Set the content length and ETag headers
+  if(response_code == OK        
+     && q->results->buff          
+     && q->results_are_visible
+     && (! r->main)   /* i.e. this is not a subrequest */
+  ) {
     ap_set_content_length(r, q->results->sz);
     if(dir->use_etags) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
@@ -464,7 +467,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     }
   };
   
-  if(! keep_tx_open) {
+  if(keep_tx_open) {
+    log_debug(r->server,"keeping tx %d open.", i->tx->getTransactionId());
+  }
+  else {
     i->tx->close();
     i->tx = 0;
   }
