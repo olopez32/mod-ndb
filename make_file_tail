@@ -15,7 +15,7 @@ mod_ndb.o: mod_ndb.cc mod_ndb.h mod_ndb_config.h
 handlers.o: handlers.cc mod_ndb.h
 read_http_post.o: read_http_post.cc
 JSON.o: JSON.cc mod_ndb.h MySQL_Field.h JSON.h
-Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h JSON.h 
+Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h JSON.h index_object.h
 MySQL_Field.o: MySQL_Field.cc MySQL_Field.h
 config.o: config.cc mod_ndb.h mod_ndb_config.h
 result_buffer.o: result_buffer.cc mod_ndb.h
