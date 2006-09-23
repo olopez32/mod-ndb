@@ -37,7 +37,6 @@ class runtime_col {
   public:
     char *value;
     int ndb_col_id;
-    const config::key_col *conf;
 };
 
 /* The main Query() function has a single instance of the QueryItems structure,
@@ -121,13 +120,6 @@ inline bool mval_is_usable(request_rec *r, mvalue &mval) {
 }
 
 
-/* Inlined code to set a bound in an IndexScan 
-*/
-inline int mval_set_bound(struct QueryItems *q, runtime_col &c, mvalue &mval) {
-  return q->scanop->setBound(c.conf->name, c.conf->filter_op, &mval.u.val_char);
-}
-
-
 /* Inlined code to allocate memory for the filter list as needed. 
 */
 inline void init_filters(request_rec *r, config::dir *dir, struct QueryItems *q) {
@@ -162,7 +154,6 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
   }
 
   q->keys[n].value = value; 
-  q->keys[n].conf = &keycol;
   column = q->tab->getColumn(keycol.name);
   if(column) {
     q->keys[n].ndb_col_id = column->getColumnNo();
@@ -370,13 +361,14 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   ndb_Column = Q.tab->getColumn(Q.keys[col].ndb_col_id);
 
   while (col >= 0 && Q.key_columns_used-- > 0) {
+    config::key_col &keycol = dir->key_columns->item(col);
     log_debug3(r->server," ** Query key: %s -- value: %s", 
-               dir->key_columns->item(col).name, Q.keys[col].value);
+               keycol.name, Q.keys[col].value);
     
     mval = MySQL::value(r->pool, ndb_Column, Q.keys[col].value);
     if(mval_is_usable(r, mval)) {
       if(q->scanop) {
-        if(mval_set_bound(q, Q.keys[col], mval)) 
+        if(q->scanop->setBound(keycol.name, keycol.filter_op, &mval.u.val_char))
           goto abort;
       }
       else {   
@@ -419,11 +411,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     filter.begin(NdbScanFilter::AND);
     for(int n = 0 ; n < Q.n_filters ; n++) {
       runtime_col * filter_col = & Q.keys[Q.filter_list[n]];
+      config::key_col &keycol = dir->key_columns->item(n);
+      
       ndb_Column = q->tab->getColumn(filter_col->ndb_col_id);
       log_debug3(r->server," ** Filter : %s -- value: %s", 
-                 filter_col->conf->name, filter_col->value);
+                 keycol.name, filter_col->value);
       mval = MySQL::value(r->pool, ndb_Column, filter_col->value);
-      filter.cmp( (NdbScanFilter::BinaryCondition) filter_col->conf->filter_op, 
+      filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op, 
                  filter_col->ndb_col_id, (&mval.u.val_char) );
     }                    
     filter.end();
