@@ -39,6 +39,8 @@ class runtime_col {
     int ndb_col_id;
 };
 
+class index_object;   // forward declaration
+
 /* The main Query() function has a single instance of the QueryItems structure,
    which is used to pass essential data among the modules  
 */
@@ -52,6 +54,7 @@ struct QueryItems {
   NdbRecAttr **result_cols;
   runtime_col *keys;
   short active_index;
+  index_object *idxobj;
   short key_columns_used;
   int n_filters;
   short *filter_list;
@@ -63,6 +66,8 @@ struct QueryItems {
   result_buffer *results;
   bool results_are_visible;
 };  
+
+#include "index_object.h"
 
 /* Most modules are represented as PlanMethods
 */
@@ -182,7 +187,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   const NdbDictionary::Dictionary *dict;
   result_buffer my_results;
   struct QueryItems Q = 
-    { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0,0,
+    { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0,0,0,
       0, NoPlan, 0, Plan::SetupRead, Plan::Read, 0, &my_results, true };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
@@ -462,7 +467,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   };
   
   if(keep_tx_open) {
-    log_debug(r->server,"keeping tx %d open.", i->tx->getTransactionId());
+    log_debug(r->server,"keeping tx %llu open.", i->tx->getTransactionId());
   }
   else {
     i->tx->close();
