@@ -1,0 +1,43 @@
+This is mod_ndb, an Apache module that provides a REST Web Services API for
+MySQL Cluster.
+
+
+--- BUILDING THE MODULE ---
+
+MySQL Cluster and Apache must be installed, including all header files and 
+shared libraries.
+
+# ./configure --mysql=/path/to/mysql_config --apxs=/path/to/apxs
+# make
+# make install
+
+Note that this configure script is not GNU Autoconf (which is not required, 
+since it has already been run to build MySQL), but rather a small script which
+can use the "mysql_config" and "apxs" commands to generate an appropriate 
+Makefile for mod_ndb.
+
+
+--- STARTING THE SERVER ---
+
+1) Refer to the additional documentation in About-mod_ndb.html; you will need
+a LoadModule directive in httpd.conf, and a number of available [API] nodes 
+in your cluster configuration.
+
+2) Apache must be able to load several NDB and MySQL libraries from 
+the mysql lib directory (e.g. /usr/local/lib/mysql); you may need to set 
+LD_LIBRARY_PATH in order to make this happen.
+
+3) If the server starts and attempts to initialize mod_ndb, there will be 
+one or more notices in the Apache server log file; either,
+
+[notice] Cannot connect to NDB Cluster.
+
+-- indicating failure, or a succesful notice like:
+
+[notice] Process 457 connected to NDB Cluster as node 5
+
+
+Enjoy!
+
+JD
+jdd@mysql.com
