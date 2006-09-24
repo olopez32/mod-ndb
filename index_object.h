@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 class index_object {
-  public:
+public:
     int key_part;
     server_rec *server;
     struct QueryItems *q;
@@ -27,15 +27,18 @@ class index_object {
       server = r->server;
       key_part = 0; 
     };
-    virtual ~index_object();
-    virtual NdbOperation *get_ndb_operation(NdbTransaction *);
+    virtual ~index_object() {};
+    virtual NdbOperation *get_ndb_operation(NdbTransaction *) = 0;
     bool next_key_part() {  return (key_part++ < n_parts); };
-    virtual int set_key_part(config::key_col &, mvalue &);
+    virtual int set_key_part(config::key_col &, mvalue &) = 0;
 };
 
 
-class PK_index_object : index_object {
+class PK_index_object : public index_object {
   public:
+    PK_index_object(struct QueryItems *queryitems, request_rec *r) :
+      index_object(queryitems, r) { } ;
+      
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
       n_parts = q->tab->getNoOfPrimaryKeys();
       NdbOperation *op = tx->getNdbOperation(q->tab);
@@ -54,8 +57,11 @@ class PK_index_object : index_object {
     };
 };
   
-class Unique_index_object : index_object {
+class Unique_index_object : public index_object {
   public:
+    Unique_index_object(struct QueryItems *queryitems, request_rec *r) :
+      index_object(queryitems, r) { } ;
+
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
       n_parts = q->idx->getNoOfColumns(); 
       NdbOperation *op = tx->getNdbIndexOperation(q->idx);
@@ -74,8 +80,11 @@ class Unique_index_object : index_object {
     };
 };
 
-class Ordered_index_object : index_object {
+class Ordered_index_object : public index_object {
   public:
+    Ordered_index_object(struct QueryItems *queryitems, request_rec *r) :
+      index_object(queryitems, r) { } ;
+
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
       n_parts = q->idx->getNoOfColumns(); 
       q->scanop = tx->getNdbIndexScanOperation(q->idx);
