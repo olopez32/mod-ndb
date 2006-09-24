@@ -69,6 +69,7 @@ struct QueryItems {
 
 #include "index_object.h"
 
+
 /* Most modules are represented as PlanMethods
 */
 namespace Plan {
@@ -195,6 +196,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   int response_code;
   mvalue mval;
   short col;
+  /* Initialize all three of these, but only one will be needed: */
+  PK_index_object       PK_idxobj(q,r);
+  Unique_index_object   UI_idxobj(q,r);
+  Ordered_index_object  OI_idxobj(q,r);
 
   /* Initialize the data dictionary 
   */
@@ -321,37 +326,29 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     }
   }
 
-  /* Now set the Query Items that depend on the access plan.
-  */
-  if(Q.plan == PrimaryKey) {
-    Q.op = i->tx->getNdbOperation(Q.tab);
-    log_debug(r->server,"Using primary key lookup; key %d",Q.active_index);
-  }
+  /* Now set the Query Items that depend on the access plan and index type.
+  */    
+  if(Q.plan == PrimaryKey)
+    q->idxobj = & PK_idxobj;
   else {                                        /* Indexed Access */
     register const char * idxname = dir->indexes->item(Q.active_index).name;
-    Q.idx = dict->getIndex(idxname, dir->table);
-    if(! Q.idx)
-    {
-      ap_log_error(APLOG_MARK, log::err, r->server, "mod_ndb: index %s "
+    if((Q.idx = dict->getIndex(idxname, dir->table)) == 0) {
+     ap_log_error(APLOG_MARK, log::err, r->server, "mod_ndb: index %s "
                    "does not exist (db: %s, table: %s)", idxname, 
                    dir->database, dir->table);
       goto abort;
     }    
-    if(Q.plan == UniqueIndexAccess) {
-      log_debug3(r->server,"Using UniqueIndexAccess; key # %d - %s",
-                 Q.active_index, Q.idx->getName());
-      Q.op = i->tx->getNdbIndexOperation(Q.idx);
-    }
-    else if(Q.plan == OrderedIndexScan) {
-      log_debug3(r->server,"Using OrderedIndexScan; key # %d - %s",
-                 Q.active_index, Q.idx->getName());
-      Q.op = Q.scanop = i->tx->getNdbIndexScanOperation(Q.idx);
-    }
+    if(Q.plan == UniqueIndexAccess) 
+      q->idxobj = & UI_idxobj;
+    else if(Q.plan == OrderedIndexScan)
+      q->idxobj = & OI_idxobj;
     else
       log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
   }
   if(Q.active_index < 0) goto abort;
 
+  // Get an NdbOperation 
+  q->op = q->idxobj->get_ndb_operation(i->tx);
 
   // Query setup, e.g. Plan::SetupRead calls op->readTuple() 
   if(Q.op_setup(r, dir, & Q)) { // returns 0 on success
