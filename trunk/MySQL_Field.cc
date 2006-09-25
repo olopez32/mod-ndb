@@ -148,7 +148,7 @@ char * MySQL::result(pool *p, const NdbRecAttr &rec) {
       return MySQL::Time(p,rec);
       
     case NdbDictionary::Column::Bigunsigned:
-      return ap_psprintf(p,"%llu", (unsigned long long) rec.u_64_value());
+      return ap_psprintf(p,"%qu", rec.u_64_value()); 
       
     case NdbDictionary::Column::Smallunsigned:
       return ap_psprintf(p,"%u", (short) rec.u_short_value());
@@ -157,7 +157,8 @@ char * MySQL::result(pool *p, const NdbRecAttr &rec) {
       return ap_psprintf(p,"%u", (int) rec.u_char_value());
       
     case NdbDictionary::Column::Bigint:
-      return ap_psprintf(p,"%lli", (long long int) rec.int64_value());
+      // return ap_psprintf(p,"%lli", (long long int) rec.int64_value());
+      return ap_psprintf(p,"%q", rec.int64_value());
       
     case NdbDictionary::Column::Smallint:
       return ap_psprintf(p,"%d", (short) rec.short_value());
@@ -235,6 +236,13 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
   unsigned int l_len;
   char *s, *q;
   
+  // You can't do anything with a null pointer
+  if(! val) {
+    m.use_value = can_not_use;
+    m.u.err_col = col;
+    return m;
+  }
+  
   switch(col->getType()) {
     case NdbDictionary::Column::Int:
       m.use_value = use_signed;
@@ -245,7 +253,7 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       1 or 2 little-endian length bytes"   [ i.e. LSB first ]*/
 
     case NdbDictionary::Column::Varchar:      
-      len = (unsigned char) strlen(val);
+      m.len = len = (unsigned char) strlen(val);
       if(len > col->getLength()) len = (unsigned char) col->getLength();
       m.u.val_char = (char *) ap_palloc(p, len + 2);
       * m.u.val_char = len;
@@ -254,7 +262,7 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       return m;
 
     case NdbDictionary::Column::Longvarchar:
-      s_len = strlen(val);
+      m.len = s_len = strlen(val);
       if(s_len > col->getLength()) s_len = col->getLength();
       m.u.val_char = (char *) ap_palloc(p, len + 3);
       * m.u.val_char     = (char) (s_len & s_lo);
@@ -265,7 +273,7 @@ mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val)
       
     case NdbDictionary::Column::Char:
       // Copy the value into the buffer, then right-pad with spaces
-      l_len = strlen(val);
+      m.len = l_len = strlen(val);
       if(l_len > col->getLength()) l_len = col->getLength();
       m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
       strcpy(m.u.val_char, val);
