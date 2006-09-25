@@ -1,7 +1,7 @@
 OBJECTS=mod_ndb.o JSON.o Query.o MySQL_Field.o config.o read_http_post.o \
 handlers.o result_buffer.o
 
-INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3) $(MY_INC4) $(MY_INC5)
+INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
 LIBS=$(APXS_LIBS_SHLIB) $(MY_LIBS) -lndbclient -lmystrings -lmysys -lstdc++
 
 mod_ndb.so: $(OBJECTS)
