@@ -36,7 +36,6 @@ typedef int PlanMethod(request_rec *, config::dir *, struct QueryItems *);
 class runtime_col {
   public:
     char *value;
-    int ndb_col_id;
 };
 
 class index_object;   // forward declaration
@@ -105,7 +104,7 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
 }
 
 int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) { 
-  return q->op->writeTuple(); 
+  return q->op->writeTuple();
 }
 
 int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) { 
@@ -141,7 +140,6 @@ inline void init_filters(request_rec *r, config::dir *dir, struct QueryItems *q)
 inline void set_key(request_rec *r, short &n, char *value, config::dir *dir, 
                     struct QueryItems *q) 
 {
-  const NdbDictionary::Column *column;
   config::key_col &keycol = dir->key_columns->item(n);
 
   if(keycol.is.alias) {  
@@ -160,13 +158,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
   }
 
   q->keys[n].value = value; 
-  column = q->tab->getColumn(keycol.name);
-  if(column) {
-    q->keys[n].ndb_col_id = column->getColumnNo();
-    log_debug3(r->server, "Config column %s = NDB AttrID %d", 
-               keycol.name, q->keys[n].ndb_col_id);
-  }
-  else return; 
+  log_debug3(r->server, "set value for key column %d [%s]",n,keycol.name);
   q->key_columns_used++;
  
   if(keycol.implied_plan > q->plan) {
@@ -196,13 +188,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   int response_code;
   mvalue mval;
   short col;
-  /* Initialize all three of these, but only one will be needed: */
+  
+  // Initialize all three of these, but only one will be needed: 
   PK_index_object       PK_idxobj(q,r);
   Unique_index_object   UI_idxobj(q,r);
   Ordered_index_object  OI_idxobj(q,r);
 
-  /* Initialize the data dictionary 
-  */
+  // Initialize the data dictionary 
   i->db->setDatabaseName(dir->database);
   dict = i->db->getDictionary();
   Q.tab = dict->getTable(dir->table);
@@ -279,10 +271,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       ap_unescape_url(key);
       ap_unescape_url(val);
       n = key_col_bin_search(key, dir);
-      if(n >= 0) { 
-        log_debug3(r->server,"key %s [%d]",key,n);
+      if(n >= 0) 
         set_key(r, n, val, dir, &Q);
-      }
       else
         log_debug(r->server,"Unidentified key %s",key);
     }
@@ -311,8 +301,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
   
   /* ===============================================================*/
-  if(! Q.key_columns_used) return NOT_FOUND;    /* no query */
-
+  if(r->method_number == M_GET && ! Q.key_columns_used) {
+    log_debug(r->server,"No key column aliases found in request %s", 
+              r->unparsed_uri);
+    return NOT_FOUND;    /* no query */
+  }
+  
   /* Open a transaction.
      This creates an obligation to close it later, using tx->close().
      If a non-null i->tx already exists, then the transaction is open
@@ -360,11 +354,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
   // Traverse the index parts and build the query
   col = dir->indexes->item(Q.active_index).first_col;
-  ndb_Column = Q.tab->getColumn(Q.keys[col].ndb_col_id);
-
 
   while (col >= 0 && Q.key_columns_used-- > 0) {
     config::key_col &keycol = dir->key_columns->item(col);
+    ndb_Column = q->idxobj->get_column();
+
     log_debug3(r->server," ** Request column_alias: %s -- value: %s", 
                keycol.name, Q.keys[col].value);
     
@@ -384,15 +378,15 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     NdbScanFilter filter(Q.op);
     filter.begin(NdbScanFilter::AND);
     for(int n = 0 ; n < Q.n_filters ; n++) {
-      runtime_col * filter_col = & Q.keys[Q.filter_list[n]];
+      runtime_col * filter_col = & Q.keys[Q.filter_list[n]];  // ??
       config::key_col &keycol = dir->key_columns->item(n);
       
-      ndb_Column = q->tab->getColumn(filter_col->ndb_col_id);
+      ndb_Column = q->tab->getColumn(keycol.name);
       log_debug3(r->server," ** Filter : %s -- value: %s", 
                  keycol.name, filter_col->value);
       mval = MySQL::value(r->pool, ndb_Column, filter_col->value);
-      filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op, 
-                 filter_col->ndb_col_id, (&mval.u.val_char) );
+      /* filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
+                 keycol.name, (&mval.u.val_char) );   FIXME */
     }                    
     filter.end();
   }
@@ -445,6 +439,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   return response_code;
   
   abort:
+  log_debug(r->server,"Aborting open transaction at '%s'",r->unparsed_uri);
   i->tx->close();
   i->tx = 0;
   return NOT_FOUND;
@@ -568,24 +563,32 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
   const char *key, *val;
   
   column_list = dir->updatable->items();
-  // iterate over the updatable columns
+  // iterate over the updatable columns, finding them in the posted form data
   for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
-    // finding them in the posted form data
     val = ap_table_get(q->form_data, key);
     if(val) {   
-      log_debug(r->server,"Updating column %s",key);
       col = q->tab->getColumn(key);
       if(col) {
+        int eqr;
         // Encode the HTTP ASCII data into proper MySQL data types
         mval = MySQL::value(r->pool, col, val);
-        // And call op->setValue
-        if(mval_is_usable(r, mval))
-           q->op->setValue(col->getName(), (const char *) (&mval.u.val_char));
+        if(mval_is_usable(r, mval)) {
+          log_debug3(r->server,"Updating column %s = %s",key, val);
+          switch(mval.use_value) {
+            case use_char:
+              eqr = q->op->setValue(col->getColumnNo(), mval.u.val_const_char );
+              break;
+            default:
+              eqr = q->op->setValue(col->getColumnNo(), (const char *) (&mval.u.val_char));
+          }
+        }
+        else eqr = -1;
+        if(eqr) log_debug(r->server,"setValue failed: %s", q->op->getNdbError().message);
       }
       else log_err2(r->server,"AllowUpdate list includes invalid column name %s", key);
-    }
-  }
+    } // if val()
+  } // for()
   return OK;
 }
 
