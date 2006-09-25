@@ -30,7 +30,6 @@ enum mvalue_use {
 }; 
 
 struct mvalue {
-  mvalue_use use_value;
   union {
     const char *        val_const_char;
     char *              val_char;
@@ -42,6 +41,8 @@ struct mvalue {
     double              val_double;
     const NdbDictionary::Column * err_col;
   } u;
+  size_t len;
+  mvalue_use use_value;
 };
 typedef struct mvalue mvalue;
 
