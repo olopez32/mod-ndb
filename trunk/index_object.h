@@ -22,15 +22,18 @@ public:
     server_rec *server;
     struct QueryItems *q;
     int n_parts;
+    
     index_object(struct QueryItems *queryitems, request_rec *r) {  
       q = queryitems;
       server = r->server;
       key_part = 0; 
     };
     virtual ~index_object() {};
+
     virtual NdbOperation *get_ndb_operation(NdbTransaction *) = 0;
     bool next_key_part() {  return (key_part++ < n_parts); };
     virtual int set_key_part(config::key_col &, mvalue &) = 0;
+    virtual const NdbDictionary::Column *get_column() = 0; 
 };
 
 
@@ -47,13 +50,17 @@ class PK_index_object : public index_object {
     };
      
     int set_key_part(config::key_col &keycol, mvalue &mval) {
-      int col_id = q->tab->getColumn(q->tab->getPrimaryKey(key_part))->getColumnNo();
+      int col_id = this->get_column()->getColumnNo();
         switch(mval.use_value) {
           case use_char:
             return q->op->equal(col_id, mval.u.val_char);
           default:
             return q->op->equal(col_id, (const char *) (&mval.u.val_char));
         }
+    };
+    
+    const NdbDictionary::Column *get_column() {
+      return q->tab->getColumn(q->tab->getPrimaryKey(key_part));
     };
 };
   
@@ -78,6 +85,10 @@ class Unique_index_object : public index_object {
           return q->op->equal(col_name, (const char *) (&mval.u.val_char)); 
       }
     };
+
+    const NdbDictionary::Column *get_column() {
+      return q->idx->getColumn(key_part);
+    };    
 };
 
 class Ordered_index_object : public index_object {
@@ -97,5 +108,10 @@ class Ordered_index_object : public index_object {
       
       return q->scanop->setBound(col_id, keycol.filter_op, &mval.u.val_char);      
     };
+
+    const NdbDictionary::Column *get_column() {
+      return q->idx->getColumn(key_part);
+    };
+    
 };
 
