@@ -122,7 +122,6 @@ extern "C" {
     ap_rprintf(r,"Result format: %s\n",(char *[4]){"[None]","JSON","Raw","XML"}
                [(int) dir->results]);
     
-    indexes = dir->indexes->items();
     columns = dir->key_columns->items();
     int n_indexes = dir->indexes->size();
     int n_kcols = dir->key_columns->size();
@@ -131,10 +130,11 @@ extern "C" {
       ap_rprintf(r,"%s ",columns[n].name);
     ap_rprintf(r,"\n%d index%s\n", n_indexes, n_indexes == 1 ? "" : "es");
     for(int n = 0 ; n < n_indexes ; n++) {
-      config::index *idx = &indexes[n];
-      ap_rprintf(r,"Type: %c | %-30s\n",idx->type, idx->name);
-      int t = idx->first_col;
-      ap_rprintf(r," %d Columns:", idx->n_columns);
+      config::index &idx = dir->indexes->item(n);
+      ap_rprintf(r,"Type: %c | %-30s\n",idx.type, idx.name);
+      int t = idx.first_col;
+      ap_rprintf(r," %d key column alias%s:", idx.n_columns,
+                 idx.n_columns == 1 ? "" : "es");
       while(t != -1) {
         ap_rprintf(r," %s", columns[t].name);
         t = columns[t].next_in_key;
@@ -152,9 +152,6 @@ extern "C" {
       ap_table_do(print_all_params,r,param_tab,NULL);
       if(! ap_is_empty_table(param_tab)) {
         array_header *a = ap_table_elts(param_tab);
-        table_entry *t1 = (table_entry *)a->elts;
-        char *key1 = t1->key;
-        ap_rprintf(r,"First arg: %s\n",key1);
       }
     }
     return OK;
