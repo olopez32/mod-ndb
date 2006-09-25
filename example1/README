@@ -1,0 +1,19 @@
+Example1: two tables from a web application.
+
+The "session" table holds name/value information associated
+with an integer session key.
+
+The "user_icon" table holds a set of image icons for users.
+
+The file ex1_data.sql is a SQL script used to create the tables and
+load the data.
+
+The file ex1_httpd.conf should be included in an httpd.conf file,
+e.g. "Include /path/to/mod_ndb/example1/ex1_httpd.conf"
+
+The files beginning with "t" are a test suite for the session table.
+
+The tests require the "curl" binary.
+
+First, edit base.test, then run the tests individually.
+
