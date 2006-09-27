@@ -65,7 +65,6 @@ extern "C" {
 
   int ndb_config_check_handler(request_rec *r) {
     table *param_tab;
-    config::index *indexes;
     config::key_col *columns;
     
     ndb_instance *i = my_instance(r);
@@ -150,9 +149,6 @@ extern "C" {
     if(r->args) {
       param_tab = http_param_table(r, r->args);
       ap_table_do(print_all_params,r,param_tab,NULL);
-      if(! ap_is_empty_table(param_tab)) {
-        array_header *a = ap_table_elts(param_tab);
-      }
     }
     return OK;
   }
