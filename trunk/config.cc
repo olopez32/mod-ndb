@@ -439,6 +439,8 @@ namespace config {
       index_rec->first_col_serial = -1;
       index_rec->first_col = -1;
     }
+    else 
+      index_rec = & dir->indexes->item(index_id);
 
     /* Sometimes a column name is not actually a column, but a flag */
     if(index_rec->type == 'O' && *col == '[') {
