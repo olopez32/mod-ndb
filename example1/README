@@ -1,19 +1,23 @@
-Example1: two tables from a web application.
+	Example1: Two tables from a web application.
 
 The "session" table holds name/value information associated
 with an integer session key.
 
 The "user_icon" table holds a set of image icons for users.
 
-The file ex1_data.sql is a SQL script used to create the tables and
-load the data.
+Use the SQL script load_sessions.sql to create the session table and load the data.
 
 The file ex1_httpd.conf should be included in an httpd.conf file,
 e.g. "Include /path/to/mod_ndb/example1/ex1_httpd.conf"
 
-The files beginning with "t" are a test suite for the session table.
+The files beginning with "t" form a test suite.  These tests require the "curl" binary.
 
-The tests require the "curl" binary.
+First edit base.test, then run the tests individually.
 
-First, edit base.test, then run the tests individually.
-
+Test t1 selects all the data from session 3.
+Test t2 modifies a row of data in session 3.
+Test t3 repeats test t1; note the modified row.
+Test t4 inserts a new row of session data.
+Test t5 demonstrates the use of the ndb_select_all utility and shows the row created by t3.
+Test t6 deletes the row created in test t4.
+Test t7 repeats test t5; note the deleted row.

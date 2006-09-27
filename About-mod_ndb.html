@@ -1,9 +1,14 @@
+<html>
+<head><title>About mod_ndb</title></head>
+<body>
 <h1 align="center">mod_ndb</h1>
 
 <h2>Introduction</h2>
 <P>Mod_ndb is an Apache module that provides a REST web services API for MySQL Cluster, making it possible to query and modify a database over HTTP using GET, POST, and DELETE requests.  An Apache web server running mod_ndb can join a MySQL Cluster as an API node and communicate directly with the cluster's data storage nodes, possibly eliminating the &quot;middle tier&quot; MySQL server from a web architecture.</p>
 	
-<P>The primary intent behind mod_ndb is to provide the performance benefits of direct access to NDB in a way that is significantly easier to use than the call-level NDB API.  It is also designed to interact directly with embedded Web application languages like PHP, Perl, and Ruby using Apache subrequests, and to correctly interact with HTTP 1.1 caches and proxy servers.
+<P>The primary intent behind mod_ndb is to provide the performance benefits of direct access to NDB in a way that is significantly easier to use than the call-level NDB API.  It is also designed to interact directly with embedded Web application languages like PHP, Perl, and Ruby using Apache subrequests, and to correctly interact with HTTP 1.1 caches and proxy servers.</p>
+	
+<P>For information on building and installing mod_ndb, refer to the README file in the source distribution</P>
 
 
 <h2>A Quick Example</h2>
@@ -87,7 +92,10 @@ ndb-connectstring = my_mgm_server
 
 <p>Under the final configuration section, at /ndb/car/photo, only the BLOB column <em>photo</em> is returned, without any additional formatting.  The <strong>DefaultType image/jpeg</strong> directive (which is handled by <em>mod_mime,</em> not mod_ndb) sets the MIME type of the response appropriately.  Photos can be obtained using the primary key (/ndb/car/photo?id=3), the license number as an argument (/ndb/car/photo?license_tag=abc+123), or the license number as a part of the URL (/ndb/car/photo/abc+123).</p>
 	
+<h3>More examples</h3>
 
+<p>The <em>example1</em> directory of the mod_ndb distribution contains a complete
+example, including sample data and a small test suite.</p>
 
 <h2>Configuring mod_ndb</h2>
 
@@ -212,7 +220,7 @@ a two-part primary key, and <em>j</em> is mapped to the second part of the key. 
 	<dd>Used to set bounds other than equality on ordered index scans, or to add an NdbScanFilter to a scan.  Not yet documented.</dd>
 	
 	<dt><strong>PathInfo</strong><dt>
-	<dd>Used to implicitly associate key columns (which must be named elsewhere in a PrimaryKey, UniqueIndex, OrderedIndex, or Filter directive) with the rightmost parts of the URL path name.<br>
+	<dd>Used to implicitly associate key columns (which must be named elsewhere in a PrimaryKey, UniqueIndex, OrderedIndex, or Filter directive) with the rightmost parts of the URL path name. <i>(Note: it is a current limitation of mod_ndb that you cannot insert records from a directory where PathInfo is also configured.)</i><br>
 		Format: PathInfo <em>key_col/key_col/... </em> <br>
 		Example: PathInfo user_id/icon_id <br>
 	</dd>
@@ -230,5 +238,19 @@ a two-part primary key, and <em>j</em> is mapped to the second part of the key. 
 	access path for the request.  An indexed column in MySQL might belong to both 
 	a UniqueIndex and an OrderedIndex in NDB; in mod_ndb, you choose one access path
 	or the other using two different column aliases.
-	  
-	
+
+<h4>Subrequests and joins</h4>
+
+<p>The file htdocs/test_note.php illustrates how mod_ndb can be used from an
+	application language like PHP or Perl which is also embedded into the web server.
+	The application code calls mod_ndb in an Apache subrequest, and then retrieves the
+	result from the Apache notes table.</p>
+ <p>It is possible for an application to join several tables together in a single
+	query by making multiple subrequests.  In order to read all of the tables inside
+	a single consistent transaction, the application code should set an Apache note
+	named <i>ndb_keep_tx_open</i> before each request except the final one.  This is
+	not yet fully documented.</p>
+
+
+</body>
+</html>
