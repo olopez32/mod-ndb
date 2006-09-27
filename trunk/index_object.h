@@ -33,7 +33,9 @@ public:
     virtual NdbOperation *get_ndb_operation(NdbTransaction *) = 0;
     bool next_key_part() {  return (key_part++ < n_parts); };
     virtual int set_key_part(config::key_col &, mvalue &) = 0;
-    virtual const NdbDictionary::Column *get_column() = 0; 
+    virtual const NdbDictionary::Column *get_column() {
+      return q->idx->getColumn(key_part);
+    };
 };
 
 
@@ -51,18 +53,17 @@ class PK_index_object : public index_object {
      
     int set_key_part(config::key_col &keycol, mvalue &mval) {
       int col_id = this->get_column()->getColumnNo();
-        switch(mval.use_value) {
-          case use_char:
-            return q->op->equal(col_id, mval.u.val_char);
-          default:
-            return q->op->equal(col_id, (const char *) (&mval.u.val_char));
-        }
+      if(mval.use_value == use_char) 
+        return q->op->equal(col_id, mval.u.val_char);
+      else
+        return q->op->equal(col_id, (const char *) (&mval.u.val_char));
     };
     
     const NdbDictionary::Column *get_column() {
       return q->tab->getColumn(q->tab->getPrimaryKey(key_part));
     };
 };
+
   
 class Unique_index_object : public index_object {
   public:
@@ -78,18 +79,13 @@ class Unique_index_object : public index_object {
     
     int set_key_part(config::key_col &keycol, mvalue &mval) {
       const char *col_name = q->idx->getColumn(key_part)->getName();
-      switch(mval.use_value) {
-        case use_char:
-          return q->op->equal(col_name, mval.u.val_char);
-        default:
-          return q->op->equal(col_name, (const char *) (&mval.u.val_char)); 
-      }
-    };
-
-    const NdbDictionary::Column *get_column() {
-      return q->idx->getColumn(key_part);
-    };    
+      if(mval.use_value == use_char) 
+        return q->op->equal(col_name, mval.u.val_char);
+      else
+        return q->op->equal(col_name, (const char *) (&mval.u.val_char)); 
+    };   
 };
+
 
 class Ordered_index_object : public index_object {
   public:
@@ -104,14 +100,10 @@ class Ordered_index_object : public index_object {
     };
     
     int set_key_part(config::key_col &keycol, mvalue &mval) {
-      int col_id = q->idx->getColumn(key_part)->getColumnNo();
-      
-      return q->scanop->setBound(col_id, keycol.filter_op, &mval.u.val_char);      
+      int col_id = q->idx->getColumn(key_part)->getColumnNo();      
+      if(mval.use_value == use_char) 
+        return q->scanop->setBound(col_id, keycol.filter_op, mval.u.val_char);
+      else
+        return q->scanop->setBound(col_id, keycol.filter_op, &mval.u.val_char);
     };
-
-    const NdbDictionary::Column *get_column() {
-      return q->idx->getColumn(key_part);
-    };
-    
 };
-
