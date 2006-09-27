@@ -3,7 +3,7 @@
 The "session" table holds name/value information associated
 with an integer session key.
 
-The "user_icon" table holds a set of image icons for users.
+The "user_icon" table holds a set of image icons for users. 
 
 Use the SQL script load_sessions.sql to create the session table and load the data.
 
@@ -21,3 +21,9 @@ Test t4 inserts a new row of session data.
 Test t5 demonstrates the use of the ndb_select_all utility and shows the row created by t3.
 Test t6 deletes the row created in test t4.
 Test t7 repeats test t5; note the deleted row.
+
+There are no included tests for the icons table, but you should be able to view the JPEG images from a browser.   For example, the icon for <user_id=3, icon_id=1> will be visible at the URL
+  
+   /ndb1/icon/3/1
+
+
