@@ -5,14 +5,27 @@ with an integer session key.
 
 The "user_icon" table holds a set of image icons for users. 
 
-Use the SQL script load_sessions.sql to create the session table and load the data.
+
+LOADING THE DATA
+
+The SQL script load_sessions.sql will create the mod_ndb_test database, create the session table, and load the data.  To load the full example:
+
+  mysql < load_sessions.sql
+  gunzip load_icons.sql.gz
+  mysql mod_ndb_test < load_icons.sql
+
+
+COFIGURING THE SERVER
 
 The file ex1_httpd.conf should be included in an httpd.conf file,
 e.g. "Include /path/to/mod_ndb/example1/ex1_httpd.conf"
 
+
+RUNNING THE TEST SUITE
+
 The files beginning with "t" form a test suite.  These tests require the "curl" binary.
 
-First edit base.test, then run the tests individually.
+First edit base.test (in case your base URL is somoething other than http://localhost/), then run the tests individually.
 
 Test t1 selects all the data from session 3.
 Test t2 modifies a row of data in session 3.
@@ -22,8 +35,12 @@ Test t5 demonstrates the use of the ndb_select_all utility and shows the row cre
 Test t6 deletes the row created in test t4.
 Test t7 repeats test t5; note the deleted row.
 
-There are no included tests for the icons table, but you should be able to view the JPEG images from a browser.   For example, the icon for <user_id=3, icon_id=1> will be visible at the URL
+
+THE ICONS TABLE
+
+There are no included tests for the icons table, but you should be able to view the JPEG images from a browser.   For example, the icon for  { user_id=3, icon_id=1 } will be visible at the URL
   
    /ndb1/icon/3/1
+
 
 
