@@ -74,6 +74,7 @@ struct QueryItems {
 namespace Plan {
  PlanMethod SetupRead; PlanMethod SetupWrite; PlanMethod SetupDelete; // setups
  PlanMethod Read;      PlanMethod Write;      PlanMethod Delete;      // actions
+ PlanMethod SetupInsert;
 };  
 
 /*  Result formatters:
@@ -105,6 +106,10 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
 
 int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) { 
   return q->op->writeTuple();
+}
+
+int Plan::SetupInsert(request_rec *r, config::dir *dir, struct QueryItems *q) { 
+  return q->op->insertTuple();
 }
 
 int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) { 
@@ -232,6 +237,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       /* Fetch the update request from the client */
       response_code = read_http_post(r, & Q.form_data);
       if(response_code != OK) return response_code;
+      /* An INSERT has a primary key plan: */
+      if(! (r->args || dir->pathinfo_size)) {
+        Q.plan = PrimaryKey;
+        Q.op_setup = Plan::SetupInsert;
+      }
       break;
     case M_DELETE:
       if(! dir->allow_delete) return DECLINED;
@@ -498,8 +508,8 @@ int Results_raw(request_rec *r, config::dir *dir, struct QueryItems *q) {
     if(q->blob->readData(q->results->buff, size)) 
       log_debug(r->server,"Error reading blob data: %s",
                 q->blob->getNdbError().message);
+    q->results->sz = size;
   }
-  q->results->sz = size;
   return OK;
 }
 
