@@ -14,7 +14,7 @@ usage() {
   echo
   echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS"
   echo 
-  echo "Use --thread-safe if you have a thread-safe mysql client library and/or Apache 2."
+  echo "Use --thread-safe if you have a thread-safe mysql client library."
   echo
 }
 
@@ -53,7 +53,7 @@ done
 echo "Configuring with"
 echo "    apxs =         " $APXS 
 echo "    mysql_config = " $MYSQLCFG 
-echo "    libs = " $GET_LIBS
+echo "    libs         = " $GET_LIBS
 echo
 
 if [ ! -x "$APXS" ]
