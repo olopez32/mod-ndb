@@ -30,11 +30,21 @@ LD_LIBRARY_PATH in order to make this happen.
 3) If the server starts and attempts to initialize mod_ndb, there will be 
 one or more notices in the Apache server log file; either,
 
-[notice] Cannot connect to NDB Cluster.
+[notice] Cannot connect to NDB Cluster
 
 -- indicating failure, or a succesful notice like:
 
 [notice] Process 457 connected to NDB Cluster as node 5
+
+
+--- BUILD NOTES FOR VARIOUS PLATFORMS ---
+
+If you have a thread-safe mysql client library, configure mod_ndb with --thread-safe 
+
+On 64-bit linux you may need to build MySQL with
+  CFLAGS=-fPIC ./configure --with-ndbcluster --with-pic=yes
+to avoid a linker error 
+
 
 
 Enjoy!
