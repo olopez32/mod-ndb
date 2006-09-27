@@ -46,6 +46,13 @@ On 64-bit linux you may need to build MySQL with
 to avoid a linker error 
 
 
+--- FURTHER DOCUMENTATION ---
+
+The README file in example1/ tells you how to load a sample database and run a small suite of tests against it.
+
+The About-mod_ndb.html file provides a complete description of the module and how to configure and use it. 
+
+
 
 Enjoy!
 
