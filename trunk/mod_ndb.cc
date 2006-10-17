@@ -73,8 +73,9 @@ void mod_ndb_child_exit(server_rec *s, pool *p) {
           delete i->db;
       delete c->connection;
 
-      ap_log_error(APLOG_MARK, log::err, s, 
-                   "Node %d disconnected from cluster.", id);
+      if(c->connected)
+        ap_log_error(APLOG_MARK, log::err, s, 
+                     "Node %d disconnected from cluster.", id);
     }
   }
 
@@ -96,7 +97,8 @@ void connect_to_cluster(ndb_connection *c, server_rec *s, config::srv *srv) {
   if (c->connection->connect()) {
     /* If the cluster is down, there could be a flood of these,
     so write it as a warning to maybe prevent filling up a log file. */
-    log_err(s,"Cannot connect to NDB Cluster.");
+    log_err2(s,"Cannot connect to NDB Cluster. (MySQL/NDB %s)",
+             MYSQL_SERVER_VERSION);
     return;
   }
 

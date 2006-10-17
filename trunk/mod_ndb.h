@@ -30,6 +30,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* NDB headers */
 #include "NdbApi.hpp"
 
+/* MySQL Headers */
+#include "mysql_version.h"
+
 /* Compatibility between Apache 2 and Apache 1.3 */
 #ifdef STANDARD20_MODULE_STUFF
 typedef apr_table_t table;
