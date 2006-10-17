@@ -27,7 +27,7 @@ class JSON {
     static void put_value(result_buffer &, const NdbRecAttr &, request_rec *);
     inline static void put_member(result_buffer &rbuf, const NdbRecAttr &rec, 
                             request_rec *r) {
-      rbuf.out("%s%s", rec.getColumn()->getName(), JSON::is);
+      rbuf.out("\"%s\"%s", rec.getColumn()->getName(), JSON::is);
       JSON::put_value(rbuf, rec, r);
     }
 };
