@@ -46,8 +46,9 @@ typedef apr_pool_t  ap_pool;
 // #define CONFIG_DEBUG 1
 
 #define log_err(s,txt) ap_log_error(APLOG_MARK, log::err, s, txt);
-#define log_err2(s,txt,arg) ap_log_error(APLOG_MARK, log::err, s, txt,arg);
+#define log_err2(s,txt,arg) ap_log_error(APLOG_MARK, log::err, s,txt,arg);
 #define log_note(s,txt) ap_log_error(APLOG_MARK, log::warn, s, txt);
+#define log_note2(s,txt,arg) ap_log_error(APLOG_MARK, log::warn, s,txt,arg);
 
 #ifdef MOD_NDB_DEBUG 
 #define log_debug(s,txt,arg) ap_log_error(APLOG_MARK, log::debug, s, txt, arg);
