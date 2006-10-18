@@ -63,7 +63,6 @@ struct QueryItems {
   PlanMethod *op_action;
   PlanMethod *build_results;
   result_buffer *results;
-  bool results_are_visible;
 };  
 
 #include "index_object.h"
@@ -186,7 +185,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   result_buffer my_results;
   struct QueryItems Q = 
     { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0,0,0,
-      0, NoPlan, 0, Plan::SetupRead, Plan::Read, 0, &my_results, true };
+      0, NoPlan, 0, Plan::SetupRead, Plan::Read, 0, &my_results };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
   bool keep_tx_open = false;
@@ -233,7 +232,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       Q.op_action = Plan::Write;
       Q.ExecType = NdbTransaction::Commit;
       Q.form_data = 0;
-      Q.results_are_visible = false;
       /* Fetch the update request from the client */
       response_code = read_http_post(r, & Q.form_data);
       if(response_code != OK) return response_code;
@@ -248,7 +246,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       Q.op_setup = Plan::SetupDelete;
       Q.op_action = Plan::Delete;
       Q.ExecType = NdbTransaction::Commit;
-      Q.results_are_visible = false;
       break;
     default:
       return DECLINED;
@@ -414,14 +411,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       response_code = HTTP_GONE;
     }
     else 
-      if(Q.results_are_visible && Q.build_results)
+      if(Q.build_results)
         response_code = Q.build_results(r, dir, q);
   }
 
   // Set the content length and ETag headers
   if(response_code == OK        
      && q->results->buff          
-     && q->results_are_visible
      && (! r->main)   /* i.e. this is not a subrequest */
   ) {
     ap_set_content_length(r, q->results->sz);
@@ -440,7 +436,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   };
   
   if(keep_tx_open) {
-    log_debug(r->server,"keeping tx %llu open.", i->tx->getTransactionId());
+    log_debug(r->server,"keeping tx %qu open.", i->tx->getTransactionId());
   }
   else {
     i->tx->close();
@@ -530,7 +526,6 @@ int Results_ap_note(request_rec *r, config::dir *dir, struct QueryItems *q) {
     */
     result_formatter[dir->sub_results](r,dir,q); 
     ap_table_set(rr->notes,"NDB_results",q->results->buff);
-    q->results_are_visible = false;
   }
   else {
     for(int n = 0; n < dir->visible->size() ; n++) {
