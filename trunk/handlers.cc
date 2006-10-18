@@ -33,9 +33,15 @@ extern "C" {
     
     // Fetch configuration  
     dir = (config::dir *) ap_get_module_config(r->per_dir_config, &ndb_module);
-    if(! (dir->database && dir->table)) {
-      log_note(r->server,"Returning NOT_IMPLEMENTED because no db or table in config");
+    if(! dir->database) {
+      log_note2(r->server,"Returning NOT_IMPLEMENTED because no db is defined at %s",
+                r->uri);
       return NOT_IMPLEMENTED;
+    }
+    if(! dir->table) {
+      log_note2(r->server,"Returning NOT_IMPLEMENTED because no table is defined at %s",
+                r->uri);
+      return NOT_IMPLEMENTED;      
     }
     
     // Get Ndb 
