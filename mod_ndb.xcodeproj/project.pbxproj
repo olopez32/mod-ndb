@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		650143780AED89750074CA65 /* mod_ndb_ap20.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap20.cc; sourceTree = "<group>"; };
+		650143DC0AED95E80074CA65 /* mod_ndb_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mod_ndb_compat.h; sourceTree = "<group>"; };
 		651343640A91869800B041A0 /* read_http_post.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = read_http_post.cc; sourceTree = "<group>"; };
+		6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap13.cc; sourceTree = "<group>"; };
 		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
 		6528658E0A9B99D7000B9E9A /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
 		655A3FF20AC35A0300FC573F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb.cc; sourceTree = "<group>"; };
 		655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_Field.cc; sourceTree = "<group>"; };
 		655CEC200A8C4C4200DB8284 /* JSON.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cc; sourceTree = "<group>"; };
 		655CEC210A8C4C4C00DB8284 /* Query.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Query.cc; sourceTree = "<group>"; };
@@ -33,11 +35,13 @@
 			children = (
 				655A3FF20AC35A0300FC573F /* README */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
+				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
 				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				654FD39D0AC5B0A6000283CB /* index_object.h */,
 				6528658E0A9B99D7000B9E9A /* JSON.h */,
-				655CEC1C0A8C4BF600DB8284 /* mod_ndb.cc */,
+				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
+				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
 				656167AB0A8F78CB00A664A0 /* config.cc */,
 				65364C080AB25F5200C355E4 /* handlers.cc */,
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
