@@ -76,9 +76,9 @@ namespace config {
       AccessPlan implied_plan;
   };
   
-  void * init_dir(pool *, char *);
-  void * init_srv(pool *, server_rec *);
-  void * merge_dir(pool *, void *, void *);
+  void * init_dir(ap_pool *, char *);
+  void * init_srv(ap_pool *, server_rec *);
+  void * merge_dir(ap_pool *, void *, void *);
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
   const char * result_format(cmd_parms *, void *, char *, char *, char *);
