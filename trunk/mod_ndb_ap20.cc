@@ -15,7 +15,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
-
 #include "mod_ndb.h"
 
 
@@ -23,15 +22,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 struct mod_ndb_process process;
 int apache_is_threaded = 0;
 int ndb_force_send = 0;
+apr_status_t mod_ndb_child_exit(void *);
 
 
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
-// child_init, child_exit, and init_instance
 //
-void mod_ndb_child_init(server_rec *s, pool *p) {\
+apr_status_t mod_ndb_child_init(ap_pool *p, ap_pool *plog, 
+                                ap_pool *ptmp, server_rec *s) {
   /* Initialize the NDB API */
-  ndb_init(); =
+  ndb_init();
 
   /* Get server configuration */
   config::srv *srv = (config::srv *)
@@ -49,7 +49,7 @@ void mod_ndb_child_init(server_rec *s, pool *p) {\
   }
   else {
     ap_mpm_query(AP_MPMQ_MAX_THREADS, & process.n_threads);
-    ap_mpm_query(AP_MPMX_HARD_LIMIT_THREADS, & process.thread_limit);
+    ap_mpm_query(AP_MPMQ_HARD_LIMIT_THREADS, & process.thread_limit);
   }
 
   /* Allocate the global instance table */
@@ -64,14 +64,18 @@ void mod_ndb_child_init(server_rec *s, pool *p) {\
  } 
   
   /* Register the exit handler */
-  apr_pool_cleanup_register(p, s, mod_ndb_child_exit, mod_ndb_child_exit);
+  apr_pool_cleanup_register(p, (const void *) s, 
+                            mod_ndb_child_exit, mod_ndb_child_exit);
+                            
+  return APR_SUCCESS;
 }
 
 
 //
 // child_exit
 //
-apr_status_t mod_ndb_child_exit(server_rec *s, pool *p) {
+apr_status_t mod_ndb_child_exit(void *v) {
+  server_rec *s = (server_rec *) v;
   ndb_connection *c;
   ndb_instance *i;
   int n = 0, id = 0;
@@ -87,8 +91,7 @@ apr_status_t mod_ndb_child_exit(server_rec *s, pool *p) {
           delete i->db;
       delete c->connection;
 
-      ap_log_error(APLOG_MARK, log::err, s, 
-                   "Node %d disconnected from cluster.", id);
+      log_err2(s, "Node %d disconnected from cluster.", id);
     }
   }
 
@@ -123,7 +126,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s, config::srv *srv) {
   
   /* Succesfully connected */
   c->connected=1;
-  ap_log_error(APLOG_MARK, log::err, s, 
+  ap_log_error(APLOG_MARK, log::err, 0, s,
                "Process %d connected to NDB Cluster as node %d", 
                getpid(), c->connection->node_id());
 
@@ -169,8 +172,8 @@ ndb_instance *my_instance(request_rec *r) {
   }
   
   /* To do: implement the case with multiple connect strings */
-  ap_log_error(APLOG_MARK, log::warn, r->server,
-               "Unwritten code in mod_ndb.cc at line %d!", __LINE__);
+  my_ap_log_error(log::warn, r->server,
+                  "Unwritten code in mod_ndb.cc at line %d!", __LINE__);
   
   return (ndb_instance *) 0;
 }
@@ -282,33 +285,19 @@ namespace config {
 
 
 
+extern int ndb_handler(request_rec *);
+
 extern "C" {
 
  /************************
   *       Hooks          *
   ************************/
-  
-  void mod_ndb_register_hooks(void) {
+
+  void mod_ndb_register_hooks(ap_pool *p) {
+    ap_hook_handler(ndb_handler, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_post_config(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
   }
     
-    
- /************************
-  *       Handlers       *
-  ************************/
-
-  extern int ndb_handler(request_rec *);
-  extern int ndb_status_handler(request_rec *);
-  extern int ndb_config_check_handler(request_rec *);
-
-  static const handler_rec mod_ndb_handlers[] = { 
-      { "ndb-cluster", ndb_handler },
-      { "ndb-status", ndb_status_handler },
-      { "ndb-config-check", ndb_config_check_handler },
-      { NULL, NULL }
-  };
-
-
   /************************
    * Global Dispatch List *
    ************************/
@@ -320,7 +309,8 @@ extern "C" {
     config::init_srv,           /* create per-server config structures */
     NULL,                       /* merge  per-server config structures */
     config::commands,           /* table of config file commands       */
-    mod_ndb_handlers,           /* [#8] MIME-typed-dispatched handlers */
-    mod_ndb_register_hooks,     /* register_hooks
+    mod_ndb_register_hooks,     /* register_hooks                      */
   };
+
 };
+
