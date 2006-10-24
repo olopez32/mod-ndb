@@ -11,7 +11,9 @@ mod_ndb.so: $(OBJECTS)
 	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $< 
 
 
-mod_ndb.o: mod_ndb.cc mod_ndb.h mod_ndb_config.h
+mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h
+	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $(MOD_SOURCE)
+
 handlers.o: handlers.cc mod_ndb.h
 read_http_post.o: read_http_post.cc
 JSON.o: JSON.cc mod_ndb.h MySQL_Field.h JSON.h
@@ -24,7 +26,7 @@ install: mod_ndb.so
 	$(APXS) -i -n 'ndb' mod_ndb.so
 
 clean:
-	-rm -f *.so *.o 
+	-rm -f mod_ndb.so $(OBJECTS)
 
 stop:
 	sudo apachectl stop
