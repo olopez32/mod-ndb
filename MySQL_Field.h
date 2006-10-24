@@ -47,12 +47,12 @@ struct mvalue {
 typedef struct mvalue mvalue;
 
 namespace MySQL {
-  char *Time(pool *p, const NdbRecAttr &rec);
-  char *Date(pool *p, const NdbRecAttr &rec);
-  char *Datetime(pool *p, const NdbRecAttr &rec);
-  char *String(pool *p, const NdbRecAttr &rec, enum ndb_string_packing packing);  
-  char *result(pool *p,  const NdbRecAttr &rec);
-  mvalue value(pool *p, const NdbDictionary::Column *col, const char *val);
+  char *Time(ap_pool *p, const NdbRecAttr &rec);
+  char *Date(ap_pool *p, const NdbRecAttr &rec);
+  char *Datetime(ap_pool *p, const NdbRecAttr &rec);
+  char *String(ap_pool *p, const NdbRecAttr &rec, enum ndb_string_packing packing);  
+  char *result(ap_pool *p,  const NdbRecAttr &rec);
+  mvalue value(ap_pool *p, const NdbDictionary::Column *col, const char *val);
 };
 
 
