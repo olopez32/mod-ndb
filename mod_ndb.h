@@ -17,6 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+/* Undefine these macros to disable debugging output at compile-time.
+   Otherwise, set LogLevel to Debug for debugging output.
+*/
+
+#define MOD_NDB_DEBUG 1
+// #define CONFIG_DEBUG 1
 
 /* Apache headers */
 #include "httpd.h"
@@ -27,43 +33,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ap_config.h"
 #include "http_log.h"
 
+/* Apache 1.3 / Apache 2 compatibility */
+#include "mod_ndb_compat.h"
+
 /* NDB headers */
 #include "NdbApi.hpp"
 
 /* MySQL Headers */
 #include "mysql_version.h"
 
-/* Compatibility between Apache 2 and Apache 1.3 */
-#ifdef STANDARD20_MODULE_STUFF
-typedef apr_table_t table;
-typedef apr_pool_t  ap_pool;
-#else 
-#define AP_MODULE_DECLARE_DATA MODULE_VAR_EXPORT
-#endif
-
-/* Macros for writing to error and debug logs */
-#define MOD_NDB_DEBUG 1
-// #define CONFIG_DEBUG 1
-
-#define log_err(s,txt) ap_log_error(APLOG_MARK, log::err, s, txt);
-#define log_err2(s,txt,arg) ap_log_error(APLOG_MARK, log::err, s,txt,arg);
-#define log_note(s,txt) ap_log_error(APLOG_MARK, log::warn, s, txt);
-#define log_note2(s,txt,arg) ap_log_error(APLOG_MARK, log::warn, s,txt,arg);
-
-#ifdef MOD_NDB_DEBUG 
-#define log_debug(s,txt,arg) ap_log_error(APLOG_MARK, log::debug, s, txt, arg);
-#define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,s,txt,arg1,arg2);
-#else
-#define log_debug(s,txt,arg) 
-#define log_debug3(s,txt,arg1,arg2)
-#endif
-
 #ifdef CONFIG_DEBUG
 #define log_conf_debug(x,y,z) log_debug(x,y,z)
 #else
 #define log_conf_debug(x,y,z)
 #endif
-
 
 typedef const char *(*CMD_HAND_TYPE) ();
 
@@ -167,13 +150,14 @@ struct mod_ndb_connection {
 };
 typedef struct mod_ndb_connection ndb_connection;
 
-/* Each process maintains a count of connections (which should usually be equal
-   to 1).
-*/
 
+/* One mod_ndb_process per apache process.  The process includes  
+   the first mod_ndb_connection structure.
+*/
 struct mod_ndb_process {
-    unsigned short n_connections;
-    unsigned short n_threads;
+    int n_connections;
+    int n_threads;
+    int thread_limit;
     struct mod_ndb_connection conn;  // not a pointer 
 };    
 
