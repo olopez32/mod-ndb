@@ -67,14 +67,17 @@ fi
 
 
 ## Check the Apache version
+rm -f mod_ndb.cc
 HTTPD=`$APXS -q SBINDIR`/`$APXS -q TARGET`
 $HTTPD -v
 echo
 if $HTTPD -v | grep -q "Apache/1.3" 
  then 
-  echo "Apache Version OK"
+  ln mod_ndb_ap13.cc mod_ndb.cc
+  echo "Using Apache 1.3"
  else 
-  echo "Sorry, this version of mod_ndb works only with Apache 1.3.x" && exit
+  ln mod_ndb_ap20.cc mod_ndb.cc
+  echo "Using Apache 2"
 fi
 echo
  
