@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "my_global.h"
 #include "NdbApi.hpp"
 #include "httpd.h"
+#include "http_config.h"
+#include "mod_ndb_compat.h"
 #include "MySQL_Field.h"
 
 
@@ -49,7 +51,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    http://dev.mysql.com/doc/internals/en/myisam-column-attributes.html
 */
 
-char * MySQL::Time(pool *p, const NdbRecAttr &rec) {
+char * MySQL::Time(ap_pool *p, const NdbRecAttr &rec) {
   long tmp=(long) sint3korr(rec.aRef());
   int hour=(uint) (tmp/10000);
   int minute=(uint) (tmp/100 % 100);
@@ -57,7 +59,7 @@ char * MySQL::Time(pool *p, const NdbRecAttr &rec) {
   return ap_psprintf(p, "%02d:%02d:%02d", hour, minute, second);
 }
 
-char * MySQL::Date(pool *p, const NdbRecAttr &rec) {
+char * MySQL::Date(ap_pool *p, const NdbRecAttr &rec) {
   unsigned int tmp= ( unsigned int ) uint3korr(rec.aRef());
   int part;
   char xbuf[40];
@@ -80,7 +82,7 @@ char * MySQL::Date(pool *p, const NdbRecAttr &rec) {
   return buf;
 }
 
-char * MySQL::Datetime(pool *p, const NdbRecAttr &rec) {
+char * MySQL::Datetime(ap_pool *p, const NdbRecAttr &rec) {
   unsigned long long tmp=rec.u_64_value();
   long part1,part2,part3;
   part1=(long) (tmp / (long long) (1000000));
@@ -112,7 +114,7 @@ char * MySQL::Datetime(pool *p, const NdbRecAttr &rec) {
 }
 
 
-char * MySQL::result(pool *p, const NdbRecAttr &rec) {
+char * MySQL::result(ap_pool *p, const NdbRecAttr &rec) {
 
   switch(rec.getType()) {
     
@@ -191,7 +193,7 @@ char * MySQL::result(pool *p, const NdbRecAttr &rec) {
 // Correct behavior here depends on MySQL version 
 // and on Column.StorageType 
 
-char * MySQL::String(pool *p, const NdbRecAttr &rec, 
+char * MySQL::String(ap_pool *p, const NdbRecAttr &rec, 
                      enum ndb_string_packing packing) {
   unsigned sz;
   char *ref;
@@ -225,7 +227,7 @@ char * MySQL::String(pool *p, const NdbRecAttr &rec,
    take an ASCII value "val", and encode it properly for NDB so that it can be 
    stored in (or compared against) column "col"
 */
-mvalue MySQL::value(pool *p, const NdbDictionary::Column *col, const char *val) 
+mvalue MySQL::value(ap_pool *p, const NdbDictionary::Column *col, const char *val) 
 {
 
   mvalue m;
