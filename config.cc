@@ -22,7 +22,7 @@ namespace config {
   /* init_dir():
      initialize the per-directory configuration structure
   */
-  void *init_dir(pool *p, char *path) {
+  void *init_dir(ap_pool *p, char *path) {
     // Initialize everything to zero with ap_pcalloc()
     config::dir *dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
 
@@ -39,7 +39,7 @@ namespace config {
   
   /* init_srv() : simply ask apache for some zeroed memory 
   */
-  void *init_srv(pool *p, server_rec *s) {
+  void *init_srv(ap_pool *p, server_rec *s) {
     return ap_pcalloc(p, sizeof(config::srv));
   }
   
@@ -48,7 +48,7 @@ namespace config {
      d2 is the current directory config exactly as specified in the conf file;
      d1 is a parent directory config that it might inherit something from.
   */
-  void *merge_dir(pool *p, void *v1, void *v2) {
+  void *merge_dir(ap_pool *p, void *v1, void *v2) {
     config::dir *dir = (config::dir *) ap_palloc(p, sizeof(config::dir));
     config::dir *d1 = (config::dir *) v1;
     config::dir *d2 = (config::dir *) v2;
@@ -95,9 +95,9 @@ namespace config {
     dir->results = fmt_from_str(fmt);
     if(dir->results == no_results) {
       dir->results = json;
-      ap_log_error(APLOG_MARK, log::warn, cmd->server,
-                   "Invalid result format %s at %s. Using default JSON results.\n",
-                   fmt, cmd->path);
+      log_note3(cmd->server,
+                "Invalid result format %s at %s. Using default JSON results.\n",
+                fmt, cmd->path);
     }
     if(arg0 && dir->results == ap_note) 
       dir->sub_results = fmt_from_str(arg0);    
@@ -294,8 +294,7 @@ namespace config {
 
     if(col_exists) {
       if((cols[id].index_id != -1) && (index_id != -1))
-        ap_log_error(APLOG_MARK, log::err, cmd->server,
-            "Reassociating column %s with index %s", 
+        log_err3(cmd->server, "Reassociating column %s with index %s", 
             col_name, indexes[index_id].name);
     }    
     cols[id].index_id = index_id;
