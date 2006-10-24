@@ -18,11 +18,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mod_ndb.h"
 
 char * result_buffer::init(request_rec *r, size_t size) {
-  parent_pool = r->pool;
   alloc_sz = size;
   sz = 0;
-  pool = ap_make_sub_pool(parent_pool);
-  buff = (char *) ap_palloc(pool,alloc_sz);
+  buff = (char *) malloc(alloc_sz);
   if(!buff) log_err(r->server, "mod_ndb result_buffer::init() out of memory");
   return buff;
 }
@@ -31,9 +29,8 @@ char * result_buffer::init(request_rec *r, size_t size) {
 void result_buffer::out(const char *fmt, ... ) {
   va_list args;
   size_t old_size = sz;
-  char * old_buff;
-  ap_pool *new_pool;
   bool try_again;
+  char *old_buff;
 
   do {    
     try_again = false;
@@ -45,17 +42,18 @@ void result_buffer::out(const char *fmt, ... ) {
       try_again = true;
       // The write was truncated.  Get a bigger buffer and do it again
       alloc_sz *= 4;
-      old_buff = buff;
       sz = old_size;
-      new_pool = ap_make_sub_pool(parent_pool);
-      buff = (char *) ap_palloc(new_pool, alloc_sz);
+      old_buff = buff;
+      buff = (char *) realloc(old_buff, alloc_sz);
       if(! buff) {
-        ap_destroy_pool(new_pool);
+        free(old_buff);
         return;
-      }      
-      memcpy(buff, old_buff, sz); 
-      ap_destroy_pool(pool);  /* Free the space used by the old buffer */
-      pool = new_pool;
+      }
     }
   } while(try_again);
+}
+
+
+result_buffer::~result_buffer() {
+  if(buff) free(buff);
 }
