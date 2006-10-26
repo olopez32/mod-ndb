@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define MOD_NDB_DEBUG 1
 // #define CONFIG_DEBUG 1
 
+/* System headers */
+#include <assert.h>
+
 /* Apache headers */
 #include "httpd.h"
 #include "http_config.h"
