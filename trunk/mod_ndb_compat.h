@@ -30,6 +30,8 @@ typedef apr_table_t table;
 typedef apr_pool_t  ap_pool;
 typedef apr_array_header_t array_header;
 
+#define THIS_IS_APACHE2 1
+
 #define ap_pcalloc apr_pcalloc
 #define ap_make_array apr_array_make
 #define XtOffsetOf APR_OFFSETOF
