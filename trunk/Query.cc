@@ -44,9 +44,9 @@ class index_object;   // forward declaration
    which is used to pass essential data among the modules  
 */
 struct QueryItems {
+  Ndb *db;
   const NdbDictionary::Table *tab;
   const NdbDictionary::Index *idx;
-  NdbTransaction::ExecType ExecType;
   NdbOperation *op;
   NdbIndexScanOperation *scanop;
   NdbBlob *blob;
@@ -63,6 +63,7 @@ struct QueryItems {
   PlanMethod *op_action;
   PlanMethod *build_results;
   result_buffer *results;
+  mvalue *set_vals;
 };  
 
 #include "index_object.h"
@@ -72,8 +73,8 @@ struct QueryItems {
 */
 namespace Plan {
  PlanMethod SetupRead; PlanMethod SetupWrite; PlanMethod SetupDelete; // setups
- PlanMethod Read;      PlanMethod Write;      PlanMethod Delete;      // actions
  PlanMethod SetupInsert;
+ PlanMethod Read;      PlanMethod Write;      PlanMethod Delete;      // actions
 };  
 
 /*  Result formatters:
@@ -91,6 +92,7 @@ PlanMethod *result_formatter[5] = {
 
 /* Utility function declarations
 */
+int set_up_write(request_rec *, config::dir *, struct QueryItems *, bool);
 short key_col_bin_search(char *, config::dir *);
 
 
@@ -98,17 +100,17 @@ short key_col_bin_search(char *, config::dir *);
 */
 int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) { 
   return q->plan == OrderedIndexScan ? 
-    q->scanop->readTuples(NdbOperation::LM_Read, 
+    q->scanop->readTuples(NdbOperation::LM_CommittedRead, 
                           dir->indexes->item(q->active_index).flag) :
-    q->op->readTuple(NdbOperation::LM_Read);
-}
-
-int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) { 
-  return q->op->writeTuple();
+    q->op->readTuple(NdbOperation::LM_CommittedRead);
 }
 
 int Plan::SetupInsert(request_rec *r, config::dir *dir, struct QueryItems *q) { 
-  return q->op->insertTuple();
+  return set_up_write(r, dir, q, true);
+}
+
+int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) { 
+  return set_up_write(r, dir, q, false);
 }
 
 int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) { 
@@ -120,9 +122,8 @@ int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) {
 */
 inline bool mval_is_usable(request_rec *r, mvalue &mval) {
   if(mval.use_value == can_not_use) {
-    ap_log_error(APLOG_MARK, log::err, r->server,
-                 "Cannot use MySQL column %s in query -- data type "
-                 "not supported by mod_ndb",mval.u.err_col->getName());
+    log_err2(r->server, "Cannot use MySQL column %s in query -- data type "
+             "not supported by mod_ndb",mval.u.err_col->getName());
     return 0;
   }
   else return 1;
@@ -183,16 +184,19 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 {
   const NdbDictionary::Dictionary *dict;
   result_buffer my_results;
+  my_results.buff = 0;
   struct QueryItems Q = 
-    { 0, 0, NdbTransaction::NoCommit, 0,0,0,0,0,0,0,0,0,
-      0, NoPlan, 0, Plan::SetupRead, Plan::Read, 0, &my_results };
+    { i->db, 0, 0, 0,0,0,0,0,0,0,0,0,
+      0, NoPlan, 0, Plan::SetupRead, Plan::Read, 0, &my_results, 0 };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
   bool keep_tx_open = false;
   int response_code;
   mvalue mval;
   short col;
-  
+  int req_method = r->method_number;
+  const char *subrequest_data = 0;
+      
   // Initialize all three of these, but only one will be needed: 
   PK_index_object       PK_idxobj(q,r);
   Unique_index_object   UI_idxobj(q,r);
@@ -203,10 +207,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   dict = i->db->getDictionary();
   Q.tab = dict->getTable(dir->table);
   if(Q.tab == 0) { 
-    ap_log_error(APLOG_MARK, log::err, r->server,
-                 "mod_ndb could not find table %s (in database %s) "
-                 "in NDB Data Dictionary: %s",dir->table,dir->database,
-                 dict->getNdbError().message);
+    log_err4(r->server, "mod_ndb could not find table %s (in database %s) "
+             "in NDB Data Dictionary: %s",dir->table,dir->database,
+             dict->getNdbError().message);
     i->errors++;
     return NOT_FOUND; 
   }  
@@ -216,10 +219,28 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   Q.keys = (runtime_col *) ap_pcalloc(r->pool, 
            (dir->key_columns->size() * sizeof(runtime_col)));
 
+  /* Is this request an Apache sub-request? 
+  */
+  if(r->main) {
+    const char *note = ap_table_get(r->main->notes,"ndb_keep_tx_open");
+    if(note && *note == '1') {
+      keep_tx_open = true;
+      ap_table_unset(r->main->notes,"ndb_keep_tx_open");
+    }
+    note = ap_table_get(r->main->notes,"ndb_request_method");
+    if(note) {
+      if(!strcmp(note,"POST")) req_method = M_POST;
+      else if(!strcmp(note,"DELETE")) req_method = M_DELETE;
+      ap_table_unset(r->main->notes,"ndb_request_method");
+    }
+    subrequest_data = ap_table_get(r->main->notes,"ndb_request_data");
+    /* To do: copy ndb_request_data and unset the note. */
+  }
+  
   /* Many elements of the query plan depend on the HTTP operation --
      GET, POST, or DELETE.  Set these up here.
   */
-  switch(r->method_number) {
+  switch(req_method) {
     case M_GET:
       ap_discard_request_body(r);
       // Allocate an array of NdbRecAttrs for all desired columns 
@@ -230,11 +251,25 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
       Q.op_action = Plan::Write;
-      Q.ExecType = NdbTransaction::Commit;
       Q.form_data = 0;
-      /* Fetch the update request from the client */
-      response_code = read_http_post(r, & Q.form_data);
-      if(response_code != OK) return response_code;
+      Q.set_vals = (mvalue *) ap_pcalloc(r->pool, dir->updatable->size() * sizeof (mvalue));
+      if(r->main && subrequest_data) {
+        /* This is a subrequest. */
+        Q.form_data = ap_make_table(r->pool, 4);
+        register const char *c = subrequest_data;
+        char *key, *val;
+        while(*c && (val = ap_getword(r->pool, &c, '&'))) {
+          key = ap_getword(r->pool, (const char **) &val, '=');
+          ap_unescape_url(key);
+          ap_unescape_url(val);
+          ap_table_merge(Q.form_data, key, val);
+        }
+      }
+      else {
+        /* Fetch the update request from the client */
+        response_code = read_http_post(r, & Q.form_data);
+        if(response_code != OK) return response_code;
+      }
       /* An INSERT has a primary key plan: */
       if(! (r->args || dir->pathinfo_size)) {
         Q.plan = PrimaryKey;
@@ -245,20 +280,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       if(! dir->allow_delete) return DECLINED;
       Q.op_setup = Plan::SetupDelete;
       Q.op_action = Plan::Delete;
-      Q.ExecType = NdbTransaction::Commit;
       break;
     default:
       return DECLINED;
-  }
-
-  /* Is this request an Apache sub-request? 
-  */
-  if(r->main) {
-    const char *note = ap_table_get(r->main->notes,"ndb_keep_tx_open");
-    if(note && *note == '1') {
-      keep_tx_open = true;
-      ap_table_unset(r->main->notes,"ndb_keep_tx_open");
-    }
   }
 
 
@@ -334,9 +358,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   else {                                        /* Indexed Access */
     register const char * idxname = dir->indexes->item(Q.active_index).name;
     if((Q.idx = dict->getIndex(idxname, dir->table)) == 0) {
-     ap_log_error(APLOG_MARK, log::err, r->server, "mod_ndb: index %s "
-                   "does not exist (db: %s, table: %s)", idxname, 
-                   dir->database, dir->table);
+     log_err4(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
+              idxname, dir->database, dir->table);
       goto abort;
     }    
     if(Q.plan == UniqueIndexAccess) 
@@ -369,7 +392,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     log_debug3(r->server," ** Request column_alias: %s -- value: %s", 
                keycol.name, Q.keys[col].value);
     
-    mval = MySQL::value(r->pool, ndb_Column, Q.keys[col].value);
+    MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
     if(mval_is_usable(r, mval)) {
       if(q->idxobj->set_key_part(keycol, mval)) {
         log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
@@ -391,7 +414,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       ndb_Column = q->tab->getColumn(keycol.name);
       log_debug3(r->server," ** Filter : %s -- value: %s", 
                  keycol.name, filter_col->value);
-      mval = MySQL::value(r->pool, ndb_Column, filter_col->value);
+      MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
       /* filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
                  keycol.name, (&mval.u.val_char) );   FIXME */
     }                    
@@ -403,7 +426,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   
   if(response_code == OK) {
     /* Execute the transaction.  tx->execute() returns 0 on success. */
-    if(i->tx->execute(Q.ExecType, NdbTransaction::AbortOnError, 
+    /* Do not commit if you will be reading a blob. */
+    NdbTransaction::ExecType commit_tx = 
+      (dir->results == raw ? NdbTransaction::NoCommit : NdbTransaction::Commit);
+    
+    if(i->tx->execute(commit_tx, NdbTransaction::AbortOnError, 
                       i->conn->ndb_force_send))
     {        
       log_debug(r->server,"Returning 410 because tx->execute failed: %s",
@@ -415,25 +442,29 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         response_code = Q.build_results(r, dir, q);
   }
 
-  // Set the content length and ETag headers
-  if(response_code == OK        
-     && q->results->buff          
-     && (! r->main)   /* i.e. this is not a subrequest */
-  ) {
-    ap_set_content_length(r, q->results->sz);
-    if(dir->use_etags) {
+  // If this is not a subrequest, set some HTTP response headers
+  if(! r->main) {   
+    // Set content-length
+    if(q->results->buff)
+      ap_set_content_length(r, q->results->sz);
+    else 
+      ap_set_content_length(r, 0);
+    
+    // Set ETag
+    if(dir->use_etags && q->results->buff) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
                                  q->results->buff, q->results->sz);
       ap_table_setn(r->headers_out, "ETag",  etag);
-      // If the ETag matches the client's cache the page should not be returned 
+      // If the ETag matches the client's cache, the page should not be returned 
       response_code = ap_meets_conditions(r);
     }
     
-    if(response_code == OK) {   /* Send the page. */
-      ap_send_http_header(r); 
-      ap_rwrite(q->results->buff, q->results->sz, r);
-    }
-  };
+    ap_send_http_header(r);
+  }
+
+  // Send the page
+  if(response_code == OK && q->results->buff) 
+    ap_rwrite(q->results->buff, q->results->sz, r);
   
   if(keep_tx_open) {
     log_debug(r->server,"keeping tx %qu open.", i->tx->getTransactionId());
@@ -561,38 +592,73 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
 }
 
 
-int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  char **column_list;
+int set_up_write(request_rec *r, config::dir *dir, 
+                 struct QueryItems *q, bool is_insert) 
+{ 
   const NdbDictionary::Column *col;
-  mvalue mval;
+  bool is_interpreted = 0;
+  char **column_list = dir->updatable->items();
   const char *key, *val;
-  
-  column_list = dir->updatable->items();
-  // iterate over the updatable columns, finding them in the posted form data
+
+  // iterate over the updatable columns and set up mvalues for them
   for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
     val = ap_table_get(q->form_data, key);
     if(val) {   
       col = q->tab->getColumn(key);
       if(col) {
-        int eqr;
-        // Encode the HTTP ASCII data into proper MySQL data types
-        mval = MySQL::value(r->pool, col, val);
-        if(mval_is_usable(r, mval)) {
-          log_debug3(r->server,"Updating column %s = %s",key, val);
-          switch(mval.use_value) {
-            case use_char:
-              eqr = q->op->setValue(col->getColumnNo(), mval.u.val_const_char );
-              break;
-            default:
-              eqr = q->op->setValue(col->getColumnNo(), (const char *) (&mval.u.val_char));
-          }
+        mvalue &mval = q->set_vals[n];
+        MySQL::value(mval, r->pool, col, val);
+        if(mval.use_value == use_interpreted) {
+          is_interpreted = 1;
+          log_debug3(r->server,"Interpreted update; column %s = [%s]", key,val);
         }
-        else eqr = -1;
-        if(eqr) log_debug(r->server,"setValue failed: %s", q->op->getNdbError().message);
+        else log_debug3(r->server,"Updating column %s = %s", key,val);
       }
       else log_err2(r->server,"AllowUpdate list includes invalid column name %s", key);
-    } // if val()
+    }
+  }
+  if(is_insert) return q->op->insertTuple();
+  return is_interpreted ? q->op->interpretedUpdateTuple() : q->op->writeTuple();
+}
+
+
+int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
+  const NdbDictionary::Column *col;
+  
+  // iterate over the mvalues that were set up in Plan::SetupWrite
+  for(int n = 0; n < dir->updatable->size() ; n++) {
+    mvalue &mval = q->set_vals[n];
+    col = mval.ndb_column;
+    if(col) {
+      int eqr;
+      if(mval_is_usable(r, mval)) {
+        switch(mval.use_value) {
+          case use_char:
+            eqr = q->op->setValue(col->getColumnNo(), mval.u.val_const_char );
+            break;
+          case use_autoinc:
+            /* to do: tunable prefetch */
+            int next_value = q->db->getAutoIncrementValue(q->tab, 10);
+            eqr = q->op->setValue(col->getColumnNo(), next_value);
+            break;
+          case use_null:
+            eqr = q->op->setValue(col->getColumnNo(), 0);
+            break;
+          case use_interpreted: 
+            if(mval.interpreted == is_increment) 
+              eqr = q->op->incValue(col->getColumnNo(), (Uint32) 1);
+            else if(mval.interpreted == is_decrement) 
+              eqr = q->op->subValue(col->getColumnNo(), (Uint32) 1);
+            else assert(0);
+            break;
+          default:
+            eqr = q->op->setValue(col->getColumnNo(), (const char *) (&mval.u.val_char));
+        }
+      } /* if(mval_is_usable) */
+      else eqr = -1;
+      if(eqr) log_debug(r->server,"setValue failed: %s", q->op->getNdbError().message);
+    }
   } // for()
   return OK;
 }
