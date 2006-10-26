@@ -17,9 +17,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
+#ifdef THIS_IS_APACHE2
+#define CheckHandler(r,h) if(strcmp(r->handler,h)) return DECLINED;
+#else
+#define CheckHandler(r,h) ;
+#endif
+
 // Globals:
 extern struct mod_ndb_process process;      /* from mod_ndb.cc */
-
 
 // 
 // Content handlers
@@ -31,6 +36,9 @@ extern "C" {
     ndb_instance *i;
     register int response;
     
+    // Apache 2 Handler name check
+    CheckHandler(r,"ndb-cluster");
+
     // Fetch configuration  
     dir = (config::dir *) ap_get_module_config(r->per_dir_config, &ndb_module);
     if(! dir->database) {
@@ -73,6 +81,9 @@ extern "C" {
     table *param_tab;
     config::key_col *columns;
     
+    // Apache 2 Handler name check
+    CheckHandler(r,"ndb-config-check");
+
     ndb_instance *i = my_instance(r);
     
     config::dir *dir = (config::dir *)
@@ -161,6 +172,9 @@ extern "C" {
 
 
   int ndb_status_handler(request_rec *r) {
+    
+    // Apache 2 Handler name check
+    CheckHandler(r,"ndb-status");
     
     config::srv *srv = 
     (config::srv *) ap_get_module_config(r->server->module_config, &ndb_module);
