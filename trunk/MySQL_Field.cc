@@ -227,91 +227,140 @@ char * MySQL::String(ap_pool *p, const NdbRecAttr &rec,
    take an ASCII value "val", and encode it properly for NDB so that it can be 
    stored in (or compared against) column "col"
 */
-mvalue MySQL::value(ap_pool *p, const NdbDictionary::Column *col, const char *val) 
+void MySQL::value(mvalue &m, ap_pool *p, 
+                  const NdbDictionary::Column *col, const char *val) 
 {
-
-  mvalue m;
   const unsigned short s_lo = 255;
   const unsigned short s_hi = 65535 ^ 255; 
   unsigned char len;
   unsigned short s_len;
   unsigned int l_len;
   char *s, *q;
+  bool is_char_col = 
+    ( (col->getType() == NdbDictionary::Column::Varchar) ||
+      (col->getType() == NdbDictionary::Column::Longvarchar) ||
+      (col->getType() == NdbDictionary::Column::Char));
+
+  m.ndb_column = col;
   
-  // You can't do anything with a null pointer
-  if(! val) {
+  /* String columns */
+  if(is_char_col) {
+  
+    if(! val) { /* null pointer */
+      m.use_value = use_null;
+      m.u.val_64 = 0;
+      return;
+    }
+  
+    switch(col->getType()) {
+      /* "If the attribute is of variable size, its value must start with
+      1 or 2 little-endian length bytes"   [ i.e. LSB first ]*/
+      
+      case NdbDictionary::Column::Varchar:      
+        m.len = len = (unsigned char) strlen(val);
+        if(len > col->getLength()) len = (unsigned char) col->getLength();
+          m.u.val_char = (char *) ap_palloc(p, len + 2);
+        * m.u.val_char = len;
+        ap_cpystrn(m.u.val_char+1, val, len+1);
+        m.use_value = use_char; 
+        return;
+        
+      case NdbDictionary::Column::Longvarchar:
+        m.len = s_len = strlen(val);
+        if(s_len > col->getLength()) s_len = col->getLength();
+          m.u.val_char = (char *) ap_palloc(p, len + 3);
+        * m.u.val_char     = (char) (s_len & s_lo);
+        * (m.u.val_char+1) = (char) (s_len & s_hi);
+        ap_cpystrn(m.u.val_char+2, val, s_len+1);
+        m.use_value = use_char; 
+        return;
+        
+      case NdbDictionary::Column::Char:
+        // Copy the value into the buffer, then right-pad with spaces
+        m.len = l_len = strlen(val);
+        if(l_len > col->getLength()) l_len = col->getLength();
+          m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
+        strcpy(m.u.val_char, val);
+        s = m.u.val_char + l_len;
+        q = m.u.val_char + col->getLength();
+        while (s < q) *s++ = ' ';
+          *q = 0;      
+        m.use_value = use_char;
+        return;
+        
+      default:
+        assert(0);
+    }
+  }
+
+/* Numeric columns */
+  
+  if(! val) {  // You can't do anything with a null pointer
     m.use_value = can_not_use;
     m.u.err_col = col;
-    return m;
+    return;
+  }
+
+  /* Dynamic values @++. @--. @null, @time, @autoinc */
+  if(*val == '@') {
+    if(!strcmp(val,"@null")) {
+      m.use_value = use_null;
+      m.u.val_64 = 0;
+      return;
+    }
+    if(!strcmp(val,"@++")) {
+      m.use_value = use_interpreted;
+      m.interpreted = is_increment;
+      return;
+    }
+    if(!strcmp(val,"@--")) {
+      m.use_value = use_interpreted;
+      m.interpreted = is_decrement;
+      return;
+    }
+    if(!strcmp(val,"@time")) {
+      m.use_value = use_unsigned;
+      time(& m.u.val_time);
+      return;
+    }
+    if(!strcmp(val,"@autoinc")) {
+      m.use_value = use_autoinc;
+      return;
+    }
   }
   
   switch(col->getType()) {
     case NdbDictionary::Column::Int:
       m.use_value = use_signed;
       m.u.val_signed = atoi(val);
-      return m;
-          
-  /* "If the attribute is of variable size, its value must start with
-      1 or 2 little-endian length bytes"   [ i.e. LSB first ]*/
-
-    case NdbDictionary::Column::Varchar:      
-      m.len = len = (unsigned char) strlen(val);
-      if(len > col->getLength()) len = (unsigned char) col->getLength();
-      m.u.val_char = (char *) ap_palloc(p, len + 2);
-      * m.u.val_char = len;
-      ap_cpystrn(m.u.val_char+1, val, len+1);
-      m.use_value = use_char; 
-      return m;
-
-    case NdbDictionary::Column::Longvarchar:
-      m.len = s_len = strlen(val);
-      if(s_len > col->getLength()) s_len = col->getLength();
-      m.u.val_char = (char *) ap_palloc(p, len + 3);
-      * m.u.val_char     = (char) (s_len & s_lo);
-      * (m.u.val_char+1) = (char) (s_len & s_hi);
-      ap_cpystrn(m.u.val_char+2, val, s_len+1);
-      m.use_value = use_char; 
-      return m;
-      
-    case NdbDictionary::Column::Char:
-      // Copy the value into the buffer, then right-pad with spaces
-      m.len = l_len = strlen(val);
-      if(l_len > col->getLength()) l_len = col->getLength();
-      m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
-      strcpy(m.u.val_char, val);
-      s = m.u.val_char + l_len;
-      q = m.u.val_char + col->getLength();
-      while (s < q) *s++ = ' ';
-      *q = 0;      
-      m.use_value = use_char;
-      return m;
+      return;
       
     case NdbDictionary::Column::Unsigned:
     case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Timestamp:
       m.use_value = use_unsigned;
-      m.u.val_signed = strtoul(val,0,0);
-      return m;
+      m.u.val_unsigned = strtoul(val,0,0);
+      return;
       
     case NdbDictionary::Column::Float:
       m.use_value = use_float;
       m.u.val_float = atof(val);
-      return m;
+      return;
       
     case NdbDictionary::Column::Double:
       m.use_value = use_double;
       m.u.val_double = strtod(val,0);
-      return m;
+      return;
       
     case NdbDictionary::Column::Bigint:
       m.use_value = use_64;
       m.u.val_64 = strtoll(val,0,0);
-      return m;
+      return;
 
     case NdbDictionary::Column::Bigunsigned:
       m.use_value = use_unsigned_64;
       m.u.val_unsigned_64 = strtoull(val,0,0);
-      return m;
+      return;
       
     /* not implemented */
 
@@ -337,6 +386,6 @@ mvalue MySQL::value(ap_pool *p, const NdbDictionary::Column *col, const char *va
     default:
       m.use_value = can_not_use;
       m.u.err_col = col;
-      return m;
+      return;
   }
 }
