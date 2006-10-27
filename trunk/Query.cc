@@ -408,15 +408,16 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     NdbScanFilter filter(Q.op);
     filter.begin(NdbScanFilter::AND);
     for(int n = 0 ; n < Q.n_filters ; n++) {
-      runtime_col * filter_col = & Q.keys[Q.filter_list[n]];  // ??
-      config::key_col &keycol = dir->key_columns->item(n);
+      int m = Q.filter_list[n];
+      runtime_col *filter_col = & Q.keys[m];
+      config::key_col &keycol = dir->key_columns->item(m);
       
       ndb_Column = q->tab->getColumn(keycol.name);
       log_debug3(r->server," ** Filter : %s -- value: %s", 
                  keycol.name, filter_col->value);
       MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
-      /* filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
-                 keycol.name, (&mval.u.val_char) );   FIXME */
+      filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
+                 ndb_Column->getColumnNo(), (&mval.u.val_char) ); 
     }                    
     filter.end();
   }
@@ -443,7 +444,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
 
   // If this is not a subrequest, set some HTTP response headers
-  if(! r->main) {   
+  if(response_code == OK && (! r->main)) {   
     // Set content-length
     if(q->results->buff)
       ap_set_content_length(r, q->results->sz);
@@ -451,7 +452,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       ap_set_content_length(r, 0);
     
     // Set ETag
-    if(dir->use_etags && q->results->buff) {
+    if(response_code == OK && dir->use_etags && q->results->buff) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
                                  q->results->buff, q->results->sz);
       ap_table_setn(r->headers_out, "ETag",  etag);
