@@ -1,6 +1,7 @@
 #!/bin/sh
 
 APXS=`which apxs`
+APXS1=`which apxs`
 MYSQLCFG=`which mysql_config`
 GET_LIBS='--libs'
 
@@ -11,8 +12,11 @@ usage() {
   echo "plus an installed copy of Apache including apxs. "
   echo 
   echo "Usage: $0  --mysql=/path/to/mysql_config --apxs=/path/to/apxs [--thread-safe]"
+  echo 
+  echo "Building an Apache 2 module requires apxs from *both* apache 1.3 and 2:"
+  echo "  $0 --apxs=/apache/2/apxs --apxs1=/apache/1.3/apxs "
   echo
-  echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS"
+  echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS --apxs1=$APXS"
   echo 
   echo "Use --thread-safe if you have a thread-safe mysql client library."
   echo
@@ -40,6 +44,9 @@ do
     --apxs)
       APXS=$conf_arg 
       ;;
+    --apxs1)
+      APXS1=$conf_arg
+      ;;
     --thread-safe)
       GET_LIBS='--libs_r'
       ;;
@@ -47,11 +54,30 @@ do
       usage
       exit
       ;;
+    *)
+      echo "Unrecognized option " $conf_option
+      exit
+      ;;
   esac
 done
 
+## Check the Apache version
+HTTPD=`$APXS -q SBINDIR`/`$APXS -q TARGET`
+$HTTPD -v
+if $HTTPD -v | grep -q "Apache/1.3" 
+ then 
+  MOD_SOURCE=mod_ndb_ap13.cc
+  echo "Using Apache 1.3"
+  APXS1=$APXS
+ else 
+  MOD_SOURCE=mod_ndb_ap20.cc
+  echo "Using Apache 2"
+fi
+echo
+
 echo "Configuring with"
 echo "    apxs =         " $APXS 
+echo "    apxs 1.3 =     " $APXS1
 echo "    mysql_config = " $MYSQLCFG 
 echo "    libs         = " $GET_LIBS
 echo
@@ -60,25 +86,14 @@ if [ ! -x "$APXS" ]
  then 
   echo "Error: apxs path is not valid."  && usage && exit 1
 fi
+if [ ! -x "$APXS1" ]
+ then
+   echo "Error: apxs1 path is not valid.  (Apache 1.3 apxs is also required)"
+fi
 if [ ! -x "$MYSQLCFG" ] 
  then
   echo "Error: mysql_config path is not valid." && usage && exit 1
 fi
-
-
-## Check the Apache version
-HTTPD=`$APXS -q SBINDIR`/`$APXS -q TARGET`
-$HTTPD -v
-echo
-if $HTTPD -v | grep -q "Apache/1.3" 
- then 
-  MOD_SOURCE=mod_ndb_ap13.cc
-  echo "Using Apache 1.3"
- else 
-  MOD_SOURCE=mod_ndb_ap20.cc
-  echo "Using Apache 2"
-fi
-echo
  
 MY_INC=`$MYSQLCFG --include`
 MY_LIBS=`$MYSQLCFG $GET_LIBS`
@@ -99,12 +114,11 @@ echo MY_LIBS=$MY_LIBS
 echo 
 echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR`   
 echo APXS_SYSCONFDIR=`$APXS -q SYSCONFDIR`
-echo APXS_CC=`$APXS -q CC`   
-echo APXS_LD_SHLIB=`$APXS -q LD_SHLIB`
-echo APXS_CFLAGS=`$APXS -q CFLAGS`   
-echo APXS_CFLAGS_SHLIB=`$APXS -q CFLAGS_SHLIB`   
-echo APXS_LDFLAGS_SHLIB=`$APXS -q LDFLAGS_SHLIB`
-echo APXS_LIBS_SHLIB=`$APXS -q LIBS_SHLIB`
+echo APXS_LD_SHLIB=`$APXS1 -q LD_SHLIB`
+echo APXS_CFLAGS=`$APXS1 -q CFLAGS`   
+echo APXS_CFLAGS_SHLIB=`$APXS1 -q CFLAGS_SHLIB`   
+echo APXS_LDFLAGS_SHLIB=`$APXS1 -q LDFLAGS_SHLIB`
+echo APXS_LIBS_SHLIB=`$APXS1 -q LIBS_SHLIB`
 
 ) > Makefile
 
