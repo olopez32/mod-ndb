@@ -120,22 +120,20 @@ void connect_to_cluster(ndb_connection *c, server_rec *s, config::srv *srv) {
 }
 
 
-void init_instance(ndb_connection *c, ndb_instance *i) {
+Ndb *init_instance(ndb_connection *c, ndb_instance *i) {
   
   /* The C++ runtime allocates an Ndb object here */
   i->db = new Ndb(c->connection);
   
-  /* init(n) where n is max no. of active transactions; default is 4 */
-  i->db->init();
+  if(i->db) {
+    /* init(n) where n is max no. of active transactions; default is 4 */
+    i->db->init();
+  }
   
   /* i->conn is a pointer back to the parent connection */
   i->conn = c;
   
-  /* Instances are allocated with ap_pcalloc(), so all counters 
-     have been initialized to zero.
-  */
-  
-  return;
+  return i->db;
 }
 
 
