@@ -98,7 +98,7 @@ short key_col_bin_search(char *, config::dir *);
 
 /* Some very simple modules are fully defined here:
 */
-int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) { 
+int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
   return q->plan == OrderedIndexScan ? 
     q->scanop->readTuples(NdbOperation::LM_CommittedRead, 
                           dir->indexes->item(q->active_index).flag) :
@@ -382,6 +382,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
 
 
+  // Debug:
+  if(q->scanop) {
+    if(q->scanop->getSorted()) log_debug(r->server, "scan is sorted %s", "asc");
+    if(q->scanop->getDescending()) log_debug(r->server, "scan is sorted %s", "desc");
+  }
+
   // Traverse the index parts and build the query
   col = dir->indexes->item(Q.active_index).first_col;
 
@@ -452,7 +458,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       ap_set_content_length(r, 0);
     
     // Set ETag
-    if(response_code == OK && dir->use_etags && q->results->buff) {
+    if(dir->use_etags && q->results->buff) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
                                  q->results->buff, q->results->sz);
       ap_table_setn(r->headers_out, "ETag",  etag);
@@ -461,11 +467,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     }
     
     ap_send_http_header(r);
-  }
 
-  // Send the page
-  if(response_code == OK && q->results->buff) 
-    ap_rwrite(q->results->buff, q->results->sz, r);
+    /* Send the page  (but recheck the response code,
+       after ap_meets_conditions) */   
+    if(response_code == OK && q->results->buff)
+      ap_rwrite(q->results->buff, q->results->sz, r);
+  }
   
   if(keep_tx_open) {
     log_debug(r->server,"keeping tx %qu open.", i->tx->getTransactionId());
