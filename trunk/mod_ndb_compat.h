@@ -23,8 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <unistd.h>
 #include "ap_compat.h"          
-#include "ap_mpm.h"
 #include "apr_strings.h"
+
+extern "C" {
+#include "ap_mpm.h"
+}
 
 typedef apr_table_t table;
 typedef apr_pool_t  ap_pool;
