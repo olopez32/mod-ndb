@@ -195,8 +195,8 @@ char * MySQL::result(ap_pool *p, const NdbRecAttr &rec) {
 
 char * MySQL::String(ap_pool *p, const NdbRecAttr &rec, 
                      enum ndb_string_packing packing) {
-  unsigned sz;
-  char *ref;
+  unsigned sz = 0;
+  char *ref = 0;
 
 
   switch(packing) {
@@ -212,6 +212,8 @@ char * MySQL::String(ap_pool *p, const NdbRecAttr &rec,
       sz = uint2korr(rec.aRef());
       ref = rec.aRef() + 2;
       break;
+    default:
+      assert(0);
    }
   
   for (int i=sz-1; i >= 0; i--) {
@@ -268,7 +270,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       case NdbDictionary::Column::Longvarchar:
         m.len = s_len = strlen(val);
         if(s_len > col->getLength()) s_len = col->getLength();
-          m.u.val_char = (char *) ap_palloc(p, len + 3);
+          m.u.val_char = (char *) ap_palloc(p, s_len + 3);
         * m.u.val_char     = (char) (s_len & s_lo);
         * (m.u.val_char+1) = (char) (s_len & s_hi);
         ap_cpystrn(m.u.val_char+2, val, s_len+1);
