@@ -315,8 +315,15 @@ extern "C" {
   *       Hooks          *
   ************************/
 
+  int mod_ndb_config_hook(apr_pool_t* p, apr_pool_t* p1, apr_pool_t* p2,
+                          server_rec* s) {
+    ap_add_version_component(p, "NDB/" MYSQL_SERVER_VERSION) ;
+    return OK ;
+  }  
+
   void mod_ndb_register_hooks(ap_pool *p) {
     ap_hook_handler(ndb_handler, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_post_config(mod_ndb_config_hook, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
   }
     
