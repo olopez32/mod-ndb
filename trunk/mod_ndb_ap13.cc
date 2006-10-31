@@ -41,7 +41,7 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
     ap_get_module_config(s->module_config, &ndb_module);
 
   /* Connect to the cluster */
-  connect_to_cluster(& process.conn, s, srv);
+  connect_to_cluster(& process.conn, s, srv, p);
 
   /* Initialize the process structure */
   process.n_connections = 1;
@@ -88,12 +88,17 @@ void mod_ndb_child_exit(server_rec *s, pool *p) {
    but it might also be called from my_instance(), if different vhosts
    connect to different clusters, or if initialization failed the first time.
 */
-void connect_to_cluster(ndb_connection *c, server_rec *s, config::srv *srv) {
+void connect_to_cluster(ndb_connection *c, server_rec *s, 
+                        config::srv *srv, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb_cluster_connection here */
   c->connection = new Ndb_cluster_connection((srv->connect_string));
 
-  // To do: arguments to connnect() ???
+  /* Set name that appears in the cluster log file */
+  c->connection->set_name(ap_psprintf(p, "Apache mod_ndb %s:%d",
+                                      s->server_hostname, getpid()));
+    
+  // To do: arguments to connect() ???
   if (c->connection->connect()) {
     /* If the cluster is down, there could be a flood of these,
     so write it as a warning to maybe prevent filling up a log file. */
@@ -147,7 +152,7 @@ ndb_instance *my_instance(request_rec *r) {
   /* This is the common case: */
   if(process.n_connections == 1) {
     if(c->connected == 0) {
-      connect_to_cluster(c, r->server, srv);
+      connect_to_cluster(c, r->server, srv, r->pool);
       if(! c->connected) return (ndb_instance *) 0;
     }
     return c->instances[0];

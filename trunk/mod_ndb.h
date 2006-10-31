@@ -166,7 +166,7 @@ struct mod_ndb_process {
 
 
 ndb_instance *my_instance(request_rec *r);
-void connect_to_cluster(ndb_connection *c, server_rec *s, config::srv *srv);
+void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, ap_pool *);
 Ndb * init_instance(ndb_connection *, ndb_instance *);
 int print_all_params(void *v, const char *key, const char *val);
 table *http_param_table(request_rec *r, const char *c);
