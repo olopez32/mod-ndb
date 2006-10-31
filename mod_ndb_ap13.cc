@@ -274,6 +274,10 @@ namespace config {
 
 extern "C" {
 
+  void mod_ndb_config_hook(server_rec* s, ap_pool * p) {
+    ap_add_version_component("NDB/" MYSQL_SERVER_VERSION) ;
+  }  
+  
   /* HANDLER LIST */
   
   /* The handlers are in handlers.cc: */
@@ -295,7 +299,7 @@ extern "C" {
 
   module MODULE_VAR_EXPORT ndb_module = {
     STANDARD_MODULE_STUFF, 
-    NULL,                       /* module initializer                  */
+    mod_ndb_config_hook,        /* module initializer                  */
     config::init_dir,           /* create per-dir    config structures */
     config::merge_dir,          /* merge  per-dir    config structures */
     config::init_srv,           /* create per-server config structures */
