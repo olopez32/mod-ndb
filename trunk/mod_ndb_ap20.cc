@@ -67,9 +67,10 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
     else n_fail++;
   }
 
-  ap_log_error(APLOG_MARK, log::err, 0, s, "Node %d: Initializing "
-               "NDB thread instances (%d succes%s, %d failure%s).", 
+  ap_log_error(APLOG_MARK, log::err, 0, s, "Node %d initialized %d "
+               "NDB thread instance%s (%d success%s, %d failure%s).", 
                process.conn.connection->node_id(),
+               process.n_threads, (process.n_threads == 1 ? "" :  "s"),
                n_ok, (n_ok == 1 ? "": "es") ,
                n_fail, (n_fail == 1 ? "" :  "s")); 
   
