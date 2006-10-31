@@ -444,10 +444,12 @@ namespace config {
     /* Sometimes a column name is not actually a column, but a flag */
     if(index_rec->type == 'O' && *col == '[') {
       if(!strcmp(col,"[ASC]")) {
+        log_conf_debug(cmd->server,"setting flag: %s",col);
         index_rec->flag = NdbScanOperation::SF_OrderBy;
         return 0;
       }
       else if(!strcmp(col,"[DESC]")) {
+        log_conf_debug(cmd->server,"setting flag: %s",col);
         index_rec->flag = NdbScanOperation::SF_Descending;
         return 0;
       }
