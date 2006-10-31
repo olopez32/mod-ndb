@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 #include "mod_ndb.h"
+#include "revision.h"
 
 //
 // Forward declarations for this file only: */
@@ -95,7 +96,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   c->connection = new Ndb_cluster_connection((srv->connect_string));
 
   /* Set name that appears in the cluster log file */
-  c->connection->set_name(ap_psprintf(p, "Apache mod_ndb %s:%d",
+  c->connection->set_name(ap_psprintf(p, "Apache mod_ndb %s/%d",
                                       s->server_hostname, getpid()));
     
   // To do: arguments to connect() ???
@@ -115,8 +116,8 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   /* Succesfully connected */
   c->connected=1;
   ap_log_error(APLOG_MARK, log::err, s, 
-               "Process %d connected to NDB Cluster as node %d", 
-               getpid(), c->connection->node_id());
+               "PID %d: mod_ndb (r%d) connected to NDB Cluster as node %d", 
+               getpid(), REVISION, c->connection->node_id());
 
   /* In multi-threaded apache 2 this might be configurable */
   c->ndb_force_send = ndb_force_send;
