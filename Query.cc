@@ -639,7 +639,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
     mvalue &mval = q->set_vals[n];
     col = mval.ndb_column;
     if(col) {
-      int eqr;
+      int eqr, next_value;
       if(mval_is_usable(r, mval)) {
         switch(mval.use_value) {
           case use_char:
@@ -647,7 +647,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
             break;
           case use_autoinc:
             /* to do: tunable prefetch */
-            int next_value = q->db->getAutoIncrementValue(q->tab, 10);
+            next_value = q->db->getAutoIncrementValue(q->tab, 10);
             eqr = q->op->setValue(col->getColumnNo(), next_value);
             break;
           case use_null:
