@@ -327,6 +327,10 @@ void MySQL::value(mvalue &m, ap_pool *p,
     }
     if(!strcmp(val,"@autoinc")) {
       m.use_value = use_autoinc;
+      if(col->getType() == NdbDictionary::Column::Bigint 
+       || col->getType() == NdbDictionary::Column::Bigunsigned)
+        m.len = 8;
+      else m.len = 4;
       return;
     }
   }
