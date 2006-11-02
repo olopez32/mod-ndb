@@ -16,6 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "mod_ndb.h"
+#include "ndb_api_compat.h"
 #include "util_md5.h"
 
 /* There are many varieties of query: 
@@ -639,7 +640,8 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
     mvalue &mval = q->set_vals[n];
     col = mval.ndb_column;
     if(col) {
-      int eqr, next_value;
+      int eqr;
+      Uint64 next_value;
       if(mval_is_usable(r, mval)) {
         switch(mval.use_value) {
           case use_char:
@@ -647,8 +649,11 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
             break;
           case use_autoinc:
             /* to do: tunable prefetch */
-            next_value = q->db->getAutoIncrementValue(q->tab, 10);
-            eqr = q->op->setValue(col->getColumnNo(), next_value);
+            eqr = get_auto_inc_value(q->db, q->tab, next_value, 10);
+            if(!eqr) 
+              eqr = (mval.len == 8 ?
+                 q->op->setValue(col->getColumnNo(), next_value) :
+                 q->op->setValue(col->getColumnNo(), (Uint32) next_value));
             break;
           case use_null:
             eqr = q->op->setValue(col->getColumnNo(), 0);
