@@ -11,14 +11,20 @@ usage() {
   echo "NDB Cluster, libraries header files, and the mysql_config utility, "
   echo "plus an installed copy of Apache including apxs. "
   echo 
-  echo "Usage: $0  --mysql=/path/to/mysql_config --apxs=/path/to/apxs [--thread-safe]"
+  echo "Options:  "
+  echo "       --mysql=/path/to/mysql_config "
+  echo "       --apxs=/path/to/apxs "
+  echo "       --apxs1=/path/to/apache13/apxs"
+  echo "       --thread-safe"
+  echo "       --aprconfig=/path/to/apr-config"
   echo 
-  echo "Building an Apache 2 module requires apxs from *both* apache 1.3 and 2:"
+  echo "To build an Apache 2 module, you must use apxs from *both* apache 1.3 and 2:"
   echo "  $0 --apxs=/apache/2/apxs --apxs1=/apache/1.3/apxs "
   echo
   echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS --apxs1=$APXS"
   echo 
   echo "Use --thread-safe if you have a thread-safe mysql client library."
+  echo "If your apr is installed outside of apache2, use --aprconfig."
   echo
 }
 
@@ -50,6 +56,9 @@ do
     --thread-safe)
       GET_LIBS='--libs_r'
       ;;
+    --aprconfig)
+      APRCONFIG=$conf_arg
+      ;;
     --help)
       usage
       exit
@@ -79,6 +88,7 @@ echo "Configuring with"
 echo "    apxs =         " $APXS 
 echo "    apxs 1.3 =     " $APXS1
 echo "    mysql_config = " $MYSQLCFG 
+[ -n "$APRCONFIG" ] && echo "    apr-config =   " $APRCONFIG
 echo "    libs         = " $GET_LIBS
 echo
 
@@ -94,6 +104,11 @@ if [ ! -x "$MYSQLCFG" ]
  then
   echo "Error: mysql_config path is not valid." && usage && exit 1
 fi
+if [ -x "$APRCONFIG" ]
+ then
+  APRLD=`$APRCONFIG --ldflags`
+  APRINC=`$APRCONFIG --includes`
+fi
  
 MY_INC=`$MYSQLCFG --include`
 MY_LIBS=`$MYSQLCFG $GET_LIBS`
@@ -102,6 +117,7 @@ if $MYSQLCFG --version | grep -q '^5.1.'
  then NDB_PATH=storage/ndb 
  else NDB_PATH=ndb 
 fi
+
 
 (
 echo APXS=$APXS
@@ -112,9 +128,9 @@ echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
 echo MY_LIBS=$MY_LIBS
 echo 
-echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR`   
+echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
 echo APXS_SYSCONFDIR=`$APXS -q SYSCONFDIR`
-echo APXS_LD_SHLIB=`$APXS1 -q LD_SHLIB`
+echo APXS_LD_SHLIB=`$APXS1 -q LD_SHLIB` $APRLD
 echo APXS_CFLAGS=`$APXS1 -q CFLAGS`   
 echo APXS_CFLAGS_SHLIB=`$APXS1 -q CFLAGS_SHLIB`   
 echo APXS_LDFLAGS_SHLIB=`$APXS1 -q LDFLAGS_SHLIB`
