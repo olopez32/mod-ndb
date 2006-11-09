@@ -11,7 +11,7 @@ mod_ndb.so: $(OBJECTS)
 	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $< 
 
 
-mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h
+mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h revision.h
 	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $(MOD_SOURCE)
 
 handlers.o: handlers.cc mod_ndb.h
@@ -21,6 +21,9 @@ Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h JSON.h index_object.h
 MySQL_Field.o: MySQL_Field.cc MySQL_Field.h
 config.o: config.cc mod_ndb.h mod_ndb_config.h
 result_buffer.o: result_buffer.cc mod_ndb.h
+
+revision.h:
+	sh create_rev_h.sh
 
 install: mod_ndb.so
 	$(APXS) -i -n 'ndb' mod_ndb.so
