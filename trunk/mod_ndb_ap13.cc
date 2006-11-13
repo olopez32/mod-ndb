@@ -27,7 +27,6 @@ ndb_instance *instance1;
 struct mod_ndb_process process;
 int ndb_force_send = 1;
 
-
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
 // child_init, child_exit, and init_instance

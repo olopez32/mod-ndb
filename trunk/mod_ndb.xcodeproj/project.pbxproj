@@ -27,6 +27,7 @@
 		6561658E0A8E8A8800A664A0 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = httpd.conf; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		658C2A5C0AC33F1A007F0B7A /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = htdocs/test_note.php; sourceTree = "<group>"; };
+		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -34,6 +35,7 @@
 			isa = PBXGroup;
 			children = (
 				655A3FF20AC35A0300FC573F /* README */,
+				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
 				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
 				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,

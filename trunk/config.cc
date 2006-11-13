@@ -16,6 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "mod_ndb.h"
+#include "defaults.h"
 
 namespace config {
   
@@ -40,7 +41,10 @@ namespace config {
   /* init_srv() : simply ask apache for some zeroed memory 
   */
   void *init_srv(ap_pool *p, server_rec *s) {
-    return ap_pcalloc(p, sizeof(config::srv));
+    config::srv *srv = (config::srv *) ap_pcalloc(p, sizeof(config::srv));
+    srv->max_operations = DEFAULT_MAX_OPERATIONS;
+
+    return (void *) srv;
   }
   
   
@@ -65,6 +69,7 @@ namespace config {
     if(! d2->sub_results) dir->sub_results = d1->sub_results;
     if(! d2->format_param[0]) dir->format_param[0] = d1->format_param[0];
     if(! d2->format_param[1]) dir->format_param[1] = d1->format_param[1];
+    if(! d2->incr_prefetch) dir->incr_prefetch = d1->incr_prefetch;
  
     return (void *) dir;
   }

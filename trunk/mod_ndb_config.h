@@ -15,12 +15,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+typedef const char *(*CMD_HAND_TYPE) ();
 
 namespace config {
   
   /* Apache per-server configuration  */
   struct srv {
     char *connect_string;
+    int max_operations;
   };
     
   /* Apache per-directory configuration */
@@ -34,6 +36,7 @@ namespace config {
     result_format_type results;
     result_format_type sub_results;
     char *format_param[2];
+    int incr_prefetch;
     struct {
       unsigned pathinfo_always : 1;
       unsigned has_filters : 1;
