@@ -123,15 +123,22 @@ struct mod_ndb_instance {
   struct mod_ndb_connection *conn;  
   Ndb *db;
   NdbTransaction *tx;
-  struct operation **ops;
-  int n_ops;
+  unsigned int n_ops;
+  struct data_operation *data;
   unsigned int requests;
   unsigned int errors;
-  unsigned int declined;
 };
 typedef struct mod_ndb_instance ndb_instance;
 
+
 /* An operation */
+struct data_operation {
+  NdbOperation *op;
+  NdbIndexScanOperation *scanop;
+  NdbBlob *blob;
+  NdbRecAttr **result_cols;
+};
+
 
 /* A cluster connection contains an Ndb_cluster_connection object
    and points to an array of NDB instances, one per thread.
@@ -161,7 +168,7 @@ struct mod_ndb_process {
 
 ndb_instance *my_instance(request_rec *r);
 void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, ap_pool *);
-Ndb * init_instance(ndb_connection *, ndb_instance *);
+Ndb * init_instance(ndb_connection *, ndb_instance *, uint, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
 table *http_param_table(request_rec *r, const char *c);
 int Query(request_rec *, config::dir *, ndb_instance *);

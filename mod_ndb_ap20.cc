@@ -62,7 +62,8 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
     /* Create an instance */
     process.conn.instances[i] = 
       (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-    Ndb *ndbp = init_instance(& process.conn , process.conn.instances[i]);
+    Ndb *ndbp = init_instance(& process.conn , process.conn.instances[i],
+                              srv->max_operations, p);
     if(ndbp) n_ok++;
     else n_fail++;
   }
@@ -160,7 +161,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 }
 
 
-Ndb *init_instance(ndb_connection *c, ndb_instance *i) {
+Ndb *init_instance(ndb_connection *c, ndb_instance *i, int n_ops, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */
   i->db = new Ndb(c->connection);
@@ -173,6 +174,12 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i) {
   /* i->conn is a pointer back to the parent connection */
   i->conn = c;
 
+  /* i->n_ops is a counter of operations in the current transaction */
+  i->n_ops = 0;
+  
+  /* i->data is an array of operations */
+  i->data = (struct data_operation *) ap_pcalloc(p, n_ops * sizeof(struct data_operation));
+    
   return i->db;
 }
 

@@ -48,10 +48,6 @@ struct QueryItems {
   Ndb *db;
   const NdbDictionary::Table *tab;
   const NdbDictionary::Index *idx;
-  NdbOperation *op;
-  NdbIndexScanOperation *scanop;
-  NdbBlob *blob;
-  NdbRecAttr **result_cols;
   runtime_col *keys;
   short active_index;
   index_object *idxobj;

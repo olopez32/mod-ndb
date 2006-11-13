@@ -182,7 +182,6 @@ extern "C" {
     ap_rprintf(r,"Node Id: %d\n",i->conn->connection->node_id());
     ap_rprintf(r,"\n");
     ap_rprintf(r,"Requests in:   %u\n", i->requests);
-    ap_rprintf(r,"Declined:      %u\n", i->declined);
     ap_rprintf(r,"Errors:        %u\n", i->errors);
     
     return OK;
