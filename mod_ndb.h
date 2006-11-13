@@ -17,12 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
-/* Undefine these macros to disable debugging output at compile-time.
-   Otherwise, set LogLevel to Debug for debugging output.
-*/
-
-#define MOD_NDB_DEBUG 1
-// #define CONFIG_DEBUG 1
 
 /* System headers */
 #include <assert.h>
@@ -50,8 +44,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #else
 #define log_conf_debug(x,y,z)
 #endif
-
-typedef const char *(*CMD_HAND_TYPE) ();
 
 extern "C" module AP_MODULE_DECLARE_DATA ndb_module;
 
@@ -114,6 +106,7 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 #include "MySQL_Field.h"
 #include "mod_ndb_config.h"
 #include "JSON.h"
+#include "defaults.h"
 
 
 
@@ -129,15 +122,16 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 struct mod_ndb_instance {
   struct mod_ndb_connection *conn;  
   Ndb *db;
-  NdbTransaction *tx; 
+  NdbTransaction *tx;
+  struct operation **ops;
+  int n_ops;
   unsigned int requests;
   unsigned int errors;
   unsigned int declined;
-  unsigned int row_not_found;
-  unsigned int row_found;
 };
 typedef struct mod_ndb_instance ndb_instance;
 
+/* An operation */
 
 /* A cluster connection contains an Ndb_cluster_connection object
    and points to an array of NDB instances, one per thread.

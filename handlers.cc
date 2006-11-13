@@ -34,7 +34,6 @@ extern "C" {
   int ndb_handler(request_rec *r) {
     config::dir *dir;
     ndb_instance *i;
-    register int response;
     
     // Apache 2 Handler name check
     CheckHandler(r,"ndb-cluster");
@@ -61,19 +60,7 @@ extern "C" {
     
     i->requests++;
     
-    response = Query(r,dir,i);
-    switch(response) {
-      case OK:
-        i->row_found++;
-        break;
-      case NOT_FOUND:
-        i->row_not_found++;
-        break;
-      case DECLINED:
-        i->declined++;
-        break;
-    }
-    return response;
+    return Query(r,dir,i);
   }
 
 
@@ -195,8 +182,6 @@ extern "C" {
     ap_rprintf(r,"Node Id: %d\n",i->conn->connection->node_id());
     ap_rprintf(r,"\n");
     ap_rprintf(r,"Requests in:   %u\n", i->requests);
-    ap_rprintf(r,"Row found:     %u\n", i->row_found);
-    ap_rprintf(r,"Row not found: %u\n", i->row_not_found);
     ap_rprintf(r,"Declined:      %u\n", i->declined);
     ap_rprintf(r,"Errors:        %u\n", i->errors);
     
