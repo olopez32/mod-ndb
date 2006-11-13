@@ -4,6 +4,7 @@ APXS=`which apxs`
 APXS1=`which apxs`
 MYSQLCFG=`which mysql_config`
 GET_LIBS='--libs'
+CONFIG_CMD="$0 $@"
 
 usage() {
   echo
@@ -120,6 +121,9 @@ fi
 
 
 (
+echo '#' Makefile for mod_ndb.  Automatically generated from:
+echo '#' $CONFIG_CMD
+echo
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE
 echo
