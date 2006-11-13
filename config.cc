@@ -484,4 +484,106 @@ namespace config {
     }
     return 0;
   }
-} 
+}
+
+
+
+
+extern "C" {
+  command_rec configuration_commands[] =
+  {
+  {   /* Per-server: ndb-connectstring */
+    "ndb-connectstring",          
+    (CMD_HAND_TYPE) ap_set_string_slot,
+    (void *)XtOffsetOf(config::srv, connect_string),
+    RSRC_CONF,      TAKE1, 
+    "NDB Connection String" 
+  },
+  {
+    "Database",         // inheritable
+    (CMD_HAND_TYPE) ap_set_string_slot,
+    (void *)XtOffsetOf(config::dir, database),
+    ACCESS_CONF,    TAKE1, 
+    "MySQL database schema" 
+  },
+  {
+    "Table",            // inheritable
+    (CMD_HAND_TYPE) ap_set_string_slot,
+    (void *)XtOffsetOf(config::dir, table),
+    ACCESS_CONF,    TAKE1, 
+    "NDB Table"
+  },            
+  {
+    "Deletes",          // NOT inheritable, defaults to 0
+    (CMD_HAND_TYPE) ap_set_flag_slot,
+    (void *)XtOffsetOf(config::dir, allow_delete),
+    ACCESS_CONF,     FLAG,
+    "Allow DELETE over HTTP"
+  },
+  {
+    "ETags",          // Inheritable, defaults to 1
+    (CMD_HAND_TYPE) ap_set_flag_slot,
+    (void *)XtOffsetOf(config::dir, use_etags),
+    ACCESS_CONF,     FLAG,
+    "Compute and set ETag header in response"
+  },    
+  {
+    "Format",           // inheritable
+    (CMD_HAND_TYPE) config::result_format,
+    NULL,
+    ACCESS_CONF,    TAKE123, 
+    "Result Set Format"
+  },     
+  {
+    "Columns",          // inheritable
+    (CMD_HAND_TYPE) config::non_key_column,
+    (void *) "R",
+    ACCESS_CONF,    ITERATE,
+    "List of attributes to include in result set"
+  },
+  {
+    "AllowUpdate",      // NOT inheritable
+    (CMD_HAND_TYPE) config::non_key_column,
+    (void *) "W",
+    ACCESS_CONF,    ITERATE,
+    "List of attributes that can be updated using HTTP"
+  },
+  {
+    "PrimaryKey",      // NOT inheritable
+    (CMD_HAND_TYPE) config::primary_key,
+    (void *) "P",  
+    ACCESS_CONF,    ITERATE,
+    "Allow Primary Key lookups"
+  },
+  {
+    "UniqueIndex",      // NOT inheritable
+    (CMD_HAND_TYPE) config::named_index,
+    (void *) "U",  
+    ACCESS_CONF,    ITERATE2,
+    "Allow unique key lookups, given index name and columns"
+  },
+  {
+    "OrderedIndex",      // NOT inheritable
+    (CMD_HAND_TYPE) config::named_index,
+    (void *) "O",  
+    ACCESS_CONF,    ITERATE2,
+    "Allow ordered index scan, given index name and columns"
+  },
+  {                      // inheritable
+    "PathInfo", // e.g. "PathInfo id" or "PathInfo keypt1/keypt2"
+    (CMD_HAND_TYPE) config::pathinfo,  
+    NULL,
+    ACCESS_CONF,    TAKE12, 
+    "Schema for interpreting the rightmost URL path components"
+  },
+  {                     // NOT inheritable
+    "Filter",  // Filter col op keyword, e.g. "Filter id < min_id"
+    (CMD_HAND_TYPE) config::filter, 
+    NULL,
+    ACCESS_CONF,    TAKE13, 
+    "NDB Table"
+  }, 
+    
+  {NULL, NULL, NULL, 0, cmd_how(0), NULL}
+  };
+}
