@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 extern "C" module AP_MODULE_DECLARE_DATA ndb_module;
 
-enum result_format_type { no_results = 0, json, raw, xml, ap_note };
+enum result_format_type { no_results = 0, json, raw, xml };
 
 namespace log {
 //debug, info, notice, warn, error, crit, alert, emerg.
@@ -109,22 +109,28 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 #include "defaults.h"
 
 
-
 /* The basic architecture of this module:
-    A single mod_ndb_process structure for each httpd process
+     A single mod_ndb_process structure for each httpd process
     plus one (or a few) ndb_connections (linked in a list)
     plus one ndb_instance per-connection, per-thread
 */
 
+
 /* An "NDB Instance" is a private per-thread data structure
-   that contains an Ndb object plus some statistics
+   that manages an Ndb object, a transaction, an array of 
+   operations, and some statistics.
  */
 struct mod_ndb_instance {
   struct mod_ndb_connection *conn;  
   Ndb *db;
   NdbTransaction *tx;
-  unsigned int n_ops;
+  int n_ops;
+  int max_ops;
   struct data_operation *data;
+  struct {
+    unsigned int has_blob : 1 ;
+    unsigned int aborted  : 1 ;
+  } flags;
   unsigned int requests;
   unsigned int errors;
 };
@@ -135,8 +141,9 @@ typedef struct mod_ndb_instance ndb_instance;
 struct data_operation {
   NdbOperation *op;
   NdbIndexScanOperation *scanop;
+  config::dir *dir;
   NdbBlob *blob;
-  NdbRecAttr **result_cols;
+  const NdbRecAttr **result_cols;
 };
 
 
@@ -172,4 +179,5 @@ Ndb * init_instance(ndb_connection *, ndb_instance *, uint, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
 table *http_param_table(request_rec *r, const char *c);
 int Query(request_rec *, config::dir *, ndb_instance *);
+int ExecuteAll(request_rec *, ndb_instance *);
 int read_http_post(request_rec *r, table **tab);
