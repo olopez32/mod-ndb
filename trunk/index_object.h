@@ -54,9 +54,9 @@ class PK_index_object : public index_object {
     int set_key_part(config::key_col &keycol, mvalue &mval) {
       int col_id = this->get_column()->getColumnNo();
       if(mval.use_value == use_char) 
-        return q->op->equal(col_id, mval.u.val_char);
+        return q->data->op->equal(col_id, mval.u.val_char);
       else
-        return q->op->equal(col_id, (const char *) (&mval.u.val_char));
+        return q->data->op->equal(col_id, (const char *) (&mval.u.val_char));
     };
     
     const NdbDictionary::Column *get_column() {
@@ -80,9 +80,9 @@ class Unique_index_object : public index_object {
     int set_key_part(config::key_col &keycol, mvalue &mval) {
       const char *col_name = q->idx->getColumn(key_part)->getName();
       if(mval.use_value == use_char) 
-        return q->op->equal(col_name, mval.u.val_char);
+        return q->data->op->equal(col_name, mval.u.val_char);
       else
-        return q->op->equal(col_name, (const char *) (&mval.u.val_char)); 
+        return q->data->op->equal(col_name, (const char *) (&mval.u.val_char)); 
     };   
 };
 
@@ -94,16 +94,16 @@ class Ordered_index_object : public index_object {
 
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
       n_parts = q->idx->getNoOfColumns(); 
-      q->scanop = tx->getNdbIndexScanOperation(q->idx);
+      q->data->scanop = tx->getNdbIndexScanOperation(q->idx);
       log_debug(server, "Using OrderedIndexScan; key %s", q->idx->getName());
-      return q->scanop;
+      return q->data->scanop;
     };
     
     int set_key_part(config::key_col &keycol, mvalue &mval) {
       int col_id = q->idx->getColumn(key_part)->getColumnNo();      
       if(mval.use_value == use_char) 
-        return q->scanop->setBound(col_id, keycol.filter_op, mval.u.val_char);
+        return q->data->scanop->setBound(col_id, keycol.filter_op, mval.u.val_char);
       else
-        return q->scanop->setBound(col_id, keycol.filter_op, &mval.u.val_char);
+        return q->data->scanop->setBound(col_id, keycol.filter_op, &mval.u.val_char);
     };
 };
