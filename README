@@ -16,6 +16,12 @@ since it has already been run to build MySQL), but rather a small script which
 can use the "mysql_config" and "apxs" commands to generate an appropriate 
 Makefile for mod_ndb.
 
+--- Building for Apache 2 ---
+
+Due to a known bug in Apache 2 (http://issues.apache.org/bugzilla/show_bug.cgi?id=29771), 
+in order to build mod_ndb, you must also have Apache 1.3 installed.  Run configure
+with --apxs=/apache2/bin/apxs and --apxs1=/apache13/bin/apxs
+
 
 --- STARTING THE SERVER ---
 
