@@ -84,7 +84,6 @@ namespace config {
     if(!strcmp(str,"json")) return json;
     else if(!strcmp(str,"raw")) return raw;
     else if(!strcmp(str,"xml")) return xml;
-    else if(!strcmp(str,"apachenote")) return ap_note;
     else return no_results;
   }
 
@@ -104,8 +103,7 @@ namespace config {
                 "Invalid result format %s at %s. Using default JSON results.\n",
                 fmt, cmd->path);
     }
-    if(arg0 && dir->results == ap_note) 
-      dir->sub_results = fmt_from_str(arg0);    
+    if(arg0) dir->sub_results = fmt_from_str(arg0);    
     else dir->sub_results = no_results;
     
     return 0;
