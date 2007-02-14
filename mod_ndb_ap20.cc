@@ -161,7 +161,8 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 }
 
 
-Ndb *init_instance(ndb_connection *c, ndb_instance *i, int n_ops, ap_pool *p) {
+Ndb *init_instance(ndb_connection *c, ndb_instance *i, 
+                   unsigned int max_ops, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */
   i->db = new Ndb(c->connection);
@@ -176,9 +177,13 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i, int n_ops, ap_pool *p) {
 
   /* i->n_ops is a counter of operations in the current transaction */
   i->n_ops = 0;
-  
+ 
+  /* i->max_ops denotes the number of operations in i->data */
+  i->max_ops = max_ops;
+    
   /* i->data is an array of operations */
-  i->data = (struct data_operation *) ap_pcalloc(p, n_ops * sizeof(struct data_operation));
+  i->data = (struct data_operation *) 
+    ap_pcalloc(p, max_ops * sizeof(struct data_operation));
     
   return i->db;
 }
@@ -205,7 +210,7 @@ ndb_instance *my_instance(request_rec *r) {
   
   /* To do: implement the case with multiple connect strings */
   my_ap_log_error(log::warn, r->server,
-                  "Unwritten code in mod_ndb.cc at line %d!", __LINE__);
+                  "Unwritten code in mod_ndb_ap20.cc at line %d!", __LINE__);
   
   return (ndb_instance *) 0;
 }
@@ -215,6 +220,7 @@ extern "C" {
 
   extern command_rec configuration_commands[];
   extern int ndb_handler(request_rec *);
+  extern int ndb_exec_batch_handler(request_rec *);
   
  /************************
   *       Hooks          *
@@ -228,6 +234,7 @@ extern "C" {
 
   void mod_ndb_register_hooks(ap_pool *p) {
     ap_hook_handler(ndb_handler, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_handler(ndb_exec_batch_handler, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_post_config(mod_ndb_config_hook, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
   }
