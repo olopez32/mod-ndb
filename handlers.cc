@@ -63,6 +63,21 @@ extern "C" {
     return Query(r,dir,i);
   }
 
+  int ndb_exec_batch_handler(request_rec *r) {
+    // Apache 2 Handler name check
+    CheckHandler(r,"ndb-exec-batch");
+
+    // Get Ndb 
+    ndb_instance *i = my_instance(r);;
+    if(i == 0) {
+      log_note(r->server,"Cannot execute batch: ndb_instance *i is null");
+      return HTTP_SERVICE_UNAVAILABLE;
+    }
+    i->requests++;
+    
+    return ExecuteAll(r,i);
+  }
+  
 
   int ndb_config_check_handler(request_rec *r) {
     table *param_tab;
