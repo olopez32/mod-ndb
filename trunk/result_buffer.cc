@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 char * result_buffer::init(request_rec *r, size_t size) {
   alloc_sz = size;
   sz = 0;
+  if(buff) free(buff);
   buff = (char *) malloc(alloc_sz);
   if(!buff) log_err(r->server, "mod_ndb result_buffer::init() out of memory");
   return buff;
