@@ -3,16 +3,17 @@
 
 <?php
 
-$req = "/ndb/table1?channel=12";
+virtual("/ndb/ex/1/session/3");
+virtual("/ndb/ex/1/session/1");
+# apache_note("ndb_send_result",1);
+virtual("/ndb-commit-all");
 
-if(virtual($req))
-	echo "virtual() success.<br>\n";
-else echo "virtual() failure.<br>\n";
 
-echo "<p>Subrequest: $req <br>";
-echo "NDB Results: " . apache_note("ndb_result_0") . "</br>\n";
+echo "ndb_result_0: " . apache_note("ndb_result_0") . "</br>\n";
+echo "ndb_result_1: " . apache_note("ndb_result_1") . "</br>\n";
 
-echo "</html>\n";
+
+# echo "</html>\n";
 
 ?>
 

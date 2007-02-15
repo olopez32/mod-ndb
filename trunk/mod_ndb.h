@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "http_log.h"
 
 /* Apache 1.3 / Apache 2 compatibility */
+#include "defaults.h"
 #include "mod_ndb_compat.h"
 
 /* NDB headers */
@@ -106,7 +107,6 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 #include "MySQL_Field.h"
 #include "mod_ndb_config.h"
 #include "JSON.h"
-#include "defaults.h"
 
 
 /* The basic architecture of this module:

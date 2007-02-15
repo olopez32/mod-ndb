@@ -40,6 +40,7 @@ ResultBuilder Results_XML;
 inline void set_note(request_rec *r, int num, result_buffer &res) {
   char note[32];
   sprintf(note, "ndb_result_%d",num);
+  log_debug(r->server,"Setting note %s",note);
   ap_table_set(r->main->notes, note, res.buff);
 }
 
@@ -60,7 +61,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   if(! i->tx) {
     log_err(r->server, "ExecuteAll() returning 410 because tx does not exist.");
     response_code = HTTP_GONE; 
-    goto cleanup;
+    goto cleanup2;
   } 
  
   /* Determine whether the output should be written as an Apache note
@@ -110,12 +111,12 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     log_debug(r->server,"Returning 410 because tx->execute failed: %s",
               i->tx->getNdbError().message);
     response_code = HTTP_GONE;
-    goto cleanup;
+    goto cleanup1;
   } 
   
   /* Loop over the operations and build the result page */
-  /* Recognize read operations by data->result_cols being non-null */
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
+    log_debug(r->server,"Doing read operation %d",opn);
     struct data_operation *data = i->data + opn ;
     if(data->result_cols && (! data->blob)) {
       build_results = result_formatter[data->dir->results];
@@ -142,18 +143,20 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       // If the ETag matches the client's cache, the page should not be returned 
       response_code = ap_meets_conditions(r);
     }
-    
-    ap_send_http_header(r);
-    
+        
     /* Send the page  (but recheck the response code,
       after ap_meets_conditions) */   
-    if(response_code == OK && my_results.buff)
-      ap_rwrite(my_results.buff, my_results.sz, r);
+    if(response_code == OK) {
+      ap_send_http_header(r);
+      if(my_results.buff)
+        ap_rwrite(my_results.buff, my_results.sz, r);
+    }
   }
 
-  cleanup:
-  
+  cleanup1:
   i->tx->close();
+
+  cleanup2:
   i->tx = 0;
   i->n_read_ops = 0;
   i->flags.aborted  = 0;
