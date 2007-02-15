@@ -23,7 +23,7 @@ MySQL_Field.o: MySQL_Field.cc MySQL_Field.h
 config.o: config.cc mod_ndb.h mod_ndb_config.h
 result_buffer.o: result_buffer.cc mod_ndb.h
 
-revision.h:
+rev:
 	sh create_rev_h.sh
 
 install: mod_ndb.so

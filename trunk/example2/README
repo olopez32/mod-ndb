@@ -1,0 +1,30 @@
+EXAMPLE 1: ICONS, BLOBS, AND RAW OUTPUT
+
+Example2 illustrates a "user_icon" table that might be used in a social 
+networking application.  JPEG images are stored in the table as BLOBs; 
+you can retreive them from mod_ndb using the "raw" output format.
+
+To load the table, uncompress the load_icons.sql.gz file and pipe it in
+to a mysql client, like this:
+
+ gzcat load_icons.sql.gz | mysql -u root 
+
+There are no included test scripts here, but you should be able to view 
+the JPEG images from a browser.   
+
+For example, the icon for { user_id=3, icon_id=1 } will be visible at the URL
+  
+   /ndb/ex/2/icon/3/1
+
+The complete list of valid URLs is:
+
+/ndb/ex/2/icon/1/1
+/ndb/ex/2/icon/1/2
+/ndb/ex/2/icon/2/1
+/ndb/ex/2/icon/3/1
+/ndb/ex/2/icon/1/2
+
+
+
+
+
