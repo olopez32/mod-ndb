@@ -48,7 +48,7 @@ inline void set_note(request_rec *r, int num, result_buffer &res) {
 
 int ExecuteAll(request_rec *r, ndb_instance *i) {
  
-  int response_code;
+  int response_code = OK;
   int opn;     // operation number
   result_buffer my_results;
   my_results.buff = 0;
@@ -58,12 +58,13 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   
   /* Check for an NdbTransaction */
   if(! i->tx) {
-    response_code = HTTP_GONE;
+    log_err(r->server, "ExecuteAll() returning 410 because tx does not exist.");
+    response_code = HTTP_GONE; 
     goto cleanup;
-  }
+  } 
  
   /* Determine whether the output should be written as an Apache note
-  */
+  */ 
   if(r->main) {
     /* This is a subrequest.
        But if the user has set a note called "ndb_send_result", 
@@ -71,7 +72,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     if(! ap_table_get(r->main->notes,"ndb_send_result"))
       apache_notes = 1;
   }
-
+ 
   /* If an operation involves reading a BLOB, then some special cases apply:
      - There can only be one operation in the transaction.
      - The transaction must be executed "NoCommit" before reading the BLOB
@@ -82,15 +83,16 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     if(i->tx->execute(NdbTransaction::NoCommit, NdbTransaction::AbortOnError, 
                       i->conn->ndb_force_send))
     {        
-      log_debug(r->server,"Returning 410 because tx->execute failed: %s",
+      log_debug(r->server,
+                "Execute with BLOB: code 410 because tx->execute() failed: %s",
                 i->tx->getNdbError().message);
       response_code = HTTP_GONE;
     }
  
     /* Loop over operations & find BLOBs) */
-    for(opn = 0 ; opn < i->n_ops ; opn++) {
+    for(opn = 0 ; opn < i->n_read_ops ; opn++) {
       struct data_operation *data = i->data + opn ;
-      if(data->blob) {
+      if(data->blob && data->result_cols) {
         build_results = result_formatter[data->dir->results];
         if(build_results) {
           response_code = build_results(r, data, my_results);
@@ -112,9 +114,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   } 
   
   /* Loop over the operations and build the result page */
-  for(opn = 0 ; opn < i->n_ops ; opn++) {
+  /* Recognize read operations by data->result_cols being non-null */
+  for(opn = 0 ; opn < i->n_read_ops ; opn++) {
     struct data_operation *data = i->data + opn ;
-    if(! data->blob) {
+    if(data->result_cols && (! data->blob)) {
       build_results = result_formatter[data->dir->results];
       if(build_results) {
         response_code = build_results(r, data, my_results);
@@ -152,11 +155,11 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   
   i->tx->close();
   i->tx = 0;
-  i->n_ops = 0;
+  i->n_read_ops = 0;
   i->flags.aborted  = 0;
   i->flags.has_blob = 0;
   /* Clear all used operations */
-  bzero(i->data, i->n_ops * sizeof(struct data_operation));
+  bzero(i->data, i->n_read_ops * sizeof(struct data_operation));
 
   return response_code;
   

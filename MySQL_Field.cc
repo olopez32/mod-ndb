@@ -381,6 +381,8 @@ void MySQL::value(mvalue &m, ap_pool *p,
       // is a one-byte character + 1900
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Datetime:
+      /* uint64 tmp=((ltime->year*10000L+ltime->month*100+ltime->day)*LL(1000000)+
+           (ltime->hour*10000L+ltime->minute*100+ltime->second)); */  
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:      

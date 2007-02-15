@@ -42,7 +42,7 @@ namespace config {
   */
   void *init_srv(ap_pool *p, server_rec *s) {
     config::srv *srv = (config::srv *) ap_pcalloc(p, sizeof(config::srv));
-    srv->max_operations = DEFAULT_MAX_OPERATIONS;
+    srv->max_read_operations = DEFAULT_MAX_READ_OPERATIONS;
 
     return (void *) srv;
   }

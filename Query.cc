@@ -160,6 +160,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 int Query(request_rec *r, config::dir *dir, ndb_instance *i) 
 {
   const NdbDictionary::Dictionary *dict;
+  data_operation local_data_op = { 0, 0, 0, 0, 0 };
   struct QueryItems Q = 
     { i, 0, 0,            // ndb_instance, tab, idx
       0, 0, 0, 0,         // keys, active_index, idxobj, key_columns_used 
@@ -167,7 +168,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       NoPlan,             // execution plan
       Plan::SetupRead,    // setup module
       Plan::Read,         // action module
-      0, 0, 0             // form_data, set_vals, data
+      0, 0,               // form_data, set_vals
+      &local_data_op      // data
     };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
@@ -177,12 +179,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   short col;
   int req_method = r->method_number;
   const char *subrequest_data = 0;
-
-  /* Locate the appropriate data_operations object for this operation
-     and associate it with the directory config 
-  */
-  q->data = i->data + i->n_ops++;
-  q->data->dir = dir;
   
   // Initialize all three of these, but only one will be needed: 
   PK_index_object       PK_idxobj(q,r);
@@ -224,6 +220,20 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   */
   switch(req_method) {
     case M_GET:
+      /* Write requests use the local data_operations structure (which is 
+         discarded after the request), but read requests use one that is 
+         stored in the ndb_instance, so that we can be access it after the
+         batch of transactions is executed and fetch the results.
+      */
+      if(i->n_read_ops < i->max_read_ops) {
+        q->data = i->data + i->n_read_ops++;
+        q->data->dir = dir;
+      }
+      else {
+        log_err(r->server,"Too many read operations in one transaction.");
+        return DECLINED;
+      }
+      
       ap_discard_request_body(r);
       // Allocate an array of NdbRecAttrs for all desired columns 
       q->data->result_cols =  (const NdbRecAttr**)

@@ -124,8 +124,8 @@ struct mod_ndb_instance {
   struct mod_ndb_connection *conn;  
   Ndb *db;
   NdbTransaction *tx;
-  int n_ops;
-  int max_ops;
+  int n_read_ops;
+  int max_read_ops;
   struct data_operation *data;
   struct {
     unsigned int has_blob : 1 ;

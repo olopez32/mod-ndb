@@ -63,7 +63,7 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
     process.conn.instances[i] = 
       (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
     Ndb *ndbp = init_instance(& process.conn , process.conn.instances[i],
-                              srv->max_operations, p);
+                              srv->max_read_operations, p);
     if(ndbp) n_ok++;
     else n_fail++;
   }
