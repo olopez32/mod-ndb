@@ -22,7 +22,7 @@ namespace config {
   /* Apache per-server configuration  */
   struct srv {
     char *connect_string;
-    int max_operations;
+    int max_read_operations;
   };
     
   /* Apache per-directory configuration */

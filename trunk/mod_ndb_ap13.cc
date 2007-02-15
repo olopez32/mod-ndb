@@ -50,7 +50,7 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
 
   /* Create an ndb instance */
   instance1 = (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-  init_instance(& process.conn, instance1, srv->max_operations, p);
+  init_instance(& process.conn, instance1, srv->max_read_operations, p);
 }
 
 
@@ -125,7 +125,8 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 }
 
 
-Ndb *init_instance(ndb_connection *c, ndb_instance *i, int max_ops, ap_pool *p) {
+Ndb *init_instance(ndb_connection *c, ndb_instance *i, 
+                   unsigned int max_ops, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */
   i->db = new Ndb(c->connection);
@@ -138,13 +139,15 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i, int max_ops, ap_pool *p) 
   /* i->conn is a pointer back to the parent connection */
   i->conn = c;
   
-  /* i->n_ops is a counter of operations in the current transaction */
-  i->n_ops = 0;
+  /* i->n_read_ops is a counter of read operations in the current transaction */
+  i->n_read_ops = 0;
   
-  /* i->max_ops denotes the number of operations in i->data */
-  i->max_ops = max_ops;
+  /* i->max_read_ops denotes the maximum number of read operations in i->data 
+     and the size of the array
+  */
+  i->max_read_ops = max_ops;
   
-  /* i->data is an array of operations */
+  /* i->data is an array of data_operations */
   i->data = (struct data_operation *) 
     ap_pcalloc(p, max_ops * sizeof(struct data_operation));
   
