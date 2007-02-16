@@ -60,7 +60,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Check for an NdbTransaction */
   if(! i->tx) {
     log_err(r->server, "ExecuteAll() returning 410 because tx does not exist.");
-    response_code = HTTP_GONE; 
+    response_code = HTTP_GONE;  /* Should be 400? */
     goto cleanup2;
   } 
  
@@ -87,7 +87,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       log_debug(r->server,
                 "Execute with BLOB: code 410 because tx->execute() failed: %s",
                 i->tx->getNdbError().message);
-      response_code = HTTP_GONE;
+      response_code = HTTP_GONE;  /* Should be 400? */
     }
  
     /* Loop over operations & find BLOBs) */
@@ -106,17 +106,16 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   
   /* Execute and Commit the transaction */
   if(i->tx->execute(NdbTransaction::Commit, NdbTransaction::AbortOnError, 
-                    i->conn->ndb_force_send))
+                    i->conn->ndb_force_send)) 
   {        
     log_debug(r->server,"Returning 410 because tx->execute failed: %s",
               i->tx->getNdbError().message);
-    response_code = HTTP_GONE;
+    response_code = HTTP_GONE;  /* Should be 400? */
     goto cleanup1;
   } 
   
   /* Loop over the operations and build the result page */
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
-    log_debug(r->server,"Doing read operation %d",opn);
     struct data_operation *data = i->data + opn ;
     if(data->result_cols && (! data->blob)) {
       build_results = result_formatter[data->dir->results];
