@@ -235,9 +235,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       }
       
       ap_discard_request_body(r);
-      // Allocate an array of NdbRecAttrs for all desired columns 
+      // Allocate an array of NdbRecAttrs for all desired columns.
+      // Like anything that will be stored in the ndb_instance, allocate
+      // from r->connection->pool, not r->pool
       q->data->result_cols =  (const NdbRecAttr**)
-        ap_pcalloc(r->pool, dir->visible->size() * sizeof(NdbRecAttr *));
+        ap_pcalloc(r->connection->pool, 
+                   dir->visible->size() * sizeof(NdbRecAttr *));
       break;
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
@@ -511,6 +514,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
               eqr = (mval.len == 8 ?
                  q->data->op->setValue(col->getColumnNo(), next_value) :
                  q->data->op->setValue(col->getColumnNo(), (Uint32) next_value));
+            /* to do: else make some note of error */
             break;
           case use_null:
             eqr = q->data->op->setValue(col->getColumnNo(), 0);
