@@ -1,10 +1,10 @@
 #!/bin/sh
 
-if svn info
+if svnversion .
   then
-    svn info | awk ' /Last Changed Rev/ { printf("#define REVISION %d\n",$NF) } ' > revision.h
+    echo \#define REVISION \"`svnversion .`\" > revision.h
   else
-    echo \#define REVISION 0 > revision.h
+    echo \#define REVISION \"0\" > revision.h
 fi
 
 
