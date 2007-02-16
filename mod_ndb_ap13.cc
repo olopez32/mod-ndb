@@ -115,7 +115,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   /* Succesfully connected */
   c->connected=1;
   ap_log_error(APLOG_MARK, log::err, s, 
-               "PID %d: mod_ndb (r%d) connected to NDB Cluster as node %d", 
+               "PID %d: mod_ndb (r%s) connected to NDB Cluster as node %d", 
                getpid(), REVISION, c->connection->node_id());
 
   /* In multi-threaded apache 2 this might be configurable */
