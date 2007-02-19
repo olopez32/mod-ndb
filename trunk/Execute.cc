@@ -55,7 +55,6 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   my_results.buff = 0;
   ResultBuilder *build_results;
   bool apache_notes = 0;
-  int use_etags = 0;
   
   /* Check for an NdbTransaction */
   if(! i->tx) {
@@ -94,11 +93,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     for(opn = 0 ; opn < i->n_read_ops ; opn++) {
       struct data_operation *data = i->data + opn ;
       if(data->blob && data->result_cols) {
-        build_results = result_formatter[data->dir->results];
+        build_results = result_formatter[data->result_format];
         if(build_results) {
           response_code = build_results(r, data, my_results);
           if(apache_notes) set_note(r, opn, my_results);
-          else use_etags += data->dir->use_etags;
         }
       }
     }
@@ -118,11 +116,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
     struct data_operation *data = i->data + opn ;
     if(data->result_cols && (! data->blob)) {
-      build_results = result_formatter[data->dir->results];
+      build_results = result_formatter[data->result_format];
       if(build_results) {
         response_code = build_results(r, data, my_results);
         if(apache_notes) set_note(r, opn, my_results);
-        else use_etags += data->dir->use_etags;
       }
     }
   }
@@ -135,7 +132,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       ap_set_content_length(r, 0);
     
     // Set ETag
-    if(use_etags && my_results.buff) {
+    if(i->flags.use_etag && my_results.buff) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
                                  my_results.buff, my_results.sz);
       ap_table_setn(r->headers_out, "ETag",  etag);
@@ -154,17 +151,17 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
 
   cleanup1:
   i->tx->close();
-
+  i->tx = 0;  
+  
   cleanup2:
-  i->tx = 0;
+  /* Clear all used operations */
+  bzero(i->data, i->n_read_ops * sizeof(struct data_operation));
   i->n_read_ops = 0;
   i->flags.aborted  = 0;
   i->flags.has_blob = 0;
-  /* Clear all used operations */
-  bzero(i->data, i->n_read_ops * sizeof(struct data_operation));
-
-  return response_code;
+  i->flags.use_etag = 0;
   
+  return response_code;
 }
 
 
@@ -174,7 +171,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
 inline void JSON_send_result_row(request_rec *r, data_operation *data, 
                                  result_buffer &res) {
   res.out(JSON::new_object);
-  for(int n = 0; n < data->dir->visible->size() ; n++) {
+  for(int n = 0; n < data->n_result_cols ; n++) {
     if(n) res.out(JSON::delimiter);
     JSON::put_member(res, *data->result_cols[n], r);
   }

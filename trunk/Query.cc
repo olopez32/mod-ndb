@@ -160,7 +160,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 int Query(request_rec *r, config::dir *dir, ndb_instance *i) 
 {
   const NdbDictionary::Dictionary *dict;
-  data_operation local_data_op = { 0, 0, 0, 0, 0 };
+  data_operation local_data_op = { 0, 0, 0, 0, 0, no_results };
   struct QueryItems Q = 
     { i, 0, 0,            // ndb_instance, tab, idx
       0, 0, 0, 0,         // keys, active_index, idxobj, key_columns_used 
@@ -227,7 +227,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       */
       if(i->n_read_ops < i->max_read_ops) {
         q->data = i->data + i->n_read_ops++;
-        q->data->dir = dir;
+        if(dir->use_etags) i->flags.use_etag = 1;
+        q->data->result_format = dir->results;
+        q->data->n_result_cols = dir->visible->size();
       }
       else {
         log_err(r->server,"Too many read operations in one transaction.");

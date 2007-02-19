@@ -130,6 +130,7 @@ struct mod_ndb_instance {
   struct {
     unsigned int has_blob : 1 ;
     unsigned int aborted  : 1 ;
+    unsigned int use_etag : 1 ;
   } flags;
   unsigned int requests;
   unsigned int errors;
@@ -141,9 +142,10 @@ typedef struct mod_ndb_instance ndb_instance;
 struct data_operation {
   NdbOperation *op;
   NdbIndexScanOperation *scanop;
-  config::dir *dir;
   NdbBlob *blob;
+  unsigned int n_result_cols;
   const NdbRecAttr **result_cols;
+  result_format_type result_format;
 };
 
 
