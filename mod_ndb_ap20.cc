@@ -153,6 +153,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
                process.n_threads, 
                process.n_threads == 1 ? "" : "s",
                process.thread_limit);
+  log_debug(s,"*--  %s --*","DEBUGGING ENABLED");
 
   /* Some day this might be configurable */
   c->ndb_force_send = ndb_force_send;
@@ -176,10 +177,10 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i,
   i->conn = c;
 
   /* i->n_ops is a counter of operations in the current transaction */
-  i->n_ops = 0;
+  i->n_read_ops = 0;
  
   /* i->max_ops denotes the number of operations in i->data */
-  i->max_ops = max_ops;
+  i->max_read_ops = max_ops;
     
   /* i->data is an array of operations */
   i->data = (struct data_operation *) 
