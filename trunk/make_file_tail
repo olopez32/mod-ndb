@@ -4,6 +4,8 @@ read_http_post.o handlers.o result_buffer.o
 INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
 LIBS=$(APXS_LIBS_SHLIB) $(MY_LIBS) -lndbclient -lmystrings -lmysys -lstdc++
 
+all: mod_ndb.so httpd.conf 
+
 mod_ndb.so: $(OBJECTS)
 	$(APXS_LD_SHLIB) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
@@ -30,13 +32,16 @@ install: mod_ndb.so
 	$(APXS) -i -n 'ndb' mod_ndb.so
 
 clean:
-	-rm -f mod_ndb.so $(OBJECTS)
+	rm -f mod_ndb.so $(OBJECTS) httpd.conf
 
-stop:
-	sudo apachectl stop
+httpd.conf:
+	sed -f template.sed $(TEMPLATE) > httpd.conf
 
 start:
-	sudo apachectl start
-
-restart: install
-	apachectl restart
+	$(START_HTTPD)
+        
+stop:
+	$(CONTROL_HTTPD) stop
+	
+restart:
+	$(CONTROL_HTTPD) restart

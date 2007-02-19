@@ -72,17 +72,21 @@ do
 done
 
 ## Check the Apache version
-HTTPD=`$APXS -q SBINDIR`/`$APXS -q TARGET`
+HTTPD="`$APXS -q SBINDIR`/`$APXS -q TARGET`"
+START_APACHE="$HTTPD -f `pwd`/httpd.conf"
 $HTTPD -v
 if $HTTPD -v | grep -q "Apache/1.3" 
  then 
-  MOD_SOURCE=mod_ndb_ap13.cc
+  APACHE=ap13
+  CONTROL_APACHE="`$APXS -q SBINDIR`/apachectl"
   echo "Using Apache 1.3"
   APXS1=$APXS
  else 
-  MOD_SOURCE=mod_ndb_ap20.cc
+  APACHE=ap20
+  CONTROL_APACHE="$HTTPD -f `pwd`/httpd.conf -k"
   echo "Using Apache 2"
 fi
+MOD_SOURCE=mod_ndb_$APACHE.cc
 echo
 
 echo "Configuring with"
@@ -119,7 +123,14 @@ if $MYSQLCFG --version | grep -q '^5.1.'
  else NDB_PATH=ndb 
 fi
 
+# sed script used to generate httpd.conf from a template:
+(
+echo s!@AP_USER@!`whoami`!
+echo s!@AP_GROUP@!`groups | awk '{print $NF}'`!
+echo s!@AP_DIR@!`pwd`!
+) > template.sed 
 
+# Start of the Makefile:
 (
 echo '#' Makefile for mod_ndb.  Automatically generated from:
 echo '#' $CONFIG_CMD
@@ -139,11 +150,22 @@ echo APXS_CFLAGS=`$APXS1 -q CFLAGS`
 echo APXS_CFLAGS_SHLIB=`$APXS1 -q CFLAGS_SHLIB`   
 echo APXS_LDFLAGS_SHLIB=`$APXS1 -q LDFLAGS_SHLIB`
 echo APXS_LIBS_SHLIB=`$APXS1 -q LIBS_SHLIB`
-
+echo
+echo TEMPLATE=template_conf_$APACHE
+echo START_HTTPD=$START_APACHE
+echo CONTROL_HTTPD=$CONTROL_APACHE
+echo
 ) > Makefile
 
 
 cat make_file_tail >> Makefile
+
+#### Prepare a test/demo environment 
+rm -f modules 
+ln -s `$APXS -q LIBEXECDIR` modules
+
+test -d logs || mkdir logs
+####
 
 echo "Created Makefile."
 echo
