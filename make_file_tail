@@ -41,7 +41,7 @@ start:
 	$(START_HTTPD)
         
 stop:
-	$(CONTROL_HTTPD) stop
+	$(STOP_HTTPD)
 	
 restart:
-	$(CONTROL_HTTPD) restart
+	$(RESTART_HTTPD)
