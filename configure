@@ -166,8 +166,8 @@ cat make_file_tail >> Makefile
 #### Prepare a test/demo environment 
 rm -f modules 
 ln -s `$APXS -q LIBEXECDIR` modules
-
 test -d logs || mkdir logs
+test -f test.conf || cp test.conf.dist test.conf
 ####
 
 echo "Created Makefile."
