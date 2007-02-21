@@ -40,6 +40,10 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
   config::srv *srv = (config::srv *)
     ap_get_module_config(s->module_config, &ndb_module);
 
+  log_debug(s,"srv->conenct_string: %s", srv->connect_string);
+  log_debug(s,"srv->max_read_operations: %d", srv->max_read_operations);
+  
+  
   /* Connect to the cluster */
   connect_to_cluster(& process.conn, s, srv, p);
 
@@ -214,7 +218,7 @@ extern "C" {
     config::init_dir,           /* create per-dir    config structures */
     config::merge_dir,          /* merge  per-dir    config structures */
     config::init_srv,           /* create per-server config structures */
-    NULL,                       /* merge  per-server config structures */
+    config::merge_srv,          /* merge  per-server config structures */
     configuration_commands,     /* table of config file commands       */
     mod_ndb_handlers,           /* [#8] MIME-typed-dispatched handlers */
     NULL,                       /* [#1] URI to filename translation    */

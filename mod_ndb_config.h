@@ -23,6 +23,7 @@ namespace config {
   struct srv {
     char *connect_string;
     int max_read_operations;
+    unsigned int magic_number;
   };
     
   /* Apache per-directory configuration */
@@ -45,6 +46,7 @@ namespace config {
     apache_array<char*> *updatable;
     apache_array<config::index> *indexes;
     apache_array<config::key_col> *key_columns;
+    unsigned int magic_number;
   };
   
   /* NDB Index */
@@ -82,12 +84,15 @@ namespace config {
   void * init_dir(ap_pool *, char *);
   void * init_srv(ap_pool *, server_rec *);
   void * merge_dir(ap_pool *, void *, void *);
+  void * merge_srv(ap_pool *, void *, void *);
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
   const char * result_format(cmd_parms *, void *, char *, char *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * filter(cmd_parms *, void *, char *, char *, char *);
   const char * primary_key(cmd_parms *, void *, char *);
+  const char * connectstring(cmd_parms *, void *, char *);
+  const char * maxreadsubrequests(cmd_parms *, void *, char *);
   
 }
 

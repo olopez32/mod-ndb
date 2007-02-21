@@ -32,16 +32,22 @@ namespace config {
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
     dir->results = json;
     dir->use_etags = 1;
+    dir->magic_number = 0xBABECAFE ;
     
     return (void *) dir;
   }
   
   
-  /* init_srv() : simply ask apache for some zeroed memory 
+  /* init_srv()  
   */
   void *init_srv(ap_pool *p, server_rec *s) {
     config::srv *srv = (config::srv *) ap_pcalloc(p, sizeof(config::srv));
+
+    srv->connect_string = 0;
     srv->max_read_operations = DEFAULT_MAX_READ_OPERATIONS;
+    srv->magic_number = 0xCAFEBABE ;
+
+    // fprintf(stderr, "Config for server: %x is %x\n", s, srv);
 
     return (void *) srv;
   }
@@ -72,7 +78,24 @@ namespace config {
  
     return (void *) dir;
   }
+
+
+  void *merge_srv(ap_pool *p, void *v1, void *v2) {
+    config::srv *srv = (config::srv *) ap_pcalloc(p, sizeof(config::srv));
+    config::srv *s1 = (config::srv *) v1;
+    config::srv *s2 = (config::srv *) v2;
     
+    // Start with a copy of s2
+    memcpy(srv,s2,sizeof(config::srv));
+    
+    // These parts can be inherited from the parent.
+    if(! s2->connect_string)    srv->connect_string = s1->connect_string ;
+    if(! s2->max_read_operations)
+        srv->max_read_operations = s1->max_read_operations;
+    
+    return (void *) srv;    
+  }
+
 
   /*  Process Format directives, e.g.   
       "Format JSON" 
@@ -84,6 +107,31 @@ namespace config {
     else if(!strcmp(str,"raw")) return raw;
     else if(!strcmp(str,"xml")) return xml;
     else return no_results;
+  }
+
+  const char *connectstring(cmd_parms *cmd, void *m, char *arg) {
+  
+    /* Due to what seems like a bug in apache, this doesn't work:
+    config::srv *srv = (config::srv *) m;
+    */
+    config::srv *srv = (config::srv *) 
+      ap_get_module_config(cmd->server->module_config, &ndb_module);
+    
+    assert(srv->magic_number == 0xCAFEBABE);
+    srv->connect_string = ap_pstrdup(cmd->pool, arg);
+    return 0;  
+  }
+
+  const char *maxreadsubrequests(cmd_parms *cmd, void *m, char *arg) {
+    /* Due to what seems like a bug in apache, this doesn't work:
+    config::srv *srv = (config::srv *) m;
+    */
+    config::srv *srv = (config::srv *) 
+      ap_get_module_config(cmd->server->module_config, &ndb_module);
+    
+    assert(srv->magic_number == 0xCAFEBABE);
+    srv->max_read_operations = atoi(arg);
+    return 0;
   }
 
   const char *result_format(cmd_parms *cmd, void *m, 
@@ -429,6 +477,9 @@ namespace config {
     char *which = (char *) cmd->cmd->cmd_data;
     index_id = get_index_by_name(dir,idx);
 
+    /* type-safe test: (is this void pointer really a dir?) */
+    assert(dir->magic_number == 0xBABECAFE);
+
     if(index_id == -1) {
       /* Build the index record */
       log_conf_debug(cmd->server,"Creating new index record %s",idx);
@@ -496,11 +547,18 @@ extern "C" {
   {
   {   /* Per-server: ndb-connectstring */
     "ndb-connectstring",          
-    (CMD_HAND_TYPE) ap_set_string_slot,
-    (void *)XtOffsetOf(config::srv, connect_string),
+    (CMD_HAND_TYPE) config::connectstring,
+    NULL,
     RSRC_CONF,      TAKE1, 
     "NDB Connection String" 
   },
+  {   // Per-server
+     "ndb-max-read-subrequests",
+     (CMD_HAND_TYPE) config::maxreadsubrequests,
+     NULL,
+     RSRC_CONF,     TAKE1,
+     "Limit to number of read subrequests in mod_ndb scripts"
+  },  
   {
     "Database",         // inheritable
     (CMD_HAND_TYPE) ap_set_string_slot,
