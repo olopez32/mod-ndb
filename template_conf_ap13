@@ -13,8 +13,6 @@ Group @AP_GROUP@
 PidFile "logs/httpd.pid"
 ScoreBoardFile "logs/httpd.scoreboard"
 
-# The rest should be OK...
-
 ServerType standalone
 
 LoadModule config_log_module  modules/mod_log_config.so
@@ -48,26 +46,6 @@ CustomLog "logs/ndb_access_log" common
 ErrorLog "logs/ndb_error_log"
 LogFormat "%h %l %u %t \"%r\" %>s %b" common
 
-
-<IfModule mod_ndb_ap13.cc>
- <Location /ndb>
-  SetHandler ndb-cluster
-  Database mod_ndb_test
- </Location>
- 
- <Location /ndb-commit-all>
-   SetHandler ndb-exec-batch
- </Location>
-
-Include cluster.conf
-Include bench/httpd.conf
-Include example1/ex1_httpd.conf
-Include example2/ex2_httpd.conf
-Include Tests/httpd.conf
-  
-
-</IfModule>
-
 MinSpareServers 1
 MaxSpareServers 5
 StartServers 2
@@ -80,4 +58,6 @@ Timeout 300
 KeepAlive On
 MaxKeepAliveRequests 100
 KeepAliveTimeout 15
+
+Include test.conf
 

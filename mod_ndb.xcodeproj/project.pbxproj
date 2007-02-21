@@ -46,6 +46,7 @@
 		6593DA500B83E31300DDE22C /* ex2_httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ex2_httpd.conf; path = example2/ex2_httpd.conf; sourceTree = "<group>"; };
 		6593DA510B83E31300DDE22C /* load_icons.sql.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = load_icons.sql.gz; path = example2/load_icons.sql.gz; sourceTree = "<group>"; };
 		6593DA520B83E31300DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example2/README; sourceTree = "<group>"; };
+		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
 		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,6 +76,7 @@
 				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				657BD36B0B890B0600A9ED69 /* template_conf_ap13 */,
 				657BD36C0B890B0600A9ED69 /* template_conf_ap20 */,
+				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
 				657BD1C30B84EE8600A9ED69 /* Tests */,
 				6593D9EC0B83D83500DDE22C /* Example1 */,
 				6593DA4F0B83E2F000DDE22C /* Example2 */,

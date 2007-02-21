@@ -74,19 +74,4 @@ DefaultType text/plain
     AddType application/x-gzip .gz .tgz
 </IfModule>
 
-<Location /ndb>
-  SetHandler ndb-cluster
-  Database mod_ndb_test
-</Location>
- 
-<Location /ndb-commit-all>
-  SetHandler ndb-exec-batch
-</Location>
-
-Include cluster.conf
-
-Include Tests/httpd.conf
-Include example1/ex1_httpd.conf
-Include example2/ex2_httpd.conf
-Include example3/ex3_httpd.conf
-Include bench/httpd.conf
+Include test.conf
