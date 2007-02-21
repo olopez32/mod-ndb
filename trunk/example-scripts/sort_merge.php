@@ -6,24 +6,24 @@
 #   that is embedded in Apache and provides functions to perform a 
 #   subrequest and to set and retreive Apache notes.
 
-# Before each query except the final one, set ndb_keep_tx_open.  This makes
-# all queries execute inside a single consistent transaction.
-apache_note("ndb_keep_tx_open",1);
 
-# Scan table 1 in an Apache sub-request, and get the result set back in an
-# Apache note.  Use an OrderedIndex scan to get a set of rows from a table.
-# In httpd.conf, specify Format ApacheNote, and put an [ASC] sort flag at 
-# the end of the OrderedIndex specifier.
+# Scan table 1 in an Apache sub-request.  
+# Use an OrderedIndex scan to get a set of rows from a table.
+# In httpd.conf, include an [ASC] sort flag in the OrderedIndex specifier.
 #
-virtual("/ndb/as-note/table1?channel=12");
-$results = apache_note("NDB_results");
-$table1 = json_decode($results,true);
+virtual("/ndb/table1?channel=12");
 
-# Scan table 2: (Same as table1).
-#
-virtual("/ndb/as-note/table2?name=joe");
-$results = apache_note("NDB_results");
-$table2 = json_decode($results,true);
+# Scan table 2
+virtual("/ndb/table2?name=joe");
+
+# Now commit the transaction:
+virtual("/ndb-commit-all");
+
+# Read the results of the two queries from the Apache notes table
+# and deserialize it into an array.
+$table1 = json_decode(apache_note("ndb_result_0",true));
+$table2 = json_decode(apache_note("ndb_result_1",true));
+
 
 # Now we have two sorted arrays and can merge them into a result set.
 #

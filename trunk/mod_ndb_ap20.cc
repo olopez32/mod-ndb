@@ -31,13 +31,16 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
   int n_ok = 0;
   int n_fail = 0;
 
-    /* Initialize the NDB API */
+  /* Initialize the NDB API */
   ndb_init();
 
   /* Get server configuration */
   config::srv *srv = (config::srv *)
     ap_get_module_config(s->module_config, &ndb_module);
-
+           
+  log_debug(s,"srv->conenct_string: %s", srv->connect_string);
+  log_debug(s,"srv->max_read_operations: %d", srv->max_read_operations);
+  
   /* Multi-threaded? */
   ap_mpm_query(AP_MPMQ_IS_THREADED, &apache_is_threaded);
   
@@ -125,17 +128,17 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
                         config::srv *srv, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb_cluster_connection here */
-  c->connection = new Ndb_cluster_connection((srv->connect_string));
-
+  c->connection = new Ndb_cluster_connection(srv->connect_string);
+  
   /* Set name that appears in the cluster log file */
   c->connection->set_name(ap_psprintf(p, "Apache mod_ndb %s/%d",
                           s->server_hostname, getpid()));
   
-  // To do: arguments to connnect() ???
-  if (c->connection->connect()) {
+  if (c->connection->connect(2,1,0)) {
     /* If the cluster is down, there could be a flood of these,
     so write it as a warning to maybe prevent filling up a log file. */
-    log_err(s,"Cannot connect to NDB Cluster.");
+    log_err2(s,"Cannot connect to NDB Cluster (connectstring: %s)",
+             srv->connect_string);
     return;
   }
 
@@ -196,7 +199,7 @@ ndb_instance *my_instance(request_rec *r) {
   
   config::srv *srv = (config::srv *)
   ap_get_module_config(r->server->module_config, &ndb_module);
-  
+ 
   if(apache_is_threaded) 
     thread_id = r->connection->id % process.thread_limit;
   
@@ -249,7 +252,7 @@ extern "C" {
     config::init_dir,           /* create per-dir    config structures */
     config::merge_dir,          /* merge  per-dir    config structures */
     config::init_srv,           /* create per-server config structures */
-    NULL,                       /* merge  per-server config structures */
+    config::merge_srv,          /* merge  per-server config structures */
     configuration_commands,     /* table of config file commands       */
     mod_ndb_register_hooks,     /* register_hooks                      */
   };
