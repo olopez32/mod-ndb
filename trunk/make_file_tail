@@ -37,7 +37,7 @@ clean:
 httpd.conf:
 	sed -f template.sed $(TEMPLATE) > httpd.conf
 
-start:
+start: mod_ndb.so httpd.conf
 	$(START_HTTPD)
         
 stop:
