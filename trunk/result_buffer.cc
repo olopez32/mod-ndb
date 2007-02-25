@@ -27,6 +27,26 @@ char * result_buffer::init(request_rec *r, size_t size) {
 }
 
 
+void result_buffer::out(size_t len, const char *s) {
+  char *old_buff = buff;
+  register size_t new_sz = sz + len;
+  
+  if(new_sz > alloc_sz) {
+    register int factor = (new_sz / alloc_sz) + 1;
+    alloc_sz *= factor;
+    buff = (char *) realloc(old_buff, alloc_sz);
+    if(! buff) {
+      free(old_buff);
+      return;
+    }
+  }
+  
+  char *dst = buff + sz;
+  while(len--) *dst++ = *s++;
+  sz = new_sz;
+}
+
+
 void result_buffer::out(const char *fmt, ... ) {
   va_list args;
   size_t old_size = sz;

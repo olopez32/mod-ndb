@@ -18,16 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class JSON {
   public:
-    static const char * new_array;
-    static const char * end_array;
-    static const char * new_object;
-    static const char * end_object;
-    static const char * delimiter ;
-    static const char * is        ;
-    static void put_value(result_buffer &, const NdbRecAttr &, request_rec *);
-    inline static void put_member(result_buffer &rbuf, const NdbRecAttr &rec, 
-                            request_rec *r) {
-      rbuf.out("\"%s\"%s", rec.getColumn()->getName(), JSON::is);
-      JSON::put_value(rbuf, rec, r);
+    inline static void new_array(result_buffer &rbuf)  { rbuf.out(2,"[\n"); }
+    inline static void end_array(result_buffer &rbuf)  { rbuf.out(2,"\n]"); }
+    inline static void new_object(result_buffer &rbuf) { rbuf.out(3," { "); }
+    inline static void end_object(result_buffer &rbuf) { rbuf.out(2," }") ; }
+    inline static void delimiter(result_buffer &rbuf)  { rbuf.out(3," , "); }
+    inline static void is(result_buffer &rbuf)         { rbuf.out(3," : "); }
+
+    inline static void put_member(result_buffer &rbuf, const NdbRecAttr &rec) 
+    {
+      rbuf.out("\"%s\"", rec.getColumn()->getName());
+      JSON::is(rbuf);
+      JSON::put_value(rbuf, rec);
     }
+    static void put_value(result_buffer &, const NdbRecAttr &);
 };

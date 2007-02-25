@@ -27,21 +27,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
      overloading the "<<" operator.  
   */
 
-const char * JSON::new_array    = "[\n";
-const char * JSON::end_array    = "\n]";
-const char * JSON::new_object   = " { ";
-const char * JSON::end_object   = " }";
-const char * JSON::delimiter    = " , ";
-const char * JSON::is           = " : ";
-
-void JSON::put_value(result_buffer &rbuf,const NdbRecAttr &rec,request_rec *r){
-
-  const NdbDictionary::Column* col;
+void JSON::put_value(result_buffer &rbuf,const NdbRecAttr &rec){
 
   if (rec.isNULL())
-     return rbuf.out("null");
+     return rbuf.out(4,"null");
 
-  col = rec.getColumn();
   switch(rec.getType()) {
     
     /* Things that must be quoted in JSON: */
@@ -54,13 +44,13 @@ void JSON::put_value(result_buffer &rbuf,const NdbRecAttr &rec,request_rec *r){
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Binary:
     case NdbDictionary::Column::Blob:
-        return rbuf.out("\"%s\"", MySQL::result(r->pool,rec));
+        rbuf.out(1,"\"");
+        MySQL::result(rbuf,rec);
+        rbuf.out(1,"\"");
+        return;
 
     default:      
-        return rbuf.out(MySQL::result(r->pool,rec));
+        return MySQL::result(rbuf,rec);
   }
-  rbuf.out("\"unknown\"");
+  rbuf.out(9,"\"unknown\"");
 }
-
-/* Note: JSON::member() is an inline function defined in JSON.h 
-*/
