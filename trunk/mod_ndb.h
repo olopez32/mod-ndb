@@ -42,8 +42,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #ifdef CONFIG_DEBUG
 #define log_conf_debug(x,y,z) log_debug(x,y,z)
+#define log_conf_debug4(s,t,a,b,c) log_debug4(s,t,a,b,c)
 #else
 #define log_conf_debug(x,y,z)
+#define log_conf_debug4(s,t,a,b,c)
 #endif
 
 extern "C" module AP_MODULE_DECLARE_DATA ndb_module;
@@ -77,19 +79,6 @@ class apache_array: public array_header {
     void * operator new(size_t, ap_pool *p, int n) {
       return ap_make_array(p, n, sizeof(T));
     };
-};
-
-
-class result_buffer {
-  private:
-    size_t alloc_sz;
-  
-  public:
-    char *buff;
-    size_t sz; 
-    char *init(request_rec *r, size_t size);
-    void out(const char *fmt, ...);
-    ~result_buffer();
 };
 
 
