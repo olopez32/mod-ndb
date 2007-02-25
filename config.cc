@@ -482,7 +482,8 @@ namespace config {
 
     if(index_id == -1) {
       /* Build the index record */
-      log_conf_debug(cmd->server,"Creating new index record %s",idx);
+      log_conf_debug4(cmd->server,"Creating new index record \"%s\" at %s:%d",
+                      idx, cmd->config_file->name, cmd->config_file->line_number);
       index_rec = dir->indexes->new_item();
       bzero(index_rec, dir->indexes->elt_size);
       index_id = dir->indexes->size() - 1;

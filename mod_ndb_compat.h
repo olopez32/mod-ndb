@@ -80,9 +80,11 @@ typedef apr_array_header_t array_header;
 #ifdef MOD_NDB_DEBUG 
 #define log_debug(s,txt,arg) ap_log_error(APLOG_MARK,log::debug,0,s,txt,arg);
 #define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,0,s,txt,arg1,arg2);
+#define log_debug4(s,txt,a,b,c) ap_log_error(APLOG_MARK,log::debug,0,s,txt,a,b,c);
 #else
 #define log_debug(s,txt,arg) 
 #define log_debug3(s,txt,arg1,arg2)
+#define log_debug4(s,txt,a,b,c)
 #endif
 /* end of logging defines */
 
@@ -104,9 +106,11 @@ typedef apr_array_header_t array_header;
 #ifdef MOD_NDB_DEBUG 
 #define log_debug(s,txt,arg) ap_log_error(APLOG_MARK, log::debug, s, txt, arg);
 #define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,s,txt,arg1,arg2);
+#define log_debug4(s,txt,a,b,c) ap_log_error(APLOG_MARK,log::debug,s,txt,a,b,c);
 #else
 #define log_debug(s,txt,arg) 
 #define log_debug3(s,txt,arg1,arg2)
+#define log_debug4(s,txt,a,b,c)
 #endif
 /* end of logging defines */
 
