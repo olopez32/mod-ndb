@@ -227,7 +227,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       */
       if(i->n_read_ops < i->max_read_ops) {
         q->data = i->data + i->n_read_ops++;
-        if(dir->use_etags) i->flags.use_etag = 1;
+        if(dir->use_etags) i->flag.use_etag = 1;
         q->data->result_format = dir->results;
         q->data->n_result_cols = dir->visible->size();
       }
@@ -339,7 +339,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
      This creates an obligation to close it later, using tx->close().
   */    
   if(i->tx == 0) {
-    if(i->flags.aborted) {
+    if(i->flag.aborted) {
       /* Transaction was already aborted */
       return NOT_FOUND;
     }
@@ -435,7 +435,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   log_debug(r->server,"Aborting open transaction at '%s'",r->unparsed_uri);
   i->tx->close();
   i->tx = 0;
-  i->flags.aborted = 1;
+  i->flag.aborted = 1;
   return NOT_FOUND;
 }
 
@@ -454,7 +454,7 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
       if(isz) {   /* then the column is a blob... */
         log_debug(r->server,"Treating column %s as a blob",column_list[n])
         q->data->blob = q->data->op->getBlobHandle(column_list[n]);
-        q->i->flags.has_blob = 1;
+        q->i->flag.has_blob = 1;
       }
     }
   }
