@@ -51,15 +51,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    http://dev.mysql.com/doc/internals/en/myisam-column-attributes.html
 */
 
-char * MySQL::Time(ap_pool *p, const NdbRecAttr &rec) {
+namespace MySQL {
+  /* Prototypes of private functions implemented here: */
+  void Time(result_buffer &rbuf, const NdbRecAttr &rec);
+  void Date(result_buffer &rbuf, const NdbRecAttr &rec);
+  void Datetime(result_buffer &rbuf, const NdbRecAttr &rec);
+  void String(result_buffer &rbuf, const NdbRecAttr &rec, 
+              enum ndb_string_packing packing); 
+}
+
+void MySQL::Time(result_buffer &rbuf, const NdbRecAttr &rec) {
   long tmp=(long) sint3korr(rec.aRef());
   int hour=(uint) (tmp/10000);
   int minute=(uint) (tmp/100 % 100);
   int second=(uint) (tmp % 100);
-  return ap_psprintf(p, "%02d:%02d:%02d", hour, minute, second);
+  rbuf.out("%02d:%02d:%02d", hour, minute, second);
 }
 
-char * MySQL::Date(ap_pool *p, const NdbRecAttr &rec) {
+void MySQL::Date(result_buffer &rbuf, const NdbRecAttr &rec) {
   unsigned int tmp= ( unsigned int ) uint3korr(rec.aRef());
   int part;
   char xbuf[40];
@@ -79,10 +88,10 @@ char * MySQL::Date(ap_pool *p, const NdbRecAttr &rec) {
   *pos--= (char) ('0'+part%10); part/=10;
   *pos--= (char) ('0'+part%10); part/=10;
   *pos=   (char) ('0'+part);
-  return buf;
+  rbuf.out(buf);
 }
 
-char * MySQL::Datetime(ap_pool *p, const NdbRecAttr &rec) {
+void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
   unsigned long long tmp=rec.u_64_value();
   long part1,part2,part3;
   part1=(long) (tmp / (long long) (1000000));
@@ -110,69 +119,68 @@ char * MySQL::Datetime(ap_pool *p, const NdbRecAttr &rec) {
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos=(char) ('0'+(char) part3);
-  return buf;    
+  rbuf.out(buf);
 }
 
 
-char * MySQL::result(ap_pool *p, const NdbRecAttr &rec) {
+void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec) {
 
   switch(rec.getType()) {
     
     case NdbDictionary::Column::Int:
-      return ap_psprintf(p,"%d", (int)  rec.int32_value()); 
+      return rbuf.out("%d", (int)  rec.int32_value()); 
       
     case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Unsigned:
     case NdbDictionary::Column::Timestamp:
-      return ap_psprintf(p,"%u", (unsigned int) rec.u_32_value());
+      return rbuf.out("%u", (unsigned int) rec.u_32_value());
       
     case NdbDictionary::Column::Varchar:
     case NdbDictionary::Column::Varbinary:
-      return MySQL::String(p,rec,char_var);
+      return MySQL::String(rbuf,rec,char_var);
     
     case NdbDictionary::Column::Char:
     case NdbDictionary::Column::Binary:
-      return MySQL::String(p,rec,char_fixed);
+      return MySQL::String(rbuf,rec,char_fixed);
       
     case NdbDictionary::Column::Longvarchar:
-      return MySQL::String(p,rec,char_longvar);
+      return MySQL::String(rbuf,rec,char_longvar);
       
     case NdbDictionary::Column::Float:
-      return ap_psprintf(p,"%G", (double) rec.float_value());
+      return rbuf.out("%G", (double) rec.float_value());
       
     case NdbDictionary::Column::Double:
-      return ap_psprintf(p,"%G", (double) rec.double_value());
+      return rbuf.out("%G", (double) rec.double_value());
       
     case NdbDictionary::Column::Date:
-      return MySQL::Date(p,rec);
+      return MySQL::Date(rbuf,rec);
       
     case NdbDictionary::Column::Time:
-      return MySQL::Time(p,rec);
+      return MySQL::Time(rbuf,rec);
       
     case NdbDictionary::Column::Bigunsigned:
-      return ap_psprintf(p,"%qu", rec.u_64_value()); 
+      return rbuf.out("%llu", rec.u_64_value()); 
       
     case NdbDictionary::Column::Smallunsigned:
-      return ap_psprintf(p,"%u", (short) rec.u_short_value());
+      return rbuf.out("%u", (short) rec.u_short_value());
       
     case NdbDictionary::Column::Tinyunsigned:
-      return ap_psprintf(p,"%u", (int) rec.u_char_value());
+      return rbuf.out("%u", (int) rec.u_char_value());
       
     case NdbDictionary::Column::Bigint:
-      // return ap_psprintf(p,"%lli", (long long int) rec.int64_value());
-      return ap_psprintf(p,"%q", rec.int64_value());
+      return rbuf.out("%ll", rec.int64_value());
       
     case NdbDictionary::Column::Smallint:
-      return ap_psprintf(p,"%d", (short) rec.short_value());
+      return rbuf.out("%d", (short) rec.short_value());
       
     case NdbDictionary::Column::Tinyint:
-      return ap_psprintf(p,"%d", (int) rec.char_value());
+      return rbuf.out("%d", (int) rec.char_value());
       
     case NdbDictionary::Column::Year:
-      return ap_psprintf(p, "%04d", 1900 + rec.u_char_value());
+      return rbuf.out("%04d", 1900 + rec.u_char_value());
       
     case NdbDictionary::Column::Datetime:
-      return MySQL::Datetime(p,rec);
+      return MySQL::Datetime(rbuf,rec);
       
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
@@ -181,7 +189,7 @@ char * MySQL::result(ap_pool *p, const NdbRecAttr &rec) {
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
     default:
-      return 0;
+      return;
   
   }
 }
@@ -189,11 +197,10 @@ char * MySQL::result(ap_pool *p, const NdbRecAttr &rec) {
 
 // MySQL::String
 // Derived from ndbrecattr_print_string in NdbRecAttr.cpp
-// BUG: ap_pstrndup() might not be safe for UTF-8 !?!?!?
 // Correct behavior here depends on MySQL version 
 // and on Column.StorageType 
 
-char * MySQL::String(ap_pool *p, const NdbRecAttr &rec, 
+void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec, 
                      enum ndb_string_packing packing) {
   unsigned sz = 0;
   char *ref = 0;
@@ -221,7 +228,7 @@ char * MySQL::String(ap_pool *p, const NdbRecAttr &rec,
     else break;
   }
   
-  return ap_pstrndup(p, ref, sz);  
+  return rbuf.out(sz, ref);  
 }
 
 

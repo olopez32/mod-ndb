@@ -18,12 +18,12 @@ mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h revision.h
 
 handlers.o: handlers.cc mod_ndb.h
 read_http_post.o: read_http_post.cc
-JSON.o: JSON.cc mod_ndb.h MySQL_Field.h JSON.h
+JSON.o: JSON.cc mod_ndb.h MySQL_Field.h JSON.h result_buffer.h
 Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h index_object.h
-Execute.o: Execute.cc mod_ndb.h JSON.h
-MySQL_Field.o: MySQL_Field.cc MySQL_Field.h
+Execute.o: Execute.cc mod_ndb.h JSON.h result_buffer.h
+MySQL_Field.o: MySQL_Field.cc MySQL_Field.h result_buffer.h
 config.o: config.cc mod_ndb.h mod_ndb_config.h
-result_buffer.o: result_buffer.cc mod_ndb.h
+result_buffer.o: result_buffer.cc mod_ndb.h result_buffer.h
 
 rev:
 	sh create_rev_h.sh

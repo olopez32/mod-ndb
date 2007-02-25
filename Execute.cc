@@ -168,14 +168,13 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
 /******** Result Page formatters *************/
 
 
-inline void JSON_send_result_row(request_rec *r, data_operation *data, 
-                                 result_buffer &res) {
-  res.out(JSON::new_object);
+inline void JSON_send_result_row(data_operation *data, result_buffer &res) {
+  JSON::new_object(res);
   for(int n = 0; n < data->n_result_cols ; n++) {
-    if(n) res.out(JSON::delimiter);
-    JSON::put_member(res, *data->result_cols[n], r);
+    if(n) JSON::delimiter(res);
+    JSON::put_member(res, *data->result_cols[n]);
   }
-  res.out(JSON::end_object);
+  JSON::end_object(res);
 }
 
 
@@ -188,20 +187,20 @@ int Results_JSON(request_rec *r, data_operation *data,
     /* Multi-row result set */   
     while((data->scanop->nextResult(true)) == 0) {
       do {
-        if(nrows++) res.out(",\n");
-        else res.out(JSON::new_array,r);
-        JSON_send_result_row(r, data, res);
+        if(nrows++) res.out(2,",\n");
+        else JSON::new_array(res); 
+        JSON_send_result_row(data, res);
       } while((data->scanop->nextResult(false)) == 0);
     }
-    if(nrows) res.out(JSON::end_array);
+    if(nrows) JSON::end_array(res);
     else return HTTP_GONE;
   }
   else {
     /* Single row result set */
-    JSON_send_result_row(r, data, res);
+    JSON_send_result_row(data, res);
   }
   
-  res.out("\n");
+  res.out(1,"\n");
   return OK;
 }
 

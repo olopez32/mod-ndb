@@ -15,6 +15,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+#include "result_buffer.h"
 
 enum ndb_string_packing {
   char_fixed,
@@ -56,12 +57,8 @@ struct mvalue {
 };
 typedef struct mvalue mvalue;
 
-namespace MySQL {
-  char *Time(ap_pool *p, const NdbRecAttr &rec);
-  char *Date(ap_pool *p, const NdbRecAttr &rec);
-  char *Datetime(ap_pool *p, const NdbRecAttr &rec);
-  char *String(ap_pool *p, const NdbRecAttr &rec, enum ndb_string_packing packing);  
-  char *result(ap_pool *p,  const NdbRecAttr &rec);
+namespace MySQL { 
+  void result(result_buffer &, const NdbRecAttr &);
   void  value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
 };
 
