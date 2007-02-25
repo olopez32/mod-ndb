@@ -78,7 +78,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
      - The transaction must be executed "NoCommit" before reading the BLOB
      - BLOBs that are truly binary cannot be returned as Apache notes 
   */
-  if(i->flags.has_blob) {
+  if(i->flag.has_blob) {
     /* Execute NoCommit */
     if(i->tx->execute(NdbTransaction::NoCommit, NdbTransaction::AbortOnError, 
                       i->conn->ndb_force_send))
@@ -132,7 +132,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       ap_set_content_length(r, 0);
     
     // Set ETag
-    if(i->flags.use_etag && my_results.buff) {
+    if(i->flag.use_etag && my_results.buff) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
                                  my_results.buff, my_results.sz);
       ap_table_setn(r->headers_out, "ETag",  etag);
@@ -157,9 +157,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Clear all used operations */
   bzero(i->data, i->n_read_ops * sizeof(struct data_operation));
   i->n_read_ops = 0;
-  i->flags.aborted  = 0;
-  i->flags.has_blob = 0;
-  i->flags.use_etag = 0;
+  i->flag.aborted  = 0;
+  i->flag.has_blob = 0;
+  i->flag.use_etag = 0;
   
   return response_code;
 }

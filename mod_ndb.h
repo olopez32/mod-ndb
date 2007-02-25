@@ -131,7 +131,7 @@ struct mod_ndb_instance {
     unsigned int has_blob : 1 ;
     unsigned int aborted  : 1 ;
     unsigned int use_etag : 1 ;
-  } flags;
+  } flag;
   unsigned int requests;
   unsigned int errors;
 };
