@@ -82,7 +82,7 @@
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2007-02-24 15:54:35 -0800</string>
+	<string>2007-02-24 21:19:58 -0800</string>
 	<key>Modifier</key>
 	<string>John David Duncan</string>
 	<key>NotesVisible</key>
@@ -6087,7 +6087,7 @@ above the  Apache API}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{391, 738.198}, {161, 14}}</string>
+					<string>{{391, 738.198}, {165, 14}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -7364,8 +7364,8 @@ first_col_idx}</string>
 op-&gt;equal() and scanop-&gt;setBound().\
 \
 \'a5 next_key_part() is an iterator that advances the counter 
-\f1\i key_part
-\f0\i0  and returns false when you reach the end of the key\
+\f1\i \cf2 key_part
+\f0\i0 \cf2  and returns false when you reach the end of the key\
 \
 \'a5 get_column() maps a key part to its Column in the dictionary}</string>
 					</dict>
@@ -8122,8 +8122,77 @@ Standardizing index access in mod_ndb }</string>
 			<key>GraphicsList</key>
 			<array>
 				<dict>
+					<key>Class</key>
+					<string>LineGraphic</string>
+					<key>ID</key>
+					<integer>125</integer>
+					<key>Points</key>
+					<array>
+						<string>{5.16302, 152.309}</string>
+						<string>{547.275, 153.029}</string>
+					</array>
+					<key>Style</key>
+					<dict>
+						<key>stroke</key>
+						<dict>
+							<key>HeadArrow</key>
+							<string>0</string>
+							<key>TailArrow</key>
+							<string>0</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
 					<key>Bounds</key>
-					<string>{{42.1901, 415.23}, {87.72, 19}}</string>
+					<string>{{37.4319, 243.737}, {516.72, 38}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>Vertical</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>124</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+{\fonttbl\f0\fnil\fcharset77 GillSans;}
+{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs32 \cf2 \'a5 Decoding is handled by some private functions inside of MySQL_Field.cc, including String(), Time(), Date(), and Datetime()...}</string>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{16.6793, 415.23}, {87.72, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8171,7 +8240,7 @@ Standardizing index access in mod_ndb }</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{42.1901, 58.8724}, {87.72, 19}}</string>
+					<string>{{5.16302, 166.576}, {87.72, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8224,8 +8293,8 @@ Standardizing index access in mod_ndb }</string>
 					<integer>121</integer>
 					<key>Points</key>
 					<array>
-						<string>{8.09747, 410.461}</string>
-						<string>{550.209, 411.181}</string>
+						<string>{8.09747, 396.263}</string>
+						<string>{550.209, 396.983}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -8471,7 +8540,7 @@ Standardizing index access in mod_ndb }</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{33.4891, 245.559}, {516.72, 38}}</string>
+					<string>{{33.4891, 198.844}, {516.72, 38}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8518,49 +8587,44 @@ Standardizing index access in mod_ndb }</string>
 					<integer>0</integer>
 				</dict>
 				<dict>
+					<key>Bounds</key>
+					<string>{{375.163, 286.267}, {161, 70}}</string>
 					<key>Class</key>
-					<string>Group</string>
-					<key>Graphics</key>
-					<array>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>YES</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>114</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
 						<dict>
-							<key>Bounds</key>
-							<string>{{373.872, 291.429}, {161, 70}}</string>
-							<key>Class</key>
-							<string>ShapedGraphic</string>
-							<key>FitText</key>
-							<string>YES</string>
-							<key>Flow</key>
-							<string>Resize</string>
-							<key>HFlip</key>
-							<string>YES</string>
-							<key>ID</key>
-							<integer>114</integer>
-							<key>Shape</key>
-							<string>Rectangle</string>
-							<key>Style</key>
-							<dict>
-								<key>fill</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>shadow</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>stroke</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-							</dict>
-							<key>Text</key>
-							<dict>
-								<key>Align</key>
-								<integer>0</integer>
-								<key>Text</key>
-								<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fnil\fcharset77 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -8570,67 +8634,63 @@ Standardizing index access in mod_ndb }</string>
   char_var,\
   char_longvar\
 \};}</string>
-							</dict>
-							<key>TextPlacement</key>
-							<integer>0</integer>
-							<key>Wrap</key>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
+					<key>Wrap</key>
+					<string>NO</string>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{56.7933, 297.157}, {314.44, 38}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>Vertical</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>115</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
 							<string>NO</string>
 						</dict>
+						<key>shadow</key>
 						<dict>
-							<key>Bounds</key>
-							<string>{{37.4319, 302.319}, {314.44, 38}}</string>
-							<key>Class</key>
-							<string>ShapedGraphic</string>
-							<key>FitText</key>
-							<string>Vertical</string>
-							<key>Flow</key>
-							<string>Resize</string>
-							<key>HFlip</key>
-							<string>YES</string>
-							<key>ID</key>
-							<integer>115</integer>
-							<key>Shape</key>
-							<string>Rectangle</string>
-							<key>Style</key>
-							<dict>
-								<key>fill</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>shadow</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>stroke</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-							</dict>
-							<key>Text</key>
-							<dict>
-								<key>Align</key>
-								<integer>0</integer>
-								<key>Text</key>
-								<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fnil\fcharset77 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs32 \cf2 \'a5 String() can unpack three different sorts of strings packed into NDB character arrays.}</string>
-							</dict>
-							<key>TextPlacement</key>
-							<integer>0</integer>
-						</dict>
-					</array>
-					<key>ID</key>
-					<integer>113</integer>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{33.4891, 361.429}, {408.44, 38}}</string>
+					<string>{{55.432, 354.976}, {487.039, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8678,7 +8738,7 @@ Standardizing index access in mod_ndb }</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{33.4891, 97.7448}, {461, 126}}</string>
+					<string>{{11.5601, 58.8724}, {425, 70}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8720,13 +8780,9 @@ Standardizing index access in mod_ndb }</string>
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
 
 \f0\fs20 \cf2 \CocoaLigature0 namespace\cf0  MySQL \{\
-  \cf2 char\cf0  *Time(pool *p, \cf2 const\cf0  NdbRecAttr &amp;rec);\
-  \cf2 char\cf0  *Date(pool *p, \cf2 const\cf0  NdbRecAttr &amp;rec);\
-  \cf2 char\cf0  *Datetime(pool *p, \cf2 const\cf0  NdbRecAttr &amp;rec);\
-  \cf2 char\cf0  *String(pool *p, \cf2 const\cf0  NdbRecAttr &amp;rec,\
-               \cf2 enum\cf0  ndb_string_packing packing);  \
-  \cf2 char\cf0  *result(pool *p,  \cf2 const\cf0  NdbRecAttr &amp;rec);\
-  mvalue value(pool *p, \cf2 const\cf0  NdbDictionary::Column *col, \cf2 const\cf0  \cf2 char\cf0  *val);\
+  \cf2 char\cf0  *result(pool *p,  result_buffer &amp;rbuf, \cf2 const\cf0  NdbRecAttr &amp;rec);\
+  mvalue value(pool *p, \cf2 const\cf0  NdbDictionary::Column *col,\
+               \cf2 const\cf0  \cf2 char\cf0  *val);\
 \};}</string>
 					</dict>
 					<key>TextPlacement</key>
@@ -8736,7 +8792,7 @@ Standardizing index access in mod_ndb }</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{444.72, 58.8724}, {120, 17}}</string>
+					<string>{{444.02, 46.2579}, {120, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8798,7 +8854,7 @@ Standardizing index access in mod_ndb }</string>
 					<array>
 						<dict>
 							<key>Bounds</key>
-							<string>{{459.72, 80.8587}, {90, 14}}</string>
+							<string>{{459.02, 68.2442}, {90, 14}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8839,7 +8895,7 @@ Standardizing index access in mod_ndb }</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{459.72, 94.8587}, {90, 84}}</string>
+							<string>{{459.02, 82.2442}, {90, 28}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8875,11 +8931,7 @@ Standardizing index access in mod_ndb }</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf0 Time()\
-Date()\
-Datetime()\
-String()\
-result()\
+\f0\fs24 \cf0 result()\
 value()}</string>
 							</dict>
 							<key>TextPlacement</key>
@@ -9833,7 +9885,7 @@ put_member()}</string>
 		<key>FitInWindow</key>
 		<true/>
 		<key>Frame</key>
-		<string>{{367, -8}, {627, 746}}</string>
+		<string>{{380, -2}, {627, 746}}</string>
 		<key>ShowRuler</key>
 		<true/>
 		<key>ShowStatusBar</key>
