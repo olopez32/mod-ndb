@@ -82,7 +82,7 @@
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2007-02-24 22:09:23 -0800</string>
+	<string>2007-02-26 12:40:10 -0800</string>
 	<key>Modifier</key>
 	<string>John David Duncan</string>
 	<key>NotesVisible</key>
@@ -8242,7 +8242,7 @@ Standardizing index access in mod_ndb }</string>
 					<array>
 						<dict>
 							<key>Bounds</key>
-							<string>{{456.066, 231.722}, {36, 19}}</string>
+							<string>{{456.066, 273.722}, {36, 19}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8292,7 +8292,7 @@ Standardizing index access in mod_ndb }</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{522.226, 242.297}, {43, 19}}</string>
+							<string>{{522.226, 284.297}, {43, 19}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8342,7 +8342,7 @@ Standardizing index access in mod_ndb }</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{464.934, 358.674}, {111.066, 19}}</string>
+							<string>{{464.934, 400.674}, {111.066, 19}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8390,7 +8390,7 @@ Standardizing index access in mod_ndb }</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{534.226, 116.524}, {19, 19}}</string>
+							<string>{{534.226, 158.524}, {19, 19}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8445,7 +8445,7 @@ Standardizing index access in mod_ndb }</string>
 							<array>
 								<dict>
 									<key>Bounds</key>
-									<string>{{417.066, 258.524}, {105, 14}}</string>
+									<string>{{417.066, 300.524}, {105, 14}}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>FitText</key>
@@ -8486,7 +8486,7 @@ Standardizing index access in mod_ndb }</string>
 								</dict>
 								<dict>
 									<key>Bounds</key>
-									<string>{{417.066, 272.524}, {105, 84}}</string>
+									<string>{{417.066, 314.524}, {105, 84}}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>FitText</key>
@@ -8557,7 +8557,7 @@ result_format}</string>
 							<array>
 								<dict>
 									<key>Bounds</key>
-									<string>{{417.066, 125.921}, {105, 14}}</string>
+									<string>{{417.066, 167.921}, {105, 14}}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>FitText</key>
@@ -8598,7 +8598,7 @@ result_format}</string>
 								</dict>
 								<dict>
 									<key>Bounds</key>
-									<string>{{417.066, 139.921}, {105, 84}}</string>
+									<string>{{417.066, 181.921}, {105, 84}}</string>
 									<key>Class</key>
 									<string>ShapedGraphic</string>
 									<key>FitText</key>
@@ -8679,8 +8679,8 @@ result_format}</string>
 					<integer>27</integer>
 					<key>Points</key>
 					<array>
-						<string>{346.868, 169.3}</string>
-						<string>{417.066, 174.921}</string>
+						<string>{346.868, 211.3}</string>
+						<string>{417.066, 216.921}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -8709,7 +8709,7 @@ result_format}</string>
 					<array>
 						<dict>
 							<key>Bounds</key>
-							<string>{{257.808, 77.1898}, {90, 14}}</string>
+							<string>{{257.808, 119.19}, {90, 14}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8750,7 +8750,7 @@ result_format}</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{257.808, 91.1898}, {90, 126}}</string>
+							<string>{{257.808, 133.19}, {90, 126}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -8840,57 +8840,7 @@ errors}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{313, 615}, {263, 114}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>FitText</key>
-					<string>Vertical</string>
-					<key>Flow</key>
-					<string>Resize</string>
-					<key>HFlip</key>
-					<string>YES</string>
-					<key>ID</key>
-					<integer>149</integer>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-					</dict>
-					<key>Text</key>
-					<dict>
-						<key>Align</key>
-						<integer>0</integer>
-						<key>Text</key>
-						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
-{\fonttbl\f0\fnil\fcharset77 GillSans;\f1\fnil\fcharset77 GillSans-Italic;}
-{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f0\fs32 \cf2 The request into "/ndb-exec-batch" (the 
-\f1\i execute handler) 
-\f0\i0 as a subrequest goes directly into Execute.cc, executing all of the operations created in previous subrequests. }</string>
-					</dict>
-					<key>TextPlacement</key>
-					<integer>0</integer>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{313, 503}, {263, 95}}</string>
+					<string>{{305, 500}, {263, 228}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -8931,64 +8881,18 @@ errors}</string>
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs32 \cf2 In Execute.cc, we execute the transaction (
-\f1\i ndb_instance::tx) 
-\f0\i0 and then iterate through its read operations, collecting each result set.  Each result set is stored as an Apache note.}</string>
+\f0\fs32 \cf2 In ExecuteAll() 
+\f1\i (Execute.cc)
+\f0\i0 , we execute the transaction and then collect and format the results.  In an ordinary request, a single result page is sent to the client.  In a subreqest, though, the final call into "/ndb-exec-batch" (the 
+\f1\i \cf2 execute handler) 
+\f0\i0 \cf2 calls directly into Execute.cc, executes the transaction, and iterates over the all the operations (from 0 to n_read_ops), storing the results in the Apache notes table.}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{16.904, 615}, {263, 95}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>FitText</key>
-					<string>Vertical</string>
-					<key>Flow</key>
-					<string>Resize</string>
-					<key>HFlip</key>
-					<string>YES</string>
-					<key>ID</key>
-					<integer>147</integer>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-					</dict>
-					<key>Text</key>
-					<dict>
-						<key>Align</key>
-						<integer>0</integer>
-						<key>Text</key>
-						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
-{\fonttbl\f0\fnil\fcharset77 GillSans;}
-{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f0\fs32 \cf2 In a simple (one-operation) request \'d0 but not a subrequest \'d0 control immediately passes into Execute.cc, and a single result set is returned to the client.}</string>
-					</dict>
-					<key>TextPlacement</key>
-					<integer>0</integer>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{371, 473.445}, {98.1144, 17}}</string>
+					<string>{{371, 471.445}, {98.1144, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -9098,7 +9002,7 @@ errors}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{13.5572, 499.582}, {263, 95}}</string>
+					<string>{{13.5572, 499.582}, {263, 171}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -9140,15 +9044,17 @@ errors}</string>
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs32 \cf2 Individual operations are processed in 
-\f1\i Query.cc.  
-\f0\i0 The Query() function uses the configuration and the query string to detrermine an "access plan" and create an appropriate NdbOperation.}</string>
+\f1\i \cf2 Query.cc.  
+\f0\i0 \cf2 The Query() function uses the configuration and the query string to detrermine an "access plan" and create an appropriate NdbOperation.\
+\
+In a subrequest, processing ends after Query(), but in a complete request it passes immediately into ExecuteAll().}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{361, 40.524}, {211, 76}}</string>
+					<string>{{361, 82.524}, {211, 76}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -9187,18 +9093,18 @@ errors}</string>
 						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
 {\fonttbl\f0\fnil\fcharset77 GillSans;\f1\fnil\fcharset77 GillSans-Italic;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs32 \cf2 At startup time, an array of 
-\f1\i max_read_ops 
-\f0\i0 data_operation structures is allocated for each ndb_instance.}</string>
+\f1\i \cf2 max_read_ops 
+\f0\i0 \cf2 data_operation structures is allocated for each ndb_instance.}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>2</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{167.783, 46}, {98.1144, 17}}</string>
+					<string>{{177.783, 41}, {98.1144, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -11050,7 +10956,7 @@ value()}</string>
 	<key>WindowInfo</key>
 	<dict>
 		<key>CurrentSheet</key>
-		<string>2</string>
+		<string>5</string>
 		<key>DrawerOpen</key>
 		<true/>
 		<key>DrawerTab</key>
@@ -11060,7 +10966,7 @@ value()}</string>
 		<key>FitInWindow</key>
 		<false/>
 		<key>Frame</key>
-		<string>{{-955, 87}, {663, 983}}</string>
+		<string>{{-1004, 154}, {663, 983}}</string>
 		<key>ShowRuler</key>
 		<true/>
 		<key>ShowStatusBar</key>
