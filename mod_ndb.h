@@ -40,6 +40,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* MySQL Headers */
 #include "mysql_version.h"
 
+/* Other mod_ndb headers are included later in this file */
+
 #ifdef CONFIG_DEBUG
 #define log_conf_debug(x,y,z) log_debug(x,y,z)
 #define log_conf_debug4(s,t,a,b,c) log_debug4(s,t,a,b,c)
@@ -93,6 +95,7 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 
 
 /* Other mod_ndb headers */
+#include "result_buffer.h"
 #include "MySQL_Field.h"
 #include "mod_ndb_config.h"
 #include "JSON.h"

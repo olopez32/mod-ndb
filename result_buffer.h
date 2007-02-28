@@ -15,6 +15,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+#ifndef _RESULT_BUFFER_H
+#define _RESULT_BUFFER_H
+
+void initialize_escapes();
 
 class result_buffer {
 private:
@@ -24,7 +28,11 @@ public:
   char *buff;
   size_t sz; 
   char *init(request_rec *r, size_t );
+  bool prepare(size_t);
+  inline void putc(char c) { *(buff + sz++) = c; };
   void out(const char *fmt, ...);
   void out(size_t, const char *);
   ~result_buffer();
 };
+
+#endif  /* _RESULT_BUFFER_H */

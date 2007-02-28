@@ -496,7 +496,7 @@ int set_up_write(request_rec *r, config::dir *dir,
 
 int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
   const NdbDictionary::Column *col;
-  int eqr;  
+  int eqr = 1;  
   
   // iterate over the mvalues that were set up in Plan::SetupWrite
   for(int n = 0; n < dir->updatable->size() ; n++) {

@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mod_ndb.h"
 #include "util_md5.h"
 
-
 /*  Result formatters:  */
 
 typedef int ResultBuilder(request_rec *, data_operation *, result_buffer &);
@@ -184,20 +183,56 @@ int Results_JSON(request_rec *r, data_operation *data,
   res.init(r, 8192);
   
   if(data->scanop) {
-    /* Multi-row result set */   
     while((data->scanop->nextResult(true)) == 0) {
       do {
         if(nrows++) res.out(2,",\n");
-        else JSON::new_array(res); 
+        else JSON::new_array(res);
         JSON_send_result_row(data, res);
       } while((data->scanop->nextResult(false)) == 0);
     }
     if(nrows) JSON::end_array(res);
-    else return HTTP_GONE;
+    else return HTTP_GONE; // ??
   }
   else {
-    /* Single row result set */
     JSON_send_result_row(data, res);
+  }
+  
+  res.out(1,"\n");
+  return OK;
+}
+
+
+inline void XML_send_result_row(data_operation *data, result_buffer &res) {
+  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
+    if(n) XML::delimiter(res);
+    XML::put_member(res, *data->result_cols[n]);
+  }
+}
+
+
+int Results_XML(request_rec *r, data_operation *data, 
+                result_buffer &res) {
+  int nrows = 0;
+  res.init(r, 8192);
+  
+  if(data->scanop) {
+    while((data->scanop->nextResult(true)) == 0) {
+      do {
+        if(nrows++) res.out(1,"\n"); 
+        else XML::new_array(res);
+        XML::new_object(res);
+        XML_send_result_row(data, res);
+        XML::end_object(res);
+      } while((data->scanop->nextResult(false)) == 0);
+    }
+    if(nrows) XML::end_array(res);
+    else return HTTP_GONE;  // ??
+  }
+  else {
+    XML::new_object(res);
+    XML_send_result_row(data, res);
+    res.out(1,"\n");
+    XML::end_object(res);    
   }
   
   res.out(1,"\n");
@@ -222,12 +257,6 @@ int Results_raw(request_rec *r, data_operation *data,
   return OK;
 }
 
-int Results_XML(request_rec *r, data_operation *data, 
-                result_buffer &res) {
-  log_debug(r->server,"In Results formatter %s", "Results_XML");
-  
-  return NOT_FOUND;
-}
 
 
 

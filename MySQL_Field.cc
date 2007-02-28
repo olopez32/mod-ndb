@@ -33,7 +33,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mod_ndb_compat.h"
 #include "MySQL_Field.h"
 
-
 // Apache disabled this
 #undef strtoul
 
@@ -57,7 +56,7 @@ namespace MySQL {
   void Date(result_buffer &rbuf, const NdbRecAttr &rec);
   void Datetime(result_buffer &rbuf, const NdbRecAttr &rec);
   void String(result_buffer &rbuf, const NdbRecAttr &rec, 
-              enum ndb_string_packing packing); 
+              enum ndb_string_packing packing, const char **escapes); 
 }
 
 void MySQL::Time(result_buffer &rbuf, const NdbRecAttr &rec) {
@@ -123,7 +122,8 @@ void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
 }
 
 
-void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec) {
+void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
+                   const char **escapes) {
 
   switch(rec.getType()) {
     
@@ -137,14 +137,14 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec) {
       
     case NdbDictionary::Column::Varchar:
     case NdbDictionary::Column::Varbinary:
-      return MySQL::String(rbuf,rec,char_var);
+      return MySQL::String(rbuf, rec, char_var, escapes);
     
     case NdbDictionary::Column::Char:
     case NdbDictionary::Column::Binary:
-      return MySQL::String(rbuf,rec,char_fixed);
+      return MySQL::String(rbuf, rec, char_fixed, escapes);
       
     case NdbDictionary::Column::Longvarchar:
-      return MySQL::String(rbuf,rec,char_longvar);
+      return MySQL::String(rbuf, rec, char_longvar, escapes);
       
     case NdbDictionary::Column::Float:
       return rbuf.out("%G", (double) rec.float_value());
@@ -201,8 +201,10 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec) {
 // and on Column.StorageType 
 
 void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec, 
-                     enum ndb_string_packing packing) {
+                     enum ndb_string_packing packing,
+                     const char **escapes) {
   unsigned sz = 0;
+  unsigned escaped_size = 0;
   char *ref = 0;
 
 
@@ -223,12 +225,38 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
       assert(0);
    }
   
-  for (int i=sz-1; i >= 0; i--) {
+  /* If the string is null-padded at the end, don't count those in the length*/
+  for(int i=sz-1; i >= 0; i--) {
     if (ref[i] == 0) sz--;
     else break;
   }
   
-  return rbuf.out(sz, ref);  
+  /* How long will the string be when it is escaped? */
+  for(unsigned int i = 0; i < sz ; i++) {
+    const char *esc = escapes[ref[i]];
+    if(esc) escaped_size += esc[0];
+    else escaped_size++;
+  }
+  
+  /* Prepare the buffer.  This returns false only after a malloc error. */
+  if(!rbuf.prepare(escaped_size)) return;
+
+  /* Now copy the string from NDB into the result buffer,
+     encoded appropriately according to the escapes 
+   */
+  for(unsigned int i = 0; i < sz ; i++) {
+    const unsigned char c = ref[i];
+    if(c < 128) {
+      const char *esc = escapes[c];
+      if(esc) {
+        for(char j = 1 ; j <= esc[0]; j++) 
+          rbuf.putc(esc[j]);
+        continue;
+      }
+    }
+    rbuf.putc(c);
+  }
+  
 }
 
 

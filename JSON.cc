@@ -18,15 +18,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
-  /* JSON.cc
-     
-     Return a valid JSON formatted value for an NDB record.
-  
-     This is based on code in NdbRecAttr.cpp,  where the ability to represent 
-     each type of value is implemented in the C++ I/O streams library by 
-     overloading the "<<" operator.  
-  */
+const char *escape_leaning_toothpicks[128];
+const char *escape_xml_entities[128];
 
+void initialize_escapes() {
+  for(int i = 0 ; i < 128 ; i++) {
+    escape_leaning_toothpicks[i] = 0;
+    escape_xml_entities[i] = 0;
+  }
+  
+  escape_leaning_toothpicks[static_cast<int>('\\')] = "\x02" "\\" "\\";
+  escape_leaning_toothpicks[static_cast<int>('\"')] = "\x02" "\\" "\"";
+  
+  escape_xml_entities[static_cast<int>('<')] = "\x04" "&lt;";
+  escape_xml_entities[static_cast<int>('>')] = "\x04" "&gt;";
+  escape_xml_entities[static_cast<int>('&')] = "\x05" "&amp;";
+  escape_xml_entities[static_cast<int>('\"')]= "\x06" "&quot;";
+}
+
+ 
 void JSON::put_value(result_buffer &rbuf,const NdbRecAttr &rec){
 
   if (rec.isNULL())
@@ -45,12 +55,26 @@ void JSON::put_value(result_buffer &rbuf,const NdbRecAttr &rec){
     case NdbDictionary::Column::Binary:
     case NdbDictionary::Column::Blob:
         rbuf.out(1,"\"");
-        MySQL::result(rbuf,rec);
+        MySQL::result(rbuf, rec, escape_leaning_toothpicks);
         rbuf.out(1,"\"");
         return;
 
     default:      
-        return MySQL::result(rbuf,rec);
+        return MySQL::result(rbuf, rec, escape_leaning_toothpicks);
   }
   rbuf.out(9,"\"unknown\"");
 }
+
+
+void XML::put_member(result_buffer &rbuf, const NdbRecAttr &rec)
+{
+  rbuf.out("<Attr name=\"%s\" ", rec.getColumn()->getName());
+  if(rec.isNULL()) rbuf.out(10,"isNull=\"1\"");
+  else {
+    rbuf.out("value=\"");
+    MySQL::result(rbuf, rec, escape_xml_entities); 
+    rbuf.out(1,"\""); 
+  }
+  rbuf.out(3," />");
+}
+

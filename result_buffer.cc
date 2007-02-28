@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
+
 char * result_buffer::init(request_rec *r, size_t size) {
   alloc_sz = size;
   sz = 0;
@@ -27,7 +28,10 @@ char * result_buffer::init(request_rec *r, size_t size) {
 }
 
 
-void result_buffer::out(size_t len, const char *s) {
+/* prepare(size_t len): make room for *len* new characters in the buffer.
+   Expect them to be placed there one at a time using putc */
+   
+bool result_buffer::prepare(size_t len) {
   char *old_buff = buff;
   register size_t new_sz = sz + len;
   
@@ -37,13 +41,18 @@ void result_buffer::out(size_t len, const char *s) {
     buff = (char *) realloc(old_buff, alloc_sz);
     if(! buff) {
       free(old_buff);
-      return;
+      return false;
     }
   }
+  return true;
+}
   
+
+void result_buffer::out(size_t len, const char *s) {
+  if(! this->prepare(len)) return;
   char *dst = buff + sz;
+  sz += len;
   while(len--) *dst++ = *s++;
-  sz = new_sz;
 }
 
 
