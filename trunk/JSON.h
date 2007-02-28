@@ -16,6 +16,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 
+
+
 class JSON {
   public:
     inline static void new_array(result_buffer &rbuf)  { rbuf.out(2,"[\n"); }
@@ -23,13 +25,30 @@ class JSON {
     inline static void new_object(result_buffer &rbuf) { rbuf.out(3," { "); }
     inline static void end_object(result_buffer &rbuf) { rbuf.out(2," }") ; }
     inline static void delimiter(result_buffer &rbuf)  { rbuf.out(3," , "); }
-    inline static void is(result_buffer &rbuf)         { rbuf.out(3," : "); }
+
+    static void put_value(result_buffer &, const NdbRecAttr &);
 
     inline static void put_member(result_buffer &rbuf, const NdbRecAttr &rec) 
     {
-      rbuf.out("\"%s\"", rec.getColumn()->getName());
-      JSON::is(rbuf);
+      rbuf.out("\"%s\":", rec.getColumn()->getName());
       JSON::put_value(rbuf, rec);
     }
-    static void put_value(result_buffer &, const NdbRecAttr &);
 };
+
+
+class XML {
+  public:
+    inline static void new_array(result_buffer &rbuf)  
+      { rbuf.out(10,"<NDBScan>\n");   }
+    inline static void end_array(result_buffer &rbuf)  
+      { rbuf.out(11,"\n</NDBScan>"); }
+    inline static void new_object(result_buffer &rbuf)
+      { rbuf.out(12," <NDBTuple> "); }
+    inline static void end_object(result_buffer &rbuf)
+      { rbuf.out(12," </NDBTuple>"); }
+    inline static void delimiter(result_buffer &rbuf) 
+      { rbuf.out(3,"\n  "); }
+    
+    static void put_member(result_buffer &rbuf, const NdbRecAttr &rec);
+};
+

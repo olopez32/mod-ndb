@@ -35,6 +35,9 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
 
   /* Initialize the NDB API */
   ndb_init();
+  
+  /* Build arrays of escape sequences, for encoding output */
+  initialize_escapes();
 
   /* Get server configuration */
   config::srv *srv = (config::srv *)
