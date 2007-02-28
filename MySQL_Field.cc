@@ -287,7 +287,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       case NdbDictionary::Column::Char:
         // Copy the value into the buffer, then right-pad with spaces
         m.len = l_len = strlen(val);
-        if(l_len > col->getLength()) l_len = col->getLength();
+        if(l_len > (unsigned) col->getLength()) l_len = col->getLength();
           m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
         strcpy(m.u.val_char, val);
         s = m.u.val_char + l_len;

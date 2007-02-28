@@ -69,7 +69,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     /* This is a subrequest.
        But if the user has set a note called "ndb_send_result", 
        then send the result on directly to the client anyway. */
-    if(! ap_table_get(r->main->notes,"ndb_send_result"))
+    if(! ap_table_get(r->main->notes,"ndb_send_result"))  // UNTESTED!
       apache_notes = 1;
   }
  
@@ -170,7 +170,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
 
 inline void JSON_send_result_row(data_operation *data, result_buffer &res) {
   JSON::new_object(res);
-  for(int n = 0; n < data->n_result_cols ; n++) {
+  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
     if(n) JSON::delimiter(res);
     JSON::put_member(res, *data->result_cols[n]);
   }
