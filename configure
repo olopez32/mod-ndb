@@ -126,6 +126,7 @@ fi
  
 MY_INC=`$MYSQLCFG --include`
 MY_LIBS=`$MYSQLCFG $GET_LIBS`
+LDSO_PATH=`$MYSQLCFG --libs | perl -n -e 'if(/-L(\S*)/) { print $1 }'`
 
 if $MYSQLCFG --version | grep -q '^5.1.' 
  then NDB_PATH=storage/ndb 
@@ -160,6 +161,7 @@ echo APXS_CFLAGS_SHLIB=`$APXS1 -q CFLAGS_SHLIB`
 echo APXS_LDFLAGS_SHLIB=`$APXS1 -q LDFLAGS_SHLIB`
 echo APXS_LIBS_SHLIB=`$APXS1 -q LIBS_SHLIB`
 echo
+echo LDSO_PATH=$LDSO_PATH
 echo TEMPLATE=$TEMPLATE
 echo START_HTTPD=$START_APACHE
 echo STOP_HTTPD=$STOP_APACHE
