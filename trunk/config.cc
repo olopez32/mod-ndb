@@ -109,11 +109,12 @@ namespace config {
     else return no_results;
   }
 
+
+/* With per-server config directives, it is not valid to 
+   cast m to a config::srv structure, and you cannot use the
+   ap_set_string_slot() family of functions. 
+*/
   const char *connectstring(cmd_parms *cmd, void *m, char *arg) {
-  
-    /* Due to what seems like a bug in apache, this doesn't work:
-    config::srv *srv = (config::srv *) m;
-    */
     config::srv *srv = (config::srv *) 
       ap_get_module_config(cmd->server->module_config, &ndb_module);
     
@@ -122,10 +123,8 @@ namespace config {
     return 0;  
   }
 
+
   const char *maxreadsubrequests(cmd_parms *cmd, void *m, char *arg) {
-    /* Due to what seems like a bug in apache, this doesn't work:
-    config::srv *srv = (config::srv *) m;
-    */
     config::srv *srv = (config::srv *) 
       ap_get_module_config(cmd->server->module_config, &ndb_module);
     
@@ -133,6 +132,7 @@ namespace config {
     srv->max_read_operations = atoi(arg);
     return 0;
   }
+
 
   const char *result_format(cmd_parms *cmd, void *m, 
                             char *fmt, char *arg0, char *arg1)
