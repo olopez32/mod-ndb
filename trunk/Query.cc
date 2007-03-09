@@ -78,10 +78,15 @@ short key_col_bin_search(char *, config::dir *);
 /* Some very simple modules are fully defined here:
 */
 int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  return q->plan == OrderedIndexScan ? 
-    q->data->scanop->readTuples(NdbOperation::LM_CommittedRead, 
-                          dir->indexes->item(q->active_index).flag) :
-    q->data->op->readTuple(NdbOperation::LM_CommittedRead);
+  switch(q->plan) {
+    case OrderedIndexScan:
+      return q->data->scanop->readTuples(NdbOperation::LM_CommittedRead, 
+                                         dir->indexes->item(q->active_index).flag);
+    case Scan:
+      return q->data->scanop->readTuples();
+    default:
+      return q->data->op->readTuple(NdbOperation::LM_CommittedRead);
+  }
 }
 
 int Plan::SetupInsert(request_rec *r, config::dir *dir, struct QueryItems *q) { 
@@ -153,7 +158,6 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 
 // =============================================================
 
-
 /* Query():
    Process an HTTP request, then formulate and run an NDB execution plan.
 */
@@ -163,7 +167,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   data_operation local_data_op = { 0, 0, 0, 0, 0, no_results };
   struct QueryItems Q = 
     { i, 0, 0,            // ndb_instance, tab, idx
-      0, 0, 0, 0,         // keys, active_index, idxobj, key_columns_used 
+      0, -1, 0, 0,        // keys, active_index, idxobj, key_columns_used 
       0, 0,               // n_filters, filter_list,
       NoPlan,             // execution plan
       Plan::SetupRead,    // setup module
@@ -174,16 +178,17 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
   bool keep_tx_open = false;
-  int response_code;
+  int response_code = 0;
   mvalue mval;
   short col;
   int req_method = r->method_number;
   const char *subrequest_data = 0;
   
-  // Initialize all three of these, but only one will be needed: 
+  // Initialize all four of these, but only one will be needed: 
   PK_index_object       PK_idxobj(q,r);
   Unique_index_object   UI_idxobj(q,r);
   Ordered_index_object  OI_idxobj(q,r);
+  Table_Scan_object     TS_idxobj(q,r);
 
   // Initialize the data dictionary 
   i->db->setDatabaseName(dir->database);
@@ -288,8 +293,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
      The detailed work is done within the inlined function set_key().
   */
 
-  /* Arguments */
-  if(r->args) {
+  if(dir->flag.table_scan) 
+    Q.plan = Scan;
+  else if(r->args) {  /* Arguments */
     register const char *c = r->args;
     char *key, *val;
     short n;
@@ -327,9 +333,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       else item_len++;
     }
   }
-  
+
   /* ===============================================================*/
-  if(r->method_number == M_GET && ! Q.key_columns_used) {
+  if(r->method_number == M_GET && 
+     ! ( dir->flag.table_scan || Q.key_columns_used)) {
     log_debug(r->server,"No key column aliases found in request %s", 
               r->unparsed_uri);
     return NOT_FOUND;    /* no query */
@@ -341,68 +348,80 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   if(i->tx == 0) {
     if(i->flag.aborted) {
       /* Transaction was already aborted */
-      return NOT_FOUND;
+      return 500;
     }
     if(!(i->tx = i->db->startTransaction())) {  // To do: supply a hint
       log_err2(r->server,"db->startTransaction failed: %s",
                 i->db->getNdbError().message);
-      return NOT_FOUND;
+      return 500;
     }
   }
 
+  
   /* Now set the Query Items that depend on the access plan and index type.
   */    
-  if(Q.plan == PrimaryKey)
-    q->idxobj = & PK_idxobj;
-  else {                                        /* Indexed Access */
-    register const char * idxname = dir->indexes->item(Q.active_index).name;
-    if((Q.idx = dict->getIndex(idxname, dir->table)) == 0) {
-     log_err4(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
-              idxname, dir->database, dir->table);
+  if(Q.plan == Scan) 
+    q->idxobj = & TS_idxobj;
+  else {
+    if(Q.active_index < 0) {
+      response_code = 500;
       goto abort;
-    }    
-    if(Q.plan == UniqueIndexAccess) 
-      q->idxobj = & UI_idxobj;
-    else if(Q.plan == OrderedIndexScan)
-      q->idxobj = & OI_idxobj;
-    else
-      log_debug(r->server," --SHOULD NOT HAVE REACHED THIS POINT-- %d",Q.plan);
+    }
+    if(Q.plan == PrimaryKey)
+      q->idxobj = & PK_idxobj;    
+    else {
+      /* Lookup the active index in the data dictionary to set q->idx */
+      register const char * idxname = dir->indexes->item(Q.active_index).name;
+      if((q->idx = dict->getIndex(idxname, dir->table)) == 0) {
+        log_err4(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
+                 idxname, dir->database, dir->table);
+        response_code = 500;
+        goto abort;
+      }
+      if(Q.plan == UniqueIndexAccess) 
+        q->idxobj = & UI_idxobj;
+      else if (Q.plan == OrderedIndexScan) 
+        q->idxobj = & OI_idxobj;
+    }
   }
-  if(Q.active_index < 0) goto abort;
-
-  // Get an NdbOperation 
+  
+  // Get an NdbOperation
   q->data->op = q->idxobj->get_ndb_operation(i->tx);
 
   // Query setup, e.g. Plan::SetupRead calls op->readTuple() 
   if(Q.op_setup(r, dir, & Q)) { // returns 0 on success
     log_debug(r->server,"Returning 404 because Q.op_setup() failed: %s",
               q->data->scanop->getNdbError().message);
+    response_code = 404;
     goto abort;
   }
 
   // Traverse the index parts and build the query
-  col = dir->indexes->item(Q.active_index).first_col;
+  if(Q.plan != Scan) {
+    col = dir->indexes->item(Q.active_index).first_col;
 
-  while (col >= 0 && Q.key_columns_used-- > 0) {
-    config::key_col &keycol = dir->key_columns->item(col);
-    ndb_Column = q->idxobj->get_column();
+    while (col >= 0 && Q.key_columns_used-- > 0) {
+      config::key_col &keycol = dir->key_columns->item(col);
+      ndb_Column = q->idxobj->get_column();
 
-    log_debug3(r->server," ** Request column_alias: %s -- value: %s", 
-               keycol.name, Q.keys[col].value);
-    
-    MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
-    if(mval_is_usable(r, mval)) {
-      if(q->idxobj->set_key_part(keycol, mval)) {
-        log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
-        goto abort;
-      }                
-    }     
-    col = dir->key_columns->item(col).next_in_key;
-    if(! q->idxobj->next_key_part()) break;
+      log_debug3(r->server," ** Request column_alias: %s -- value: %s", 
+                 keycol.name, Q.keys[col].value);
+      
+      MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
+      if(mval_is_usable(r, mval)) {
+        if(q->idxobj->set_key_part(keycol, mval)) {
+          log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
+          response_code = 404;
+          goto abort;
+        }                
+      }     
+      col = dir->key_columns->item(col).next_in_key;
+      if(! q->idxobj->next_key_part()) break;
+    }
   }
- 
+  
   // Set filters
-  if(Q.plan == OrderedIndexScan && Q.n_filters) {
+  if(Q.plan >= Scan && Q.n_filters) {
     NdbScanFilter filter(q->data->op);
     filter.begin(NdbScanFilter::AND);
     for(int n = 0 ; n < Q.n_filters ; n++) {
@@ -421,9 +440,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
 
   // Perform the action; i.e. get the value of each column
-  if(Q.op_action(r, dir, &Q)) 
+  if(Q.op_action(r, dir, &Q)) {
+    response_code = 404;
     goto abort;
-
+  }
   if(keep_tx_open) 
     return OK;
   else
@@ -433,10 +453,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   // Look at this later.  A failure of any operation causes the whole transaction
   // to be aborted?  
   log_debug(r->server,"Aborting open transaction at '%s'",r->unparsed_uri);
+  if(! response_code) response_code = 500;
   i->tx->close();
   i->tx = 0;
   i->flag.aborted = 1;
-  return NOT_FOUND;
+  return response_code;
 }
 
 

@@ -55,12 +55,16 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   ResultBuilder *build_results;
   bool apache_notes = 0;
   
+  log_debug(r->server, "Entering ExecuteAll() with %d read operations",
+            i->n_read_ops);
+            
   /* Check for an NdbTransaction */
   if(! i->tx) {
-    log_err(r->server, "ExecuteAll() returning 410 because tx does not exist.");
+    log_err(r->server, "tx does not exist.");
     response_code = HTTP_GONE;  /* Should be 400? */
     goto cleanup2;
   } 
+
  
   /* Determine whether the output should be written as an Apache note
   */ 
@@ -82,8 +86,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     if(i->tx->execute(NdbTransaction::NoCommit, NdbTransaction::AbortOnError, 
                       i->conn->ndb_force_send))
     {        
-      log_debug(r->server,
-                "Execute with BLOB: code 410 because tx->execute() failed: %s",
+      log_debug(r->server, "tx->execute() with BLOB failed: %s", 
                 i->tx->getNdbError().message);
       response_code = HTTP_GONE;  /* Should be 400? */
     }
@@ -105,8 +108,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   if(i->tx->execute(NdbTransaction::Commit, NdbTransaction::AbortOnError, 
                     i->conn->ndb_force_send)) 
   {        
-    log_debug(r->server,"Returning 410 because tx->execute failed: %s",
-              i->tx->getNdbError().message);
+    log_debug(r->server,"tx->execute failed: %s", i->tx->getNdbError().message);
     response_code = HTTP_GONE;  /* Should be 400? */
     goto cleanup1;
   } 
@@ -160,6 +162,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   i->flag.has_blob = 0;
   i->flag.use_etag = 0;
   
+  log_debug(r->server,"ExecuteAll() returning %d",response_code);
   return response_code;
 }
 

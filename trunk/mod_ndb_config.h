@@ -41,6 +41,7 @@ namespace config {
     struct {
       unsigned pathinfo_always : 1;
       unsigned has_filters : 1;
+      unsigned table_scan : 1;
     } flag;
     apache_array<char*> *visible;
     apache_array<char*> *updatable;
@@ -89,10 +90,10 @@ namespace config {
   const char * named_index(cmd_parms *, void *, char *, char *);
   const char * result_format(cmd_parms *, void *, char *, char *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
+  const char * table(cmd_parms *, void *, char *, char *);
   const char * filter(cmd_parms *, void *, char *, char *, char *);
   const char * primary_key(cmd_parms *, void *, char *);
   const char * connectstring(cmd_parms *, void *, char *);
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
-  
 }
 

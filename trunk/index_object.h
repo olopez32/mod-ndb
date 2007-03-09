@@ -45,10 +45,9 @@ class PK_index_object : public index_object {
       index_object(queryitems, r) { } ;
       
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
-      n_parts = q->tab->getNoOfPrimaryKeys();
-      NdbOperation *op = tx->getNdbOperation(q->tab);
       log_debug(server, "Using primary key lookup; key %d", q->active_index);
-      return op;
+      n_parts = q->tab->getNoOfPrimaryKeys();
+      return tx->getNdbOperation(q->tab);
     };
      
     int set_key_part(config::key_col &keycol, mvalue &mval) {
@@ -71,9 +70,9 @@ class Unique_index_object : public index_object {
       index_object(queryitems, r) { } ;
 
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
+      log_debug(server, "Using UniqueIndexAccess; key %s", q->idx->getName());
       n_parts = q->idx->getNoOfColumns(); 
       NdbOperation *op = tx->getNdbIndexOperation(q->idx);
-      log_debug(server, "Using UniqueIndexAccess; key %s", q->idx->getName());
       return op;
     };
     
@@ -107,3 +106,25 @@ class Ordered_index_object : public index_object {
         return q->data->scanop->setBound(col_id, keycol.filter_op, &mval.u.val_char);
     };
 };
+
+
+class Table_Scan_object : public index_object {
+public:
+  Table_Scan_object(struct QueryItems *queryitems, request_rec *r) :
+  index_object(queryitems, r) { } ;  
+  NdbScanOperation *ts_op;
+  
+  NdbOperation *get_ndb_operation(NdbTransaction *tx) {
+    n_parts = 0; 
+    ts_op = tx->getNdbScanOperation(q->tab);
+    q->data->scanop = static_cast<NdbIndexScanOperation *> (ts_op);
+    return ts_op;
+  };
+  
+  int set_key_part(config::key_col &keycol, mvalue &mval) {
+    log_debug(server,"In Table_Scan_object::set_key_part %d",0);
+    return 0;
+  };
+};
+
+
