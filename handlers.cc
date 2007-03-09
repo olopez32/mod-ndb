@@ -107,6 +107,7 @@ extern "C" {
     ap_rprintf(r,"Database: %s\n",dir->database);
     ap_rprintf(r,"Table: %s\n",dir->table);
     ap_rprintf(r,"Size of configuration structures:");
+    /* gcc may give a warning here where glibc printf uses "%z" for size_t */
     ap_rprintf(r,"   dir: %lu.  index: %lu.  key_col: %lu.\n", sizeof(config::dir),
                sizeof(config::index), sizeof(config::key_col));
     if(i == (ndb_instance *) 0) {
