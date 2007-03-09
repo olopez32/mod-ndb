@@ -373,6 +373,22 @@ namespace config {
   const char *primary_key(cmd_parms *cmd, void *m, char *col) {
     return named_index(cmd, m, "*Primary$Key*", col);
   }
+
+  
+  const char *table(cmd_parms *cmd, void *m, char *arg1, char *arg2) {
+    config::dir *dir = (config::dir *) m;
+
+    dir->table = ap_pstrdup(cmd->pool, arg1);
+    
+    if(arg2) {
+      if(!(ap_strcasecmp_match(arg2,"scan"))) {
+        if(dir->indexes->size())
+          return "Cannot define indexes at the same endpoint as a table scan.";
+        dir->flag.table_scan = 1;
+      }
+    }
+    return 0;
+  }
   
   
   /* filter(), syntax "Filter column [operator pseudocolumn]"
@@ -480,6 +496,9 @@ namespace config {
     /* type-safe test: (is this void pointer really a dir?) */
     assert(dir->magic_number == 0xBABECAFE);
 
+    if(dir->flag.table_scan)
+      return "Cannot define indexes at the same endpoint as a table scan.";
+
     if(index_id == -1) {
       /* Build the index record */
       log_conf_debug4(cmd->server,"Creating new index record \"%s\" at %s:%d",
@@ -569,9 +588,9 @@ extern "C" {
   },
   {
     "Table",            // inheritable
-    (CMD_HAND_TYPE) ap_set_string_slot,
-    (void *)XtOffsetOf(config::dir, table),
-    ACCESS_CONF,    TAKE1, 
+    (CMD_HAND_TYPE) config::table,
+    NULL,
+    ACCESS_CONF,    TAKE12, 
     "NDB Table"
   },            
   {
