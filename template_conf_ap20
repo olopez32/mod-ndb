@@ -39,8 +39,7 @@ DefaultType text/plain
   MaxRequestsPerChild 1000000
 </IfModule>
 
-<IfModule dir_module>
-    DirectoryIndex index.html
-</IfModule>
+DirectoryIndex index.html
+TypesConfig mime-types
 
 Include test.conf
