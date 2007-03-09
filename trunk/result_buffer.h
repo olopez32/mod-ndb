@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef _RESULT_BUFFER_H
 #define _RESULT_BUFFER_H
 
+// If putc() is a macro it can prevent this file from compiling.
+#ifdef putc
+#undef putc
+#endif
+
 void initialize_escapes();
 
 class result_buffer {
