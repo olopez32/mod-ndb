@@ -28,6 +28,7 @@
 		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6566D03D0BA0CE3500B7AD9B /* template_conf_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = template_conf_ap22; sourceTree = "<group>"; };
+		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
 		657BD1C50B84EFD100A9ED69 /* Create_tables.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Create_tables.sql; path = Tests/Create_tables.sql; sourceTree = "<group>"; };
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
@@ -60,6 +61,7 @@
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
 				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
+				6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */,
 				654FD39D0AC5B0A6000283CB /* index_object.h */,
 				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
