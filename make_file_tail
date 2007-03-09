@@ -38,16 +38,10 @@ httpd.conf:
 	sed -f template.sed $(TEMPLATE) > httpd.conf
 
 start: mod_ndb.so httpd.conf
-	LD_LIBRARY_PATH=$(LDSO_PATH) 
-	export LD_LIBRARY_PATH
-	$(START_HTTPD)
+	LD_LIBRARY_PATH=$(LDSO_PATH) $(START_HTTPD)
         
 stop:
-	LD_LIBRARY_PATH=$(LDSO_PATH)
-	export LD_LIBRARY_PATH        
-	$(STOP_HTTPD)
-	
+	LD_LIBRARY_PATH=$(LDSO_PATH) $(STOP_HTTPD)
+      
 restart:
-	LD_LIBRARY_PATH=$(LDSO_PATH) 
-	export LD_LIBRARY_PATH
-	$(RESTART_HTTPD)
+	LD_LIBRARY_PATH=$(LDSO_PATH) $(RESTART_HTTPD)
