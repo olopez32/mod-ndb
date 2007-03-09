@@ -27,6 +27,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define AUTOINC_V2
 #endif
 
+#if MYSQL_VERSION_ID > 50115 
+#define TX_ABORT_OPT NdbOperation::DefaultAbortOption
+#else
+#define TX_ABORT_OPT NdbTransaction::AbortOnError
+#endif
 
 #ifdef AUTOINC_V1
 inline int get_auto_inc_value(Ndb *ndb,

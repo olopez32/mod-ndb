@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "util_md5.h"
+#include "ndb_api_compat.h"
 
 /*  Result formatters:  */
 
@@ -83,7 +84,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   */
   if(i->flag.has_blob) {
     /* Execute NoCommit */
-    if(i->tx->execute(NdbTransaction::NoCommit, NdbTransaction::AbortOnError, 
+    if(i->tx->execute(NdbTransaction::NoCommit, TX_ABORT_OPT, 
                       i->conn->ndb_force_send))
     {        
       log_debug(r->server, "tx->execute() with BLOB failed: %s", 
@@ -105,7 +106,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   }
   
   /* Execute and Commit the transaction */
-  if(i->tx->execute(NdbTransaction::Commit, NdbTransaction::AbortOnError, 
+  if(i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
                     i->conn->ndb_force_send)) 
   {        
     log_debug(r->server,"tx->execute failed: %s", i->tx->getNdbError().message);
