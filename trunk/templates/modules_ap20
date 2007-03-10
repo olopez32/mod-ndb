@@ -1,0 +1,9 @@
+access_module	mod_access.so
+action_module	mod_actions.so
+alias_module	mod_alias.so
+asis_module	mod_asis.so
+auth_module	mod_auth.so
+dir_module	mod_dir.so
+expires_module	mod_expires.so
+log_config_module	mod_log_config.so
+mime_module	mod_mime.so

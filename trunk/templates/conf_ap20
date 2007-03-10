@@ -10,25 +10,16 @@ Group @AP_GROUP@
 
 PidFile "logs/httpd.pid"
 ScoreBoardFile "logs/httpd.scoreboard"
-LogFormat "%h %l %u %t \"%r\" %>s %b" common
-CustomLog "logs/ndb_access_log" common
-ErrorLog "logs/ndb_error_log"
 
 LoadModule ndb_module         mod_ndb.so
 
-
-LoadModule access_module 	modules/mod_access.so
-LoadModule actions_module	modules/mod_actions.so
-LoadModule alias_module		modules/mod_alias.so
-LoadModule asis_module		modules/mod_asis.so
-LoadModule auth_module		modules/mod_auth.so
-LoadModule dir_module		modules/mod_dir.so
-LoadModule expires_module	modules/mod_expires.so
-LoadModule log_config_module 	modules/mod_log_config.so
-LoadModule mime_module		modules/mod_mime.so
+#-Other-Modules
 
 AddType application/x-httpd-php .php
 DefaultType text/plain
+
+TransferLog "logs/ndb_access_log" 
+ErrorLog "logs/ndb_error_log"
 
 <IfModule mpm_worker_module>
   StartServers 2
