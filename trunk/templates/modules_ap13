@@ -1,5 +1,6 @@
+# Apache 1.3: some module names are non-standard, e.g. "action_module", "config_log_module"
 access_module	mod_access.so
-actions_module	mod_actions.so
+action_module	mod_actions.so
 alias_module	mod_alias.so
 asis_module	mod_asis.so
 auth_module	mod_auth.so
