@@ -10,9 +10,6 @@ Group @AP_GROUP@
 
 PidFile "logs/httpd.pid"
 ScoreBoardFile "logs/httpd.scoreboard"
-LogFormat "%h %l %u %t \"%r\" %>s %b" common
-CustomLog "logs/ndb_access_log" common
-ErrorLog "logs/ndb_error_log"
 
 LoadModule ndb_module         mod_ndb.so
 
@@ -21,6 +18,8 @@ LoadModule ndb_module         mod_ndb.so
 AddType application/x-httpd-php .php
 DefaultType text/plain
 
+TransferLog "logs/ndb_access_log" 
+ErrorLog "logs/ndb_error_log"
 
 <IfModule mpm_worker_module>
   StartServers 2
@@ -31,8 +30,7 @@ DefaultType text/plain
   MaxRequestsPerChild 1000000
 </IfModule>
 
-<IfModule dir_module>
-    DirectoryIndex index.html
-</IfModule>
+DirectoryIndex index.html
+TypesConfig mime-types
 
 Include test.conf
