@@ -27,14 +27,11 @@
 		655CEC240A8C4C9500DB8284 /* configure */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
 		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
-		6566D03D0BA0CE3500B7AD9B /* template_conf_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = template_conf_ap22; sourceTree = "<group>"; };
 		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
 		657BD1C50B84EFD100A9ED69 /* Create_tables.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Create_tables.sql; path = Tests/Create_tables.sql; sourceTree = "<group>"; };
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
-		657BD36B0B890B0600A9ED69 /* template_conf_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = template_conf_ap13; sourceTree = "<group>"; };
-		657BD36C0B890B0600A9ED69 /* template_conf_ap20 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = template_conf_ap20; sourceTree = "<group>"; };
 		6593D9EE0B83D87800DDE22C /* base.test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = base.test; path = example1/base.test; sourceTree = "<group>"; };
 		6593D9EF0B83D87800DDE22C /* ex1_httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ex1_httpd.conf; path = example1/ex1_httpd.conf; sourceTree = "<group>"; };
 		6593D9F10B83D87800DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example1/README; sourceTree = "<group>"; };
@@ -50,6 +47,12 @@
 		6593DA510B83E31300DDE22C /* load_icons.sql.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = load_icons.sql.gz; path = example2/load_icons.sql.gz; sourceTree = "<group>"; };
 		6593DA520B83E31300DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example2/README; sourceTree = "<group>"; };
 		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
+		65E2E83F0BA218B600B1B8D0 /* conf_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap13; path = templates/conf_ap13; sourceTree = "<group>"; };
+		65E2E8400BA218B600B1B8D0 /* conf_ap20 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap20; path = templates/conf_ap20; sourceTree = "<group>"; };
+		65E2E8410BA218B600B1B8D0 /* conf_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap22; path = templates/conf_ap22; sourceTree = "<group>"; };
+		65E2E8420BA218B600B1B8D0 /* modules_ap20 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap20; path = templates/modules_ap20; sourceTree = "<group>"; };
+		65E2E8430BA218B600B1B8D0 /* modules_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap22; path = templates/modules_ap22; sourceTree = "<group>"; };
+		65E2E85F0BA2252E00B1B8D0 /* modules_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap13; path = templates/modules_ap13; sourceTree = "<group>"; };
 		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -79,10 +82,8 @@
 				6513067E0B8299CC00A70BDA /* Execute.cc */,
 				655CEC240A8C4C9500DB8284 /* configure */,
 				655CEC250A8C4CA400DB8284 /* make_file_tail */,
-				657BD36B0B890B0600A9ED69 /* template_conf_ap13 */,
-				657BD36C0B890B0600A9ED69 /* template_conf_ap20 */,
-				6566D03D0BA0CE3500B7AD9B /* template_conf_ap22 */,
 				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
+				65E2E83C0BA2186700B1B8D0 /* templates */,
 				657BD1C30B84EE8600A9ED69 /* Tests */,
 				6593D9EC0B83D83500DDE22C /* Example1 */,
 				6593DA4F0B83E2F000DDE22C /* Example2 */,
@@ -135,6 +136,19 @@
 				6593DA510B83E31300DDE22C /* load_icons.sql.gz */,
 			);
 			name = Example2;
+			sourceTree = "<group>";
+		};
+		65E2E83C0BA2186700B1B8D0 /* templates */ = {
+			isa = PBXGroup;
+			children = (
+				65E2E83F0BA218B600B1B8D0 /* conf_ap13 */,
+				65E2E8400BA218B600B1B8D0 /* conf_ap20 */,
+				65E2E8410BA218B600B1B8D0 /* conf_ap22 */,
+				65E2E85F0BA2252E00B1B8D0 /* modules_ap13 */,
+				65E2E8420BA218B600B1B8D0 /* modules_ap20 */,
+				65E2E8430BA218B600B1B8D0 /* modules_ap22 */,
+			);
+			name = templates;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
