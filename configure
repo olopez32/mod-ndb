@@ -144,7 +144,7 @@ test -f test.conf || cp test.conf.dist test.conf
 awk ' !/^#/ {print $2}' templates/modules_$APACHE_VER | sort > modules_desired
 (cd modules ; ls ) | sort | comm -12 - modules_desired >  modules_avail
 join -2 2 modules_avail templates/modules_$APACHE_VER | \
- awk '{print "LoadModule \t" $0 }' > modules_conf
+ awk '{printf("LoadModule\t%s \t\t modules/%s \n",$2,$1) }' > modules_conf
 
 # Create the sed script which will generate httpd.conf from the template:
 (
