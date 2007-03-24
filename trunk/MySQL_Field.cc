@@ -421,44 +421,49 @@ void MySQL::value(mvalue &m, ap_pool *p,
     case NdbDictionary::Column::Tinyint:
       m.use_value = use_signed;
       aux_int = strtol(val,0,0);
-      if(aux_int < -128) aux_int = -128;
-      m.u.val_8 = (char) ( aux_int < 128 ? aux_int : 127);
+      if(aux_int < -128) aux_int = -128 , m.over = 1;
+      else if( aux_int > 127) aux_int = 127, m.over = 1;
+      m.u.val_8 = (char) aux_int;
       return;
 
     case NdbDictionary::Column::Tinyunsigned:
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
-      if(aux_int > 255 || aux_int < 0) aux_int = 255;
-      m.u.val_unsigned_8 = (unsigned char) (aux_int);
+      if(aux_int > 255) aux_int = 255 , m.over = 1;
+      else if (aux_int < 0) aux_int = 0 , m.over = 1;
+      m.u.val_unsigned_8 = (unsigned char) aux_int;
       return;
 
     case NdbDictionary::Column::Smallint:
       m.use_value = use_signed;
       aux_int = strtol(val,0,0);
-      if(aux_int < -32768) aux_int = -32768;
-      m.u.val_16 = ( aux_int < 32767 ? aux_int : 32767);
+      if(aux_int < -32768) aux_int = -32768 , m.over = 1;
+      else if(aux_int > 32767)  aux_int = 32767 , m.over = 1;
+      m.u.val_16 = (int16_t) aux_int;
       return;
 
     case NdbDictionary::Column::Smallunsigned:
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
-      if(aux_int > 65535 || aux_int < 0) aux_int = 65535;
-      m.u.val_unsigned_16 = aux_int;
+      if(aux_int > 65535) aux_int = 65535 , m.over = 1;
+      else if (aux_int < 0) aux_int = 0 , m.over = 1;
+      m.u.val_unsigned_16 = (u_int16_t) aux_int;
       return;
 
     case NdbDictionary::Column::Mediumint:
       m.use_value = use_signed;
       aux_int = strtol(val,0,0);
-      if(aux_int > 8388607) aux_int = 8388607 ;
-      else if(aux_int < -8388608) aux_int = -8388608;
-      int3store(& m.u.val_unsigned, aux_int);
+      if(aux_int > 8388607) aux_int = 8388607 , m.over = 1;
+      else if(aux_int < -8388608) aux_int = -8388608 , m.over = 1;
+      store24(m.u.val_signed, aux_int);
       return;
 
     case NdbDictionary::Column::Mediumunsigned:
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
-      if(aux_int > 16777215 || aux_int < 0) aux_int = 16777215;
-      int3store(& m.u.val_unsigned, aux_int);
+      if(aux_int > 16777215) aux_int = 16777215 , m.over = 1;
+      else if (aux_int < 0) aux_int = 0 , m.over = 1;
+      store24(m.u.val_unsigned, aux_int);
       return;
       
     /* not implemented */
