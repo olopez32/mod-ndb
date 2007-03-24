@@ -416,7 +416,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       m.u.val_unsigned_64 = strtoull(val,0,0);
       return;
 
-    /* Tiny and small types -- be like mysql: 
+    /* Tiny, small, and medium types -- be like mysql: 
         on overflow, put in the highest allowed value */
     case NdbDictionary::Column::Tinyint:
       m.use_value = use_signed;
@@ -447,9 +447,17 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Mediumint:
+      m.use_value = use_signed;
+      aux_int = strtol(val,0,0);
+      if(aux_int > 8388607) aux_int = 8388607 ;
+      else if(aux_int < -8388608) aux_int = -8388608;
+      int3store(& m.u.val_unsigned, aux_int);
+      return;
+
     case NdbDictionary::Column::Mediumunsigned:
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
+      if(aux_int > 16777215 || aux_int < 0) aux_int = 16777215;
       int3store(& m.u.val_unsigned, aux_int);
       return;
       
