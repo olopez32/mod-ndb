@@ -47,6 +47,9 @@ namespace config {
     srv->max_read_operations = DEFAULT_MAX_READ_OPERATIONS;
     srv->magic_number = 0xCAFEBABE ;
 
+    initialize_output_formats(p);
+    register_built_in_formatters(p);
+
     return (void *) srv;
   }
   
@@ -121,7 +124,7 @@ namespace config {
   {    
     config::dir *dir = (config::dir *) m;
     
-    dir->fmt = get_format_by_name(ap_pstrdup(cmd->pool,format));
+    dir->fmt = get_format_by_name(format);
     if(! dir->fmt) 
       return ap_psprintf(cmd->pool,"Undefined result format \"%s\".", format);
 

@@ -93,10 +93,10 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 
 
 /* Other mod_ndb headers */
+#include "output_format.h"
 #include "result_buffer.h"
 #include "MySQL_Field.h"
 #include "mod_ndb_config.h"
-#include "output_format.h"
 
 
 /* The basic architecture of this module:
@@ -174,7 +174,7 @@ int Query(request_rec *, config::dir *, ndb_instance *);
 int ExecuteAll(request_rec *, ndb_instance *);
 int read_http_post(request_rec *r, table **tab);
 void initialize_output_formats(ap_pool *);
-char *register_format(const char *, output_format *);
-output_format *get_format_by_name(const char *);
+char *register_format(char *, output_format *);
+output_format *get_format_by_name(char *);
 void register_built_in_formatters(ap_pool *);
 int build_results(request_rec *, data_operation *, result_buffer &);
