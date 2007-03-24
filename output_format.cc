@@ -17,15 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
-const char *escape_leaning_toothpicks[128];
-const char *escape_xml_entities[128];
-
 void build_result_row(output_format *, data_operation *, result_buffer &);
 
+/* Globals */
+const char *escape_leaning_toothpicks[128];
+const char *escape_xml_entities[128];
+table *global_format_names = 0;
+apache_array<struct output_format *> *global_output_formats = 0;
 
-row_element::row_element(re_type typ, re_esc esc, re_quot quot) {
-  elem_type   = typ;
-  elem_quote  = quot;
+
+row_element::row_element(re_type type, re_esc esc, re_quot quote) {
+  elem_type   = type;
+  elem_quote  = quote;
   if(esc == esc_xml) 
     escapes = escape_xml_entities;
   else if(esc == esc_json) 
@@ -36,6 +39,46 @@ row_element::row_element(re_type typ, re_esc esc, re_quot quot) {
 };
 
 
+void initialize_output_formats(ap_pool *p) {
+  global_format_names = ap_make_table(p, 6);
+  global_output_formats = new(p,6) apache_array<output_format *>;
+  assert(global_format_names);
+  assert(global_output_formats);
+  return;
+}
+
+
+output_format *get_format_by_name(char *name) {
+  const char *format_index = ap_table_get(global_format_names, name);
+  if(format_index) {
+    int idx = atoi(format_index);
+    return global_output_formats->item(idx);
+  }
+  return 0;
+}
+
+
+char *register_format(char *name, output_format *format) {  
+  char idx_string[32];
+  output_format *existing = get_format_by_name(name);
+  if(existing && ! existing->flag.can_override)
+    return "Cannot redefine existing format";      
+  
+  /* Get the index value for the new format */
+  int nformats = global_output_formats->size();
+  sprintf(idx_string,"%d",nformats);
+  
+  /* Store the pointer to the new format */
+  * global_output_formats->new_item() = format;
+  
+  /* Store the index in the table of format names */
+  ap_table_set(global_format_names, name, idx_string);
+  
+  format->name = name;
+  return 0;
+}
+
+
 void initialize_escapes() {
   for(int i = 0 ; i < 128 ; i++) {
     escape_leaning_toothpicks[i] = 0;
@@ -44,7 +87,12 @@ void initialize_escapes() {
   
   escape_leaning_toothpicks[static_cast<int>('\\')] = "\x02" "\\" "\\";
   escape_leaning_toothpicks[static_cast<int>('\"')] = "\x02" "\\" "\"";
-  
+  escape_leaning_toothpicks[static_cast<int>('\b')] = "\x02" "\\" "\b";
+  escape_leaning_toothpicks[static_cast<int>('\f')] = "\x02" "\\" "\f";
+  escape_leaning_toothpicks[static_cast<int>('\n')] = "\x02" "\\" "\n";
+  escape_leaning_toothpicks[static_cast<int>('\r')] = "\x02" "\\" "\r";
+  escape_leaning_toothpicks[static_cast<int>('\t')] = "\x02" "\\" "\t";
+
   escape_xml_entities[static_cast<int>('<')] = "\x04" "&lt;";
   escape_xml_entities[static_cast<int>('>')] = "\x04" "&gt;";
   escape_xml_entities[static_cast<int>('&')] = "\x05" "&amp;";
@@ -53,7 +101,7 @@ void initialize_escapes() {
 
 
 void register_built_in_formatters(ap_pool *p) {
-  struct row_element *my_item[12];
+  struct row_element *my_item[13];
   struct output_format *json_format = new(p) output_format;
   struct output_format *raw_format  = new(p) output_format;
   struct output_format *xml_format  = new(p) output_format;

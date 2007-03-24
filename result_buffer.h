@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #undef putc
 #endif
 
-class len_string;     // forward declaration
-
 void initialize_escapes();
 
 class result_buffer {
@@ -39,7 +37,7 @@ public:
   inline void putc(char c) { *(buff + sz++) = c; };
   void out(const char *fmt, ...);
   void out(size_t, const char *);
-  void out(len_string &);
+  inline void out(len_string &ls) { out(ls.len, ls.string); };
   ~result_buffer();
 };
 

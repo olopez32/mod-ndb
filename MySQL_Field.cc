@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "httpd.h"
 #include "http_config.h"
 #include "mod_ndb_compat.h"
+#include "output_format.h"
+#include "result_buffer.h"
 #include "MySQL_Field.h"
 
 // Apache disabled this
@@ -204,7 +206,6 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
                      enum ndb_string_packing packing,
                      const char **escapes) {
   unsigned sz = 0;
-  unsigned escaped_size = 0;
   char *ref = 0;
 
 
@@ -231,32 +232,37 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
     else break;
   }
   
-  /* How long will the string be when it is escaped? */
-  for(unsigned int i = 0; i < sz ; i++) {
-    const char *esc = escapes[ref[i]];
-    if(esc) escaped_size += esc[0];
-    else escaped_size++;
-  }
-  
-  /* Prepare the buffer.  This returns false only after a malloc error. */
-  if(!rbuf.prepare(escaped_size)) return;
+  if(escapes) {
+    unsigned escaped_size = 0;
 
-  /* Now copy the string from NDB into the result buffer,
-     encoded appropriately according to the escapes 
-   */
-  for(unsigned int i = 0; i < sz ; i++) {
-    const unsigned char c = ref[i];
-    if(c < 128) {
-      const char *esc = escapes[c];
-      if(esc) {
-        for(char j = 1 ; j <= esc[0]; j++) 
-          rbuf.putc(esc[j]);
-        continue;
-      }
+    /* How long will the string be when it is escaped? */
+    for(unsigned int i = 0; i < sz ; i++) {
+      const char *esc = escapes[ref[i]];
+      if(esc) escaped_size += esc[0];
+      else escaped_size++;
     }
-    rbuf.putc(c);
+    
+    /* Prepare the buffer.  This returns false only after a malloc error. */
+    if(!rbuf.prepare(escaped_size)) return;
+
+    /* Now copy the string from NDB into the result buffer,
+       encoded appropriately according to the escapes 
+     */
+    for(unsigned int i = 0; i < sz ; i++) {
+      const unsigned char c = ref[i];
+      if(c < 128) {
+        const char *esc = escapes[c];
+        if(esc) {
+          for(char j = 1 ; j <= esc[0]; j++) 
+            rbuf.putc(esc[j]);
+          continue;
+        }
+      }
+      rbuf.putc(c);
+    }
   }
-  
+  else                /* alternate code path -- no escapes */   
+    rbuf.out(sz, ref);
 }
 
 

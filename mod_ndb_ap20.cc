@@ -25,8 +25,6 @@ int apache_is_threaded = 0;
 int ndb_force_send = 0;
 apr_status_t mod_ndb_child_exit(void *);
 
-/* Output Formats */
-apr_hash_t *output_formats = 0;
 
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
@@ -226,28 +224,6 @@ ndb_instance *my_instance(request_rec *r) {
   return (ndb_instance *) 0;
 }
 
-void initialize_output_formats(ap_pool *p) {
-  output_formats = apr_hash_make(p);
-  assert(output_formats);
-  return;
-}
-
-
-output_format *get_format_by_name(const char *name) {
-  return (output_format *) apr_hash_get(output_formats, name, APR_HASH_KEY_STRING);
-}
-
-
-char *register_format(const char *name, output_format *format) { 
-  output_format *existing = get_format_by_name(name);
-  if(existing && ! existing->flag.can_override)
-    return "Cannot redefine existing format";      
-
-  apr_hash_set(output_formats, name, APR_HASH_KEY_STRING, format);
-  format->name = name;
-  return 0;
-}
-
 
 extern "C" {
 
@@ -258,18 +234,18 @@ extern "C" {
  /************************
   *       Hooks          *
   ************************/
-
-  int mod_ndb_config_hook(apr_pool_t* p, apr_pool_t* p1, apr_pool_t* p2,
+  
+  int mod_ndb_post_config(apr_pool_t* p, apr_pool_t* p1, apr_pool_t* p2,
                           server_rec* s) {
     ap_add_version_component(p, "NDB/" MYSQL_SERVER_VERSION) ;
     return OK ;
   }  
 
   void mod_ndb_register_hooks(ap_pool *p) {
+    ap_hook_post_config(mod_ndb_post_config, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(ndb_handler, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(ndb_exec_batch_handler, NULL, NULL, APR_HOOK_MIDDLE);
-    ap_hook_post_config(mod_ndb_config_hook, NULL, NULL, APR_HOOK_MIDDLE);
-    ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
   }
     
   /************************
