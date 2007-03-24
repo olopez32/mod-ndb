@@ -185,7 +185,6 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
     while((data->scanop->nextResult(true)) == 0) {
       do {
         res.out(nrows++ ? fmt->mid_scan : fmt->begin_scan);
-        if(nrows++) res.out(fmt->begin_scan);
         build_result_row(fmt, data, res);
       } while((data->scanop->nextResult(false)) == 0);
       if(nrows) res.out(fmt->end_scan);
@@ -195,6 +194,7 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
   else {  /* not a scan, just a single result row */
     build_result_row(fmt, data, res);
   }
+  res.out("\n");
   return OK;
 }
 
