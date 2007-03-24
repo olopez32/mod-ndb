@@ -30,7 +30,7 @@ namespace config {
     dir->updatable   = new(p, 4) apache_array<char *>;
     dir->indexes     = new(p, 2) apache_array<config::index>;
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
-    dir->results = json;
+    dir->fmt = get_format_by_name("JSON");
     dir->use_etags = 1;
     dir->magic_number = 0xBABECAFE ;
     
@@ -46,8 +46,6 @@ namespace config {
     srv->connect_string = 0;
     srv->max_read_operations = DEFAULT_MAX_READ_OPERATIONS;
     srv->magic_number = 0xCAFEBABE ;
-
-    // fprintf(stderr, "Config for server: %x is %x\n", s, srv);
 
     return (void *) srv;
   }
@@ -70,10 +68,7 @@ namespace config {
     if(! d2->table)     dir->table     = d1->table;
     if(! d2->visible)   dir->visible   = d1->visible;
     if(! d2->updatable) dir->updatable = d1->updatable;
-    if(! d2->results)   dir->results   = d1->results;
-    if(! d2->sub_results) dir->sub_results = d1->sub_results;
-    if(! d2->format_param[0]) dir->format_param[0] = d1->format_param[0];
-    if(! d2->format_param[1]) dir->format_param[1] = d1->format_param[1];
+    if(! d2->fmt)       dir->fmt       = d1->fmt;
     if(! d2->incr_prefetch) dir->incr_prefetch = d1->incr_prefetch;
  
     return (void *) dir;
@@ -96,18 +91,6 @@ namespace config {
     return (void *) srv;    
   }
 
-
-  /*  Process Format directives, e.g.   
-      "Format JSON" 
-  */
-  result_format_type fmt_from_str(char *str) {
-
-    ap_str_tolower(str);   // Do all comparisons in lowercase 
-    if(!strcmp(str,"json")) return json;
-    else if(!strcmp(str,"raw")) return raw;
-    else if(!strcmp(str,"xml")) return xml;
-    else return no_results;
-  }
 
 
 /* With per-server config directives, it is not valid to 
@@ -134,25 +117,14 @@ namespace config {
   }
 
 
-  const char *result_format(cmd_parms *cmd, void *m, 
-                            char *fmt, char *arg0, char *arg1)
+  const char *result_format(cmd_parms *cmd, void *m, char *format)
   {    
     config::dir *dir = (config::dir *) m;
     
-    /* Some formatters can take 1 or 2 extra parameters */
-    dir->format_param[0] = ap_pstrdup(cmd->pool, arg0);
-    dir->format_param[1] = ap_pstrdup(cmd->pool, arg1);
+    dir->fmt = get_format_by_name(ap_pstrdup(cmd->pool,format));
+    if(! dir->fmt) 
+      return ap_psprintf(cmd->pool,"Undefined result format \"%s\".", format);
 
-    dir->results = fmt_from_str(fmt);
-    if(dir->results == no_results) {
-      dir->results = json;
-      log_note3(cmd->server,
-                "Invalid result format %s at %s. Using default JSON results.\n",
-                fmt, cmd->path);
-    }
-    if(arg0) dir->sub_results = fmt_from_str(arg0);    
-    else dir->sub_results = no_results;
-    
     return 0;
   }
 
@@ -557,9 +529,31 @@ namespace config {
     }
     return 0;
   }
-}
+  
+  const char *result_fmt_container(cmd_parms *cmd, void *m, char *args) {
+//  const char *pos = args;
+//    char *word;
+//    char line[MAX_STRING_LEN];
+//    
+//    /* read arguments on top line */
+//    while( *pos && ap_getword_conf(cmd->pool, &pos)) {
+// 
+//    }
+//    
+//    /* read lines */
+//    while(!ap_cfg_getline(line, sizeof(line), cmd->config_file)) {
+//      if(!strcasecmp(line,"</ResultFormat>"))
+//        break;
+//      
+//    }
+//    
+//    
+//    return 0;
+//  } 
+  return "unimplemented";
+  }
 
-
+} /* end of  namespace config */
 
 
 extern "C" {
@@ -579,6 +573,13 @@ extern "C" {
      RSRC_CONF,     TAKE1,
      "Limit to number of read subrequests in mod_ndb scripts"
   },  
+  {
+    "<ResultFormat",  // Define a result format 
+    (CMD_HAND_TYPE) config::result_fmt_container,
+    NULL,
+    RSRC_CONF,      RAW_ARGS,
+    "Result Format Definition"
+  },
   {
     "Database",         // inheritable
     (CMD_HAND_TYPE) ap_set_string_slot,
@@ -611,7 +612,7 @@ extern "C" {
     "Format",           // inheritable
     (CMD_HAND_TYPE) config::result_format,
     NULL,
-    ACCESS_CONF,    TAKE123, 
+    ACCESS_CONF,    TAKE1, 
     "Result Set Format"
   },     
   {
@@ -663,7 +664,6 @@ extern "C" {
     ACCESS_CONF,    TAKE13, 
     "NDB Table"
   }, 
-    
   {NULL, NULL, NULL, 0, cmd_how(0), NULL}
   };
 }

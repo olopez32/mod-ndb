@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Globals:
 extern struct mod_ndb_process process;      /* from mod_ndb.cc */
-char *result_formats[4] = {"[None]","JSON","Raw","XML"};
 
 // 
 // Content handlers
@@ -139,7 +138,7 @@ extern "C" {
                  dir->visible->size() == 1 ? "" : "s");
       ap_rprintf(r,"%s \n",ap_array_pstrcat(r->pool,dir->updatable,','));  
     }
-    ap_rprintf(r,"Result format: %s\n",result_formats[(int) dir->results]);
+    ap_rprintf(r,"Result format: %s\n", dir->fmt->name);
     
     columns = dir->key_columns->items();
     int n_indexes = dir->indexes->size();

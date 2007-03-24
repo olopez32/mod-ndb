@@ -17,12 +17,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "revision.h"
+#include "apr_hash.h"
 
 /* Multi-threaded Apache 2 version: */
 struct mod_ndb_process process;
 int apache_is_threaded = 0;
 int ndb_force_send = 0;
 apr_status_t mod_ndb_child_exit(void *);
+
+/* Output Formats */
+apr_hash_t *output_formats = 0;
 
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
@@ -220,6 +224,28 @@ ndb_instance *my_instance(request_rec *r) {
                   "Unwritten code in mod_ndb_ap20.cc at line %d!", __LINE__);
   
   return (ndb_instance *) 0;
+}
+
+void initialize_output_formats(ap_pool *p) {
+  output_formats = apr_hash_make(p);
+  assert(output_formats);
+  return;
+}
+
+
+output_format *get_format_by_name(const char *name) {
+  return (output_format *) apr_hash_get(output_formats, name, APR_HASH_KEY_STRING);
+}
+
+
+char *register_format(const char *name, output_format *format) { 
+  output_format *existing = get_format_by_name(name);
+  if(existing && ! existing->flag.can_override)
+    return "Cannot redefine existing format";      
+
+  apr_hash_set(output_formats, name, APR_HASH_KEY_STRING, format);
+  format->name = name;
+  return 0;
 }
 
 

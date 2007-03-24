@@ -27,6 +27,10 @@ ndb_instance *instance1;
 struct mod_ndb_process process;
 int ndb_force_send = 1;
 
+/* Output Formats */
+table *global_format_names = 0;
+apache_array<struct output_format *> *global_output_formats = 0;
+
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
 // child_init, child_exit, and init_instance
@@ -186,11 +190,50 @@ ndb_instance *my_instance(request_rec *r) {
   return (ndb_instance *) 0;
 }
 
+void initialize_output_formats(ap_pool *p) {
+  global_format_names = ap_make_table(p, 6);
+  global_output_formats = new(p,6) apache_array<output_format *>;
+  assert(global_format_names);
+  assert(global_output_formats);
+  return;
+}
+
+output_format *get_format_by_name(const char *name) {
+  const char *format_index = ap_table_get(global_format_names, name);
+  if(format_index) {
+    int idx = atoi(format_index);
+    return global_output_formats->item(idx);
+  }
+  return 0;
+}
+
+char *register_format(const char *name, output_format *format) {  
+  char idx_string[32];
+  output_format *existing = get_format_by_name(name);
+  if(existing && ! existing->flag.can_override)
+    return "Cannot redefine existing format";      
+
+  /* Get the index value for the new format */
+  int nformats = global_output_formats->size();
+  sprintf(idx_string,"%d",nformats);
+
+  /* Store the pointer to the new format */
+  * global_output_formats->new_item() = format;
+
+  /* Store the index in the table of format names */
+  ap_table_set(global_format_names, name, idx_string);
+  
+  format->name = name;
+  return 0;
+}
+
 
 extern "C" {
 
   void mod_ndb_config_hook(server_rec* s, ap_pool * p) {
     ap_add_version_component("NDB/" MYSQL_SERVER_VERSION) ;
+    initialize_output_formats(p);
+    register_built_in_formatters(p);
   }  
   
   extern command_rec configuration_commands[];

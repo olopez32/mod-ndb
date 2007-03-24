@@ -52,8 +52,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 extern "C" module AP_MODULE_DECLARE_DATA ndb_module;
 
-enum result_format_type { no_results = 0, json, raw, xml };
-
 namespace log {
 //debug, info, notice, warn, error, crit, alert, emerg.
   enum {
@@ -98,7 +96,7 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 #include "result_buffer.h"
 #include "MySQL_Field.h"
 #include "mod_ndb_config.h"
-#include "JSON.h"
+#include "output_format.h"
 
 
 /* The basic architecture of this module:
@@ -137,7 +135,7 @@ struct data_operation {
   NdbBlob *blob;
   unsigned int n_result_cols;
   const NdbRecAttr **result_cols;
-  result_format_type result_format;
+  output_format *fmt;
 };
 
 
@@ -175,3 +173,8 @@ table *http_param_table(request_rec *r, const char *c);
 int Query(request_rec *, config::dir *, ndb_instance *);
 int ExecuteAll(request_rec *, ndb_instance *);
 int read_http_post(request_rec *r, table **tab);
+void initialize_output_formats(ap_pool *);
+char *register_format(const char *, output_format *);
+output_format *get_format_by_name(const char *);
+void register_built_in_formatters(ap_pool *);
+int build_results(request_rec *, data_operation *, result_buffer &);
