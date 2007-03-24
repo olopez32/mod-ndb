@@ -15,6 +15,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+#ifdef __i386__
+#define store24(A,V) A = V
+#else
+#define store24(A,V) int3store(& A, V)
+#endif
+
 enum ndb_string_packing {
   char_fixed,
   char_var,
@@ -56,6 +62,7 @@ struct mvalue {
   size_t len;
   mvalue_use use_value;
   mvalue_interpreted interpreted;
+  bool over;        /* overflow indicator */
 };
 typedef struct mvalue mvalue;
 
