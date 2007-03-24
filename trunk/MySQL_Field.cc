@@ -126,7 +126,6 @@ void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
                    const char **escapes) {
-
   switch(rec.getType()) {
     
     case NdbDictionary::Column::Int:
@@ -177,7 +176,14 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       
     case NdbDictionary::Column::Tinyint:
       return rbuf.out("%d", (int) rec.char_value());
-      
+
+    /* Mediums are stored in Intel byte order on all architectures! */
+    case NdbDictionary::Column::Mediumint:
+      return rbuf.out("%d", sint3korr(rec.aRef()));
+
+    case NdbDictionary::Column::Mediumunsigned:
+      return rbuf.out("%d", uint3korr(rec.aRef()));
+    
     case NdbDictionary::Column::Year:
       return rbuf.out("%04d", 1900 + rec.u_char_value());
       
@@ -439,6 +445,13 @@ void MySQL::value(mvalue &m, ap_pool *p,
       if(aux_int > 65535 || aux_int < 0) aux_int = 65535;
       m.u.val_unsigned_16 = aux_int;
       return;
+
+    case NdbDictionary::Column::Mediumint:
+    case NdbDictionary::Column::Mediumunsigned:
+      m.use_value = use_unsigned;
+      aux_int = strtol(val,0,0);
+      int3store(& m.u.val_unsigned, aux_int);
+      return;
       
     /* not implemented */
 
@@ -458,7 +471,6 @@ void MySQL::value(mvalue &m, ap_pool *p,
     case NdbDictionary::Column::Olddecimalunsigned:
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
-    case NdbDictionary::Column::Mediumint:
     default:
       m.use_value = can_not_use;
       m.u.err_col = col;
