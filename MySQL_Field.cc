@@ -163,7 +163,7 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       return rbuf.out("%llu", rec.u_64_value()); 
       
     case NdbDictionary::Column::Smallunsigned:
-      return rbuf.out("%u", (short) rec.u_short_value());
+      return rbuf.out("%uh", (short) rec.u_short_value());
       
     case NdbDictionary::Column::Tinyunsigned:
       return rbuf.out("%u", (int) rec.u_char_value());
@@ -172,7 +172,7 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       return rbuf.out("%ll", rec.int64_value());
       
     case NdbDictionary::Column::Smallint:
-      return rbuf.out("%d", (short) rec.short_value());
+      return rbuf.out("%dh", (short) rec.short_value());
       
     case NdbDictionary::Column::Tinyint:
       return rbuf.out("%d", (int) rec.char_value());
