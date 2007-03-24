@@ -283,6 +283,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
     ( (col->getType() == NdbDictionary::Column::Varchar) ||
       (col->getType() == NdbDictionary::Column::Longvarchar) ||
       (col->getType() == NdbDictionary::Column::Char));
+  int aux_int;
 
   m.ndb_column = col;
   
@@ -403,18 +404,44 @@ void MySQL::value(mvalue &m, ap_pool *p,
       m.use_value = use_64;
       m.u.val_64 = strtoll(val,0,0);
       return;
-
+      
     case NdbDictionary::Column::Bigunsigned:
       m.use_value = use_unsigned_64;
       m.u.val_unsigned_64 = strtoull(val,0,0);
       return;
+
+    /* Tiny and small types -- be like mysql: 
+        on overflow, put in the highest allowed value */
+    case NdbDictionary::Column::Tinyint:
+      m.use_value = use_signed;
+      aux_int = strtol(val,0,0);
+      if(aux_int < -128) aux_int = -128;
+      m.u.val_8 = (char) ( aux_int < 128 ? aux_int : 127);
+      return;
+
+    case NdbDictionary::Column::Tinyunsigned:
+      m.use_value = use_unsigned;
+      aux_int = strtol(val,0,0);
+      if(aux_int > 255 || aux_int < 0) aux_int = 255;
+      m.u.val_unsigned_8 = (unsigned char) (aux_int);
+      return;
+
+    case NdbDictionary::Column::Smallint:
+      m.use_value = use_signed;
+      aux_int = strtol(val,0,0);
+      if(aux_int < -32768) aux_int = -32768;
+      m.u.val_16 = ( aux_int < 32767 ? aux_int : 32767);
+      return;
+
+    case NdbDictionary::Column::Smallunsigned:
+      m.use_value = use_unsigned;
+      aux_int = strtol(val,0,0);
+      if(aux_int > 65535 || aux_int < 0) aux_int = 65535;
+      m.u.val_unsigned_16 = aux_int;
+      return;
       
     /* not implemented */
 
-    case NdbDictionary::Column::Smallint:
-    case NdbDictionary::Column::Tinyint:
-    case NdbDictionary::Column::Smallunsigned:
-    case NdbDictionary::Column::Tinyunsigned:
     case NdbDictionary::Column::Date:
       // can use http or rfc822 dates via apache utility functions
     case NdbDictionary::Column::Time:

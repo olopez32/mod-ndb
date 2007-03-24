@@ -47,6 +47,10 @@ struct mvalue {
     unsigned long long  val_unsigned_64;
     float               val_float;
     double              val_double;
+    char                val_8;
+    unsigned char       val_unsigned_8;
+    int16_t             val_16;
+    u_int16_t           val_unsigned_16;
     const NdbDictionary::Column * err_col;
   } u;
   size_t len;
