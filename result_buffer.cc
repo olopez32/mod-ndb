@@ -47,8 +47,11 @@ bool result_buffer::prepare(size_t len) {
   return true;
 }
   
+//void result_buffer::out(size_t len, const char *s) {
+void result_buffer::out(len_string &ls) {
+  const char *s = ls.string;
+  size_t len = ls.len;
 
-void result_buffer::out(size_t len, const char *s) {
   if(! this->prepare(len)) return;
   char *dst = buff + sz;
   sz += len;

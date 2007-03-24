@@ -15,6 +15,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+// Forward declaration
+class output_format;
+
 typedef const char *(*CMD_HAND_TYPE) ();
 
 namespace config {
@@ -34,9 +37,7 @@ namespace config {
     short *pathinfo;
     int allow_delete;
     int use_etags;
-    result_format_type results;
-    result_format_type sub_results;
-    char *format_param[2];
+    output_format *fmt;
     int incr_prefetch;
     struct {
       unsigned pathinfo_always : 1;
@@ -88,12 +89,13 @@ namespace config {
   void * merge_srv(ap_pool *, void *, void *);
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
-  const char * result_format(cmd_parms *, void *, char *, char *, char *);
+  const char * result_format(cmd_parms *, void *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * table(cmd_parms *, void *, char *, char *);
   const char * filter(cmd_parms *, void *, char *, char *, char *);
   const char * primary_key(cmd_parms *, void *, char *);
   const char * connectstring(cmd_parms *, void *, char *);
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
+  const char * result_fmt_container(cmd_parms *, void *, char *);
 }
 

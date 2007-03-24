@@ -19,23 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "util_md5.h"
 #include "ndb_api_compat.h"
 
-/*  Result formatters:  */
-
-typedef int ResultBuilder(request_rec *, data_operation *, result_buffer &);
-
-ResultBuilder Results_JSON;
-ResultBuilder Results_raw;
-ResultBuilder Results_XML;
-
-/* A map from enum result_format_type to the corresponding function: */
- ResultBuilder *result_formatter[4] = 
-{ 
-  0 , 
-  Results_JSON , 
-  Results_raw, 
-  Results_XML 
-};
-
 
 inline void set_note(request_rec *r, int num, result_buffer &res) {
   char note[32];
@@ -53,7 +36,6 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   int opn;     // operation number
   result_buffer my_results;
   my_results.buff = 0;
-  ResultBuilder *build_results;
   bool apache_notes = 0;
   
   log_debug(r->server, "Entering ExecuteAll() with %d read operations",
@@ -96,11 +78,8 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     for(opn = 0 ; opn < i->n_read_ops ; opn++) {
       struct data_operation *data = i->data + opn ;
       if(data->blob && data->result_cols) {
-        build_results = result_formatter[data->result_format];
-        if(build_results) {
-          response_code = build_results(r, data, my_results);
-          if(apache_notes) set_note(r, opn, my_results);
-        }
+        response_code = build_results(r, data, my_results);
+        if(apache_notes) set_note(r, opn, my_results);
       }
     }
   }
@@ -117,12 +96,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Loop over the operations and build the result page */
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
     struct data_operation *data = i->data + opn ;
-    if(data->result_cols && (! data->blob)) {
-      build_results = result_formatter[data->result_format];
-      if(build_results) {
-        response_code = build_results(r, data, my_results);
-        if(apache_notes) set_note(r, opn, my_results);
-      }
+    if(data->result_cols && (! data->blob) && data->fmt) {
+      response_code = build_results(r, data, my_results);
+      if(apache_notes) set_note(r, opn, my_results);
     }
   }
   
@@ -166,101 +142,3 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   log_debug(r->server,"ExecuteAll() returning %d",response_code);
   return response_code;
 }
-
-
-/******** Result Page formatters *************/
-
-
-inline void JSON_send_result_row(data_operation *data, result_buffer &res) {
-  JSON::new_object(res);
-  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
-    if(n) JSON::delimiter(res);
-    JSON::put_member(res, *data->result_cols[n]);
-  }
-  JSON::end_object(res);
-}
-
-
-int Results_JSON(request_rec *r, data_operation *data, 
-                 result_buffer &res) {
-  int nrows = 0;
-  res.init(r, 8192);
-  
-  if(data->scanop) {
-    while((data->scanop->nextResult(true)) == 0) {
-      do {
-        if(nrows++) res.out(2,",\n");
-        else JSON::new_array(res);
-        JSON_send_result_row(data, res);
-      } while((data->scanop->nextResult(false)) == 0);
-    }
-    if(nrows) JSON::end_array(res);
-    else return HTTP_GONE; // ??
-  }
-  else {
-    JSON_send_result_row(data, res);
-  }
-  
-  res.out(1,"\n");
-  return OK;
-}
-
-
-inline void XML_send_result_row(data_operation *data, result_buffer &res) {
-  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
-    if(n) XML::delimiter(res);
-    XML::put_member(res, *data->result_cols[n]);
-  }
-}
-
-
-int Results_XML(request_rec *r, data_operation *data, 
-                result_buffer &res) {
-  int nrows = 0;
-  res.init(r, 8192);
-  
-  if(data->scanop) {
-    while((data->scanop->nextResult(true)) == 0) {
-      do {
-        if(nrows++) res.out(1,"\n"); 
-        else XML::new_array(res);
-        XML::new_object(res);
-        XML_send_result_row(data, res);
-        XML::end_object(res);
-      } while((data->scanop->nextResult(false)) == 0);
-    }
-    if(nrows) XML::end_array(res);
-    else return HTTP_GONE;  // ??
-  }
-  else {
-    XML::new_object(res);
-    XML_send_result_row(data, res);
-    res.out(1,"\n");
-    XML::end_object(res);    
-  }
-  
-  res.out(1,"\n");
-  return OK;
-}
-
-
-int Results_raw(request_rec *r, data_operation *data, 
-                result_buffer &res) {
-  unsigned long long size64 = 0;
-  unsigned int size;
-  
-  if(data->blob) {
-    data->blob->getLength(size64);  //passed by reference
-    size = (unsigned int) size64;
-    res.init(r, size);
-    if(data->blob->readData(res.buff, size)) 
-      log_debug(r->server,"Error reading blob data: %s",
-                data->blob->getNdbError().message);
-    res.sz = size;
-  }
-  return OK;
-}
-
-
-
-

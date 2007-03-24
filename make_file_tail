@@ -1,5 +1,5 @@
-OBJECTS=mod_ndb.o JSON.o Query.o Execute.o MySQL_Field.o config.o \
-read_http_post.o handlers.o result_buffer.o
+OBJECTS=mod_ndb.o Query.o Execute.o MySQL_Field.o config.o \
+read_http_post.o handlers.o result_buffer.o output_format.o
 
 INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
 LIBS=$(APXS_LIBS_SHLIB) -lndbclient -lmystrings $(MY_LIBS) -lmysys -lstdc++
@@ -13,17 +13,17 @@ mod_ndb.so: $(OBJECTS)
 	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $< 
 
 
-mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h revision.h
+mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h revision.h output_format.h
 	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall -O0 -o $@ $(MOD_SOURCE)
 
 handlers.o: handlers.cc mod_ndb.h
 read_http_post.o: read_http_post.cc
-JSON.o: JSON.cc mod_ndb.h MySQL_Field.h JSON.h result_buffer.h
 Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h index_object.h
-Execute.o: Execute.cc mod_ndb.h JSON.h result_buffer.h
+Execute.o: Execute.cc mod_ndb.h result_buffer.h output_format.h
 MySQL_Field.o: MySQL_Field.cc MySQL_Field.h result_buffer.h
 config.o: config.cc mod_ndb.h mod_ndb_config.h
 result_buffer.o: result_buffer.cc mod_ndb.h result_buffer.h
+output_format.o: output_format.cc output_format.h 
 
 rev:
 	sh create_rev_h.sh
