@@ -469,6 +469,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
     /* not implemented */
 
     case NdbDictionary::Column::Date:
+      // A "Date" is  floor(nr/1000000.0) where nr is a MySQL Datetime
       // can use http or rfc822 dates via apache utility functions
     case NdbDictionary::Column::Time:
     case NdbDictionary::Column::Year:
