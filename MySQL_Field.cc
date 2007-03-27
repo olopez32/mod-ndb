@@ -19,12 +19,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* 
    MySQL_Field.cc
    
-   This file has a different set of includes than other mod_ndb source files:
+   This file is based largely on code from sql/field.cc.
+   It has a different set of includes than other mod_ndb source files:
    it uses my_global.h to get MySQL's typedefs and macros like "sint3korr",
    but it does not include mod_ndb.h (because you can get trouble if you try 
    to combine mysql headers and apache headers in a single source file).
 */
-   
+
+#include <time.h>
+
 #include "mysql_version.h"
 #include "my_global.h"
 #include "mysql.h"
@@ -47,14 +50,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 
 
-/* This is based on code from Field.cc 
-   (which was also copied into NdbRecAttr.cpp)
-   and documentation at 
-   http://dev.mysql.com/doc/internals/en/myisam-column-attributes.html
-*/
-
 namespace MySQL {
   /* Prototypes of private functions implemented here: */
+  void field_to_tm(struct tm *tm, const NdbRecAttr &rec);
   void Time(result_buffer &rbuf, const NdbRecAttr &rec);
   void Date(result_buffer &rbuf, const NdbRecAttr &rec);
   void Datetime(result_buffer &rbuf, const NdbRecAttr &rec);
@@ -63,68 +61,66 @@ namespace MySQL {
               enum ndb_string_packing packing, const char **escapes); 
 }
 
-void MySQL::Time(result_buffer &rbuf, const NdbRecAttr &rec) {
-  long tmp=(long) sint3korr(rec.aRef());
-  int hour=(uint) (tmp/10000);
-  int minute=(uint) (tmp/100 % 100);
-  int second=(uint) (tmp % 100);
-  rbuf.out("%02d:%02d:%02d", hour, minute, second);
+
+void MySQL::field_to_tm(struct tm *tm, const NdbRecAttr &rec) {
+  int int_date = -1, int_time = -1;
+  unsigned long long datetime;
+
+  switch(rec.getType()) {
+    case NdbDictionary::Column::Datetime :
+      datetime = rec.u_64_value();
+      int_date = datetime / (long long) (1000000);
+      int_time = datetime - (unsigned long long) int_date * (long long)(1000000);
+      break;
+    case NdbDictionary::Column::Date :
+      int_date = uint3korr(rec.aRef());
+      break; 
+    case NdbDictionary::Column::Time :
+      int_time = (long) sint3korr(rec.aRef());
+      break;
+    default:
+      assert(0);
+  }
+  if(int_time != -1) {
+    tm->tm_hour = int_time/10000;
+    tm->tm_min  = int_time/100 % 100;
+    tm->tm_sec  = int_time % 100;
+  }
+  if(int_date != -1) {
+    tm->tm_year = int_date/10000;
+    tm->tm_mon  = int_date/100 % 100;
+    tm->tm_mday = int_date % 100;
+  }
 }
+
+
+void MySQL::Time(result_buffer &rbuf, const NdbRecAttr &rec) {
+  struct tm tm;
+  
+  bzero ( &tm, sizeof(struct tm));
+  MySQL::field_to_tm(&tm, rec);
+  rbuf.out("%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
+}
+
 
 void MySQL::Date(result_buffer &rbuf, const NdbRecAttr &rec) {
-  unsigned int tmp= ( unsigned int ) uint3korr(rec.aRef());
-  int part;
-  char xbuf[40];
-  char *buf = xbuf;
-  char *pos=(char*) buf+10;
-  *pos--=0;
-  part=(int) (tmp & 31);
-  *pos--= (char) ('0'+part%10);
-  *pos--= (char) ('0'+part/10);
-  *pos--= '-';
-  part=(int) (tmp >> 5 & 15);
-  *pos--= (char) ('0'+part%10);
-  *pos--= (char) ('0'+part/10);
-  *pos--= '-';
-  part=(int) (tmp >> 9);
-  *pos--= (char) ('0'+part%10); part/=10;
-  *pos--= (char) ('0'+part%10); part/=10;
-  *pos--= (char) ('0'+part%10); part/=10;
-  *pos=   (char) ('0'+part);
-  rbuf.out(buf);
+  struct tm tm;
+  
+  bzero ( &tm, sizeof(struct tm));
+  MySQL::field_to_tm(&tm, rec);
+  rbuf.out("%04d-%02d-%02d",tm.tm_year, tm.tm_mon, tm.tm_mday);
 }
 
+
 void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
-  /* YYYYMMDDHHMMSS */
-  unsigned long long tmp=rec.u_64_value();
-  long part1,part2,part3;
-  part1=(long) (tmp / (long long) (1000000));  // YYYYMMDD
-  part2=(long) (tmp - (unsigned long long) part1 * (long long)(1000000)); //HHMMSS
-  char xbuf[40];
-  char *buf = xbuf;
-  char* pos=(char*) buf+19;
-  *pos--=0;  // walk backwards through HHMMSS
-  *pos--= (char) ('0'+(char) (part2%10)); part2/=10; 
-  *pos--= (char) ('0'+(char) (part2%10)); part3= (int) (part2 / 10);
-  *pos--= ':';  // part3 is HHMM
-  *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
-  *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
-  *pos--= ':';
-  *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
-  *pos--= (char) ('0'+(char) part3);
-  *pos--= ' ';
-  *pos--= (char) ('0'+(char) (part1%10)); part1/=10; // Day
-  *pos--= (char) ('0'+(char) (part1%10)); part1/=10;
-  *pos--= '-';
-  *pos--= (char) ('0'+(char) (part1%10)); part1/=10;
-  *pos--= (char) ('0'+(char) (part1%10)); part3= (int) (part1/10);
-  *pos--= '-';  // now part3 is YYYY
-  *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
-  *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
-  *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
-  *pos=(char) ('0'+(char) part3);
-  rbuf.out(buf);
+  struct tm tm;
+  
+  bzero ( &tm, sizeof(struct tm));
+  MySQL::field_to_tm(&tm, rec);
+  rbuf.out("%04d-%02d-%02d %02d:%02d:%02d",
+           tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
+
 
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
   return;
