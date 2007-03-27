@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    
 #include "mysql_version.h"
 #include "my_global.h"
+#include "mysql.h"
 #include "NdbApi.hpp"
 #include "httpd.h"
 #include "http_config.h"
@@ -57,6 +58,7 @@ namespace MySQL {
   void Time(result_buffer &rbuf, const NdbRecAttr &rec);
   void Date(result_buffer &rbuf, const NdbRecAttr &rec);
   void Datetime(result_buffer &rbuf, const NdbRecAttr &rec);
+  void Decimal(result_buffer &rbuf, const NdbRecAttr &rec);
   void String(result_buffer &rbuf, const NdbRecAttr &rec, 
               enum ndb_string_packing packing, const char **escapes); 
 }
@@ -93,29 +95,30 @@ void MySQL::Date(result_buffer &rbuf, const NdbRecAttr &rec) {
 }
 
 void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
+  /* YYYYMMDDHHMMSS */
   unsigned long long tmp=rec.u_64_value();
   long part1,part2,part3;
-  part1=(long) (tmp / (long long) (1000000));
-  part2=(long) (tmp - (unsigned long long) part1 * (long long)(1000000));
+  part1=(long) (tmp / (long long) (1000000));  // YYYYMMDD
+  part2=(long) (tmp - (unsigned long long) part1 * (long long)(1000000)); //HHMMSS
   char xbuf[40];
   char *buf = xbuf;
   char* pos=(char*) buf+19;
-  *pos--=0;
+  *pos--=0;  // walk backwards through HHMMSS
   *pos--= (char) ('0'+(char) (part2%10)); part2/=10; 
   *pos--= (char) ('0'+(char) (part2%10)); part3= (int) (part2 / 10);
-  *pos--= ':';
+  *pos--= ':';  // part3 is HHMM
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos--= ':';
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos--= (char) ('0'+(char) part3);
   *pos--= ' ';
-  *pos--= (char) ('0'+(char) (part1%10)); part1/=10;
+  *pos--= (char) ('0'+(char) (part1%10)); part1/=10; // Day
   *pos--= (char) ('0'+(char) (part1%10)); part1/=10;
   *pos--= '-';
   *pos--= (char) ('0'+(char) (part1%10)); part1/=10;
   *pos--= (char) ('0'+(char) (part1%10)); part3= (int) (part1/10);
-  *pos--= '-';
+  *pos--= '-';  // now part3 is YYYY
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
   *pos--= (char) ('0'+(char) (part3%10)); part3/=10;
@@ -123,6 +126,9 @@ void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
   rbuf.out(buf);
 }
 
+void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
+  return;
+}
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
                    const char **escapes) {
@@ -190,12 +196,14 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
     case NdbDictionary::Column::Datetime:
       return MySQL::Datetime(rbuf,rec);
       
+    case NdbDictionary::Column::Decimal:
+    case NdbDictionary::Column::Decimalunsigned:
+      return MySQL::Decimal(rbuf,rec);
+
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
-    case NdbDictionary::Column::Decimal:
-    case NdbDictionary::Column::Decimalunsigned:
     default:
       return;
   
@@ -469,22 +477,28 @@ void MySQL::value(mvalue &m, ap_pool *p,
     /* not implemented */
 
     case NdbDictionary::Column::Date:
+      // stored as a long.
       // A "Date" is  floor(nr/1000000.0) where nr is a MySQL Datetime
-      // can use http or rfc822 dates via apache utility functions
+      // can use apache utility functions (Stein & MacEachern pp.617-618)
     case NdbDictionary::Column::Time:
+      // Time is stored as 3 bytes 
     case NdbDictionary::Column::Year:
-      // is a one-byte character + 1900
+      // is stored as a one-byte character + 1900
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Datetime:
-      /* uint64 tmp=((ltime->year*10000L+ltime->month*100+ltime->day)*LL(1000000)+
-           (ltime->hour*10000L+ltime->minute*100+ltime->second)); */  
+      // stored as a 64-bit longlong
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Varbinary:
-    case NdbDictionary::Column::Binary:      
+    case NdbDictionary::Column::Binary:
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
+      /* Olddecimal types are just strings.  But you cannot create old decimal
+         columns with MySQL 5, so this is difficult to test. */
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
+      /* Use Column::getPrecision() and getScale() to find the column's 
+         dimensions, then use string2decimal() and decimal2bin().  
+      */
     default:
       m.use_value = can_not_use;
       m.u.err_col = col;

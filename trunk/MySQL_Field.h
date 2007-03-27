@@ -15,6 +15,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+/* In ha_ndbcluster.cc, low_byte_first() is FALSE on WORDS_BIGENDIAN machines
+   and TRUE on other (e.g. intel) machines.  This is a key to understanding
+   how NDB actually stores values from sql/field.cc Field_xxx::store()
+*/ 
+
 #ifdef __i386__
 #define store24(A,V) A = V
 #else
@@ -71,5 +76,38 @@ namespace MySQL {
   void  value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
 };
 
+/* --------------------------------------------------------------------
+    == DECIMAL support that is not in MySQL's public include files ==
+ This is only needed in MySQL_Field.cc and only if the "real" decimal.h
+ has not been included.  "#ifdef _mysql_h" is here because mysql.h is required 
+ by these prorotypes (for e.g. my_bool).  MySQL_Field.cc is the 
+ only source file that includes mysql.h, but this file (MySQL_Field.h) is 
+ included by mod_ndb.h and thus by every source file.
+*/
 
+#ifdef _mysql_h
+#ifndef _decimal_h
+typedef int32 decimal_digit_t;
 
+typedef struct st_decimal_t {
+  int intg, frac, len;
+  my_bool sign;
+  decimal_digit_t *buf;
+} decimal_t;
+
+int decimal_size(int precision, int scale);
+int decimal_bin_size(int precision, int scale);
+#define decimal_string_size(dec) (((dec)->intg ? (dec)->intg : 1) + \
+				  (dec)->frac + ((dec)->frac > 0) + 2)
+                                  
+int decimal2bin(decimal_t *from, char *to, int precision, int scale);
+int bin2decimal(char *from, decimal_t *to, int precision, int scale);
+
+int decimal2string(decimal_t *from, char *to, int *to_len,
+                   int fixed_precision, int fixed_decimals,
+                   char filler);
+int internal_str2dec(const char *from, decimal_t *to, char **end,
+                     my_bool fixed);
+#define string2decimal(A,B,C) internal_str2dec((A), (B), (C), 0)
+#endif
+#endif
