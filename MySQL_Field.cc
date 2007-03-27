@@ -53,9 +53,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace MySQL {
   /* Prototypes of private functions implemented here: */
   void field_to_tm(struct tm *tm, const NdbRecAttr &rec);
-  void Time(result_buffer &rbuf, const NdbRecAttr &rec);
-  void Date(result_buffer &rbuf, const NdbRecAttr &rec);
-  void Datetime(result_buffer &rbuf, const NdbRecAttr &rec);
   void Decimal(result_buffer &rbuf, const NdbRecAttr &rec);
   void String(result_buffer &rbuf, const NdbRecAttr &rec, 
               enum ndb_string_packing packing, const char **escapes); 
@@ -66,6 +63,7 @@ void MySQL::field_to_tm(struct tm *tm, const NdbRecAttr &rec) {
   int int_date = -1, int_time = -1;
   unsigned long long datetime;
 
+  bzero (tm, sizeof(struct tm));
   switch(rec.getType()) {
     case NdbDictionary::Column::Datetime :
       datetime = rec.u_64_value();
@@ -93,41 +91,14 @@ void MySQL::field_to_tm(struct tm *tm, const NdbRecAttr &rec) {
   }
 }
 
-
-void MySQL::Time(result_buffer &rbuf, const NdbRecAttr &rec) {
-  struct tm tm;
-  
-  bzero ( &tm, sizeof(struct tm));
-  MySQL::field_to_tm(&tm, rec);
-  rbuf.out("%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
-}
-
-
-void MySQL::Date(result_buffer &rbuf, const NdbRecAttr &rec) {
-  struct tm tm;
-  
-  bzero ( &tm, sizeof(struct tm));
-  MySQL::field_to_tm(&tm, rec);
-  rbuf.out("%04d-%02d-%02d",tm.tm_year, tm.tm_mon, tm.tm_mday);
-}
-
-
-void MySQL::Datetime(result_buffer &rbuf, const NdbRecAttr &rec) {
-  struct tm tm;
-  
-  bzero ( &tm, sizeof(struct tm));
-  MySQL::field_to_tm(&tm, rec);
-  rbuf.out("%04d-%02d-%02d %02d:%02d:%02d",
-           tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-}
-
-
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
   return;
 }
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
                    const char **escapes) {
+  struct tm tm;
+
   switch(rec.getType()) {
     
     case NdbDictionary::Column::Int:
@@ -156,10 +127,12 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       return rbuf.out("%G", (double) rec.double_value());
       
     case NdbDictionary::Column::Date:
-      return MySQL::Date(rbuf,rec);
+      MySQL::field_to_tm(&tm, rec);
+      return rbuf.out("%04d-%02d-%02d",tm.tm_year, tm.tm_mon, tm.tm_mday);
       
     case NdbDictionary::Column::Time:
-      return MySQL::Time(rbuf,rec);
+      MySQL::field_to_tm(&tm, rec);
+      return rbuf.out("%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
       
     case NdbDictionary::Column::Bigunsigned:
       return rbuf.out("%llu", rec.u_64_value()); 
@@ -190,7 +163,9 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       return rbuf.out("%04d", 1900 + rec.u_char_value());
       
     case NdbDictionary::Column::Datetime:
-      return MySQL::Datetime(rbuf,rec);
+      MySQL::field_to_tm(&tm, rec);
+      return rbuf.out("%04d-%02d-%02d %02d:%02d:%02d",
+               tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
       
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
