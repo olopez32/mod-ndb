@@ -67,25 +67,28 @@ void MySQL::field_to_tm(struct tm *tm, const NdbRecAttr &rec) {
   switch(rec.getType()) {
     case NdbDictionary::Column::Datetime :
       datetime = rec.u_64_value();
-      int_date = datetime / (long long) (1000000);
-      int_time = datetime - (unsigned long long) int_date * (long long)(1000000);
+      int_date = datetime / 1000000LL;
+      int_time = datetime - (unsigned long long) int_date * 1000000LL;
+      break;
+    case NdbDictionary::Column::Time :
+      int_time = sint3korr(rec.aRef());
       break;
     case NdbDictionary::Column::Date :
       int_date = uint3korr(rec.aRef());
-      break; 
-    case NdbDictionary::Column::Time :
-      int_time = (long) sint3korr(rec.aRef());
-      break;
+      tm->tm_mday = (int_date & 31);
+      tm->tm_mon  = (int_date >> 5 & 15);
+      tm->tm_year = (int_date >> 9);
+      return;
     default:
       assert(0);
   }
-  if(int_time != -1) {
+  if(int_time != -1) { // HHMMSS
     tm->tm_hour = int_time/10000;
     tm->tm_min  = int_time/100 % 100;
     tm->tm_sec  = int_time % 100;
   }
-  if(int_date != -1) {
-    tm->tm_year = int_date/10000;
+  if(int_date != -1) { // YYYYMMDD
+    tm->tm_year = int_date/10000 % 10000;
     tm->tm_mon  = int_date/100 % 100;
     tm->tm_mday = int_date % 100;
   }
@@ -152,7 +155,6 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
     case NdbDictionary::Column::Tinyint:
       return rbuf.out("%d", (int) rec.char_value());
 
-    /* Mediums are stored in Intel byte order on all architectures! */
     case NdbDictionary::Column::Mediumint:
       return rbuf.out("%d", sint3korr(rec.aRef()));
 
@@ -164,8 +166,8 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       
     case NdbDictionary::Column::Datetime:
       MySQL::field_to_tm(&tm, rec);
-      return rbuf.out("%04d-%02d-%02d %02d:%02d:%02d",
-               tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+      return rbuf.out("%04d-%02d-%02d %02d:%02d:%02d", tm.tm_year, tm.tm_mon, 
+                      tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
       
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
