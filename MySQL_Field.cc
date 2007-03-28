@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    to combine mysql headers and apache headers in a single source file).
 */
 
-#include <time.h>
-
 #include "mysql_version.h"
 #include "my_global.h"
 #include "mysql.h"
@@ -49,50 +47,56 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define Attr_Size(r) r.get_size_in_bytes()
 #endif
 
+// From apache_time.cc:
+extern void parse_http_date(time_struct *tm, const char *string);
 
 namespace MySQL {
   /* Prototypes of private functions implemented here: */
-  void field_to_tm(struct tm *tm, const NdbRecAttr &rec);
+  void field_to_tm(time_struct *tm, const NdbRecAttr &rec);
   void Decimal(result_buffer &rbuf, const NdbRecAttr &rec);
   void String(result_buffer &rbuf, const NdbRecAttr &rec, 
               enum ndb_string_packing packing, const char **escapes); 
 }
 
+inline void factor_HHMMSS(time_struct *tm, int int_time) {
+  tm->tm_hour = int_time/10000;
+  tm->tm_min  = int_time/100 % 100;
+  tm->tm_sec  = int_time % 100;  
+}
 
-void MySQL::field_to_tm(struct tm *tm, const NdbRecAttr &rec) {
+inline void factor_YYYYMMDD(time_struct *tm, int int_date) {
+  tm->tm_year = int_date/10000 % 10000;
+  tm->tm_mon  = int_date/100 % 100;
+  tm->tm_mday = int_date % 100;  
+}
+
+void MySQL::field_to_tm(time_struct *tm, const NdbRecAttr &rec) {
   int int_date = -1, int_time = -1;
   unsigned long long datetime;
 
-  bzero (tm, sizeof(struct tm));
+  bzero (tm, sizeof(time_struct));
   switch(rec.getType()) {
     case NdbDictionary::Column::Datetime :
       datetime = rec.u_64_value();
-      int_date = datetime / 1000000LL;
-      int_time = datetime - (unsigned long long) int_date * 1000000LL;
+      int_date = datetime / 1000000;
+      int_time = datetime - (unsigned long long) int_date * 1000000;
       break;
     case NdbDictionary::Column::Time :
       int_time = sint3korr(rec.aRef());
       break;
     case NdbDictionary::Column::Date :
       int_date = uint3korr(rec.aRef());
-      tm->tm_mday = (int_date & 31);
-      tm->tm_mon  = (int_date >> 5 & 15);
+      tm->tm_mday = (int_date & 31);      // five bits
+      tm->tm_mon  = (int_date >> 5 & 15); // four bits
       tm->tm_year = (int_date >> 9);
       return;
     default:
       assert(0);
   }
-  if(int_time != -1) { // HHMMSS
-    tm->tm_hour = int_time/10000;
-    tm->tm_min  = int_time/100 % 100;
-    tm->tm_sec  = int_time % 100;
-  }
-  if(int_date != -1) { // YYYYMMDD
-    tm->tm_year = int_date/10000 % 10000;
-    tm->tm_mon  = int_date/100 % 100;
-    tm->tm_mday = int_date % 100;
-  }
+  if(int_time != -1) factor_HHMMSS(tm, int_time);
+  if(int_date != -1) factor_YYYYMMDD(tm, int_date);
 }
+
 
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
   return;
@@ -100,14 +104,13 @@ void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
                    const char **escapes) {
-  struct tm tm;
+  time_struct tm;
 
   switch(rec.getType()) {
     
     case NdbDictionary::Column::Int:
       return rbuf.out("%d", (int)  rec.int32_value()); 
       
-    case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Unsigned:
     case NdbDictionary::Column::Timestamp:
       return rbuf.out("%u", (unsigned int) rec.u_32_value());
@@ -166,13 +169,13 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       
     case NdbDictionary::Column::Datetime:
       MySQL::field_to_tm(&tm, rec);
-      return rbuf.out("%04d-%02d-%02d %02d:%02d:%02d", tm.tm_year, tm.tm_mon, 
-                      tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+      return rbuf.datetime(&tm);
       
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
       return MySQL::Decimal(rbuf,rec);
 
+    case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Olddecimal:
@@ -194,7 +197,6 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
                      const char **escapes) {
   unsigned sz = 0;
   char *ref = 0;
-
 
   switch(packing) {
     case char_fixed:
@@ -269,7 +271,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
   bool is_char_col = 
     ( (col->getType() == NdbDictionary::Column::Varchar) ||
       (col->getType() == NdbDictionary::Column::Longvarchar) ||
-      (col->getType() == NdbDictionary::Column::Char));
+      (col->getType() == NdbDictionary::Column::Char));        
   int aux_int;
 
   m.ndb_column = col;
@@ -324,11 +326,56 @@ void MySQL::value(mvalue &m, ap_pool *p,
     }
   }
 
-/* Numeric columns */
-  
+  /* Date columns */
+  if ( (col->getType() == NdbDictionary::Column::Time) ||
+       (col->getType() == NdbDictionary::Column::Date) ||
+       (col->getType() == NdbDictionary::Column::Datetime)) {
+    time_struct tm;
+
+    if(! val) { /* null pointer */
+      m.use_value = use_null;
+      m.u.val_64 = 0;
+      return;
+    }
+    bzero(&tm, sizeof(time_struct));
+
+    if(col->getType() == NdbDictionary::Column::Datetime) {
+      parse_http_date(&tm, val);
+      m.use_value = use_unsigned_64;
+      m.u.val_unsigned_64 = 
+        tm.tm_sec + (tm.tm_min * 100) + (tm.tm_hour * 10000) +
+        (tm.tm_mday * 1000000) + (tm.tm_mon * 100000000LL) + 
+        (tm.tm_year * 10000000000LL);
+      return;
+    }
+    else {
+      char strbuf[40];
+      char *buf = strbuf;
+      const char *c = val;
+      if(*c == '-' || *c == '+') *buf++ = *c++;
+      for(register int i = 0 ; i < 38 && *c != 0 ; c++, i++ ) 
+        if(! (*c == ':' || *c == '-' || *c == '/' || *c == ' '))
+          *buf++ = *c; 
+      *buf = 0;
+      aux_int = strtol(buf, 0, 10);
+
+      if(col->getType() == NdbDictionary::Column::Time) {
+        m.use_value = use_signed;
+        m.u.val_signed = aux_int;
+      }
+      else {  /* NdbDictionary::Column::Date */
+        factor_YYYYMMDD(&tm, aux_int);
+        aux_int = (tm.tm_year << 9) | (tm.tm_year << 5) | tm.tm_mday;
+        m.use_value = use_signed;
+        store24(m.u.val_signed, aux_int);
+      }
+      return;
+    }
+  }
+
+  /* Numeric columns */  
   if(! val) {  // You can't do anything with a null pointer
     m.use_value = can_not_use;
-    m.u.err_col = col;
     return;
   }
 
@@ -446,20 +493,16 @@ void MySQL::value(mvalue &m, ap_pool *p,
       else if (aux_int < 0) aux_int = 0 , m.over = 1;
       store24(m.u.val_unsigned, aux_int);
       return;
-      
+
+    case NdbDictionary::Column::Year:
+      m.use_value = use_unsigned;
+      aux_int = strtol(val,0,0) - 1900;      
+      m.u.val_unsigned_8 = (unsigned char) aux_int;
+      return;
+            
     /* not implemented */
 
-    case NdbDictionary::Column::Date:
-      // stored as a long.
-      // A "Date" is  floor(nr/1000000.0) where nr is a MySQL Datetime
-      // can use apache utility functions (Stein & MacEachern pp.617-618)
-    case NdbDictionary::Column::Time:
-      // Time is stored as 3 bytes 
-    case NdbDictionary::Column::Year:
-      // is stored as a one-byte character + 1900
     case NdbDictionary::Column::Text:
-    case NdbDictionary::Column::Datetime:
-      // stored as a 64-bit longlong
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:
@@ -474,7 +517,6 @@ void MySQL::value(mvalue &m, ap_pool *p,
       */
     default:
       m.use_value = can_not_use;
-      m.u.err_col = col;
       return;
   }
 }

@@ -62,7 +62,6 @@ struct mvalue {
     unsigned char       val_unsigned_8;
     int16_t             val_16;
     u_int16_t           val_unsigned_16;
-    const NdbDictionary::Column * err_col;
   } u;
   size_t len;
   mvalue_use use_value;
