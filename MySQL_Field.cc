@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mysql_version.h"
 #include "my_global.h"
 #include "mysql.h"
+#include "mysql_time.h"
 #include "NdbApi.hpp"
 #include "httpd.h"
 #include "http_config.h"
@@ -47,34 +48,35 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define Attr_Size(r) r.get_size_in_bytes()
 #endif
 
-// From apache_time.cc:
-extern void parse_http_date(time_struct *tm, const char *string);
 
 namespace MySQL {
   /* Prototypes of private functions implemented here: */
-  void field_to_tm(time_struct *tm, const NdbRecAttr &rec);
+  void field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec);
   void Decimal(result_buffer &rbuf, const NdbRecAttr &rec);
   void String(result_buffer &rbuf, const NdbRecAttr &rec, 
               enum ndb_string_packing packing, const char **escapes); 
 }
 
-inline void factor_HHMMSS(time_struct *tm, int int_time) {
-  tm->tm_hour = int_time/10000;
-  tm->tm_min  = int_time/100 % 100;
-  tm->tm_sec  = int_time % 100;  
+inline void factor_HHMMSS(MYSQL_TIME *tm, int int_time) {
+  if(int_time < 0) {
+    tm->neg = true; int_time = - int_time;
+  }
+  tm->hour = int_time/10000;
+  tm->minute  = int_time/100 % 100;
+  tm->second  = int_time % 100;  
 }
 
-inline void factor_YYYYMMDD(time_struct *tm, int int_date) {
-  tm->tm_year = int_date/10000 % 10000;
-  tm->tm_mon  = int_date/100 % 100;
-  tm->tm_mday = int_date % 100;  
+inline void factor_YYYYMMDD(MYSQL_TIME *tm, int int_date) {
+  tm->year = int_date/10000 % 10000;
+  tm->month  = int_date/100 % 100;
+  tm->day = int_date % 100;  
 }
 
-void MySQL::field_to_tm(time_struct *tm, const NdbRecAttr &rec) {
-  int int_date = -1, int_time = -1;
+void MySQL::field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec) {
+  int int_date = -1, int_time = -99;
   unsigned long long datetime;
 
-  bzero (tm, sizeof(time_struct));
+  bzero (tm, sizeof(MYSQL_TIME));
   switch(rec.getType()) {
     case NdbDictionary::Column::Datetime :
       datetime = rec.u_64_value();
@@ -86,14 +88,14 @@ void MySQL::field_to_tm(time_struct *tm, const NdbRecAttr &rec) {
       break;
     case NdbDictionary::Column::Date :
       int_date = uint3korr(rec.aRef());
-      tm->tm_mday = (int_date & 31);      // five bits
-      tm->tm_mon  = (int_date >> 5 & 15); // four bits
-      tm->tm_year = (int_date >> 9);
+      tm->day = (int_date & 31);      // five bits
+      tm->month  = (int_date >> 5 & 15); // four bits
+      tm->year = (int_date >> 9);
       return;
     default:
       assert(0);
   }
-  if(int_time != -1) factor_HHMMSS(tm, int_time);
+  if(int_time != -99)factor_HHMMSS(tm, int_time);
   if(int_date != -1) factor_YYYYMMDD(tm, int_date);
 }
 
@@ -104,7 +106,7 @@ void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
                    const char **escapes) {
-  time_struct tm;
+  MYSQL_TIME tm;
 
   switch(rec.getType()) {
     
@@ -134,11 +136,12 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       
     case NdbDictionary::Column::Date:
       MySQL::field_to_tm(&tm, rec);
-      return rbuf.out("%04d-%02d-%02d",tm.tm_year, tm.tm_mon, tm.tm_mday);
+      return rbuf.out("%04d-%02d-%02d",tm.year, tm.month, tm.day);
       
     case NdbDictionary::Column::Time:
       MySQL::field_to_tm(&tm, rec);
-      return rbuf.out("%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
+      return rbuf.out("%s%02d:%02d:%02d", tm.neg ? "-" : "" ,
+                      tm.hour, tm.minute, tm.second);
       
     case NdbDictionary::Column::Bigunsigned:
       return rbuf.out("%llu", rec.u_64_value()); 
@@ -169,7 +172,8 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
       
     case NdbDictionary::Column::Datetime:
       MySQL::field_to_tm(&tm, rec);
-      return rbuf.datetime(&tm);
+      return rbuf.out("%04d-%02d-%02d %02d:%02d:%02d", tm.year, tm.month, 
+                      tm.day, tm.hour, tm.minute, tm.second);
       
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
@@ -330,46 +334,42 @@ void MySQL::value(mvalue &m, ap_pool *p,
   if ( (col->getType() == NdbDictionary::Column::Time) ||
        (col->getType() == NdbDictionary::Column::Date) ||
        (col->getType() == NdbDictionary::Column::Datetime)) {
-    time_struct tm;
-
+    MYSQL_TIME tm;
+    char strbuf[64];
+    char *buf = strbuf;
+    const char *c = val;
+    
     if(! val) { /* null pointer */
       m.use_value = use_null;
       m.u.val_64 = 0;
       return;
     }
-    bzero(&tm, sizeof(time_struct));
+    /* Parse a MySQL date, time, or datetime.  Allow it to be signed.
+       Ignore common separators, and treat it as a number. */
+    if(*c == '-' || *c == '+') *buf++ = *c++;
+    for(register int i = 0 ; i < 62 && *c != 0 ; c++, i++ ) 
+    if(! (*c == ':' || *c == '-' || *c == '/' || *c == ' '))
+    *buf++ = *c; *buf = 0;
+    buf = strbuf;
 
-    if(col->getType() == NdbDictionary::Column::Datetime) {
-      parse_http_date(&tm, val);
-      m.use_value = use_unsigned_64;
-      m.u.val_unsigned_64 = 
-        tm.tm_sec + (tm.tm_min * 100) + (tm.tm_hour * 10000) +
-        (tm.tm_mday * 1000000) + (tm.tm_mon * 100000000LL) + 
-        (tm.tm_year * 10000000000LL);
-      return;
-    }
-    else {
-      char strbuf[40];
-      char *buf = strbuf;
-      const char *c = val;
-      if(*c == '-' || *c == '+') *buf++ = *c++;
-      for(register int i = 0 ; i < 38 && *c != 0 ; c++, i++ ) 
-        if(! (*c == ':' || *c == '-' || *c == '/' || *c == ' '))
-          *buf++ = *c; 
-      *buf = 0;
-      aux_int = strtol(buf, 0, 10);
-
-      if(col->getType() == NdbDictionary::Column::Time) {
+    switch(col->getType()) {
+      case NdbDictionary::Column::Datetime :
+        m.u.val_unsigned_64 = strtoull(buf, 0, 10);
+        m.use_value = use_unsigned_64;
+        return;
+      case NdbDictionary::Column::Time :
         m.use_value = use_signed;
-        m.u.val_signed = aux_int;
-      }
-      else {  /* NdbDictionary::Column::Date */
-        factor_YYYYMMDD(&tm, aux_int);
-        aux_int = (tm.tm_year << 9) | (tm.tm_year << 5) | tm.tm_mday;
+        m.u.val_signed = strtol(buf, 0, 10);
+        return;
+      case NdbDictionary::Column::Date :
+        bzero(&tm, sizeof(MYSQL_TIME));
+        factor_YYYYMMDD(&tm, strtol(buf, 0, 10));
+        aux_int = (tm.year << 9) | (tm.month << 5) | tm.day;
         m.use_value = use_signed;
         store24(m.u.val_signed, aux_int);
-      }
-      return;
+        return;
+      default:
+        assert(0);
     }
   }
 
