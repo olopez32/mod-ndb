@@ -69,24 +69,14 @@ typedef apr_array_header_t array_header;
 
 /* Apache 2 logging defines */
 #define my_ap_log_error(l,s,fmt,arg) ap_log_error(APLOG_MARK,l,0,s,fmt,arg);
-#define log_err(s,txt) ap_log_error(APLOG_MARK,log::err,0,s,txt);
-#define log_err2(s,txt,arg) ap_log_error(APLOG_MARK,log::err,0,s,txt,arg);
-#define log_err3(s,fmt,a1,a2) ap_log_error(APLOG_MARK,log::err,0,s,fmt,a1,a2);
-#define log_err4(s,fmt,a1,a2,a3) ap_log_error(APLOG_MARK,log::err,0,s,fmt,a1,a2,a3);
-#define log_note(s,txt) ap_log_error(APLOG_MARK,log::warn,0,s,txt);
-#define log_note2(s,txt,arg) ap_log_error(APLOG_MARK,log::warn,0,s,txt,arg);
-#define log_note3(s,fmt,a1,a2) ap_log_error(APLOG_MARK,log::warn,0,s,fmt,a1,a2);
+#define log_err(s, ... ) ap_log_error(APLOG_MARK,log::err,0,s, __VA_ARGS__ );
+#define log_note(s, ... ) ap_log_error(APLOG_MARK,log::warn,0,s,__VA_ARGS__ );
 
 #ifdef MOD_NDB_DEBUG 
-#define log_debug(s,txt,arg) ap_log_error(APLOG_MARK,log::debug,0,s,txt,arg);
-#define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,0,s,txt,arg1,arg2);
-#define log_debug4(s,txt,a,b,c) ap_log_error(APLOG_MARK,log::debug,0,s,txt,a,b,c);
+#define log_debug(s,txt,...) ap_log_error(APLOG_MARK,log::debug,0,s,txt, __VA_ARGS__);
 #else
-#define log_debug(s,txt,arg) 
-#define log_debug3(s,txt,arg1,arg2)
-#define log_debug4(s,txt,a,b,c)
+#define log_debug(s,txt,...) 
 #endif
-/* end of logging defines */
 
 #else 
           /* Apache 1.3: */
@@ -95,23 +85,13 @@ typedef apr_array_header_t array_header;
 
 /* Apache 1.3 logging defines */
 #define my_ap_log_error(l,s,fmt,arg) ap_log_error(APLOG_MARK,l,s,fmt,arg);
-#define log_err(s,txt) ap_log_error(APLOG_MARK, log::err, s, txt);
-#define log_err2(s,txt,arg) ap_log_error(APLOG_MARK, log::err, s,txt,arg);
-#define log_err3(s,fmt,a1,a2) ap_log_error(APLOG_MARK,log::err,s,fmt,a1,a2);
-#define log_err4(s,fmt,a1,a2,a3) ap_log_error(APLOG_MARK,log::err,s,fmt,a1,a2,a3);
-#define log_note(s,txt) ap_log_error(APLOG_MARK, log::warn, s, txt);
-#define log_note2(s,txt,arg) ap_log_error(APLOG_MARK, log::warn, s,txt,arg);
-#define log_note3(s,fmt,a1,a2) ap_log_error(APLOG_MARK,log::warn,s,fmt,a1,a2);
+#define log_err(s, ... ) ap_log_error(APLOG_MARK, log::err, s, __VA_ARGS__ );
+#define log_note(s, ... ) ap_log_error(APLOG_MARK, log::warn, s, __VA_ARGS__ );
 
 #ifdef MOD_NDB_DEBUG 
-#define log_debug(s,txt,arg) ap_log_error(APLOG_MARK, log::debug, s, txt, arg);
-#define log_debug3(s,txt,arg1,arg2) ap_log_error(APLOG_MARK,log::debug,s,txt,arg1,arg2);
-#define log_debug4(s,txt,a,b,c) ap_log_error(APLOG_MARK,log::debug,s,txt,a,b,c);
+#define log_debug(s, ... ) ap_log_error(APLOG_MARK, log::debug, s, __VA_ARGS__ );
 #else
-#define log_debug(s,txt,arg) 
-#define log_debug3(s,txt,arg1,arg2)
-#define log_debug4(s,txt,a,b,c)
+#define log_debug(s, ... ) 
 #endif
-/* end of logging defines */
 
 #endif

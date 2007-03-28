@@ -319,7 +319,7 @@ namespace config {
 
     if(col_exists) {
       if((cols[id].index_id != -1) && (index_id != -1))
-        log_err3(cmd->server, "Reassociating column %s with index %s", 
+        log_err(cmd->server, "Reassociating column %s with index %s", 
             col_name, indexes[index_id].name);
     }    
     cols[id].index_id = index_id;
@@ -423,9 +423,9 @@ namespace config {
       // One-argument syntax, e.g. "Filter year."   This is an NdbScanFilter.
       if(columns[base_col_id].index_id >= 0) {
         columns[base_col_id].implied_plan = NoPlan;
-        log_debug3(cmd->server,"Column %s is a filter, so including it in a req"
-                   "uest will NOT cause that request to use index %s", base_col_name, 
-                   dir->indexes->item(columns[base_col_id].index_id).name);
+        log_debug(cmd->server,"Column %s is a filter, so including it in a req"
+                  "uest will NOT cause that request to use index %s", base_col_name, 
+                  dir->indexes->item(columns[base_col_id].index_id).name);
       }
       dir->flag.has_filters = 1;
       filter_col = base_col_id;   // Use the base col as the filter 

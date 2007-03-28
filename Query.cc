@@ -106,8 +106,8 @@ int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) {
 */
 inline bool mval_is_usable(request_rec *r, mvalue &mval) {
   if(mval.use_value == can_not_use) {
-    log_err2(r->server, "Cannot use MySQL column %s in query -- data type "
-             "not supported by mod_ndb",mval.u.err_col->getName());
+    log_err(r->server, "Cannot use MySQL column %s in query -- data type "
+             "not supported by mod_ndb",mval.ndb_column->getName());
     return 0;
   }
   else return 1;
@@ -147,7 +147,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
   }
 
   q->keys[n].value = value; 
-  log_debug3(r->server, "set value for key column %d [%s]",n,keycol.name);
+  log_debug(r->server, "set value for key column %d [%s]",n,keycol.name);
   q->key_columns_used++;
  
   if(keycol.implied_plan > q->plan) {
@@ -195,7 +195,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   dict = i->db->getDictionary();
   q->tab = dict->getTable(dir->table);
   if(q->tab == 0) { 
-    log_err4(r->server, "mod_ndb could not find table %s (in database %s) "
+    log_err(r->server, "mod_ndb could not find table %s (in database %s) "
              "in NDB Data Dictionary: %s",dir->table,dir->database,
              dict->getNdbError().message);
     i->errors++;
@@ -351,7 +351,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       return 500;
     }
     if(!(i->tx = i->db->startTransaction())) {  // To do: supply a hint
-      log_err2(r->server,"db->startTransaction failed: %s",
+      log_err(r->server,"db->startTransaction failed: %s",
                 i->db->getNdbError().message);
       return 500;
     }
@@ -373,7 +373,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       /* Lookup the active index in the data dictionary to set q->idx */
       register const char * idxname = dir->indexes->item(Q.active_index).name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) {
-        log_err4(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
+        log_err(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
                  idxname, dir->database, dir->table);
         response_code = 500;
         goto abort;
@@ -404,7 +404,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       config::key_col &keycol = dir->key_columns->item(col);
       ndb_Column = q->idxobj->get_column();
 
-      log_debug3(r->server," ** Request column_alias: %s -- value: %s", 
+      log_debug(r->server," ** Request column_alias: %s -- value: %s", 
                  keycol.name, Q.keys[col].value);
       
       MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
@@ -430,7 +430,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       config::key_col &keycol = dir->key_columns->item(m);
       
       ndb_Column = q->tab->getColumn(keycol.name);
-      log_debug3(r->server," ** Filter : %s -- value: %s", 
+      log_debug(r->server," ** Filter : %s -- value: %s", 
                  keycol.name, filter_col->value);
       MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
       filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
@@ -502,11 +502,11 @@ int set_up_write(request_rec *r, config::dir *dir,
         MySQL::value(mval, r->pool, col, val);
         if(mval.use_value == use_interpreted) {
           is_interpreted = 1;
-          log_debug3(r->server,"Interpreted update; column %s = [%s]", key,val);
+          log_debug(r->server,"Interpreted update; column %s = [%s]", key,val);
         }
-        else log_debug3(r->server,"Updating column %s = %s", key,val);
+        else log_debug(r->server,"Updating column %s = %s", key,val);
       }
-      else log_err2(r->server,"AllowUpdate list includes invalid column name %s", key);
+      else log_err(r->server,"AllowUpdate list includes invalid column name %s", key);
     }
   }
   if(is_insert) return q->data->op->insertTuple();
