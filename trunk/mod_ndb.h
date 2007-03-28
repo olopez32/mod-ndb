@@ -43,11 +43,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* Other mod_ndb headers are included later in this file */
 
 #ifdef CONFIG_DEBUG
-#define log_conf_debug(x,y,z) log_debug(x,y,z)
-#define log_conf_debug4(s,t,a,b,c) log_debug4(s,t,a,b,c)
+#define log_conf_debug(x,y, ...) log_debug(x,y, __VA_ARGS__)
 #else
-#define log_conf_debug(x,y,z)
-#define log_conf_debug4(s,t,a,b,c)
+#define log_conf_debug(x,y, ...)
 #endif
 
 extern "C" module AP_MODULE_DECLARE_DATA ndb_module;

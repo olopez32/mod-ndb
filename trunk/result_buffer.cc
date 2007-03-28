@@ -29,7 +29,9 @@ char * result_buffer::init(request_rec *r, size_t size) {
 
 
 /* prepare(size_t len): make room for *len* new characters in the buffer.
-   Expect them to be placed there one at a time using putc */
+   Expect them to be placed there one at a time using putc or out(fmt, ...).
+   It is OK to prepare more space than you will actually use.
+*/
    
 bool result_buffer::prepare(size_t len) {
   char *old_buff = buff;
@@ -82,7 +84,6 @@ void result_buffer::out(const char *fmt, ... ) {
     }
   } while(try_again);
 }
-
 
 result_buffer::~result_buffer() {
   if(buff) free(buff);
