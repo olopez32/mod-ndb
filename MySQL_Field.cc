@@ -359,7 +359,8 @@ void MySQL::value(mvalue &m, ap_pool *p,
         return;
       case NdbDictionary::Column::Time :
         m.use_value = use_signed;
-        m.u.val_signed = strtol(buf, 0, 10);
+        aux_int = strtol(buf, 0, 10);
+        store24(m.u.val_signed, aux_int);
         return;
       case NdbDictionary::Column::Date :
         bzero(&tm, sizeof(MYSQL_TIME));
