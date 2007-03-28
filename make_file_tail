@@ -24,7 +24,6 @@ MySQL_Field.o: MySQL_Field.cc MySQL_Field.h result_buffer.h
 config.o: config.cc mod_ndb.h mod_ndb_config.h
 result_buffer.o: result_buffer.cc mod_ndb.h result_buffer.h
 output_format.o: output_format.cc output_format.h 
-apache_time.o: apache_time.cc mod_ndb_compat.h
 
 rev:
 	sh create_rev_h.sh
