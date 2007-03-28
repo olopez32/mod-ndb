@@ -110,7 +110,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   if (c->connection->connect()) {
     /* If the cluster is down, there could be a flood of these,
     so write it as a warning to maybe prevent filling up a log file. */
-    log_err2(s,"Cannot connect to NDB Cluster. (MySQL/NDB %s)",
+    log_err(s,"Cannot connect to NDB Cluster. (MySQL/NDB %s)",
              MYSQL_SERVER_VERSION);
     return;
   }

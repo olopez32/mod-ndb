@@ -114,7 +114,7 @@ apr_status_t mod_ndb_child_exit(void *v) {
       }
     }
     delete c->connection;
-    log_err3(s, "Node %d disconnected from cluster; destroyed %d Ndb instances.", 
+    log_err(s, "Node %d disconnected from cluster; destroyed %d Ndb instances.", 
              id, n_destroyed);
   }
 
@@ -142,7 +142,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   if (c->connection->connect(2,1,0)) {
     /* If the cluster is down, there could be a flood of these,
     so write it as a warning to maybe prevent filling up a log file. */
-    log_err2(s,"Cannot connect to NDB Cluster (connectstring: %s)",
+    log_err(s,"Cannot connect to NDB Cluster (connectstring: %s)",
              srv->connect_string);
     return;
   }
