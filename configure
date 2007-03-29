@@ -13,9 +13,11 @@ usage() {
   echo "NDB Cluster, libraries header files, and the mysql_config utility, "
   echo "plus an installed copy of Apache including apxs. "
   echo 
-  echo "Options:  "
+  echo "Required: "
   echo "       --mysql=/path/to/mysql_config "
   echo "       --apxs=/path/to/apxs "
+  echo 
+  echo "Options:  "
   echo "       --apxs1=/path/to/apache13/apxs"
   echo "       --aprconfig=/path/to/apr-config"
   echo "       --thread-safe"
