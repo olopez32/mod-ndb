@@ -99,24 +99,18 @@ void MySQL::field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec) {
   if(int_date != -1) factor_YYYYMMDD(tm, int_date);
 }
 
-#define MAX_DECIMAL_DIGITS 32 
+
+#define DECIMAL_BUFF_LENGTH 9 
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
-  decimal_digit_t digits[MAX_DECIMAL_DIGITS]; // (an array of ints, not base-10 digits)
-  decimal_t dec = { 0,0,0,0, digits };
+  decimal_digit_t digits[DECIMAL_BUFF_LENGTH]; // (an array of ints, not base-10 digits)
+  decimal_t dec = { 0, 0, DECIMAL_BUFF_LENGTH, 0, digits };
   
   int prec  = rec.getColumn()->getPrecision();
-  int scale = rec.getColumn()->getScale();
-  int dec_size = decimal_size(prec,scale);
-  int *n = (decimal_digit_t *) rec.aRef(); 
-  fprintf(stderr,"Column: %s ",rec.getColumn()->getName());
-  fprintf(stderr,"array: %x %x %x %x %x %x \n", n[0], n[1], n[2], n[3], n[4], n[5]);
-  
-  int i = bin2decimal(rec.aRef(), &dec, prec, scale);
-  fprintf(stderr,"Decimal size: %d ; bin2decimal returns %d \n",dec_size,i);
+  int scale = rec.getColumn()->getScale();  
+  bin2decimal(rec.aRef(), &dec, prec, scale);
   rbuf.out(&dec);
   return;
-}
-
+}  
 
 void result_buffer::out(decimal_t *decimal) {
   int to_len = decimal_string_size(decimal);
@@ -124,6 +118,7 @@ void result_buffer::out(decimal_t *decimal) {
   decimal2string(decimal, buff + sz, &to_len, 0, 0, 0);
   sz += to_len; // to_len has been reset to the length actually written 
 }
+
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
                    const char **escapes) {
@@ -433,7 +428,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
     }
   }
   
-  switch(col->getType()) {
+  switch(col->getType()) {    
     case NdbDictionary::Column::Int:
       m.use_value = use_signed;
       m.u.val_signed = atoi(val);
@@ -521,22 +516,34 @@ void MySQL::value(mvalue &m, ap_pool *p,
       aux_int = strtol(val,0,0) - 1900;      
       m.u.val_unsigned_8 = (unsigned char) aux_int;
       return;
-            
+
+    case NdbDictionary::Column::Decimal:
+    case NdbDictionary::Column::Decimalunsigned:
+    {  
+     decimal_digit_t digits[DECIMAL_BUFF_LENGTH]; 
+     char *end = (char *) val + strlen(val);
+     const int prec  = col->getPrecision();
+     const int scale = col->getScale();
+     decimal_t dec = {prec - scale, scale, DECIMAL_BUFF_LENGTH ,0, digits};
+
+     string2decimal(val, &dec, &end);
+     m.use_value = use_char;
+     m.u.val_char = (char *) ap_pcalloc(p, 40);
+     decimal2bin(&dec, m.u.val_char, prec, scale);
+   }; 
+     return;
+    
     /* not implemented */
 
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:
+      /* Binary, etc. would require multipart/form-data POSTs */
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
       /* Olddecimal types are just strings.  But you cannot create old decimal
          columns with MySQL 5, so this is difficult to test. */
-    case NdbDictionary::Column::Decimal:
-    case NdbDictionary::Column::Decimalunsigned:
-      /* Use Column::getPrecision() and getScale() to find the column's 
-         dimensions, then use string2decimal() and decimal2bin().  
-      */
     default:
       m.use_value = can_not_use;
       return;
