@@ -100,10 +100,10 @@ void MySQL::field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec) {
 }
 
 
-#define DECIMAL_BUFF_LENGTH 9 
+#define DECIMAL_BUFF 9 
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
-  decimal_digit_t digits[DECIMAL_BUFF_LENGTH]; // (an array of ints, not base-10 digits)
-  decimal_t dec = { 0, 0, DECIMAL_BUFF_LENGTH, 0, digits };
+  decimal_digit_t digits[DECIMAL]; // (an array of ints, not base-10 digits)
+  decimal_t dec = { 0, 0, DECIMAL_BUFF, 0, digits };
   
   int prec  = rec.getColumn()->getPrecision();
   int scale = rec.getColumn()->getScale();  
@@ -520,17 +520,18 @@ void MySQL::value(mvalue &m, ap_pool *p,
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
     {  
-     decimal_digit_t digits[DECIMAL_BUFF_LENGTH]; 
+     decimal_digit_t digits[DECIMAL_BUFF]; 
      char *end = (char *) val + strlen(val);
      const int prec  = col->getPrecision();
      const int scale = col->getScale();
-     decimal_t dec = {prec - scale, scale, DECIMAL_BUFF_LENGTH ,0, digits};
+     decimal_t dec = {prec - scale, scale, DECIMAL_BUFF ,0, digits};
 
      string2decimal(val, &dec, &end);
      m.use_value = use_char;
-     m.u.val_char = (char *) ap_pcalloc(p, 40);
+     /* decimal_bin_size() is never greater than 32: */
+     m.u.val_char = (char *) ap_pcalloc(p, 32);
      decimal2bin(&dec, m.u.val_char, prec, scale);
-   }; 
+    }; 
      return;
     
     /* not implemented */
