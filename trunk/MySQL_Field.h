@@ -94,21 +94,19 @@ typedef struct st_decimal_t {
   decimal_digit_t *buf;
 } decimal_t;
 
-extern "C" {
-int decimal_size(int precision, int scale);
-int decimal_bin_size(int precision, int scale);
+#define string2decimal(A,B,C) internal_str2dec((A), (B), (C), 0)
 #define decimal_string_size(dec) (((dec)->intg ? (dec)->intg : 1) + \
 				  (dec)->frac + ((dec)->frac > 0) + 2)
-                                  
-int decimal2bin(decimal_t *from, char *to, int precision, int scale);
-int bin2decimal(char *from, decimal_t *to, int precision, int scale);
-
-int decimal2string(decimal_t *from, char *to, int *to_len,
-                   int fixed_precision, int fixed_decimals,
-                   char filler);
-int internal_str2dec(const char *from, decimal_t *to, char **end,
-                     my_bool fixed);
-#define string2decimal(A,B,C) internal_str2dec((A), (B), (C), 0)
+extern "C" {
+  int decimal_size(int precision, int scale);
+  int decimal_bin_size(int precision, int scale);                                  
+  int decimal2bin(decimal_t *from, char *to, int precision, int scale);
+  int bin2decimal(char *from, decimal_t *to, int precision, int scale);
+  int decimal2string(decimal_t *from, char *to, int *to_len,
+                     int fixed_precision, int fixed_decimals,
+                     char filler);
+  int internal_str2dec(const char *from, decimal_t *to, char **end,
+                       my_bool fixed);
 }
 #endif
 #endif
