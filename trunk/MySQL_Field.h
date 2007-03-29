@@ -76,7 +76,7 @@ namespace MySQL {
 };
 
 /* --------------------------------------------------------------------
-    == DECIMAL support that is not in MySQL's public include files ==
+   == DECIMAL support that is not in MySQL's public include files ==
  This is only needed in MySQL_Field.cc and only if the "real" decimal.h
  has not been included.  "#ifdef _mysql_h" is here because mysql.h is required 
  by these prorotypes (for e.g. my_bool).  MySQL_Field.cc is the 
@@ -94,6 +94,7 @@ typedef struct st_decimal_t {
   decimal_digit_t *buf;
 } decimal_t;
 
+extern "C" {
 int decimal_size(int precision, int scale);
 int decimal_bin_size(int precision, int scale);
 #define decimal_string_size(dec) (((dec)->intg ? (dec)->intg : 1) + \
@@ -108,5 +109,6 @@ int decimal2string(decimal_t *from, char *to, int *to_len,
 int internal_str2dec(const char *from, decimal_t *to, char **end,
                      my_bool fixed);
 #define string2decimal(A,B,C) internal_str2dec((A), (B), (C), 0)
+}
 #endif
 #endif

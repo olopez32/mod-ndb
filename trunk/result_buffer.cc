@@ -85,6 +85,7 @@ void result_buffer::out(const char *fmt, ... ) {
   } while(try_again);
 }
 
+
 result_buffer::~result_buffer() {
   if(buff) free(buff);
 }

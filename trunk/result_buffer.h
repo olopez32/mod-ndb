@@ -37,6 +37,7 @@ public:
   inline void putc(char c) { *(buff + sz++) = c; };
   void out(const char *fmt, ...);
   void out(size_t, const char *);
+  void out(struct st_decimal_t *);   /* in MySQL_Field.cc */
   inline void out(len_string &ls) { out(ls.len, ls.string); };
   ~result_buffer();
 };

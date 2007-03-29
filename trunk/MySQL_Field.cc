@@ -99,9 +99,30 @@ void MySQL::field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec) {
   if(int_date != -1) factor_YYYYMMDD(tm, int_date);
 }
 
-
+#define MAX_DECIMAL_DIGITS 32 
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
+  decimal_digit_t digits[MAX_DECIMAL_DIGITS]; // (an array of ints, not base-10 digits)
+  decimal_t dec = { 0,0,0,0, digits };
+  
+  int prec  = rec.getColumn()->getPrecision();
+  int scale = rec.getColumn()->getScale();
+  int dec_size = decimal_size(prec,scale);
+  int *n = (decimal_digit_t *) rec.aRef(); 
+  fprintf(stderr,"Column: %s ",rec.getColumn()->getName());
+  fprintf(stderr,"array: %x %x %x %x %x %x \n", n[0], n[1], n[2], n[3], n[4], n[5]);
+  
+  int i = bin2decimal(rec.aRef(), &dec, prec, scale);
+  fprintf(stderr,"Decimal size: %d ; bin2decimal returns %d \n",dec_size,i);
+  rbuf.out(&dec);
   return;
+}
+
+
+void result_buffer::out(decimal_t *decimal) {
+  int to_len = decimal_string_size(decimal);
+  this->prepare(to_len);
+  decimal2string(decimal, buff + sz, &to_len, 0, 0, 0);
+  sz += to_len; // to_len has been reset to the length actually written 
 }
 
 void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,

@@ -12,6 +12,14 @@ CREATE TABLE numtypes (
   um mediumint(8) unsigned,
 ) engine=ndbcluster; 
 
+CREATE TABLE decimals (
+  i int NOT NULL PRIMARY KEY,
+  d1 decimal(8,2),
+  d2 decimal(14,4),
+  d3 decimal(3,1),
+  d4 decimal(65,30)
+) engine=ndbcluster;
+
 CREATE TABLE datetypes (
   i int not null primary key,
   t time,
