@@ -102,7 +102,7 @@ void MySQL::field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec) {
 
 #define DECIMAL_BUFF 9 
 void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
-  decimal_digit_t digits[DECIMAL]; // (an array of ints, not base-10 digits)
+  decimal_digit_t digits[DECIMAL_BUFF]; // (an array of ints, not base-10 digits)
   decimal_t dec = { 0, 0, DECIMAL_BUFF, 0, digits };
   
   int prec  = rec.getColumn()->getPrecision();
