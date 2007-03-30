@@ -36,6 +36,10 @@ usage() {
   echo
 }
 
+fail() { 
+ echo ; echo "Error: $1" ; echo ; exit 
+}
+
 
 while test $# != 0
 do
@@ -69,6 +73,7 @@ do
       ;;
     --aprconfig)
       APRCONFIG=$conf_arg
+      test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
       ;;
     --help)
       usage
@@ -181,8 +186,6 @@ echo MY_LIBS=$MY_LIBS
 echo 
 echo OPT=$OPT
 echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
-echo APXS_SYSCONFDIR=`$APXS -q SYSCONFDIR`
-echo APXS_LD_SHLIB=`$APXS1 -q LD_SHLIB` $APRLD
 echo APXS_CFLAGS=`$APXS1 -q CFLAGS`   
 echo APXS_CFLAGS_SHLIB=`$APXS1 -q CFLAGS_SHLIB`   
 echo APXS_LDFLAGS_SHLIB=`$APXS1 -q LDFLAGS_SHLIB`
