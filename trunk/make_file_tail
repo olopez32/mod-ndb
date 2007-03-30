@@ -7,7 +7,7 @@ LIBS=$(APXS_LIBS_SHLIB) -lndbclient -lmystrings $(MY_LIBS) -lmysys -lstdc++
 all: mod_ndb.so httpd.conf 
 
 mod_ndb.so: $(OBJECTS)
-	$(APXS_LD_SHLIB) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
+	g++ $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
 .cc.o:
 	g++ -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $< 
