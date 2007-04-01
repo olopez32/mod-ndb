@@ -119,7 +119,7 @@ void RowLoop::Run(data_operation *data, result_buffer &res) {
 
 
 void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
-  for( Cell *c = rec.isNULL() ? fmt : null_fmt; c != 0 ; c=c->next) 
+  for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
     c->out(rec, res);
 }
 
@@ -216,7 +216,6 @@ void register_built_in_formatters(ap_pool *p) {
   my_item[3]->next = my_item[4];
 
   Scan->inner_loop->record->set_formats(my_item[0], my_item[3]);
-
   json_format->top_node = Scan;
   
   /* Define the internal XML format */

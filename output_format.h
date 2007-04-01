@@ -15,8 +15,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
-#include "result_buffer.h"
-
 enum re_type { const_string, item_name, item_value };
 enum re_esc  { no_esc, esc_xml, esc_json };
 enum re_quot { no_quot, quote_char, quote_all };
@@ -62,12 +60,10 @@ class Cell : public len_string {
   void out(struct data_operation *, result_buffer &);
   void out(const NdbRecAttr &, result_buffer &); 
   void chain_out(struct data_operation *data, result_buffer &res) {
-    this->out(data,res);
-    for(Cell *c = this->next; c != 0 ; c = c->next) c->out(data,res);
+    for(Cell *c = this; c != 0 ; c = c->next) c->out(data,res);
   }
   void chain_out(result_buffer &res) {
-    this->out(res);
-    for(Cell *c = this->next; c != 0 ; c = c->next)  c->out(res);    
+    for(Cell *c = this; c != 0 ; c = c->next)  c->out(res);    
   }
 };
 
@@ -80,7 +76,8 @@ class Node {
   Node *next_node;
   
   Node(const char *c1, const char *c2 ) : name (c1) , unresolved (c2) {}
-  void Run(struct data_operation *data, result_buffer &res) {
+  virtual ~Node() {};
+  virtual void Run(struct data_operation *data, result_buffer &res) {
     if(cell) cell->out(data, res);
   }
 
@@ -102,11 +99,12 @@ class RecAttr : public Node {
 };
 
 class Loop : public Node {
-  public:
+  protected:
   Cell *begin;
   len_string sep;
   Cell *end;
  
+  public:
   Loop(const char *c1, const char *c2) : Node(c1,c2) {}
   void set_parts(Cell *a, char *b, Cell *c) {
     begin = a; sep = len_string(b); end = c;
