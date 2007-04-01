@@ -25,6 +25,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 void initialize_escapes();
 
+class len_string {
+public:
+  size_t len;
+  const char *string;
+  
+  len_string() {};
+  len_string(const char *str) : string (str) {
+    len = strlen(str);
+  };
+  
+  void * operator new(size_t sz, ap_pool *p) {
+    return ap_pcalloc(p, sz);
+  };
+};
+
+
 class result_buffer {
 private:
   size_t alloc_sz;
