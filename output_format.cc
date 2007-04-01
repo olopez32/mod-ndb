@@ -26,7 +26,7 @@ table *global_format_names = 0;
 apache_array<struct output_format *> *global_output_formats = 0;
 
 
-row_element::row_element(re_type type, re_esc esc, re_quot quote) {
+Cell::Cell(re_type type, re_esc esc, re_quot quote) {
   elem_type   = type;
   elem_quote  = quote;
   if(esc == esc_xml) 
@@ -38,6 +38,90 @@ row_element::row_element(re_type type, re_esc esc, re_quot quote) {
   next = 0;
 };
 
+
+void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
+  if(elem_type == const_string) {
+    res.out(len, string);
+    return;
+  }
+
+  const char *col_name = rec.getColumn()->getName();
+  NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
+  switch(elem_type) {
+    case item_name:
+      if(elem_quote == no_quot) 
+        res.out(strlen(col_name), col_name);
+      else
+        res.out("\"%s\"",col_name);
+      break;
+    case item_value:          
+      if((elem_quote == quote_all) || 
+         ((elem_quote == quote_char)
+          && (col_type == NdbDictionary::Column::Char        ||
+              col_type == NdbDictionary::Column::Varchar     ||
+              col_type == NdbDictionary::Column::Longvarchar ||
+              col_type == NdbDictionary::Column::Date        ||
+              col_type == NdbDictionary::Column::Time        ||
+              col_type == NdbDictionary::Column::Datetime    ||
+              col_type == NdbDictionary::Column::Text 
+              ))) {
+        /* Quoted Value */
+        res.out(1,"\"");
+        MySQL::result(res, rec, escapes);
+        res.out(1,"\"");            
+      }
+      else MySQL::result(res, rec, escapes);  /* No Quotes */
+      break;
+    default:
+      assert(0);      
+  } /* end of switch statement */      
+}
+
+
+void Cell::out(struct data_operation *data, result_buffer &res) {
+  if(elem_type == const_string) 
+    return this->out(res);
+  const NdbRecAttr &rec = *data->result_cols[i]; 
+  this->out(rec, res);
+  return;
+}
+
+
+void ScanLoop::Run(data_operation *data, result_buffer &res) {
+  int nrows = 0;
+
+  if(data->scanop) {
+    while((data->scanop->nextResult(true)) == 0) {
+      do {
+        if(nrows++) res.out(sep);
+        else begin->chain_out(res);
+        inner_loop->Run(data, res);
+      } while((data->scanop->nextResult(false)) == 0);
+      if(nrows) end->chain_out(res);
+      else return; // ?? used to be return HTTP_GONE
+    }
+  }
+  else {  /* not a scan, just a single result row */
+    inner_loop->Run(data, res);
+  }
+}
+
+
+void RowLoop::Run(data_operation *data, result_buffer &res) {
+  begin->chain_out(data, res);
+  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
+    if(n) res.out(sep);
+    const NdbRecAttr &rec = *data->result_cols[n];
+    record->out(rec, res);
+  }
+  end->chain_out(data, res);
+};
+
+
+void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
+  for( Cell *c = rec.isNULL() ? fmt : null_fmt; c != 0 ; c=c->next) 
+    c->out(rec, res);
+}
 
 void initialize_output_formats(ap_pool *p) {
   global_format_names = ap_make_table(p, 6);
@@ -101,7 +185,7 @@ void initialize_escapes() {
 
 
 void register_built_in_formatters(ap_pool *p) {
-  struct row_element *my_item[13];
+  Cell *my_item[13];
   struct output_format *json_format = new(p) output_format;
   struct output_format *raw_format  = new(p) output_format;
   struct output_format *xml_format  = new(p) output_format;
@@ -114,41 +198,53 @@ void register_built_in_formatters(ap_pool *p) {
   json_format->flag.is_internal  = 1;
   json_format->flag.can_override = 1;
 
-  json_format->set_scan_parts("[\n", ",\n", "\n]\n");  // JSON array
+  ScanLoop *Scan = new (p) ScanLoop("JSON_scan","");
+  Scan->set_parts(p, "[\n", ",\n", "\n]\n");         // JSON array
+  
+  Scan->inner_loop = new(p) RowLoop("JSON_row","");
+  Scan->inner_loop->set_parts(p, " { ", " , ", " }"); // JSON object
+  Scan->inner_loop->record = new(p) RecAttr("JSON_item","");
 
-  json_format->set_row_parts(" { ", " , ", " }");    // JSON object
-  my_item[0] = new(p) row_element(item_name, no_esc, quote_all);
-  my_item[1] = new(p) row_element(":");
-  my_item[2] = new(p) row_element(item_value, esc_json, quote_char);
-  json_format->row_elements = my_item[0];
+  my_item[0] = new(p) Cell(item_name, no_esc, quote_all);
+  my_item[1] = new(p) Cell(":");
+  my_item[2] = new(p) Cell(item_value, esc_json, quote_char);
   my_item[0]->next = my_item[1];
   my_item[1]->next = my_item[2];
-  
-  my_item[3] = new(p) row_element(item_name, no_esc, quote_all);
-  my_item[4] = new(p) row_element(":null");
-  json_format->null_elements = my_item[3];
+ 
+  my_item[3] = new(p) Cell(item_name, no_esc, quote_all);
+  my_item[4] = new(p) Cell(":null");
   my_item[3]->next = my_item[4];
+
+  Scan->inner_loop->record->set_formats(my_item[0], my_item[3]);
+
+  json_format->top_node = Scan;
   
   /* Define the internal XML format */
   xml_format->flag.is_internal  = 1;
   xml_format->flag.can_override = 1; 
-   
-  xml_format->set_scan_parts("<NDBScan>\n", "\n", "\n</NDBScan>\n");
-  xml_format->set_row_parts(" <NDBTuple> ", "\n  ", " </NDBTuple>");  
-  my_item[5] = new(p) row_element("<Attr name=");
-  my_item[6] = new(p) row_element(item_name, no_esc, quote_all);
-  my_item[7] = new(p) row_element(" value=");
-  my_item[8] = new(p) row_element(item_value, no_esc, quote_all);
-  my_item[9] = new(p) row_element(" />");
-  xml_format->row_elements = my_item[5];
+
+  Scan = new (p) ScanLoop("XML_scan","");   
+  Scan->set_parts(p, "<NDBScan>\n", "\n", "\n</NDBScan>\n");
+
+  Scan->inner_loop = new(p) RowLoop("XML_row","");  
+  Scan->inner_loop->set_parts(p, " <NDBTuple> ", "\n  ", " </NDBTuple>");  
+  Scan->inner_loop->record = new(p) RecAttr("XML_item","");
+  
+  my_item[5] = new(p) Cell("<Attr name=");
+  my_item[6] = new(p) Cell(item_name, no_esc, quote_all);
+  my_item[7] = new(p) Cell(" value=");
+  my_item[8] = new(p) Cell(item_value, no_esc, quote_all);
+  my_item[9] = new(p) Cell(" />");
   for(int i = 5; i < 9 ; i++) my_item[i]->next = my_item[i+1];
 
-  my_item[10] = new(p) row_element("<Attr name=");
-  my_item[11] = new(p) row_element(item_name, no_esc, quote_all);
-  my_item[12] = new(p) row_element("isNull=\"1\" />");
-  xml_format->null_elements = my_item[10];
+  my_item[10] = new(p) Cell("<Attr name=");
+  my_item[11] = new(p) Cell(item_name, no_esc, quote_all);
+  my_item[12] = new(p) Cell("isNull=\"1\" />");
   my_item[10]->next = my_item[11];
   my_item[11]->next = my_item[12];
+
+  Scan->inner_loop->record->set_formats(my_item[5], my_item[10]);
+  xml_format->top_node = Scan;
   
   register_format("raw",  raw_format);
   register_format("JSON", json_format);
@@ -175,76 +271,14 @@ int Results_raw(request_rec *r, data_operation *data,
 
 
 int build_results(request_rec *r, data_operation *data, result_buffer &res) {
-  int nrows = 0;
   output_format *fmt = data->fmt;
   
   if(fmt->flag.is_raw) return Results_raw(r, data, res);
-  
   res.init(r, 8192);
-  if(data->scanop) {
-    while((data->scanop->nextResult(true)) == 0) {
-      do {
-        res.out(nrows++ ? fmt->mid_scan : fmt->begin_scan);
-        build_result_row(fmt, data, res);
-      } while((data->scanop->nextResult(false)) == 0);
-      if(nrows) res.out(fmt->end_scan);
-      else return HTTP_GONE; // ??
-    }
-  }
-  else {  /* not a scan, just a single result row */
-    build_result_row(fmt, data, res);
-  }
-  res.out("\n");
+  for(Node *N = fmt->top_node; N != 0 ; N=N->next_node)
+    N->Run(data, res);
+
+  res.out("\n"); // should be a node after the scan
   return OK;
-}
-
-
-void build_result_row(output_format *fmt, data_operation *data, result_buffer &res) {
-  res.out(fmt->begin_row);
-  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
-    const NdbRecAttr &rec = *data->result_cols[n];
-
-    const char *col_name = rec.getColumn()->getName();
-    NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
-    row_element *item = rec.isNULL() ? fmt->null_elements : fmt->row_elements;
-    
-    if(n) res.out(fmt->mid_row);
-    
-    for( ; item != 0 ; item=item->next) {
-      switch(item->elem_type) {
-        case const_string :
-          res.out(item->len, item->string);        
-          break;
-        case item_name:
-          if(item->elem_quote == no_quot) 
-            res.out(strlen(col_name), col_name);
-          else
-            res.out("\"%s\"",col_name);
-          break;
-        case item_value:          
-          if((item->elem_quote == quote_all) ||
-             ((item->elem_quote == quote_char)
-               && (col_type == NdbDictionary::Column::Char        ||
-                   col_type == NdbDictionary::Column::Varchar     ||
-                   col_type == NdbDictionary::Column::Longvarchar ||
-                   col_type == NdbDictionary::Column::Date        ||
-                   col_type == NdbDictionary::Column::Time        ||
-                   col_type == NdbDictionary::Column::Datetime    ||
-                   col_type == NdbDictionary::Column::Text 
-          ))) {
-            /* Quoted Value */
-              res.out(1,"\"");
-              MySQL::result(res, rec, item->escapes);
-              res.out(1,"\"");            
-          }
-          else MySQL::result(res, rec, item->escapes);  /* No Quotes */
-          break;
-        default:
-          assert(0);      
-      } /* end of switch statement */      
-    } /* loop over list of row_elements in the output format */
-  } /* loop over columns in the row */
-  
-  res.out(fmt->end_row);
 }
 

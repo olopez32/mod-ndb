@@ -89,6 +89,20 @@ enum AccessPlan {  /* Ways of executing an NDB query */
   OrderedIndexScan = 5,   // Scan & UseIndex 
 };
 
+class len_string {
+public:
+  size_t len;
+  const char *string;
+  
+  len_string() {};
+  len_string(const char *str) : string (str) {
+    len = strlen(str);
+  };
+  
+  void * operator new(size_t sz, ap_pool *p) {
+    return ap_pcalloc(p, sz);
+  };
+};
 
 /* Other mod_ndb headers */
 #include "output_format.h"
@@ -161,7 +175,6 @@ struct mod_ndb_process {
     int thread_limit;
     struct mod_ndb_connection conn;  // not a pointer 
 };    
-
 
 ndb_instance *my_instance(request_rec *r);
 void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, ap_pool *);

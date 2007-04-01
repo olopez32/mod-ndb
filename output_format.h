@@ -15,83 +15,121 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+#include "result_buffer.h"
+
 enum re_type { const_string, item_name, item_value };
 enum re_esc  { no_esc, esc_xml, esc_json };
 enum re_quot { no_quot, quote_char, quote_all };
 
-class row_element {
-  public:
-  re_type elem_type ;
-  re_quot elem_quote ;
-  char *string;
-  const char **escapes;
-  size_t len;
-  row_element *next;
-
-  row_element(re_type, re_esc, re_quot);
-
-  row_element(char *txt) {
-    elem_type = const_string;
-    string = txt;
-    len = strlen(txt);
-    next = 0;
-  };
-
-  void * operator new(size_t sz, ap_pool *p) {
-    return ap_pcalloc(p, sz);
-  };
-};
-
-
-class len_string {
-public:
-  size_t len;
-  const char *string;
-  
-  len_string() {};
-
-  len_string(const char *str) {
-    string = str;
-    len = strlen(str);
-  };
-    
-  void * operator new(size_t sz, ap_pool *p) {
-    return ap_pcalloc(p, sz);
-  };
-};
+class Node;
+class RecAttr;
 
 class output_format {
 public:  
   const char *name;
-  len_string begin_page;
-  len_string begin_scan;
-  len_string mid_scan;
-  len_string end_scan;
-  len_string begin_row;
-  len_string mid_row;
-  len_string end_row;
-  len_string end_page;  
-  struct row_element *row_elements;
-  struct row_element *null_elements;
   struct {
     unsigned int is_internal  : 1;
     unsigned int can_override : 1;
     unsigned int is_raw       : 1;
   } flag;
+  Node *top_node;
+  
+  void * operator new(size_t sz, ap_pool *p) {
+    return ap_pcalloc(p, sz);
+  };
+};
+
+
+class Cell : public len_string { 
+  public:
+  re_type elem_type ;
+  re_quot elem_quote ;
+  const char **escapes;
+  int i;
+  Cell *next;
+  
+  Cell(re_type, re_esc, re_quot);
+
+  Cell(char *txt) {
+    elem_type = const_string;
+    string = txt;
+    len = strlen(txt);
+    next = 0;
+  };
+  void out(result_buffer &res) {
+    res.out(len,string);
+  }
+  void out(struct data_operation *, result_buffer &);
+  void out(const NdbRecAttr &, result_buffer &); 
+  void chain_out(struct data_operation *data, result_buffer &res) {
+    this->out(data,res);
+    for(Cell *c = this->next; c != 0 ; c = c->next) c->out(data,res);
+  }
+  void chain_out(result_buffer &res) {
+    this->out(res);
+    for(Cell *c = this->next; c != 0 ; c = c->next)  c->out(res);    
+  }
+};
+
+
+class Node {
+  public:
+  const char *name;
+  const char *unresolved;
+  Cell *cell;
+  Node *next_node;
+  
+  Node(const char *c1, const char *c2 ) : name (c1) , unresolved (c2) {}
+  void Run(struct data_operation *data, result_buffer &res) {
+    if(cell) cell->out(data, res);
+  }
 
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
   };
-  
-  void set_scan_parts(char *a, char *b, char *c) {
-    begin_scan = len_string(a);
-    mid_scan   = len_string(b);
-    end_scan   = len_string(c);
+};
+
+class RecAttr : public Node {
+  Cell *fmt;
+  Cell *null_fmt;
+
+  public:
+  RecAttr(const char *c1, const char *c2) : Node(c1,c2) {}
+  void set_formats(Cell *c1, Cell *c2) {
+    fmt = c1 ; null_fmt = c2 ;
+  }
+  void out(const NdbRecAttr &rec, result_buffer &res);
+};
+
+class Loop : public Node {
+  public:
+  Cell *begin;
+  len_string sep;
+  Cell *end;
+ 
+  Loop(const char *c1, const char *c2) : Node(c1,c2) {}
+  void set_parts(Cell *a, char *b, Cell *c) {
+    begin = a; sep = len_string(b); end = c;
   };
-    
-  void set_row_parts(char *a, char *b, char *c) {
-    begin_row = len_string(a);
-    mid_row   = len_string(b);
-    end_row   = len_string(c);
-  };  
+  void set_parts (ap_pool *p, char *a, char *b, char *c) {
+    begin = new(p) Cell(a); 
+    sep = len_string(b);
+    end = new(p) Cell(c);
+  }
+};
+
+
+class RowLoop : public Loop {
+public: 
+  RecAttr *record;
+  RowLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
+  void Run(struct data_operation *, result_buffer &);
+};
+
+
+class ScanLoop : public Loop {  
+  public:
+  RowLoop *inner_loop;
+  ScanLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
+  void Run(struct data_operation *, result_buffer &);
 };
