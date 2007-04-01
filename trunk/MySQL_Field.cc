@@ -34,8 +34,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "httpd.h"
 #include "http_config.h"
 #include "mod_ndb_compat.h"
-#include "output_format.h"
 #include "result_buffer.h"
+#include "output_format.h"
 #include "MySQL_Field.h"
 
 // Apache disabled this
