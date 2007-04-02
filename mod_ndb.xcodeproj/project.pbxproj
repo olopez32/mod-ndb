@@ -13,6 +13,7 @@
 		6513067E0B8299CC00A70BDA /* Execute.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Execute.cc; sourceTree = "<group>"; };
 		651343640A91869800B041A0 /* read_http_post.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = read_http_post.cc; sourceTree = "<group>"; };
 		6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap13.cc; sourceTree = "<group>"; };
+		651D4C760BC02D69007E9007 /* format_compiler.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_compiler.cc; sourceTree = "<group>"; };
 		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 				654FD39D0AC5B0A6000283CB /* index_object.h */,
 				65ADCC4A0BB0FF0A00AEE680 /* output_format.h */,
 				65C8FF5E0BB2047A0040028D /* output_format.cc */,
+				651D4C760BC02D69007E9007 /* format_compiler.cc */,
 				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
 				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,

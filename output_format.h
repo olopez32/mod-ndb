@@ -22,6 +22,13 @@ enum re_quot { no_quot, quote_char, quote_all };
 class Node;
 class RecAttr;
 
+struct symbol {
+  Node *node;
+  struct symbol *next_sym;
+}; 
+
+
+#define SYM_TAB_SZ 16
 class output_format {
 public:  
   const char *name;
@@ -31,10 +38,14 @@ public:
     unsigned int is_raw       : 1;
   } flag;
   Node *top_node;
+  struct symbol *symbol_table[SYM_TAB_SZ];
   
+  output_format(const char *n) : name(n) {}
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
   };
+  Node * symbol(const char *, ap_pool *, Node *);
+  const char *compile(ap_pool *);
 };
 
 
@@ -43,20 +54,17 @@ class Cell : public len_string {
   re_type elem_type ;
   re_quot elem_quote ;
   const char **escapes;
-  int i;
+  int i;  
   Cell *next;
   
-  Cell(re_type, re_esc, re_quot);
-
-  Cell(char *txt) {
+  Cell(re_type, re_esc, re_quot, int i=0);
+  Cell(char *txt) : len_string(txt) {
     elem_type = const_string;
-    string = txt;
-    len = strlen(txt);
-    next = 0;
-  };
-  void out(result_buffer &res) {
-    res.out(len,string);
   }
+  Cell(size_t size, const char *txt) : len_string(size,txt) {
+    elem_type = const_string; 
+  }
+  void out(result_buffer &res) { res.out(len,string); }
   void out(struct data_operation *, result_buffer &);
   void out(const NdbRecAttr &, result_buffer &); 
   void chain_out(struct data_operation *data, result_buffer &res) {
@@ -76,10 +84,14 @@ class Node {
   Node *next_node;
   
   Node(const char *c1, const char *c2 ) : name (c1) , unresolved (c2) {}
-  virtual ~Node() {};
+  virtual ~Node() {}
   virtual void Run(struct data_operation *data, result_buffer &res) {
-    if(cell) cell->out(data, res);
+    if(cell) cell->out(data, res); 
   }
+  virtual void out(const NdbRecAttr &rec, result_buffer &res) {
+    if(cell) cell->out(rec, res);
+  }
+  virtual const char *compile(output_format *);
 
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
@@ -87,47 +99,43 @@ class Node {
 };
 
 class RecAttr : public Node {
+  const char *unresolved2;
   Cell *fmt;
   Cell *null_fmt;
 
   public:
-  RecAttr(const char *c1, const char *c2) : Node(c1,c2) {}
-  void set_formats(Cell *c1, Cell *c2) {
-    fmt = c1 ; null_fmt = c2 ;
-  }
+  RecAttr(const char *nm, const char *str1, const char *str2) : 
+    Node(nm,str1) , unresolved2 (str2) {}
   void out(const NdbRecAttr &rec, result_buffer &res);
+  const char *compile(output_format *);
 };
 
 class Loop : public Node {
   protected:
   Cell *begin;
-  len_string sep;
+  Node *core;
+  len_string *sep;
   Cell *end;
  
   public:
   Loop(const char *c1, const char *c2) : Node(c1,c2) {}
-  void set_parts(Cell *a, char *b, Cell *c) {
-    begin = a; sep = len_string(b); end = c;
-  };
-  void set_parts (ap_pool *p, char *a, char *b, char *c) {
-    begin = new(p) Cell(a); 
-    sep = len_string(b);
-    end = new(p) Cell(c);
-  }
+  const char *compile(output_format *);
 };
 
 
 class RowLoop : public Loop {
 public: 
-  RecAttr *record;
   RowLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
+  const char *compile(output_format *);
   void Run(struct data_operation *, result_buffer &);
+  void out(const NdbRecAttr &, result_buffer &); 
 };
 
 
 class ScanLoop : public Loop {  
-  public:
-  RowLoop *inner_loop;
+public:
   ScanLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
+  const char *compile(output_format *);
   void Run(struct data_operation *, result_buffer &);
+  void out(const NdbRecAttr &, result_buffer &); 
 };
