@@ -31,13 +31,13 @@ public:
   const char *string;
   
   len_string() {};
+  len_string(size_t l, const char *str) : len (l) , string (str) {}
   len_string(const char *str) : string (str) {
     len = strlen(str);
-  };
-  
+  }  
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
-  };
+  }
 };
 
 

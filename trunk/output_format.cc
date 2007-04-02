@@ -17,7 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
-void build_result_row(output_format *, data_operation *, result_buffer &);
 
 /* Globals */
 const char *escape_leaning_toothpicks[128];
@@ -26,9 +25,38 @@ table *global_format_names = 0;
 apache_array<struct output_format *> *global_output_formats = 0;
 
 
-Cell::Cell(re_type type, re_esc esc, re_quot quote) {
-  elem_type   = type;
-  elem_quote  = quote;
+void initialize_output_formats(ap_pool *p) {
+  global_format_names = ap_make_table(p, 6);
+  global_output_formats = new(p,6) apache_array<output_format *>;
+  assert(global_format_names);
+  assert(global_output_formats);
+  return;
+}
+
+
+void initialize_escapes() {
+  for(int i = 0 ; i < 128 ; i++) {
+    escape_leaning_toothpicks[i] = 0;
+    escape_xml_entities[i] = 0;
+  }
+  
+  escape_leaning_toothpicks[static_cast<int>('\\')] = "\x02" "\\" "\\";
+  escape_leaning_toothpicks[static_cast<int>('\"')] = "\x02" "\\" "\"";
+  escape_leaning_toothpicks[static_cast<int>('\b')] = "\x02" "\\" "\b";
+  escape_leaning_toothpicks[static_cast<int>('\f')] = "\x02" "\\" "\f";
+  escape_leaning_toothpicks[static_cast<int>('\n')] = "\x02" "\\" "\n";
+  escape_leaning_toothpicks[static_cast<int>('\r')] = "\x02" "\\" "\r";
+  escape_leaning_toothpicks[static_cast<int>('\t')] = "\x02" "\\" "\t";
+  
+  escape_xml_entities[static_cast<int>('<')] = "\x04" "&lt;";
+  escape_xml_entities[static_cast<int>('>')] = "\x04" "&gt;";
+  escape_xml_entities[static_cast<int>('&')] = "\x05" "&amp;";
+  escape_xml_entities[static_cast<int>('\"')]= "\x06" "&quot;";
+}
+
+
+Cell::Cell(re_type type, re_esc esc, re_quot quote, int i) :
+   elem_type (type) , elem_quote (quote) , i (i) {     
   if(esc == esc_xml) 
     escapes = escape_xml_entities;
   else if(esc == esc_json) 
@@ -37,7 +65,6 @@ Cell::Cell(re_type type, re_esc esc, re_quot quote) {
     escapes = 0;
   next = 0;
 };
-
 
 void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
   if(elem_type == const_string) {
@@ -77,7 +104,6 @@ void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
   } /* end of switch statement */      
 }
 
-
 void Cell::out(struct data_operation *data, result_buffer &res) {
   if(elem_type == const_string) 
     return this->out(res);
@@ -93,16 +119,16 @@ void ScanLoop::Run(data_operation *data, result_buffer &res) {
   if(data->scanop) {
     while((data->scanop->nextResult(true)) == 0) {
       do {
-        if(nrows++) res.out(sep);
+        if(nrows++) res.out(*sep);
         else begin->chain_out(res);
-        inner_loop->Run(data, res);
+        core->Run(data, res);
       } while((data->scanop->nextResult(false)) == 0);
       if(nrows) end->chain_out(res);
       else return; // ?? used to be return HTTP_GONE
     }
   }
   else {  /* not a scan, just a single result row */
-    inner_loop->Run(data, res);
+    core->Run(data, res);
   }
 }
 
@@ -110,9 +136,9 @@ void ScanLoop::Run(data_operation *data, result_buffer &res) {
 void RowLoop::Run(data_operation *data, result_buffer &res) {
   begin->chain_out(data, res);
   for(unsigned int n = 0; n < data->n_result_cols ; n++) {
-    if(n) res.out(sep);
+    if(n) res.out(*sep);
     const NdbRecAttr &rec = *data->result_cols[n];
-    record->out(rec, res);
+    core->out(rec, res);
   }
   end->chain_out(data, res);
 };
@@ -123,16 +149,8 @@ void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
     c->out(rec, res);
 }
 
-void initialize_output_formats(ap_pool *p) {
-  global_format_names = ap_make_table(p, 6);
-  global_output_formats = new(p,6) apache_array<output_format *>;
-  assert(global_format_names);
-  assert(global_output_formats);
-  return;
-}
 
-
-output_format *get_format_by_name(char *name) {
+output_format *get_format_by_name(const char *name) {
   const char *format_index = ap_table_get(global_format_names, name);
   if(format_index) {
     int idx = atoi(format_index);
@@ -142,9 +160,9 @@ output_format *get_format_by_name(char *name) {
 }
 
 
-char *register_format(char *name, output_format *format) {  
+char *register_format(output_format *format) {  
   char idx_string[32];
-  output_format *existing = get_format_by_name(name);
+  output_format *existing = get_format_by_name(format->name);
   if(existing && ! existing->flag.can_override)
     return "Cannot redefine existing format";      
   
@@ -156,39 +174,16 @@ char *register_format(char *name, output_format *format) {
   * global_output_formats->new_item() = format;
   
   /* Store the index in the table of format names */
-  ap_table_set(global_format_names, name, idx_string);
+  ap_table_set(global_format_names, format->name, idx_string);
   
-  format->name = name;
   return 0;
 }
 
 
-void initialize_escapes() {
-  for(int i = 0 ; i < 128 ; i++) {
-    escape_leaning_toothpicks[i] = 0;
-    escape_xml_entities[i] = 0;
-  }
-  
-  escape_leaning_toothpicks[static_cast<int>('\\')] = "\x02" "\\" "\\";
-  escape_leaning_toothpicks[static_cast<int>('\"')] = "\x02" "\\" "\"";
-  escape_leaning_toothpicks[static_cast<int>('\b')] = "\x02" "\\" "\b";
-  escape_leaning_toothpicks[static_cast<int>('\f')] = "\x02" "\\" "\f";
-  escape_leaning_toothpicks[static_cast<int>('\n')] = "\x02" "\\" "\n";
-  escape_leaning_toothpicks[static_cast<int>('\r')] = "\x02" "\\" "\r";
-  escape_leaning_toothpicks[static_cast<int>('\t')] = "\x02" "\\" "\t";
-
-  escape_xml_entities[static_cast<int>('<')] = "\x04" "&lt;";
-  escape_xml_entities[static_cast<int>('>')] = "\x04" "&gt;";
-  escape_xml_entities[static_cast<int>('&')] = "\x05" "&amp;";
-  escape_xml_entities[static_cast<int>('\"')]= "\x06" "&quot;";
-}
-
-
 void register_built_in_formatters(ap_pool *p) {
-  Cell *my_item[13];
-  struct output_format *json_format = new(p) output_format;
-  struct output_format *raw_format  = new(p) output_format;
-  struct output_format *xml_format  = new(p) output_format;
+  output_format *json_format = new(p) output_format("JSON");
+  output_format *raw_format  = new(p) output_format("raw");
+  output_format *xml_format  = new(p) output_format("XML");
   
   /* Define the raw format (simply by setting some flags) */
   raw_format->flag.is_internal = 1;
@@ -197,57 +192,32 @@ void register_built_in_formatters(ap_pool *p) {
   /* Define the internal JSON format */
   json_format->flag.is_internal  = 1;
   json_format->flag.can_override = 1;
-
-  ScanLoop *Scan = new (p) ScanLoop("JSON_scan","");
-  Scan->set_parts(p, "[\n", ",\n", "\n]\n");         // JSON array
   
-  Scan->inner_loop = new(p) RowLoop("JSON_row","");
-  Scan->inner_loop->set_parts(p, " { ", " , ", " }"); // JSON object
-  Scan->inner_loop->record = new(p) RecAttr("JSON_item","");
-
-  my_item[0] = new(p) Cell(item_name, no_esc, quote_all);
-  my_item[1] = new(p) Cell(":");
-  my_item[2] = new(p) Cell(item_value, esc_json, quote_char);
-  my_item[0]->next = my_item[1];
-  my_item[1]->next = my_item[2];
- 
-  my_item[3] = new(p) Cell(item_name, no_esc, quote_all);
-  my_item[4] = new(p) Cell(":null");
-  my_item[3]->next = my_item[4];
-
-  Scan->inner_loop->record->set_formats(my_item[0], my_item[3]);
+  ScanLoop *Scan = new(p) ScanLoop("scan","[\n $row$,\n ... \n]\n");
+  json_format->symbol("scan", p, Scan);
+  json_format->symbol("row",  p, new(p) RowLoop("row"," { $item$ , ... }"));
+  json_format->symbol("item", p, new(p) 
+                      RecAttr("item","$name/Q$:$value/qj$","$name/Q$:null"));
+  json_format->compile(p);
   json_format->top_node = Scan;
   
   /* Define the internal XML format */
   xml_format->flag.is_internal  = 1;
   xml_format->flag.can_override = 1; 
 
-  Scan = new (p) ScanLoop("XML_scan","");   
-  Scan->set_parts(p, "<NDBScan>\n", "\n", "\n</NDBScan>\n");
-
-  Scan->inner_loop = new(p) RowLoop("XML_row","");  
-  Scan->inner_loop->set_parts(p, " <NDBTuple> ", "\n  ", " </NDBTuple>");  
-  Scan->inner_loop->record = new(p) RecAttr("XML_item","");
-  
-  my_item[5] = new(p) Cell("<Attr name=");
-  my_item[6] = new(p) Cell(item_name, no_esc, quote_all);
-  my_item[7] = new(p) Cell(" value=");
-  my_item[8] = new(p) Cell(item_value, no_esc, quote_all);
-  my_item[9] = new(p) Cell(" />");
-  for(int i = 5; i < 9 ; i++) my_item[i]->next = my_item[i+1];
-
-  my_item[10] = new(p) Cell("<Attr name=");
-  my_item[11] = new(p) Cell(item_name, no_esc, quote_all);
-  my_item[12] = new(p) Cell("isNull=\"1\" />");
-  my_item[10]->next = my_item[11];
-  my_item[11]->next = my_item[12];
-
-  Scan->inner_loop->record->set_formats(my_item[5], my_item[10]);
+  Scan = new (p) ScanLoop("scan",   "<NDBScan>\n$row$\n...\n</NDBScan>\n");   
+  xml_format->symbol("scan", p, Scan);
+  xml_format->symbol("row",  p, new(p) RowLoop("XML_row",
+                      " <NDBTuple> $attr$ \n  ...  </NDBTuple>"));
+  xml_format->symbol("attr", p, new(p) RecAttr("XML_item",
+                      "<Attr name=$name/Q$ value=$value/Qx$ />",
+                      "<Attr name=$name/Q$ isNull=\"1\" />"));
+  xml_format->compile(p);
   xml_format->top_node = Scan;
   
-  register_format("raw",  raw_format);
-  register_format("JSON", json_format);
-  register_format("XML",  xml_format);
+  register_format(raw_format);
+  register_format(json_format);
+  register_format(xml_format);
 }
 
 
