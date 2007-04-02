@@ -54,103 +54,14 @@ void initialize_escapes() {
   escape_xml_entities[static_cast<int>('\"')]= "\x06" "&quot;";
 }
 
-
-Cell::Cell(re_type type, re_esc esc, re_quot quote, int i) :
-   elem_type (type) , elem_quote (quote) , i (i) {     
-  if(esc == esc_xml) 
-    escapes = escape_xml_entities;
-  else if(esc == esc_json) 
-    escapes = escape_leaning_toothpicks;
-  else
-    escapes = 0;
-  next = 0;
-};
-
-void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
-  if(elem_type == const_string) {
-    res.out(len, string);
-    return;
-  }
-
-  const char *col_name = rec.getColumn()->getName();
-  NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
-  switch(elem_type) {
-    case item_name:
-      if(elem_quote == no_quot) 
-        res.out(strlen(col_name), col_name);
-      else
-        res.out("\"%s\"",col_name);
-      break;
-    case item_value:          
-      if((elem_quote == quote_all) || 
-         ((elem_quote == quote_char)
-          && (col_type == NdbDictionary::Column::Char        ||
-              col_type == NdbDictionary::Column::Varchar     ||
-              col_type == NdbDictionary::Column::Longvarchar ||
-              col_type == NdbDictionary::Column::Date        ||
-              col_type == NdbDictionary::Column::Time        ||
-              col_type == NdbDictionary::Column::Datetime    ||
-              col_type == NdbDictionary::Column::Text 
-              ))) {
-        /* Quoted Value */
-        res.out(1,"\"");
-        MySQL::result(res, rec, escapes);
-        res.out(1,"\"");            
-      }
-      else MySQL::result(res, rec, escapes);  /* No Quotes */
-      break;
-    default:
-      assert(0);      
-  } /* end of switch statement */      
-}
-
-void Cell::out(struct data_operation *data, result_buffer &res) {
-  if(elem_type == const_string) 
-    return this->out(res);
-  const NdbRecAttr &rec = *data->result_cols[i]; 
-  this->out(rec, res);
-  return;
+const char **get_escapes(re_esc esc) {
+  if(esc == esc_xml) return escape_xml_entities;
+  else if(esc == esc_json) return escape_leaning_toothpicks;
+  return 0;  
 }
 
 
-void ScanLoop::Run(data_operation *data, result_buffer &res) {
-  int nrows = 0;
-
-  if(data->scanop) {
-    while((data->scanop->nextResult(true)) == 0) {
-      do {
-        if(nrows++) res.out(*sep);
-        else begin->chain_out(res);
-        core->Run(data, res);
-      } while((data->scanop->nextResult(false)) == 0);
-      if(nrows) end->chain_out(res);
-      else return; // ?? used to be return HTTP_GONE
-    }
-  }
-  else {  /* not a scan, just a single result row */
-    core->Run(data, res);
-  }
-}
-
-
-void RowLoop::Run(data_operation *data, result_buffer &res) {
-  begin->chain_out(data, res);
-  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
-    if(n) res.out(*sep);
-    const NdbRecAttr &rec = *data->result_cols[n];
-    core->out(rec, res);
-  }
-  end->chain_out(data, res);
-};
-
-
-void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
-  for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
-    c->out(rec, res);
-}
-
-
-output_format *get_format_by_name(const char *name) {
+output_format *get_format_by_name(char *name) {
   const char *format_index = ap_table_get(global_format_names, name);
   if(format_index) {
     int idx = atoi(format_index);
@@ -162,7 +73,7 @@ output_format *get_format_by_name(const char *name) {
 
 char *register_format(output_format *format) {  
   char idx_string[32];
-  output_format *existing = get_format_by_name(format->name);
+  output_format *existing = get_format_by_name((char *) format->name);
   if(existing && ! existing->flag.can_override)
     return "Cannot redefine existing format";      
   
@@ -249,5 +160,71 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
 
   res.out("\n"); // should be a node after the scan
   return OK;
+}
+
+
+void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
+  if(elem_type == const_string) {
+    res.out(len, string);
+    return;
+  }
+  
+  const char *col_name = rec.getColumn()->getName();
+  NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
+  switch(elem_type) {
+    case item_name:
+      if(elem_quote == no_quot) 
+        res.out(strlen(col_name), col_name);
+      else
+        res.out("\"%s\"",col_name);
+      break;
+    case item_value:          
+      if((elem_quote == quote_all) || 
+         ((elem_quote == quote_char)
+          && (col_type == NdbDictionary::Column::Char        ||
+              col_type == NdbDictionary::Column::Varchar     ||
+              col_type == NdbDictionary::Column::Longvarchar ||
+              col_type == NdbDictionary::Column::Date        ||
+              col_type == NdbDictionary::Column::Time        ||
+              col_type == NdbDictionary::Column::Datetime    ||
+              col_type == NdbDictionary::Column::Text 
+              ))) {
+        /* Quoted Value */
+        res.out(1,"\"");
+        MySQL::result(res, rec, escapes);
+        res.out(1,"\"");            
+      }
+      else MySQL::result(res, rec, escapes);  /* No Quotes */
+      break;
+    default:
+      assert(0);      
+  } /* end of switch statement */      
+}
+
+void Cell::out(struct data_operation *data, result_buffer &res) {
+  if(elem_type == const_string) 
+    return this->out(res);
+  const NdbRecAttr &rec = *data->result_cols[i]; 
+  this->out(rec, res);
+  return;
+}
+
+void ScanLoop::Run(data_operation *data, result_buffer &res) {
+  int nrows = 0;
+  
+  if(data->scanop) {
+    while((data->scanop->nextResult(true)) == 0) {
+      do {
+        if(nrows++) res.out(*sep);
+        else begin->chain_out(res);
+        core->Run(data, res);
+      } while((data->scanop->nextResult(false)) == 0);
+      if(nrows) end->chain_out(res);
+      else return; // ?? used to be return HTTP_GONE
+    }
+  }
+  else {  /* not a scan, just a single result row */
+    core->Run(data, res);
+  }
 }
 

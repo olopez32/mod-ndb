@@ -18,33 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mod_ndb.h"
 #include <ctype.h>
 
-enum token { 
-  tok_error , tok_no_more ,
-  tok_plaintext , tok_elipses , 
-  tok_fieldname , tok_fieldval , tok_fieldnum ,
-  tok_node 
-};
-
-class Parser {
-  public:
-  ap_pool *pool;
-  const char *token_start ;
-  const char *token_end ;
-  char *error_message;
-  token current_token;
-
-  Parser() { pool = 0 ; error_message = 0; }
-  token scan(const char *);
-  const char *copy_node_text(const char *, const char *);
-  len_string *get_string(const char *, const char **);
-  Cell *get_cell(const char *, const char **);
-  Node *get_node(output_format *, const char *, const char **);
-  const char *get_error() {
-    const char *m = error_message;
-    error_message = 0;
-    return m;
-  }
-};
 
 /* In Apache (regardless of MPM), configuration processing is single-threaded.
    So, compiling of output formats is single-threaded, and this file uses a
@@ -52,6 +25,51 @@ class Parser {
 */
 Parser parser;
     
+Cell::Cell(re_type type, re_esc esc, re_quot quote, int i) :
+elem_type (type) , elem_quote (quote) , i (i) {   
+  
+  escapes = get_escapes(esc);  
+  next = 0;
+};
+
+/* Given a string from "start" to "end" that has been parsed out to token 
+type "t", build a Cell to represent the string
+*/
+
+Cell *build_cell(ap_pool *pool, token t, const char *start, const char *end) {
+  re_esc  escape = no_esc;
+  re_quot quote  = no_quot;
+  int i = 0;
+  
+  if(t == tok_fieldname || t == tok_fieldval || t == tok_fieldnum) {
+    const char *p;
+    for(p = start ; *p != '/' && p < end ; p++);
+    if(*p == '/') {
+      for( ; *p != '$' && p < end ; p++) {
+        if(*p == 'q') quote = quote_char;
+        else if(*p == 'Q') quote = quote_all;
+        else if(*p == 'x') escape = esc_xml;
+        else if(*p == 'j') escape = esc_json;
+      }
+    }
+    if(t == tok_fieldnum) {
+      char *end_num = (char *) (end - 1);
+      i = strtol(start+1, &end_num, 10);
+      return new(pool) Cell(item_value, escape, quote, i);
+    }
+    if(t == tok_fieldname) return new(pool) Cell(item_name, escape, quote);
+    if(t == tok_fieldval) return new(pool) Cell(item_value, escape, quote);
+    assert(0);
+  }
+  if(t == tok_plaintext) {
+    size_t size = end - start + 1;
+    char *copy = (char *) ap_pcalloc(pool, size);
+    ap_cpystrn(copy, start, size);
+    return new(pool) Cell(size, copy);
+  }
+  assert(0);
+}
+
 
 /*  Look up "name" in a format's symbol table. 
     If ap_pool *p is non-null and the name cannot be found, add it to the table.
@@ -132,45 +150,6 @@ token Parser::scan(const char *start) {
   token_end = s;
   return tok_plaintext;
 }
-
-/* Given a string from "start" to "end" that has been parsed out to token 
-   type "t", build a Cell to represent the string
-*/
-   
-Cell *build_cell(ap_pool *pool, token t, const char *start, const char *end) {
-  re_esc  escape = no_esc;
-  re_quot quote  = no_quot;
-  int i = 0;
-  
-  if(t == tok_fieldname || t == tok_fieldval || t == tok_fieldnum) {
-    const char *p;
-    for(p = start ; *p != '/' && p < end ; p++);
-    if(*p == '/') {
-      for( ; *p != '$' && p < end ; p++) {
-        if(*p == 'q') quote = quote_char;
-        else if(*p == 'Q') quote = quote_all;
-        else if(*p == 'x') escape = esc_xml;
-        else if(*p == 'j') escape = esc_json;
-      }
-    }
-    if(t == tok_fieldnum) {
-      char *end_num = (char *) (end - 1);
-      i = strtol(start+1, &end_num, 10);
-      return new(pool) Cell(item_value, escape, quote, i);
-    }
-    if(t == tok_fieldname) return new(pool) Cell(item_name, escape, quote);
-    if(t == tok_fieldval) return new(pool) Cell(item_value, escape, quote);
-    assert(0);
-  }
-  if(t == tok_plaintext) {
-    size_t size = end - start + 1;
-    char *copy = (char *) ap_pcalloc(pool, size);
-    ap_cpystrn(copy, start, size);
-    return new(pool) Cell(size, copy);
-  }
-  assert(0);
-}
-
 
 const char *Parser::copy_node_text(const char *start, const char *end) {
   size_t size = (end - start) + 1;
@@ -287,5 +266,27 @@ const char * Loop::compile(output_format *o) {
   return 0;
 }
 
+void RowLoop::Run(data_operation *data, result_buffer &res) {
+  begin->chain_out(data, res);
+  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
+    if(n) res.out(*sep);
+    const NdbRecAttr &rec = *data->result_cols[n];
+    core->out(rec, res);
+  }
+  end->chain_out(data, res);
+};
 
+
+void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
+  for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
+    c->out(rec, res);
+}
+
+void RowLoop::out(const NdbRecAttr &rec, result_buffer &res) {
+  assert(0);
+}
+
+void ScanLoop::out(const NdbRecAttr &rec, result_buffer &res) {
+  assert(0);
+}
 
