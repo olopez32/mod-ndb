@@ -19,6 +19,8 @@ enum re_type { const_string, item_name, item_value };
 enum re_esc  { no_esc, esc_xml, esc_json };
 enum re_quot { no_quot, quote_char, quote_all };
 
+const char **get_escapes(re_esc);
+
 class Node;
 class RecAttr;
 
@@ -85,14 +87,13 @@ class Node {
   
   Node(const char *c1, const char *c2 ) : name (c1) , unresolved (c2) {}
   virtual ~Node() {}
+  virtual const char *compile(output_format *);
   virtual void Run(struct data_operation *data, result_buffer &res) {
     if(cell) cell->out(data, res); 
   }
   virtual void out(const NdbRecAttr &rec, result_buffer &res) {
     if(cell) cell->out(rec, res);
   }
-  virtual const char *compile(output_format *);
-
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
   };
@@ -126,7 +127,7 @@ class Loop : public Node {
 class RowLoop : public Loop {
 public: 
   RowLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
-  const char *compile(output_format *);
+  const char *compile(output_format *o) { return Loop::compile(o); }
   void Run(struct data_operation *, result_buffer &);
   void out(const NdbRecAttr &, result_buffer &); 
 };
@@ -135,7 +136,37 @@ public:
 class ScanLoop : public Loop {  
 public:
   ScanLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
-  const char *compile(output_format *);
+  const char *compile(output_format *o) { return Loop::compile(o); }
   void Run(struct data_operation *, result_buffer &);
   void out(const NdbRecAttr &, result_buffer &); 
 };
+
+
+enum token { 
+  tok_error , tok_no_more ,
+  tok_plaintext , tok_elipses , 
+  tok_fieldname , tok_fieldval , tok_fieldnum ,
+  tok_node 
+};
+
+class Parser {
+public:
+  ap_pool *pool;
+  const char *token_start ;
+  const char *token_end ;
+  char *error_message;
+  token current_token;
+  
+  Parser() { pool = 0 ; error_message = 0; }
+  token scan(const char *);
+  const char *copy_node_text(const char *, const char *);
+  len_string *get_string(const char *, const char **);
+  Cell *get_cell(const char *, const char **);
+  Node *get_node(output_format *, const char *, const char **);
+  const char *get_error() {
+    const char *m = error_message;
+    error_message = 0;
+    return m;
+  }
+};
+
