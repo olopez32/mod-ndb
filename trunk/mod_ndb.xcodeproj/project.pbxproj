@@ -18,6 +18,7 @@
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
+		655116C20BC1CAF30009C9E1 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = format_compiler.h; sourceTree = "<group>"; };
 		655A3FF20AC35A0300FC573F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_Field.cc; sourceTree = "<group>"; };
 		655CEC210A8C4C4C00DB8284 /* Query.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Query.cc; sourceTree = "<group>"; };
@@ -69,6 +70,7 @@
 				654FD39D0AC5B0A6000283CB /* index_object.h */,
 				65ADCC4A0BB0FF0A00AEE680 /* output_format.h */,
 				65C8FF5E0BB2047A0040028D /* output_format.cc */,
+				655116C20BC1CAF30009C9E1 /* format_compiler.h */,
 				651D4C760BC02D69007E9007 /* format_compiler.cc */,
 				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
