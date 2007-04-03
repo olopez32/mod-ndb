@@ -60,7 +60,7 @@ class Cell : public len_string {
   Cell *next;
   
   Cell(re_type, re_esc, re_quot, int i=0);
-  Cell(char *txt) : len_string(txt) {
+  Cell(const char *txt) : len_string(txt) {
     elem_type = const_string;
   }
   Cell(size_t size, const char *txt) : len_string(size,txt) {
@@ -85,7 +85,7 @@ class Node {
   Cell *cell;
   Node *next_node;
   
-  Node(const char *c1, const char *c2 ) : name (c1) , unresolved (c2) {}
+  Node(const char *c) : unresolved (c) {}
   virtual ~Node() {}
   virtual const char *compile(output_format *);
   virtual void Run(struct data_operation *data, result_buffer &res) {
@@ -105,8 +105,7 @@ class RecAttr : public Node {
   Cell *null_fmt;
 
   public:
-  RecAttr(const char *nm, const char *str1, const char *str2) : 
-    Node(nm,str1) , unresolved2 (str2) {}
+  RecAttr(const char *str1, const char *str2) : Node(str1), unresolved2(str2) {}
   void out(const NdbRecAttr &rec, result_buffer &res);
   const char *compile(output_format *);
 };
@@ -119,54 +118,25 @@ class Loop : public Node {
   Cell *end;
  
   public:
-  Loop(const char *c1, const char *c2) : Node(c1,c2) {}
+  Loop(const char *c) : Node(c) {}
   const char *compile(output_format *);
 };
 
 
 class RowLoop : public Loop {
 public: 
-  RowLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
+  RowLoop(const char *c) : Loop(c) {}
   const char *compile(output_format *o) { return Loop::compile(o); }
   void Run(struct data_operation *, result_buffer &);
-  void out(const NdbRecAttr &, result_buffer &); 
+  void out(const NdbRecAttr &, result_buffer &) { assert(0); }
 };
 
 
 class ScanLoop : public Loop {  
 public:
-  ScanLoop(const char *c1, const char *c2) : Loop(c1,c2) {}
+  ScanLoop(const char *c) : Loop(c) {}
   const char *compile(output_format *o) { return Loop::compile(o); }
   void Run(struct data_operation *, result_buffer &);
-  void out(const NdbRecAttr &, result_buffer &); 
-};
-
-
-enum token { 
-  tok_error , tok_no_more ,
-  tok_plaintext , tok_elipses , 
-  tok_fieldname , tok_fieldval , tok_fieldnum ,
-  tok_node 
-};
-
-class Parser {
-public:
-  ap_pool *pool;
-  const char *token_start ;
-  const char *token_end ;
-  char *error_message;
-  token current_token;
-  
-  Parser() { pool = 0 ; error_message = 0; }
-  token scan(const char *);
-  const char *copy_node_text(const char *, const char *);
-  len_string *get_string(const char *, const char **);
-  Cell *get_cell(const char *, const char **);
-  Node *get_node(output_format *, const char *, const char **);
-  const char *get_error() {
-    const char *m = error_message;
-    error_message = 0;
-    return m;
-  }
+  void out(const NdbRecAttr &, result_buffer &) { assert(0); } 
 };
 

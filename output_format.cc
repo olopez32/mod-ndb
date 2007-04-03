@@ -104,26 +104,33 @@ void register_built_in_formatters(ap_pool *p) {
   json_format->flag.is_internal  = 1;
   json_format->flag.can_override = 1;
   
-  ScanLoop *Scan = new(p) ScanLoop("scan","[\n $row$,\n ... \n]\n");
+  ScanLoop *Scan = new(p) ScanLoop("[\n $row$,\n ... \n]\n");
   json_format->symbol("scan", p, Scan);
-  json_format->symbol("row",  p, new(p) RowLoop("row"," { $item$ , ... }"));
-  json_format->symbol("item", p, new(p) 
-                      RecAttr("item","$name/Q$:$value/qj$","$name/Q$:null"));
-  json_format->compile(p);
+  json_format->symbol("row",  p, new(p) RowLoop(" { $item$ , ... }"));
+  json_format->symbol("item", p, new(p) RecAttr("$name/Q$:$value/qj$","$name/Q$:null"));
+  const char *err = json_format->compile(p);
+  if(err) {
+    fprintf(stderr,err);
+    exit(1);
+  }
+  
   json_format->top_node = Scan;
   
   /* Define the internal XML format */
   xml_format->flag.is_internal  = 1;
   xml_format->flag.can_override = 1; 
 
-  Scan = new (p) ScanLoop("scan",   "<NDBScan>\n$row$\n...\n</NDBScan>\n");   
+  Scan = new (p) ScanLoop("<NDBScan>\n$row$\n...\n</NDBScan>\n");   
   xml_format->symbol("scan", p, Scan);
-  xml_format->symbol("row",  p, new(p) RowLoop("XML_row",
-                      " <NDBTuple> $attr$ \n  ...  </NDBTuple>"));
-  xml_format->symbol("attr", p, new(p) RecAttr("XML_item",
-                      "<Attr name=$name/Q$ value=$value/Qx$ />",
-                      "<Attr name=$name/Q$ isNull=\"1\" />"));
-  xml_format->compile(p);
+  xml_format->symbol("row",  p, new(p) RowLoop(" <NDBTuple> $attr$ \n  ...  </NDBTuple>"));
+  xml_format->symbol("attr", p, new(p) RecAttr("<Attr name=$name/Q$ value=$value/Qx$ />",
+                                               "<Attr name=$name/Q$ isNull=\"1\" />"));
+  err = xml_format->compile(p);
+  if(err) {
+    fprintf(stderr,err);
+    exit(1);
+  }
+  
   xml_format->top_node = Scan;
   
   register_format(raw_format);
@@ -201,21 +208,13 @@ void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
   } /* end of switch statement */      
 }
 
-void Cell::out(struct data_operation *data, result_buffer &res) {
-  if(elem_type == const_string) 
-    return this->out(res);
-  const NdbRecAttr &rec = *data->result_cols[i]; 
-  this->out(rec, res);
-  return;
-}
-
 void ScanLoop::Run(data_operation *data, result_buffer &res) {
   int nrows = 0;
   
   if(data->scanop) {
     while((data->scanop->nextResult(true)) == 0) {
       do {
-        if(nrows++) res.out(*sep);
+        if(nrows++) res.out(sep);
         else begin->chain_out(res);
         core->Run(data, res);
       } while((data->scanop->nextResult(false)) == 0);
@@ -228,3 +227,25 @@ void ScanLoop::Run(data_operation *data, result_buffer &res) {
   }
 }
 
+void RowLoop::Run(data_operation *data, result_buffer &res) {
+  begin->chain_out(data, res);
+  for(unsigned int n = 0; n < data->n_result_cols ; n++) {
+    if(n) res.out(sep);
+    const NdbRecAttr &rec = *data->result_cols[n];
+    core->out(rec, res);
+  }
+  end->chain_out(data, res);
+}
+
+void Cell::out(struct data_operation *data, result_buffer &res) {
+  if(elem_type == const_string) 
+    return this->out(res);
+  const NdbRecAttr &rec = *data->result_cols[i]; 
+  this->out(rec, res);
+  return;
+}
+
+void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
+  for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
+    c->out(rec, res);
+}
