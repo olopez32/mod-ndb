@@ -86,6 +86,7 @@ class Node {
   Node *next_node;
   
   Node(const char *c) : unresolved (c) {}
+  Node(const char *n, Cell *cell) : name(n), cell(cell), next_node(0) {}
   virtual ~Node() {}
   virtual const char *compile(output_format *);
   virtual void Run(struct data_operation *data, result_buffer &res) {

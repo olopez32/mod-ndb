@@ -20,11 +20,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "format_compiler.h"
 
 
-/* In Apache (regardless of MPM), configuration processing is single-threaded.
-   So, compiling of output formats is single-threaded, and this file uses a
-   single "static" parser.
+/* In Apache (regardless of MPM), configuration processing is single-threaded
+   -- so there are some static globals in this file.
 */
 Parser parser;
+len_string the_null_string(0,""); // to do: use this, instead of if(ls)
+Cell the_null_cell(0, "");
+Node the_null_node("the_null_node", &the_null_cell);
+
     
 Cell::Cell(re_type type, re_esc esc, re_quot quote, int i) :
 elem_type (type) , elem_quote (quote) , i (i) {   
@@ -264,6 +267,7 @@ const char * RecAttr::compile(output_format *o) {
 /* "Loop" compiles its open, close, core, and sep.
     Loop loop 'begin $Rec$ sep ... end' 
 */
+//  TO DO: Make items optional, and fill in the null node or null cell where needed
 const char * Loop::compile(output_format *o) {
   const char *error = 0;
   /* First get a cell chain */
