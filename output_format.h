@@ -20,6 +20,7 @@ enum re_esc  { no_esc, esc_xml, esc_json };
 enum re_quot { no_quot, quote_char, quote_all };
 
 const char **get_escapes(re_esc);
+char *json_str(ap_pool *, len_string &);
 
 class Node;
 class RecAttr;
@@ -48,6 +49,7 @@ public:
   };
   Node * symbol(const char *, ap_pool *, Node *);
   const char *compile(ap_pool *);
+  char *dump(ap_pool *, int);
 };
 
 
@@ -75,6 +77,7 @@ class Cell : public len_string {
   void chain_out(result_buffer &res) {
     for(Cell *c = this; c != 0 ; c = c->next)  c->out(res);    
   }
+  char *dump(ap_pool *p, int);
 };
 
 
@@ -88,13 +91,10 @@ class Node {
   Node(const char *c) : unresolved (c) {}
   Node(const char *n, Cell *cell) : name(n), cell(cell), next_node(0) {}
   virtual ~Node() {}
-  virtual const char *compile(output_format *);
-  virtual void Run(struct data_operation *data, result_buffer &res) {
-    if(cell) cell->out(data, res); 
-  }
-  virtual void out(const NdbRecAttr &rec, result_buffer &res) {
-    if(cell) cell->out(rec, res);
-  }
+  virtual void compile(output_format *);
+  virtual void Run(struct data_operation *d, result_buffer &b) {cell->out(d,b);}
+  virtual void out(const NdbRecAttr &r, result_buffer &b) {cell->out(r,b);}
+  virtual char *dump(ap_pool *p, int);
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
   };
@@ -108,7 +108,8 @@ class RecAttr : public Node {
   public:
   RecAttr(const char *str1, const char *str2) : Node(str1), unresolved2(str2) {}
   void out(const NdbRecAttr &rec, result_buffer &res);
-  const char *compile(output_format *);
+  void compile(output_format *);
+  char *dump(ap_pool *p, int);
 };
 
 class Loop : public Node {
@@ -120,15 +121,17 @@ class Loop : public Node {
  
   public:
   Loop(const char *c) : Node(c) {}
-  const char *compile(output_format *);
+  void compile(output_format *);
+  char *dump(ap_pool *p, int);
 };
 
 
 class RowLoop : public Loop {
 public: 
   RowLoop(const char *c) : Loop(c) {}
-  const char *compile(output_format *o) { return Loop::compile(o); }
   void Run(struct data_operation *, result_buffer &);
+  void compile(output_format *o) { return Loop::compile(o); }
+  char *dump(ap_pool *p, int i) { return Loop::dump(p,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); }
 };
 
@@ -136,8 +139,9 @@ public:
 class ScanLoop : public Loop {  
 public:
   ScanLoop(const char *c) : Loop(c) {}
-  const char *compile(output_format *o) { return Loop::compile(o); }
   void Run(struct data_operation *, result_buffer &);
+  void compile(output_format *o) { return Loop::compile(o); }
+  char *dump(ap_pool *p, int i) { return Loop::dump(p,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); } 
 };
 

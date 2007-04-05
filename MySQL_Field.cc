@@ -242,7 +242,7 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
   }
   
   if(escapes) {
-    unsigned escaped_size = 0;
+    size_t escaped_size = 0;
 
     /* How long will the string be when it is escaped? */
     for(unsigned int i = 0; i < sz ; i++) {
@@ -259,15 +259,12 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
      */
     for(unsigned int i = 0; i < sz ; i++) {
       const unsigned char c = ref[i];
-      if(c < 128) {
-        const char *esc = escapes[c];
-        if(esc) {
-          for(char j = 1 ; j <= esc[0]; j++) 
-            rbuf.putc(esc[j]);
-          continue;
-        }
+      const char *esc = escapes[c];
+      if(esc) {
+        for(char j = 1 ; j <= esc[0]; j++) 
+          rbuf.putc(esc[j]);
       }
-      rbuf.putc(c);
+      else rbuf.putc(c);
     }
   }
   else                /* alternate code path -- no escapes */   

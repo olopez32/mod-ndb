@@ -56,6 +56,7 @@ typedef apr_array_header_t array_header;
 
 #define ap_pstrndup apr_pstrndup
 #define ap_pstrdup apr_pstrdup
+#define ap_pstrcat apr_pstrcat
 #define ap_psprintf apr_psprintf
 #define ap_cpystrn apr_cpystrn
 #define ap_palloc apr_palloc
