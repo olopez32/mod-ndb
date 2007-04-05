@@ -77,7 +77,7 @@ class Cell : public len_string {
   void chain_out(result_buffer &res) {
     for(Cell *c = this; c != 0 ; c = c->next)  c->out(res);    
   }
-  char *dump(ap_pool *p, int);
+  char *dump(ap_pool *p);
 };
 
 

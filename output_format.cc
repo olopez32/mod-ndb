@@ -64,37 +64,6 @@ const char **get_escapes(re_esc esc) {
 }
 
 
-char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {  
-  size_t escaped_size = 0;
-  register const char *esc;
-  
-  /* How long will the string be when it is escaped? */
-  for(unsigned int i = 0; i < str.len ; i++) {
-    const unsigned char c = str.string[i];
-    esc = escapes[c];
-    if(esc) escaped_size += esc[0];
-    else escaped_size++;
-  }
-  
-  char *out = (char *) ap_pcalloc(pool, escaped_size);
-  char *p = out;
-  for(unsigned int i = 0; i < str.len ; i++) {
-    const unsigned char c = str.string[i];
-    esc = escapes[c];
-    if(esc) 
-      for(char j = 1 ; j <= esc[0]; j++) *p++ = esc[j];
-    else 
-      *p++ = c;
-  }
-  return out;
-}
-
-
-char *json_str(ap_pool *pool, len_string &str) {
-  return escape_string(pool, escape_leaning_toothpicks, str);
-}
-
-
 output_format *get_format_by_name(char *name) {
   const char *format_index = ap_table_get(global_format_names, name);
   if(format_index) {
@@ -203,46 +172,6 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
   return OK;
 }
  
-
-char *Cell::dump(ap_pool *p, int indent) {
-  int n = 0;
-  char *out = ap_pstrdup(p, "[");
-  for(Cell *c = this ; c != 0 ; c = c->next) {
-    if(n++) out = ap_pstrcat(p, out, " , ", 0);
-    switch(c->elem_type) {
-      case const_string: 
-        const char *val = escape_string(p, escape_leaning_toothpicks, *c);
-        out = ap_pstrcat(p, out, "\"", val, "\"", 0);
-        break;
-      case item_name :
-        if(c->elem_quote == quote_char) out = ap_pstrcat(p, out, "\"$name/q$\"", 0);
-        else if (c->elem_quote == quote_all) out = ap_pstrcat(p, out, "\"$name/Q$\"", 0);
-        else out = ap_pstrcat(p, out, "\"$name$\"", 0);
-        break;
-      case item_value:
-        {
-          char flags[4] = { 0, 0, 0, 0 };
-          int f = 1;
-          char *item;
-          if(c->escapes || ( c->elem_quote != no_quot)) {
-            flags[0] = '/';
-            if(c->escapes == escape_leaning_toothpicks) flags[f++] = 'j';
-            else if(c->escapes == escape_xml_entities)  flags[f++] = 'x';
-            if(c->elem_quote == quote_char)             flags[f++] = 'q';
-            else if(c->elem_quote == quote_all)         flags[f++] = 'Q';
-          }
-          if(c->i > 0) item = ap_psprintf(p, "$%d", c->i);
-          else item = "$value";
-          out = ap_pstrcat(p, out, "\"", item, flags, "$\"", 0);
-        }
-        break;
-      default:
-        out = ap_pstrcat(p, out, "\"*HOW_DO_I_DUMP_THIS_KIND_OF_CELL*\"", 0);
-    }
-  }
-  out = ap_pstrcat(p, out, "]", 0);
-  return out;
-}
 
 void Cell::out(struct data_operation *data, result_buffer &res) {
   if(elem_type == const_string) 

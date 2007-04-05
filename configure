@@ -207,4 +207,17 @@ echo
 echo "Removing out-of-date files:"
 make clean
 echo
-echo "Hello!  Run 'make' to build mod_ndb."
+echo "Hello!"
+echo 
+echo "   make            : build mod_ndb" 
+echo "   make install    : install mod_ndb.so"
+echo "   make configtest : test configuration"
+echo "   make start      : start a test server on port 3080"
+echo "   make stop       : stop the test server"
+echo "   make restart    : restart the test server" 
+echo 
+echo "To configure the test server, edit test.conf"
+echo
+echo "Thanks for trying mod_ndb!"
+echo
+

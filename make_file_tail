@@ -1,6 +1,6 @@
 OBJECTS=mod_ndb.o Query.o Execute.o MySQL_Field.o config.o \
 read_http_post.o handlers.o result_buffer.o output_format.o \
-format_compiler.o
+format_compiler.o format_dumper.o
 
 INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
 LIBS=$(APXS_LIBS_SHLIB) -lndbclient -lmystrings $(MY_LIBS) -lmysys -lstdc++
@@ -26,6 +26,7 @@ config.o: config.cc mod_ndb.h mod_ndb_config.h
 result_buffer.o: result_buffer.cc mod_ndb.h result_buffer.h
 output_format.o: output_format.cc output_format.h 
 format_compiler.o: output_format.h format_compiler.h
+format_dumper.o: output_format.h format_compiler.h
 
 rev:
 	sh create_rev_h.sh
@@ -48,3 +49,5 @@ stop:
 restart:
 	LD_LIBRARY_PATH=$(LDSO_PATH) $(RESTART_HTTPD)
 
+configtest:
+	LD_LIBRARY_PATH=$(LDSO_PATH) $(START_HTTPD) -t
