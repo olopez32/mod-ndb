@@ -15,26 +15,59 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+
+/* 
+   Compile output format descriptions into runnable form. 
+   
+   The most important design goal here is to catch all errors at 
+   compile time.  Don't let anything sneak by and crash the server 
+   later on.   
+*/
+   
+
 #include "mod_ndb.h"
 #include <ctype.h>
 #include "format_compiler.h"
 
 
-/* In Apache (regardless of MPM), configuration processing is single-threaded
-   -- so there are some static globals in this file.
-*/
+// Globals
 Parser parser;
-len_string the_null_string(0,""); // to do: use this, instead of if(ls)
+len_string the_null_string(0,"");
 Cell the_null_cell(0, "");
 Node the_null_node("the_null_node", &the_null_cell);
 
-    
-Cell::Cell(re_type type, re_esc esc, re_quot quote, int i) :
-elem_type (type) , elem_quote (quote) , i (i) {   
-  
-  escapes = get_escapes(esc);  
-  next = 0;
-};
+
+/*  Find each node in the symbol table and compile it 
+*/
+const char * output_format::compile(ap_pool *pool)  {
+  parser.pool = pool;
+  try {
+    for(unsigned int h = 0 ; h < SYM_TAB_SZ ; h++)
+      for(struct symbol *sym = symbol_table[h]; sym != 0 ; sym = sym->next_sym)
+        sym->node->compile(this);
+    return 0;
+  }
+  catch(ParserError P) {
+    return P.message;
+  }
+}
+
+char * output_format::dump(ap_pool *pool, int indent) {
+  int n = 0;
+  char *inset = (char *) ap_pcalloc(pool, indent + 2);
+  inset[0] = '\n'; for(int i = 1 ; i <= indent ; i++) inset[i] = ' ';
+  char *out = ap_pstrcat(pool, 
+                         inset, "{ \"", name, "\":",
+                         inset, "  { ", 
+                          "is_internal:", (flag.is_internal ? "1" : "0"), 
+                          ", can_override:", (flag.can_override ? "1" : "0"),
+                          ", is_raw:", (flag.is_raw ? "1" : "0"),", nodes:", 
+                         inset, "    [", 0);
+  for(Node *N = top_node ; N != 0 ; N = N->next_node) 
+    out = ap_pstrcat(pool, out, (n++ ? "," : "") , N->dump(pool, indent+6), 0);
+  out = ap_pstrcat(pool, out, inset, "    ]", inset, "  }", inset, "}", 0);
+  return out;
+}
 
 
 /*  Look up "name" in a format's symbol table. 
@@ -60,17 +93,11 @@ Node * output_format::symbol(const char *name, ap_pool *p=0, Node *node=0) {
 }
 
 
-/*  Find each node in the symbol table and compile it */
-const char * output_format::compile(ap_pool *pool)  {
-  const char *err;
-  parser.pool = pool;
-  parser.error_message = 0;
-  for(unsigned int h = 0 ; h < SYM_TAB_SZ ; h++)
-    for(struct symbol *sym = symbol_table[h]; sym != 0 ; sym = sym->next_sym)
-      if( (err = sym->node->compile(this)) != 0)
-        return err;
-  return 0;
-}
+Cell::Cell(re_type type, re_esc esc, re_quot quote, int i) :
+elem_type (type) , elem_quote (quote) , i (i) {   
+  escapes = get_escapes(esc);  
+  next = 0;
+};
 
 
 token Parser::scan(const char *start) {  
@@ -114,9 +141,7 @@ token Parser::scan(const char *start) {
         return tok_node;
       }
       /* No terminating dollar sign */
-      error_message = ap_psprintf(pool, "Syntax error; no terminating '$' at \'%s\'\n",
-                                start);
-      return tok_error;
+      throw ParserError(ap_psprintf(pool, "Expected terminating '$' in \'%s\'\n", start));
     } 
   } 
   
@@ -171,14 +196,7 @@ Cell * Parser::build_cell() {
 }
 
 inline void Parser::expected(const char *what) {
-  error_message = ap_psprintf(pool,"Parser error: %s expected at '%s'\n",
-                              what, token_start);
-}
-
-const char * Parser::get_error() {
-  const char *m = error_message;
-  error_message = 0; 
-  return m;
+  throw ParserError(ap_psprintf(pool,"Parser error: %s expected at '%s'\n", what, token_start));
 }
 
 void Parser::rollback() {
@@ -186,43 +204,41 @@ void Parser::rollback() {
   token_end = token_start - 1;
   token_start = old_start;
   current_token = old_token;
-  error_message = 0;
 }
 
-len_string *Parser::get_string(pars_req req, const char *code) {  
+len_string *Parser::get_string(bool required, const char *code) {  
   current_token = this->scan(code);
   if(current_token == tok_plaintext) {
     const char *copy = this->copy_node_text();
     return new(pool) len_string(copy);
   }
-  if(req == required) expected("constant string");
-  return 0;
+  if(required) expected("constant string");
+  return &the_null_string;
 }
 
-bool Parser::get_ellipses(pars_req req, const char *code) {
+bool Parser::get_ellipses(bool required, const char *code) {
   current_token = this->scan(code);
   if(current_token == tok_ellipses) 
     return true;
-  if(req == required) expected("ellipses");
+  if(required) expected("ellipses");
   return false;
 }
 
-Cell *Parser::get_cell(pars_req req, const char *code) {
+Cell *Parser::get_cell(bool required, const char *code) {
   current_token = this->scan(code);
   if( (current_token == tok_plaintext) || (current_token == tok_fieldname) 
    || (current_token == tok_fieldval)  || (current_token == tok_fieldnum)) 
     return build_cell();
-  if(req == required) expected("terminal");
-  return 0;
+  if(required) expected("terminal");
+  return &the_null_cell;
 }
 
-Cell *Parser::get_cell_chain(const char *code) {
+Cell *Parser::get_cell_chain(bool required, const char *code) {
   Cell *c0 = 0, *c1 = 0, *c2 = 0;
 
   c0=get_cell(required, code);
-  if(c0) c1 = c0;
-  else return 0;
-  while((c2 = get_cell(optional)) != 0) {
+  c1 = c0;
+  while((c2 = get_cell(pars_optional)) != &the_null_cell) {
     c1->next = c2;
     c1 = c2;
   }
@@ -231,7 +247,7 @@ Cell *Parser::get_cell_chain(const char *code) {
   return c0;
 }
 
-Node *Parser::get_node(pars_req req, output_format *f, const char *code) {
+Node *Parser::get_node(bool required, output_format *f, const char *code) {
   const char *node_name;
   Node *N;
   
@@ -239,28 +255,47 @@ Node *Parser::get_node(pars_req req, output_format *f, const char *code) {
   if(current_token == tok_node) {
     N = f->symbol(node_symbol);
     if(N) return N;
-    error_message = ap_psprintf(pool, "Undefined symbol '%s'\n",node_name);
+    throw ParserError(ap_psprintf(pool, "Undefined symbol '%s'\n",node_name));
   }
-  else if(req == required) expected("node");
-  return 0;
+  else if(required) expected("node");
+  return &the_null_node;
 }
 
+bool Parser::the_end(bool required, const char *code) {
+  current_token = scan(code);
+  if(current_token == tok_no_more) return true;
+  if(required) throw ParserError("Unexpected text at end of format.");
+  return false;
+}
 
 /* A plain node compiles simply by parsing its cell 
 */
-const char * Node::compile(output_format *o) {
-  cell = parser.get_cell(required, unresolved);
-  return parser.get_error();
+void Node::compile(output_format *o) {
+  cell = parser.get_cell(pars_required, unresolved);
 }
 
+char *Node::dump(ap_pool *p, int indent) {
+  char *inset = (char *) ap_pcalloc(p, indent + 2);
+  inset[0] = '\n'; for(int i = 1 ; i <= indent ; i++) inset[i] = ' ';
+  return ap_pstrcat(p, inset,"{ \"cell\":", cell->dump(p, indent+2), " }", 0);
+}
 
 /* A RecAttr compiles two cell chains 
 */
-const char * RecAttr::compile(output_format *o) {
-  fmt = parser.get_cell_chain(unresolved);
-  if(unresolved2) null_fmt = parser.get_cell_chain(unresolved2);
+void RecAttr::compile(output_format *o) {
+  fmt = parser.get_cell_chain(pars_required, unresolved);
+  if(unresolved2) null_fmt = parser.get_cell_chain(pars_required, unresolved2);
   else null_fmt = fmt;
-  return parser.get_error();
+}
+
+char *RecAttr::dump(ap_pool *p, int indent) {
+  char *inset = (char *) ap_pcalloc(p, indent + 2);
+  inset[0] = '\n'; for(int i = 1 ; i <= indent ; i++) inset[i] = ' ';
+  return ap_pstrcat(p, 
+                    inset, "{",
+                    inset, "  fmt :     ", fmt->dump(p, indent + 2), " ,",
+                    inset, "  null_fmt: ", null_fmt->dump(p, indent+2), 
+                    inset, "}", 0);
 }
 
 
@@ -268,33 +303,28 @@ const char * RecAttr::compile(output_format *o) {
     Loop loop 'begin $Rec$ sep ... end' 
 */
 //  TO DO: Make items optional, and fill in the null node or null cell where needed
-const char * Loop::compile(output_format *o) {
-  const char *error = 0;
-  /* First get a cell chain */
-  begin = parser.get_cell_chain(unresolved);
-  if(! begin) return parser.get_error();
-  
-  /* Then get a node reference */
-  core = parser.get_node(required, o);
-  error = parser.get_error();
-  if(error) return error;
+void Loop::compile(output_format *o) {
 
-  /* Then get a separator */
-  sep = parser.get_string(optional);  
-  error = parser.get_error();
-  if(error) return error;  
-  
-  /* Then get the ellipses */
-  if(! parser.get_ellipses(required)) 
-    return parser.get_error();
-  
-  /* Then get the final cell chain */
-  end = parser.get_cell_chain();
-  error = parser.get_error();
-  if(error) return error;
-  
-  /* There should be nothing left */
-  if(parser.scan(0) != tok_no_more) return "Unexpected text at end of format.";
-  
-  return 0;
+  begin = parser.get_cell_chain(pars_optional, unresolved);
+  core = parser.get_node(pars_optional, o);
+  sep = parser.get_string(pars_optional);  
+  parser.get_ellipses(pars_optional); 
+  end = parser.get_cell_chain(pars_optional);
+
+  parser.the_end(pars_required);
 }
+
+char * Loop::dump(ap_pool *p, int indent) {
+  char *inset = (char *) ap_pcalloc(p, indent + 2);
+  inset[0] = '\n'; for(int i = 1 ; i <= indent ; i++) inset[i] = ' ';
+  return ap_pstrcat(p, "{ \"", name , "\":", 
+                    inset, "  {",
+                    inset, "    begin: ", begin->dump(p, indent + 4), " ,", 
+                    inset, "    core:  ", core->dump(p, indent + 4),  " ,", 
+                    inset, "    sep:   \"", json_str(p, *sep),   "\" ,", 
+                    inset, "    end:   ", end->dump(p, indent + 4), 
+                    inset, "  }", 
+                    inset, "}", 0 );
+}
+                    
+

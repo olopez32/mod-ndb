@@ -204,6 +204,18 @@ extern "C" {
 } /* extern "C" */
 
 
+/* This strategy, taken from mod_dav, is to write our own error document,
+   set verbose-errors-to=*, and return DONE. 
+*/
+int ndb_handle_error(request_rec *r, int status, data_operation *data, 
+                     const char *message) {
+  ap_table_setn(r->notes, "verbose-error-to", "*");
+  r->status = status;
+  // r->status_line = ap_get_status_line(status);
+  
+}
+
+
 table *http_param_table(request_rec *r, const char *c) {
   table *t = ap_make_table(r->pool, 4);
   char *key, *val;
