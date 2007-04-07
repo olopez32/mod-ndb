@@ -33,27 +33,25 @@ inline char *make_inset(ap_pool *pool, int size) {
 void output_format::dump(ap_pool *pool, result_buffer &res, int indent) {
   int n = 0;
   char *inset = make_inset(pool, indent);
-  char *out = ap_pstrcat(pool, 
-                         inset, "{ \"", name, "\":",
-                         inset, "  { ", 
-                         "is_internal:", (flag.is_internal ? "1" : "0"), 
-                         ", can_override:", (flag.can_override ? "1" : "0"),
-                         ", is_raw:", (flag.is_raw ? "1" : "0"),", nodes:", 
-                         inset, "    [", 0);
-  res.out(strlen(out), out);
+  res.out(ap_pstrcat(pool, 
+                    inset, "{ \"", name, "\":",
+                    inset, "  { ", 
+                    "is_internal:", (flag.is_internal ? "1" : "0"), 
+                    ", can_override:", (flag.can_override ? "1" : "0"),
+                    ", is_raw:", (flag.is_raw ? "1" : "0"),", nodes:", 
+                    inset, "    [", 0));
   
   for(Node *N = top_node ; N != 0 ; N = N->next_node) {
     if(n++) res.out(1, ",");
     N->dump(pool, res, indent+6);
   }
-  res.out("%s    ]%s  }%s}", inset, inset, inset);
+  res.out("%s    ]%s  }%s}\n", inset, inset, inset);
 }
 
 
 void Node::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  res.out(inset);
-  res.out("{ \"cell\":");
+  res.out("%s{ \"cell\":",inset);
   cell->dump(p, res);
   res.out(" }");
 }
@@ -61,11 +59,10 @@ void Node::dump(ap_pool *p, result_buffer &res, int indent) {
 
 void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  char *out;
-  out = ap_pstrcat(p, "{ \"", name , "\":", 
-                      inset, "  {",
-                      inset, "    begin: ", 0);
-  res.out(out); begin->dump(p, res);
+  res.out(ap_pstrcat(p, "{ \"", name , "\":", 
+                    inset, "  {",
+                    inset, "    begin: ", 0));
+  begin->dump(p, res);
   res.out(" ,%s    core:  ", inset); 
   core->dump(p, res, indent + 4);
   res.out(" ,%s    sep:   \"%s\" ,",inset, json_str(p, *sep));
@@ -126,6 +123,7 @@ void Cell::dump(ap_pool *p, result_buffer &res) {
   }
   res.out("]");
 }
+
 
 const char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {  
   size_t escaped_size = 0;
