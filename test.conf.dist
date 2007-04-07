@@ -33,6 +33,16 @@ LogLevel debug
   SetHandler ndb-exec-batch
 </Location>
 
+<Location /ndb/format>
+  SetHandler ndb-dump-format
+</Location>
+
+<ResultFormat "HTML">
+Scan tab = '<table> $row$ ...</table>\n'
+Row  row = '<tr> $data$ ... </tr>\n'
+Record data = '<td>$value/x$</td>'
+</ResultFormat>
+
 Include Tests/httpd.conf
 Include example1/ex1_httpd.conf
 Include example2/ex2_httpd.conf
