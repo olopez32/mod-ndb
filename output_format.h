@@ -20,7 +20,7 @@ enum re_esc  { no_esc, esc_xml, esc_json };
 enum re_quot { no_quot, quote_char, quote_all };
 
 const char **get_escapes(re_esc);
-char *json_str(ap_pool *, len_string &);
+const char *json_str(ap_pool *, len_string &);
 
 class Node;
 class RecAttr;

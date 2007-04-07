@@ -51,7 +51,7 @@ bool result_buffer::prepare(size_t len) {
   
 
 void result_buffer::out(size_t len, const char *s) {
-  if(! this->prepare(len)) return;
+  if(len == 0 || (! this->prepare(len))) return;
   char *dst = buff + sz;
   sz += len;
   while(len--) *dst++ = *s++;

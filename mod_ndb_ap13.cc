@@ -203,12 +203,14 @@ extern "C" {
   extern int ndb_status_handler(request_rec *);
   extern int ndb_config_check_handler(request_rec *);
   extern int ndb_exec_batch_handler(request_rec *);
+  extern int ndb_dump_format_handler(request_rec *);
 
   static const handler_rec mod_ndb_handlers[] = { 
       { "ndb-cluster", ndb_handler },
       { "ndb-status", ndb_status_handler },
       { "ndb-config-check", ndb_config_check_handler },
       { "ndb-exec-batch", ndb_exec_batch_handler },
+      { "ndb-dump-format", ndb_dump_format_handler },
       { NULL, NULL }
   };
 
