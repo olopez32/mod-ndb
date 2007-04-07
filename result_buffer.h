@@ -46,9 +46,9 @@ private:
   size_t alloc_sz;
   
 public:
-  result_buffer() : sz(0) , buff(0) {};
   char *buff;
   size_t sz; 
+  result_buffer() : sz(0) , buff(0) {};
   char *init(request_rec *r, size_t );
   bool prepare(size_t);
   inline void putc(char c) { *(buff + sz++) = c; };
