@@ -64,7 +64,7 @@ void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   char *out;
   out = ap_pstrcat(p, "{ \"", name , "\":", 
                       inset, "  {",
-                      inset, "    begin: ");
+                      inset, "    begin: ", 0);
   res.out(out); begin->dump(p, res);
   res.out(" ,%s    core:  ", inset); 
   core->dump(p, res, indent + 4);
