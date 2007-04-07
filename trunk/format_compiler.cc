@@ -146,10 +146,13 @@ token Parser::scan(const char *start) {
 
 
 const char *Parser::copy_node_text() {
-  assert(! (token_end < token_start));
-  size_t size = (token_end - token_start) + 2; 
-  char *copy = (char *) ap_pcalloc(pool, size);
-  ap_cpystrn(copy, token_start, size);
+  assert(token_next > token_start);
+  size_t size = token_next - token_start;
+  const char *text = token_start;
+  char *copy = (char *) ap_pcalloc(pool, size + 1);
+  char *s = copy;
+  for(int i = 0; i < size ; i++) 
+    *s++ = *text++;
   return copy;
 }
 

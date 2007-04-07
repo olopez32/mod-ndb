@@ -16,6 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "mod_ndb.h"
+#include "util_md5.h"
 
 #ifdef THIS_IS_APACHE2
 #define CheckHandler(r,h) if(strcmp(r->handler,h)) return DECLINED;
@@ -80,18 +81,26 @@ extern "C" {
   
   
   int ndb_dump_format_handler(request_rec *r) {
+    // Apache 2 Handler name check    
     CheckHandler(r, "ndb-dump-format");
 
-    r->content_type = "text/plain";
+    char *etag;
+    result_buffer res;
     const char *name = r->args;
-    
     output_format *fmt = get_format_by_name(name);
     if(!fmt) {
-      ap_rprintf(r, "Unknown format \"%s\".\n",name);
-      return OK;
+      res.out("Unknown format \"%s\".\n",name);
     }
-    char *result = fmt->dump(r->pool, 0);
-    ap_rprintf(r,result);    
+    else {
+      fmt->dump(r->pool, res, 0);
+      etag = ap_md5_binary(r->pool, (const unsigned char *) res.buff, res.sz);
+      ap_table_setn(r->headers_out, "ETag",  etag);
+    }
+    ap_set_content_length(r, res.sz);
+    r->content_type = "text/plain";
+    ap_send_http_header(r);
+    ap_rwrite(res.buff, res.sz, r);
+    
     return OK;
   }
 

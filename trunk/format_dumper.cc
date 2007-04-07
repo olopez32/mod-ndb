@@ -30,10 +30,9 @@ inline char *make_inset(ap_pool *pool, int size) {
 }
 
 
-char * output_format::dump(ap_pool *pool, int indent) {
+void output_format::dump(ap_pool *pool, result_buffer &res, int indent) {
   int n = 0;
   char *inset = make_inset(pool, indent);
-
   char *out = ap_pstrcat(pool, 
                          inset, "{ \"", name, "\":",
                          inset, "  { ", 
@@ -41,59 +40,69 @@ char * output_format::dump(ap_pool *pool, int indent) {
                          ", can_override:", (flag.can_override ? "1" : "0"),
                          ", is_raw:", (flag.is_raw ? "1" : "0"),", nodes:", 
                          inset, "    [", 0);
-  for(Node *N = top_node ; N != 0 ; N = N->next_node) 
-    out = ap_pstrcat(pool, out, (n++ ? "," : "") , N->dump(pool, indent+6), 0);
-  out = ap_psprintf(pool,"%s%s    ]%s  }%s}",out, inset, inset, inset);
-  return out;
+  res.out(strlen(out), out);
+  
+  for(Node *N = top_node ; N != 0 ; N = N->next_node) {
+    if(n++) res.out(1, ",");
+    N->dump(pool, res, indent+6);
+  }
+  res.out("%s    ]%s  }%s}", inset, inset, inset);
 }
 
 
-char *Node::dump(ap_pool *p, int indent) {
+void Node::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  return ap_psprintf(p, "%s{ \"cell\":%s }", inset, cell->dump(p));
+  res.out(inset);
+  res.out("{ \"cell\":");
+  cell->dump(p, res);
+  res.out(" }");
 }
 
 
-char * Loop::dump(ap_pool *p, int indent) {
+void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  return ap_pstrcat(p, "{ \"", name , "\":", 
-                    inset, "  {",
-                    inset, "    begin: ",  begin->dump(p), " ,", 
-                    inset, "    core:  ",  core->dump(p, indent + 4),  " ,", 
-                    inset, "    sep:   \"",json_str(p, *sep),   "\" ,", 
-                    inset, "    end:   ",  end->dump(p), 
-                    inset, "  }", 
-                    inset, "}", 0 );
+  char *out;
+  out = ap_pstrcat(p, "{ \"", name , "\":", 
+                      inset, "  {",
+                      inset, "    begin: ");
+  res.out(out); begin->dump(p, res);
+  res.out(" ,%s    core:  ", inset); 
+  core->dump(p, res, indent + 4);
+  res.out(" ,%s    sep:   \"%s\" ,",inset, json_str(p, *sep));
+  res.out("%s    end:   ",inset);
+  end->dump(p, res), 
+  res.out("%s  }%s}", inset, inset);
 }
 
 
-char *RecAttr::dump(ap_pool *p, int indent) {
+void RecAttr::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  return ap_pstrcat(p, 
-                    inset, "{",
-                    inset, "  fmt :     ", fmt->dump(p), " ,",
-                    inset, "  null_fmt: ", null_fmt->dump(p), 
-                    inset, "}", 0);
+  res.out("%s{%s  fmt :     ",inset, inset);
+  fmt->dump(p, res);
+  res.out(" ,%s  null_fmt: ",inset);
+  null_fmt->dump(p, res), 
+  res.out("%s}", inset);
 }
 
 
-char *Cell::dump(ap_pool *p) {
+void Cell::dump(ap_pool *p, result_buffer &res) {
   int n = 0;
-  char *out = ap_pstrdup(p, "[");
+  char *out;
   const char *val;
+  res.out("[");
 
   for(Cell *c = this ; c != 0 ; c = c->next) {
-    if(n++) out = ap_psprintf(p, "%s , ", out);
+    if(n++) res.out(" , ");
     switch(c->elem_type) {
       case const_string: 
         val = json_str(p, *c);
-        out = ap_psprintf(p, "%s\"%s\"", out, val);
+        res.out("\"%s\"", val);
         break;
       case item_name :
         if(c->elem_quote == quote_char) val = "/q";
         else if (c->elem_quote == quote_all) val ="/Q";
         else val="";
-        out = ap_psprintf(p, "%s\"$name%s$\"", out, val);
+        res.out("\"$name%s$\"", val);
         break;
       case item_value:
       {
@@ -109,15 +118,14 @@ char *Cell::dump(ap_pool *p) {
         }
         if(c->i > 0) item = ap_psprintf(p, "$%d", c->i);
         else item = "$value";
-        out = ap_psprintf(p, "%s\"%s%s$\"", out, item, flags);
+        res.out("\"%s%s$\"", item, flags);
       }
         break;
       default:
-        return "[ \"*HOW_DO_I_DUMP_THIS_KIND_OF_CELL*\" ]";
+        res.out(" \"*HOW_DO_I_DUMP_THIS_KIND_OF_CELL*\" ");
     }
   }
-  out = ap_psprintf(p, "%s]", out);
-  return out;
+  res.out("]");
 }
 
 const char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {  

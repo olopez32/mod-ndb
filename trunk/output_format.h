@@ -49,7 +49,7 @@ public:
   };
   Node * symbol(const char *, ap_pool *, Node *);
   const char *compile(ap_pool *);
-  char *dump(ap_pool *, int);
+  void dump(ap_pool *, result_buffer &, int);
 };
 
 
@@ -77,7 +77,7 @@ class Cell : public len_string {
   void chain_out(result_buffer &res) {
     for(Cell *c = this; c != 0 ; c = c->next)  c->out(res);    
   }
-  char *dump(ap_pool *p);
+  void dump(ap_pool *, result_buffer &);
 };
 
 
@@ -94,7 +94,7 @@ class Node {
   virtual void compile(output_format *);
   virtual void Run(struct data_operation *d, result_buffer &b) {cell->out(d,b);}
   virtual void out(const NdbRecAttr &r, result_buffer &b) {cell->out(r,b);}
-  virtual char *dump(ap_pool *p, int);
+  virtual void dump(ap_pool *p, result_buffer &, int);
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
   };
@@ -109,7 +109,7 @@ class RecAttr : public Node {
   RecAttr(const char *str1, const char *str2) : Node(str1), unresolved2(str2) {}
   void out(const NdbRecAttr &rec, result_buffer &res);
   void compile(output_format *);
-  char *dump(ap_pool *p, int);
+  void dump(ap_pool *p, result_buffer &, int);
 };
 
 class Loop : public Node {
@@ -122,7 +122,7 @@ class Loop : public Node {
   public:
   Loop(const char *c) : Node(c) {}
   void compile(output_format *);
-  char *dump(ap_pool *p, int);
+  void dump(ap_pool *p, result_buffer &, int);
 };
 
 
@@ -131,7 +131,7 @@ public:
   RowLoop(const char *c) : Loop(c) {}
   void Run(struct data_operation *, result_buffer &);
   void compile(output_format *o) { return Loop::compile(o); }
-  char *dump(ap_pool *p, int i) { return Loop::dump(p,i); }
+  void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); }
 };
 
@@ -141,7 +141,7 @@ public:
   ScanLoop(const char *c) : Loop(c) {}
   void Run(struct data_operation *, result_buffer &);
   void compile(output_format *o) { return Loop::compile(o); }
-  char *dump(ap_pool *p, int i) { return Loop::dump(p,i); }
+  void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); } 
 };
 
