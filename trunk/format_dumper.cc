@@ -140,7 +140,7 @@ const char *escape_string(ap_pool *pool, const char **escapes, len_string &str) 
   }
   if(escaped_size == str.len) return str.string;
   
-  char *out = (char *) ap_pcalloc(pool, escaped_size);
+  char *out = (char *) ap_palloc(pool, escaped_size + 1);
   char *p = out;
   for(unsigned int i = 0; i < str.len ; i++) {
     const unsigned char c = str.string[i];
@@ -150,6 +150,7 @@ const char *escape_string(ap_pool *pool, const char **escapes, len_string &str) 
     else 
       *p++ = c;
   }
+  *p = 0;
   return out;
 }
 
