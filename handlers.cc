@@ -86,6 +86,8 @@ extern "C" {
 
     char *etag;
     result_buffer res;
+    res.init(r, 8192);
+    
     const char *name = r->args;
     output_format *fmt = get_format_by_name(name);
     if(!fmt) {

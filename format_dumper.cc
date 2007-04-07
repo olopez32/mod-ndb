@@ -87,7 +87,6 @@ void RecAttr::dump(ap_pool *p, result_buffer &res, int indent) {
 
 void Cell::dump(ap_pool *p, result_buffer &res) {
   int n = 0;
-  char *out;
   const char *val;
   res.out("[");
 
