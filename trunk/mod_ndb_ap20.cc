@@ -230,6 +230,7 @@ extern "C" {
   extern command_rec configuration_commands[];
   extern int ndb_handler(request_rec *);
   extern int ndb_exec_batch_handler(request_rec *);
+  extern int ndb_dump_format_handler(request_rec *);
   
  /************************
   *       Hooks          *
@@ -246,6 +247,7 @@ extern "C" {
     ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(ndb_handler, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(ndb_exec_batch_handler, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_handler(ndb_dump_format_handler, NULL, NULL, APR_HOOK_MIDDLE);
   }
     
   /************************
