@@ -80,11 +80,13 @@ char *RecAttr::dump(ap_pool *p, int indent) {
 char *Cell::dump(ap_pool *p) {
   int n = 0;
   char *out = ap_pstrdup(p, "[");
+  const char *val;
+
   for(Cell *c = this ; c != 0 ; c = c->next) {
     if(n++) out = ap_pstrcat(p, out, " , ", 0);
     switch(c->elem_type) {
       case const_string: 
-        const char *val = json_str(p, *c);
+        val = json_str(p, *c);
         out = ap_pstrcat(p, out, "\"", val, "\"", 0);
         break;
       case item_name :
