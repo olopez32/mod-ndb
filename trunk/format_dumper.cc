@@ -30,22 +30,18 @@ inline char *make_inset(ap_pool *pool, int size) {
 }
 
 
-void output_format::dump(ap_pool *pool, result_buffer &res, int indent) {
+void output_format::dump(ap_pool *pool, result_buffer &res) {
   int n = 0;
-  char *inset = make_inset(pool, indent);
-  res.out(ap_pstrcat(pool, 
-                    inset, "{ \"", name, "\":",
-                    inset, "  { ", 
-                    "is_internal:", (flag.is_internal ? "1" : "0"), 
-                    ", can_override:", (flag.can_override ? "1" : "0"),
-                    ", is_raw:", (flag.is_raw ? "1" : "0"),", nodes:", 
-                    inset, "    [", 0));
+  
+  res.out("{ \"%s\":\n"
+          "{ is_internal: %d, can_override: %d, is_raw: %d, nodes:\n"
+          "    [", name, flag.is_internal, flag.can_override, flag.is_raw);
   
   for(Node *N = top_node ; N != 0 ; N = N->next_node) {
     if(n++) res.out(1, ",");
-    N->dump(pool, res, indent+6);
+    N->dump(pool, res, 6);
   }
-  res.out("%s    ]%s  }%s}\n", inset, inset, inset);
+  res.out("\n    ]\n  }\n}\n");
 }
 
 

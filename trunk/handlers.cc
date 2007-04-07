@@ -94,7 +94,7 @@ extern "C" {
       res.out("Unknown format \"%s\".\n",name);
     }
     else {
-      fmt->dump(r->pool, res, 0);
+      fmt->dump(r->pool, res);
       etag = ap_md5_binary(r->pool, (const unsigned char *) res.buff, res.sz);
       ap_table_setn(r->headers_out, "ETag",  etag);
     }

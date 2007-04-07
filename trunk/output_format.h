@@ -49,7 +49,7 @@ public:
   };
   Node * symbol(const char *, ap_pool *, Node *);
   const char *compile(ap_pool *);
-  void dump(ap_pool *, result_buffer &, int);
+  void dump(ap_pool *, result_buffer &);
 };
 
 
