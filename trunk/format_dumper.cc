@@ -43,14 +43,14 @@ char * output_format::dump(ap_pool *pool, int indent) {
                          inset, "    [", 0);
   for(Node *N = top_node ; N != 0 ; N = N->next_node) 
     out = ap_pstrcat(pool, out, (n++ ? "," : "") , N->dump(pool, indent+6), 0);
-  out = ap_pstrcat(pool, out, inset, "    ]", inset, "  }", inset, "}", 0);
+  out = ap_psprintf(pool,"%s%s    ]%s  }%s}",out, inset, inset, inset);
   return out;
 }
 
 
 char *Node::dump(ap_pool *p, int indent) {
   char *inset = make_inset(p, indent);
-  return ap_pstrcat(p, inset,"{ \"cell\":", cell->dump(p), " }", 0);
+  return ap_psprintf(p, "%s{ \"cell\":%s }", inset, cell->dump(p));
 }
 
 
@@ -83,16 +83,17 @@ char *Cell::dump(ap_pool *p) {
   const char *val;
 
   for(Cell *c = this ; c != 0 ; c = c->next) {
-    if(n++) out = ap_pstrcat(p, out, " , ", 0);
+    if(n++) out = ap_psprintf(p, "%s , ", out);
     switch(c->elem_type) {
       case const_string: 
         val = json_str(p, *c);
-        out = ap_pstrcat(p, out, "\"", val, "\"", 0);
+        out = ap_psprintf(p, "%s\"%s\"", out, val);
         break;
       case item_name :
-        if(c->elem_quote == quote_char) out = ap_pstrcat(p, out, "\"$name/q$\"", 0);
-        else if (c->elem_quote == quote_all) out = ap_pstrcat(p, out, "\"$name/Q$\"", 0);
-        else out = ap_pstrcat(p, out, "\"$name$\"", 0);
+        if(c->elem_quote == quote_char) val = "/q";
+        else if (c->elem_quote == quote_all) val ="/Q";
+        else val="";
+        out = ap_psprintf(p, "%s\"$name%s$\"", out, val);
         break;
       case item_value:
       {
@@ -108,14 +109,14 @@ char *Cell::dump(ap_pool *p) {
         }
         if(c->i > 0) item = ap_psprintf(p, "$%d", c->i);
         else item = "$value";
-        out = ap_pstrcat(p, out, "\"", item, flags, "$\"", 0);
+        out = ap_psprintf(p, "%s\"%s%s$\"", out, item, flags);
       }
         break;
       default:
-        out = ap_pstrcat(p, out, "\"*HOW_DO_I_DUMP_THIS_KIND_OF_CELL*\"", 0);
+        return "[ \"*HOW_DO_I_DUMP_THIS_KIND_OF_CELL*\" ]";
     }
   }
-  out = ap_pstrcat(p, out, "]", 0);
+  out = ap_psprintf(p, "%s]", out);
   return out;
 }
 
