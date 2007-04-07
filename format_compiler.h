@@ -19,7 +19,7 @@ enum token {
   tok_no_more ,
   tok_plaintext , tok_ellipses , 
   tok_fieldname , tok_fieldval , tok_fieldnum ,
-  tok_node 
+  tok_node
 };
 
 enum { pars_optional = 0, pars_required = 1 };

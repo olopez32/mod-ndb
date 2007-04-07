@@ -46,6 +46,7 @@ private:
   size_t alloc_sz;
   
 public:
+  result_buffer() : sz(0) {};
   char *buff;
   size_t sz; 
   char *init(request_rec *r, size_t );
