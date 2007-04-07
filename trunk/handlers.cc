@@ -78,6 +78,23 @@ extern "C" {
     return ExecuteAll(r,i);
   }
   
+  
+  int ndb_dump_format_handler(request_rec *r) {
+    CheckHandler(r, "ndb-dump-format");
+
+    r->content_type = "text/plain";
+    const char *name = r->args;
+    
+    output_format *fmt = get_format_by_name(name);
+    if(!fmt) {
+      ap_rprintf(r, "Unknown format \"%s\".\n",name);
+      return OK;
+    }
+    char *result = fmt->dump(r->pool, 0);
+    ap_rprintf(r,result);    
+    return OK;
+  }
+
 
   int ndb_config_check_handler(request_rec *r) {
     table *param_tab;

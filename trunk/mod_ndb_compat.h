@@ -83,6 +83,7 @@ typedef apr_array_header_t array_header;
           /* Apache 1.3: */
 
 #define AP_MODULE_DECLARE_DATA MODULE_VAR_EXPORT
+#define EXEC_ON_READ 0
 
 /* Apache 1.3 logging defines */
 #define my_ap_log_error(l,s,fmt,arg) ap_log_error(APLOG_MARK,l,s,fmt,arg);

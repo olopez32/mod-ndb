@@ -64,7 +64,7 @@ const char **get_escapes(re_esc esc) {
 }
 
 
-output_format *get_format_by_name(char *name) {
+output_format *get_format_by_name(const char *name) {
   const char *format_index = ap_table_get(global_format_names, name);
   if(format_index) {
     int idx = atoi(format_index);
@@ -74,11 +74,15 @@ output_format *get_format_by_name(char *name) {
 }
 
 
-char *register_format(output_format *format) {  
+char *register_format(ap_pool *pool, output_format *format) {  
   char idx_string[32];
   output_format *existing = get_format_by_name((char *) format->name);
-  if(existing && ! existing->flag.can_override)
-    return "Cannot redefine existing format";      
+  if(existing && ! existing->flag.can_override) {
+    return ap_psprintf(pool,"Output format \"%s\" already exists %s"
+                       "and cannot be overriden.", format->name,
+                       existing->flag.is_internal ? 
+                       "as an internal format " : "");
+  }
   
   /* Get the index value for the new format */
   int nformats = global_output_formats->size();
@@ -88,6 +92,7 @@ char *register_format(output_format *format) {
   * global_output_formats->new_item() = format;
   
   /* Store the index in the table of format names */
+  /* If the entry exists, its value is replaced. */
   ap_table_set(global_format_names, format->name, idx_string);
   
   return 0;
@@ -111,7 +116,8 @@ void register_built_in_formatters(ap_pool *p) {
   ScanLoop *Scan = new(p) ScanLoop("[\n $row$,\n ... \n]\n");
   json_format->symbol("scan", p, Scan);
   json_format->symbol("row",  p, new(p) RowLoop(" { $item$ , ... }"));
-  json_format->symbol("item", p, new(p) RecAttr("$name/Q$:$value/qj$","$name/Q$:null"));
+  json_format->symbol("item", p, new(p) RecAttr(
+                                       "$name/Q$:$value/qj$","$name/Q$:null"));
   json_format->top_node = Scan;
   const char *err = json_format->compile(p);
   if(err) {
@@ -126,8 +132,9 @@ void register_built_in_formatters(ap_pool *p) {
   Scan = new (p) ScanLoop("<NDBScan>\n$row$\n...\n</NDBScan>\n");   
   xml_format->symbol("scan", p, Scan);
   xml_format->symbol("row",  p, new(p) RowLoop(" <NDBTuple> $attr$ \n  ...  </NDBTuple>"));
-  xml_format->symbol("attr", p, new(p) RecAttr("<Attr name=$name/Q$ value=$value/Qx$ />",
-                                               "<Attr name=$name/Q$ isNull=\"1\" />"));
+  xml_format->symbol("attr", p, new(p) RecAttr(
+                                    "<Attr name=$name/Q$ value=$value/Qx$ />",
+                                    "<Attr name=$name/Q$ isNull=\"1\" />"));
   xml_format->top_node = Scan;
   err = xml_format->compile(p);
   if(err) {
@@ -136,9 +143,9 @@ void register_built_in_formatters(ap_pool *p) {
   }
   
   
-  register_format(raw_format);
-  register_format(json_format);
-  register_format(xml_format);
+  register_format(p, raw_format);
+  register_format(p, json_format);
+  register_format(p, xml_format);
 }
 
 
@@ -237,7 +244,7 @@ void ScanLoop::Run(data_operation *data, result_buffer &res) {
         core->Run(data, res);
       } while((data->scanop->nextResult(false)) == 0);
       if(nrows) end->chain_out(res);
-      else return; // ?? used to be return HTTP_GONE
+      else return; // ?? used to be return HTTP_GONE.  Should be 404.
     }
   }
   else {  /* not a scan, just a single result row */

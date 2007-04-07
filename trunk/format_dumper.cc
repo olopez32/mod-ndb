@@ -33,7 +33,7 @@ inline char *make_inset(ap_pool *pool, int size) {
 char * output_format::dump(ap_pool *pool, int indent) {
   int n = 0;
   char *inset = make_inset(pool, indent);
-  
+
   char *out = ap_pstrcat(pool, 
                          inset, "{ \"", name, "\":",
                          inset, "  { ", 
@@ -117,7 +117,7 @@ char *Cell::dump(ap_pool *p) {
   return out;
 }
 
-char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {  
+const char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {  
   size_t escaped_size = 0;
   register const char *esc;
   
@@ -128,6 +128,7 @@ char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {
     if(esc) escaped_size += esc[0];
     else escaped_size++;
   }
+  if(escaped_size == str.len) return str.string;
   
   char *out = (char *) ap_pcalloc(pool, escaped_size);
   char *p = out;
@@ -143,6 +144,6 @@ char *escape_string(ap_pool *pool, const char **escapes, len_string &str) {
 }
 
 
-inline char *json_str(ap_pool *pool, len_string &str) {
+inline const char *json_str(ap_pool *pool, len_string &str) {
   return escape_string(pool, escape_leaning_toothpicks, str);
 }

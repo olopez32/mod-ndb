@@ -17,6 +17,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
+
+const char *unescape(ap_pool *p, const char *str) {
+  char *res = (char *) ap_pcalloc(p, strlen(str));
+  char *c = res;
+  
+  while(*str) {
+    if(*str == '\\' && *(str+1) == 'n')
+      *c++ = '\n', str+=2;
+    else
+      *c++ = *str++;
+  }
+  return (const char *) res;
+}
+
+
 namespace config {
   
   /* init_dir():
@@ -534,29 +549,70 @@ namespace config {
   }
   
   const char *result_fmt_container(cmd_parms *cmd, void *m, char *args) {
-//  const char *pos = args;
-//    char *word;
-//    char line[MAX_STRING_LEN];
-//    
-//    /* read arguments on top line */
-//    while( *pos && ap_getword_conf(cmd->pool, &pos)) {
-// 
-//    }
-//    
-//    /* read lines */
-//    while(!ap_cfg_getline(line, sizeof(line), cmd->config_file)) {
-//      if(!strcasecmp(line,"</ResultFormat>"))
-//        break;
-//      
-//    }
-//    
-//    
-//    return 0;
-//  } 
-  return "unimplemented";
+    const char *pos = args;
+    char line[MAX_STRING_LEN];
+    output_format *fmt;
+    
+    const char *name = ap_getword_conf(cmd->pool, &pos);
+    fmt = new(cmd->pool) output_format(name);
+
+    /* skip to the end of line) */
+    while(*(ap_getword_conf(cmd->pool, &pos)) != 0);
+    
+    /* read lines */
+    while(!ap_cfg_getline(line, sizeof(line), cmd->config_file)) {
+      if(!strcasecmp(line,"</ResultFormat>")) break;
+
+      pos = line;
+      const char *word1 = ap_getword_conf(cmd->pool, &pos);
+      const char *word2 = ap_getword_conf(cmd->pool, &pos);
+      const char *word3 = ap_getword_conf(cmd->pool, &pos);
+      const char *word4 = ap_getword_conf(cmd->pool, &pos);
+
+      /* Syntax check */
+      if( (! *word1) || (*word1 == '#')) continue;
+      if(*word2 == 0)
+        return ap_psprintf(cmd->pool,"Syntax error at \"%s\" "
+                           "in result format \"%s\"", word1, name);
+      if(*word3 != '=') 
+        return ap_psprintf(cmd->pool, "Expected '=' after \"%s %s\" "
+                           "in result format \"%s\"", word1, word2, name);
+      if(*word4 == 0) 
+        return ap_psprintf(cmd->pool, "Incomplete assignment to %s %s "
+                           "in result format \"%s\"", word1, word2, name);
+      
+      word4 = unescape(cmd->pool, word4);
+      if(!strcasecmp(word1,"Scan")) {
+        fmt->top_node = new(cmd->pool) ScanLoop(word4);
+        fmt->symbol(word2, cmd->pool, fmt->top_node);
+      }
+      else if(!strcasecmp(word1,"Row")) {
+        fmt->symbol(word2, cmd->pool, new(cmd->pool) RowLoop(word4));
+      }
+      else if(!strcasecmp(word1,"Record")) {
+        const char *word5 = ap_getword_conf(cmd->pool, &pos);
+        const char *word6 = ap_getword_conf(cmd->pool, &pos);
+        if(*word6) {
+          if(strcasecmp(word5,"or")) return "Expected 'or'";
+          word6 = unescape(cmd->pool, word6);
+        }
+        else word6 = word4;        
+        fmt->symbol(word2, cmd->pool, new(cmd->pool) RecAttr(word4, word6));
+      }
+      else return ap_psprintf(cmd->pool,"Unknown object type \"%s\" "
+                              "in result format \"%s\".", word1, name);
+    }
+    if(!fmt->top_node) 
+      return ap_psprintf(cmd->pool,"You must define a Scan object "
+                         "in result format \"%s\"", name);
+    
+    const char *error = fmt->compile(cmd->pool);
+    if(!error)
+      error = register_format(cmd->pool, fmt);
+    return error;
   }
 
-} /* end of  namespace config */
+} /* end of namespace config */
 
 
 extern "C" {
@@ -580,7 +636,7 @@ extern "C" {
     "<ResultFormat",  // Define a result format 
     (CMD_HAND_TYPE) config::result_fmt_container,
     NULL,
-    RSRC_CONF,      RAW_ARGS,
+    RSRC_CONF | EXEC_ON_READ,      RAW_ARGS,
     "Result Format Definition"
   },
   {
@@ -594,7 +650,7 @@ extern "C" {
     "Table",            // inheritable
     (CMD_HAND_TYPE) config::table,
     NULL,
-    ACCESS_CONF,    TAKE12, 
+    ACCESS_CONF,    TAKE123, 
     "NDB Table"
   },            
   {

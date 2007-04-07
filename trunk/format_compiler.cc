@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Globals
 Parser parser;
-len_string the_null_string(0,"");
+len_string the_null_string(0, "");
 Cell the_null_cell(0, "");
 Node the_null_node("the_null_node", &the_null_cell);
 
@@ -40,16 +40,20 @@ Node the_null_node("the_null_node", &the_null_cell);
 /*  Find each node in the symbol table and compile it 
 */
 const char * output_format::compile(ap_pool *pool)  {
+  struct symbol *sym;
+  
   parser.pool = pool;
   try {
     for(unsigned int h = 0 ; h < SYM_TAB_SZ ; h++)
-      for(struct symbol *sym = symbol_table[h]; sym != 0 ; sym = sym->next_sym)
+      for(sym = symbol_table[h]; sym != 0 ; sym = sym->next_sym)
         sym->node->compile(this);
-    return 0;
   }
   catch(ParserError P) {
-    return P.message;
+    if(sym && sym->node && sym->node->name) 
+      return ap_psprintf(pool, "%s [compiling: %s]", P.message, sym->node->name);
+    else return P.message;
   }
+  return 0;
 }
 
 
@@ -72,7 +76,8 @@ Node * output_format::symbol(const char *name, ap_pool *p=0, Node *node=0) {
     sym->next_sym = symbol_table[h]; 
     symbol_table[h] = sym;
   }
-  return sym->node;
+  if(sym) return sym->node;
+  return 0;
 }
 
 
@@ -124,7 +129,8 @@ token Parser::scan(const char *start) {
         return tok_node;
       }
       /* No terminating dollar sign */
-      throw ParserError(ap_psprintf(pool, "Expected terminating '$' in \'%s\'\n", start));
+      throw ParserError(ap_psprintf(pool, "Expected terminating '$' after \'%s\'", 
+                                   token_start));
     } 
   } 
   
@@ -141,7 +147,7 @@ token Parser::scan(const char *start) {
 
 const char *Parser::copy_node_text() {
   assert(! (token_end < token_start));
-  size_t size = (token_end - token_start) + 2;
+  size_t size = (token_end - token_start) + 2; 
   char *copy = (char *) ap_pcalloc(pool, size);
   ap_cpystrn(copy, token_start, size);
   return copy;
@@ -182,7 +188,7 @@ Cell * Parser::build_cell() {
 
 
 inline void Parser::expected(const char *what) {
-  throw ParserError(ap_psprintf(pool,"Parser error: %s expected at '%s'\n", what, token_start));
+  throw ParserError(ap_psprintf(pool,"Parser error: %s expected at '%s'", what, token_start));
 }
 
 
@@ -240,14 +246,13 @@ Cell *Parser::get_cell_chain(bool required, const char *code) {
 
 
 Node *Parser::get_node(bool required, output_format *f, const char *code) {
-  const char *node_name;
   Node *N;
   
   current_token = this->scan(code);
   if(current_token == tok_node) {
     N = f->symbol(node_symbol);
     if(N) return N;
-    throw ParserError(ap_psprintf(pool, "Undefined symbol '%s'\n",node_name));
+    throw ParserError(ap_psprintf(pool, "Undefined symbol '%s'",node_symbol));
   }
   else if(required) expected("node");
   return &the_null_node;
@@ -262,8 +267,6 @@ bool Parser::the_end(bool required, const char *code) {
 }
 
 
-/* A plain node compiles simply by parsing its cell 
-*/
 void Node::compile(output_format *o) {
   cell = parser.get_cell(pars_required, unresolved);
 }
@@ -282,13 +285,15 @@ void RecAttr::compile(output_format *o) {
     Loop loop 'begin $Rec$ sep ... end' 
 */
 void Loop::compile(output_format *o) {
-
   begin = parser.get_cell_chain(pars_optional, unresolved);
   core = parser.get_node(pars_optional, o);
-  sep = parser.get_string(pars_optional);  
-  parser.get_ellipses(pars_optional); 
-  end = parser.get_cell_chain(pars_optional);
-
+  
+  if(core != &the_null_node) {
+    sep = parser.get_string(pars_optional); 
+    if(sep == &the_null_string) parser.rollback();   
+    parser.get_ellipses(pars_required);
+    end = parser.get_cell_chain(pars_optional); 
+  }  
   parser.the_end(pars_required);
 }
 
