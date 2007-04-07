@@ -151,7 +151,7 @@ const char *Parser::copy_node_text() {
   const char *text = token_start;
   char *copy = (char *) ap_pcalloc(pool, size + 1);
   char *s = copy;
-  for(int i = 0; i < size ; i++) 
+  for(size_t i = 0; i < size ; i++) 
     *s++ = *text++;
   return copy;
 }
