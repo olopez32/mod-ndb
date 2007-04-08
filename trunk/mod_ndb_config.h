@@ -91,7 +91,7 @@ namespace config {
   const char * named_index(cmd_parms *, void *, char *, char *);
   const char * result_format(cmd_parms *, void *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
-  const char * table(cmd_parms *, void *, char *, char *);
+  const char * table(cmd_parms *, void *, char *, char *, char *);
   const char * filter(cmd_parms *, void *, char *, char *, char *);
   const char * primary_key(cmd_parms *, void *, char *);
   const char * connectstring(cmd_parms *, void *, char *);

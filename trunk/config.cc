@@ -365,7 +365,7 @@ namespace config {
   }
 
   
-  const char *table(cmd_parms *cmd, void *m, char *arg1, char *arg2) {
+  const char *table(cmd_parms *cmd, void *m, char *arg1, char *arg2, char *arg3) {
     config::dir *dir = (config::dir *) m;
 
     dir->table = ap_pstrdup(cmd->pool, arg1);
@@ -375,6 +375,13 @@ namespace config {
         if(dir->indexes->size())
           return "Cannot define indexes at the same endpoint as a table scan.";
         dir->flag.table_scan = 1;
+        if(arg3) {
+          /* arg3 is an ordered index, and the scan is actually an index scan */
+          config::index *index_rec = dir->indexes->new_item();
+          bzero(index_rec, dir->indexes->elt_size);
+          index_rec->name = ap_pstrdup(cmd->pool, arg3);
+          index_rec->type = 'O';                     
+        }
       }
     }
     return 0;
