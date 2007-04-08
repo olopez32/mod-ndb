@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 const char *unescape(ap_pool *p, const char *str) {
-  char *res = (char *) ap_pcalloc(p, strlen(str));
+  /* The unescaped string will never be longer than the original */
+  char *res = (char *) ap_pcalloc(p, strlen(str) + 1);
   char *c = res;
   
   while(*str) {
@@ -28,6 +29,7 @@ const char *unescape(ap_pool *p, const char *str) {
     else
       *c++ = *str++;
   }
+  *c = 0;
   return (const char *) res;
 }
 
