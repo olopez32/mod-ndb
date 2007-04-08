@@ -118,7 +118,7 @@ token Parser::scan(const char *start) {
           return tok_fieldname;
         if( (!strncmp(token_start,"$value$",6)) || (!strncmp(token_start,"$value/",6)))
           return tok_fieldval;
-        if(isdigit(*s+1))
+        if(isdigit(*(token_start+1)))
           return tok_fieldnum;
         /* Anything else is a node */
         char *sym = (char *) ap_pcalloc(pool, (token_end - token_start));
@@ -291,7 +291,11 @@ void Loop::compile(output_format *o) {
   begin = parser.get_cell_chain(pars_optional, unresolved);
   core = parser.get_node(pars_optional, o);
   
-  if(core != &the_null_node) {
+  if(core == &the_null_node) {
+    sep = &the_null_string;
+    end = &the_null_cell;
+  }
+  else {
     sep = parser.get_string(pars_optional); 
     if(sep == &the_null_string) parser.rollback();   
     parser.get_ellipses(pars_required);
