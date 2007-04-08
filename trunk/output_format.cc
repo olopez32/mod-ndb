@@ -183,7 +183,8 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
 void Cell::out(struct data_operation *data, result_buffer &res) {
   if(elem_type == const_string) 
     return this->out(res);
-  const NdbRecAttr &rec = *data->result_cols[i]; 
+  if(i > data->n_result_cols) return; //error?
+  const NdbRecAttr &rec = *data->result_cols[i-1]; 
   this->out(rec, res);
   return;
 }
