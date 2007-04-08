@@ -183,6 +183,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   short col;
   int req_method = r->method_number;
   const char *subrequest_data = 0;
+  register const char * idxname;
   
   // Initialize all four of these, but only one will be needed: 
   PK_index_object       PK_idxobj(q,r);
@@ -360,8 +361,15 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   
   /* Now set the Query Items that depend on the access plan and index type.
   */    
-  if(Q.plan == Scan) 
-    q->idxobj = & TS_idxobj;
+  if(Q.plan == Scan) {
+    if(dir->indexes->size() == 1) {
+      q->idxobj = & OI_idxobj;
+      idxname = dir->indexes->item(0).name;
+      if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
+        goto bad_index;
+    }
+    else q->idxobj = & TS_idxobj;
+  }
   else {
     if(Q.active_index < 0) {
       response_code = 500;
@@ -371,13 +379,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       q->idxobj = & PK_idxobj;    
     else {
       /* Lookup the active index in the data dictionary to set q->idx */
-      register const char * idxname = dir->indexes->item(Q.active_index).name;
-      if((q->idx = dict->getIndex(idxname, dir->table)) == 0) {
-        log_err(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
-                 idxname, dir->database, dir->table);
-        response_code = 500;
-        goto abort;
-      }
+      idxname = dir->indexes->item(Q.active_index).name;
+      if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
+        goto bad_index;
       if(Q.plan == UniqueIndexAccess) 
         q->idxobj = & UI_idxobj;
       else if (Q.plan == OrderedIndexScan) 
@@ -458,6 +462,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   i->tx = 0;
   i->flag.aborted = 1;
   return response_code;
+  
+  bad_index:
+  log_err(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
+        idxname, dir->database, dir->table);
+  response_code = 500;
+  goto abort;
 }
 
 
