@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    queries that use blobs.
    Each variant possibility is represented as a module in this file, 
    and those modules are functions that conform to the "PlanMethod" typedef.
+   TO DO: PlanMethods return 0 on success or an HTTP response code on error.   
 */
 typedef int PlanMethod(request_rec *, config::dir *, struct QueryItems *);
 
@@ -200,7 +201,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
              "in NDB Data Dictionary: %s",dir->table,dir->database,
              dict->getNdbError().message);
     i->errors++;
-    return NOT_FOUND; 
+    return 500;  // HTTP_INTERNAL_SERVER_ERROR  
   }  
   
   /* Initialize q->keys, the runtime array of key columns which is used
@@ -371,12 +372,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     else q->idxobj = & TS_idxobj;
   }
   else {
-    if(Q.active_index < 0) {
+    if(Q.plan == PrimaryKey)
+      q->idxobj = & PK_idxobj;
+    else if(Q.active_index < 0) {
       response_code = 500;
       goto abort;
     }
-    if(Q.plan == PrimaryKey)
-      q->idxobj = & PK_idxobj;    
     else {
       /* Lookup the active index in the data dictionary to set q->idx */
       idxname = dir->indexes->item(Q.active_index).name;
