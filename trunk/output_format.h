@@ -58,7 +58,7 @@ class Cell : public len_string {
   re_type elem_type ;
   re_quot elem_quote ;
   const char **escapes;
-  int i;  
+  unsigned int i;  
   Cell *next;
   
   Cell(re_type, re_esc, re_quot, int i=0);
