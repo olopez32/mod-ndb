@@ -345,7 +345,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     log_debug(r->server,"No key column aliases found in request %s", 
               r->unparsed_uri);
     response_code = NOT_FOUND;
-    goto abort;
+    goto abort2;
   }
   
   /* Open a transaction, if one is not already open.
@@ -355,13 +355,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     if(i->flag.aborted) {
       log_err(r->server,"Transaction already aborted.");
       response_code = 500;
-      goto abort;
+      goto abort2;
     }
     if(!(i->tx = i->db->startTransaction())) {  // To do: supply a hint
       log_err(r->server,"db->startTransaction failed: %s",
                 i->db->getNdbError().message);
       response_code = 500;
-      goto abort;
+      goto abort1;
     }
   }
 
@@ -385,7 +385,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     /* If not a PK lookup, there must be a driving index. */
     else if(Q.active_index < 0) {
       response_code = 500;
-      goto abort;
+      goto abort1;
     }
     else {
       /* Not PK. Look up the active index in the data dictionary to set q->idx */
@@ -407,7 +407,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     log_debug(r->server,"Returning 404 because Q.op_setup() failed: %s",
               q->data->scanop->getNdbError().message);
     response_code = 404;
-    goto abort;
+    goto abort1;
   }
 
   // Traverse the index parts and build the query
@@ -426,7 +426,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         if(q->idxobj->set_key_part(keycol, mval)) {
           log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
           response_code = 404;
-          goto abort;
+          goto abort1;
         }                
       }     
       col = dir->key_columns->item(col).next_in_key;
@@ -456,22 +456,24 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   // Perform the action; i.e. get the value of each column
   if(Q.op_action(r, dir, &Q)) {
     response_code = 404;
-    goto abort;
+    goto abort1;
   }
   if(keep_tx_open) 
     return OK;
   else
     return ExecuteAll(r, i);
 
-  abort:
+  abort1:
+  i->tx->close();
+
+  abort2:
   // Look at this later.  A failure of any operation causes the whole transaction
   // to be aborted?  
   log_debug(r->server,"Aborting open transaction at '%s'",r->unparsed_uri);
   if(! response_code) response_code = 500;
-  i->tx->close();
-  i->tx = 0;
+  i->tx = 0;  // every other op in the tx will see this and fail
   if(keep_tx_open)
-    i->flag.aborted = 1;
+    i->flag.aborted = 1;  // this will only trigger the msg on line 356.  what is the point?
   else
     i->cleanup();
   return response_code;
@@ -480,7 +482,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   log_err(r->server, "mod_ndb: index %s does not exist (db: %s, table: %s)",
         idxname, dir->database, dir->table);
   response_code = 500;
-  goto abort;
+  goto abort1;
 }
 
 
