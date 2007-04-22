@@ -104,11 +104,23 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 */
 
 
+/* An operation */
+struct data_operation {
+  NdbOperation *op;
+  NdbIndexScanOperation *scanop;
+  NdbBlob *blob;
+  unsigned int n_result_cols;
+  const NdbRecAttr **result_cols;
+  output_format *fmt;
+};
+
+
 /* An "NDB Instance" is a private per-thread data structure
    that manages an Ndb object, a transaction, an array of 
    operations, and some statistics.
  */
-struct mod_ndb_instance {
+class ndb_instance {
+  public:
   struct mod_ndb_connection *conn;  
   Ndb *db;
   NdbTransaction *tx;
@@ -122,19 +134,15 @@ struct mod_ndb_instance {
   } flag;
   unsigned int requests;
   unsigned int errors;
+  void cleanup() {
+    bzero(data, n_read_ops * sizeof(struct data_operation));
+    n_read_ops = 0;
+    flag.has_blob = 0;
+    flag.aborted = 0;
+    flag.use_etag = 0;
+  }
 };
-typedef struct mod_ndb_instance ndb_instance;
-
-
-/* An operation */
-struct data_operation {
-  NdbOperation *op;
-  NdbIndexScanOperation *scanop;
-  NdbBlob *blob;
-  unsigned int n_result_cols;
-  const NdbRecAttr **result_cols;
-  output_format *fmt;
-};
+// typedef struct mod_ndb_instance ndb_instance;
 
 
 /* A cluster connection contains an Ndb_cluster_connection object
