@@ -201,7 +201,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
              "in NDB Data Dictionary: %s",dir->table,dir->database,
              dict->getNdbError().message);
     i->errors++;
-    return 500;  // HTTP_INTERNAL_SERVER_ERROR  
+    return 500;
   }  
   
   /* Initialize q->keys, the runtime array of key columns which is used
@@ -291,7 +291,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
 
   /* ===============================================================
-     Process arguments, and then pathinfo.  Determine an access plan.
+     Process arguments, and then pathinfo, to determine an access plan.
      The detailed work is done within the inlined function set_key().
   */
 
@@ -335,13 +335,17 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       else item_len++;
     }
   }
-
   /* ===============================================================*/
+
+  /* At this point, a GET query must either be a table scan or have
+     used a key column.
+  */
   if(r->method_number == M_GET && 
      ! ( dir->flag.table_scan || Q.key_columns_used)) {
     log_debug(r->server,"No key column aliases found in request %s", 
               r->unparsed_uri);
-    return NOT_FOUND;    /* no query */
+    response_code = NOT_FOUND;
+    goto abort;
   }
   
   /* Open a transaction, if one is not already open.
@@ -349,48 +353,53 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   */    
   if(i->tx == 0) {
     if(i->flag.aborted) {
-      /* Transaction was already aborted */
-      return 500;
+      log_err(r->server,"Transaction already aborted.");
+      response_code = 500;
+      goto abort;
     }
     if(!(i->tx = i->db->startTransaction())) {  // To do: supply a hint
       log_err(r->server,"db->startTransaction failed: %s",
                 i->db->getNdbError().message);
-      return 500;
+      response_code = 500;
+      goto abort;
     }
   }
 
   
   /* Now set the Query Items that depend on the access plan and index type.
-  */    
+     Case 1: Table Scan  */    
   if(Q.plan == Scan) {
     if(dir->indexes->size() == 1) {
+      /* "Table scan" using an ordered index: */
       q->idxobj = & OI_idxobj;
       idxname = dir->indexes->item(0).name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
         goto bad_index;
     }
-    else q->idxobj = & TS_idxobj;
+    else q->idxobj = & TS_idxobj;  /* true (non-indexed) table scan. */
   }
-  else {
+  else { /* Not a scan: */
+    /* Case 2: Primary Key lookup (or insert) */
     if(Q.plan == PrimaryKey)
       q->idxobj = & PK_idxobj;
+    /* If not a PK lookup, there must be a driving index. */
     else if(Q.active_index < 0) {
       response_code = 500;
       goto abort;
     }
     else {
-      /* Lookup the active index in the data dictionary to set q->idx */
+      /* Not PK. Look up the active index in the data dictionary to set q->idx */
       idxname = dir->indexes->item(Q.active_index).name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
         goto bad_index;
-      if(Q.plan == UniqueIndexAccess) 
+      if(Q.plan == UniqueIndexAccess)   // Case 3: Unique Index
         q->idxobj = & UI_idxobj;
-      else if (Q.plan == OrderedIndexScan) 
+      else if (Q.plan == OrderedIndexScan)  // Case 4: Ordered Index
         q->idxobj = & OI_idxobj;
     }
   }
   
-  // Get an NdbOperation
+  // Get an NdbOperation (or NdbIndexOperation, etc.)
   q->data->op = q->idxobj->get_ndb_operation(i->tx);
 
   // Query setup, e.g. Plan::SetupRead calls op->readTuple() 
@@ -461,7 +470,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   if(! response_code) response_code = 500;
   i->tx->close();
   i->tx = 0;
-  i->flag.aborted = 1;
+  if(keep_tx_open)
+    i->flag.aborted = 1;
+  else
+    i->cleanup();
   return response_code;
   
   bad_index:

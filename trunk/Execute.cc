@@ -133,11 +133,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   
   cleanup2:
   /* Clear all used operations */
-  bzero(i->data, i->n_read_ops * sizeof(struct data_operation));
-  i->n_read_ops = 0;
-  i->flag.aborted  = 0;
-  i->flag.has_blob = 0;
-  i->flag.use_etag = 0;
+  i->cleanup();
   
   log_debug(r->server,"ExecuteAll() returning %d",response_code);
   return response_code;
