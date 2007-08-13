@@ -240,7 +240,7 @@ int ndb_handle_error(request_rec *r, int status, data_operation *data,
   ap_table_setn(r->notes, "verbose-error-to", "*");
   r->status = status;
   // r->status_line = ap_get_status_line(status);
-  
+  return 1;  // make the compiler happy for now
 }
 
 
