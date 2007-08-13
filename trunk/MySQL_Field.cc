@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    to combine mysql headers and apache headers in a single source file).
 */
 
+#include <strings.h>
 #include "mysql_version.h"
 #include "my_global.h"
 #include "mysql.h"
@@ -489,7 +490,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       aux_int = strtol(val,0,0);
       if(aux_int > 65535) aux_int = 65535 , m.over = 1;
       else if (aux_int < 0) aux_int = 0 , m.over = 1;
-      m.u.val_unsigned_16 = (u_int16_t) aux_int;
+      m.u.val_unsigned_16 = (Uint16) aux_int;
       return;
 
     case NdbDictionary::Column::Mediumint:

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* System headers */
 #include <assert.h>
+#include <strings.h>
 
 /* Apache headers */
 #include "httpd.h"
@@ -86,7 +87,7 @@ enum AccessPlan {  /* Ways of executing an NDB query */
   PrimaryKey = 2,         // Lookup 
   UniqueIndexAccess = 3,  // Lookup & UseIndex 
   Scan = 4,               // Scan  
-  OrderedIndexScan = 5,   // Scan & UseIndex 
+  OrderedIndexScan = 5    // Scan & UseIndex 
 };
 
 
