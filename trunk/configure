@@ -40,7 +40,6 @@ fail() {
  echo ; echo "Error: $1" ; echo ; exit 
 }
 
-
 while test $# != 0
 do
   case $1 in
@@ -85,6 +84,10 @@ do
       ;;
   esac
 done
+
+## On Solaris, the standards-compliant shell utilities are in /usr/xpg4/bin,
+## including the "grep" that understands the "-q" option.
+test -d /usr/xpg4/bin && PATH=/usr/xpg4/bin:$PATH
 
 ## Check the Apache version
 HTTPD="`$APXS -q SBINDIR`/`$APXS -q TARGET`"
@@ -176,6 +179,7 @@ echo '/#-Other-Modules/r modules_conf'
 echo '#' Makefile for mod_ndb.  Automatically generated from:
 echo '#' $CONFIG_CMD
 echo
+echo CC=g++
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE
 echo
