@@ -61,7 +61,7 @@ struct mvalue {
     char                val_8;
     unsigned char       val_unsigned_8;
     int16_t             val_16;
-    u_int16_t           val_unsigned_16;
+    Uint16              val_unsigned_16;
   } u;
   size_t len;
   mvalue_use use_value;
