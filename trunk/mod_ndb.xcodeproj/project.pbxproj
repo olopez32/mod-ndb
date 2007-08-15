@@ -17,6 +17,9 @@
 		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
+		65383BF60C72B6E9001F8451 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = NSQL.atg; sourceTree = "<group>"; };
+		65383BF70C72B6E9001F8451 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Parser.frame; sourceTree = "<group>"; };
+		65383BF80C72B6E9001F8451 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Scanner.frame; sourceTree = "<group>"; };
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
 		655116C20BC1CAF30009C9E1 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = format_compiler.h; sourceTree = "<group>"; };
 		655A3FF20AC35A0300FC573F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -89,6 +92,7 @@
 				655CEC240A8C4C9500DB8284 /* configure */,
 				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
+				65383BF30C72B69B001F8451 /* N-SQL */,
 				65E2E83C0BA2186700B1B8D0 /* templates */,
 				657BD1C30B84EE8600A9ED69 /* Tests */,
 				6593D9EC0B83D83500DDE22C /* Example1 */,
@@ -96,6 +100,16 @@
 				657BD2920B853B7000A9ED69 /* PHP */,
 			);
 			name = mod_ndb;
+			sourceTree = "<group>";
+		};
+		65383BF30C72B69B001F8451 /* N-SQL */ = {
+			isa = PBXGroup;
+			children = (
+				65383BF60C72B6E9001F8451 /* NSQL.atg */,
+				65383BF70C72B6E9001F8451 /* Parser.frame */,
+				65383BF80C72B6E9001F8451 /* Scanner.frame */,
+			);
+			name = "N-SQL";
 			sourceTree = "<group>";
 		};
 		657BD1C30B84EE8600A9ED69 /* Tests */ = {
