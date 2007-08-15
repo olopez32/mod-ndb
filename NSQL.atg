@@ -5,6 +5,14 @@ cmd_parms *cmd;
 void *m;
 config::dir *dir;
 ap_pool *p;
+char *copy_token(Token *t) {
+  wchar_t *w = t->val;
+  char *c;
+  char *buff = (char *) ap_pcalloc(p, coco_string_length(w) + 1);
+  while((*c++ = (char) *w++));
+  return buff;
+}
+  
 
 IGNORECASE
 
@@ -22,15 +30,15 @@ PRODUCTIONS
   NSQL = SelectClause FromClause [ WhereClause ] ";" .
   SelectClause = "SELECT" Column { "," Column } .
 
-  Column =              (. *dir->visible->new_item() = ap_pstrdup(p, t->val); .)
+  Column =                      (. *dir->visible->new_item() = copy_token(t); .)
     Name .
 
   FromClause = "FROM" TableSpec  .
 
   TableSpec = (DBName ".") TableName.
-  DBName =                          (. dir->database = ap_pstrdup(p, t->val); .)
+  DBName =                                  (. dir->database = copy_token(t); .)
     Name.
-  TableName =                          (. dir->table = ap_pstrdup(p, t->val); .)
+  TableName =                                  (. dir->table = copy_token(t); .)
     Name.
 
   WhereClause = 
@@ -42,7 +50,7 @@ PRODUCTIONS
     | OI ScanIndex.  
   ScanIndex =         (. config::index *index_rec = dir->indexes->new_item(); .)
                       (. bzero(index_rec, dir->indexes->elt_size);  .)
-                      (. index_rec->name = ap_pstrdup(p, t->val); .)
+                      (. index_rec->name = copy_token(t); .)
                       (. index_rec->type = 'O';  .)
     Name.
 
