@@ -124,6 +124,7 @@ inline void init_filters(request_rec *r, config::dir *dir, struct QueryItems *q)
 }
 
 
+// to do: filters don't work with ordered full-table scans...?
 /* Inlined code (called while processing both pathinfo and request params)
    which sets the items in the Q.keys array and determines the access plan.
 */
