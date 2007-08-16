@@ -1,69 +1,63 @@
 #include "mod_ndb.h"
 
 COMPILER NSQL
+
 cmd_parms *cmd;
-void *m;
 config::dir *dir;
-ap_pool *p;
-char *copy_token(Token *t) {
-  wchar_t *w = t->val;
-  char *c;
-  char *buff = (char *) ap_pcalloc(p, coco_string_length(w) + 1);
-  while((*c++ = (char) *w++));
-  return buff;
+char *idxname;
+char *idxtype;
+char * copy_token() {
+  return coco_string_create_char(t->val);
+}
+
+void index_col(char *name) {
+  const char *err = named_idx(idxtype, cmd, dir, idxname, name);
+  log_debug(cmd->server,"SQL index rec (%s,%s,%s)", idxtype, idxname, name);
+  if(err) SemErr(err);
 }
   
-
 IGNORECASE
-
 CHARACTERS
-  char = 'a'..'z' + 'A'..'Z' + "0123456789!#$%_-".
+  char = 'a'..'z' + 'A'..'Z' + "0123456789!@#$%^_-".
 
 TOKENS 
+  DBName = char { char } CONTEXT(".").
   Name = char { char }.
   
 COMMENTS FROM "/*" TO "*/"
-COMMENTS FROM "--" TO '\n'
 IGNORE '\n' + '\r' + '\t' 
 
 PRODUCTIONS
-  NSQL = SelectClause FromClause [ WhereClause ] ";" .
+  NSQL = SelectClause FromClause WhereClause ";" .
   SelectClause = "SELECT" Column { "," Column } .
-
-  Column =                      (. *dir->visible->new_item() = copy_token(t); .)
-    Name .
-
   FromClause = "FROM" TableSpec  .
+  WhereClause = "SCAN"  ScanSpec  | "WHERE" IndexSpec .
 
-  TableSpec = (DBName ".") TableName.
-  DBName =                                  (. dir->database = copy_token(t); .)
-    Name.
-  TableName =                                  (. dir->table = copy_token(t); .)
-    Name.
+  Column = Name                (. *dir->visible->new_item() = copy_token(); .) .
 
-  WhereClause = 
-      "SCAN"  ScanSpec  
-    | "WHERE" IndexSpec .
+  TableSpec = 
+    [ DBName                               (. dir->database = copy_token(); .)
+     "." ] Name                               (. dir->table = copy_token(); .) .
+  
+  ScanSpec =                                   (. dir->flag.table_scan = 1; .)
+    "TABLE" | "ordered" "index" ( Name | "primary" )
+                    (. config::index *index_rec = dir->indexes->new_item(); .)
+                    (. bzero(index_rec, dir->indexes->elt_size);  .)
+                    (. index_rec->name = copy_token(); .)
+                    (. index_rec->type = 'O';  .) .
 
-  ScanSpec =                                     (. dir->flag.table_scan = 1; .)
-    "TABLE" 
-    | OI ScanIndex.  
-  ScanIndex =         (. config::index *index_rec = dir->indexes->new_item(); .)
-                      (. bzero(index_rec, dir->indexes->elt_size);  .)
-                      (. index_rec->name = copy_token(t); .)
-                      (. index_rec->type = 'O';  .)
-    Name.
+  IndexSpec                                 
+    = ( "primary" "key"        (. idxtype = "P"; idxname = "*Primary$Key*"; .)
+      | "unique" "index" Name  (. idxtype = "U"; idxname = copy_token();    .)
+    ) "=" VarList 
+   |  "ordered" "index" ( Name | "primary" ) 
+                               (.  idxtype = "O"; idxname = copy_token();   .)
+    "=" VarList [ "ORDER" OrderOp ].
 
-  IndexSpec = 
-      PK "=" VarList 
-    |  UI Name "=" VarList 
-    |  OI Name relop VarList [ "ORDER" OrderOp ].
-  PK = "PK" | "PrimaryKey" | "primary" "key".
-  OI = "OI" | "OrderedIndex" | "ordered" "index".
-  UI = "UI" | "UniqueIndex" | "unique" "index".
-  relop = "=" | "<" | "<=" | ">" | ">=".
-  OrderOp = "ASC" | "DESC" .
-  VarList = Var { "," Var }.
-  Var = Name.
-
+  OrderOp = "ASC"                                   (.  index_col("[ASC]"); .)
+   | "DESC"                                         (. index_col("[DESC]"); .) .
+  
+  VarList = Var { "," Var } .
+  Var = Name                                    (. index_col(copy_token()); .) .
+  
 END NSQL .

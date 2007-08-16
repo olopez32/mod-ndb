@@ -15,8 +15,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
-#include "mod_ndb.h"
-
+#include "Parser.h"
 
 const char *unescape(ap_pool *p, const char *str) {
   /* The unescaped string will never be longer than the original */
@@ -153,7 +152,7 @@ namespace config {
       While building the dir->key_columns array, we want to keep
       it sorted on the key name.
   
-      Add a new element to the end of the array, then shift itmes
+      Add a new element to the end of the array, then shift items
       toward the end if necessary to make a hole for the new items
       in the appropriate place.  Fix every chain of column id links,
       then return the array index of the hole.
@@ -474,22 +473,28 @@ namespace config {
   }
     
     
-  /* named_index():  process Index directives.
+  /* cf_named_index():  process Index directives.
      UniqueIndex index-name column [column ... ]
      OrderedIndex index-name column [column ... ]
 
      Create an index record for the index, and a key_column record 
      for each column    
   */
-  const char *named_index(cmd_parms *cmd, void *m, char *idx, char *col) 
+
+  const char *named_index(cmd_parms *cmd, void *m, char *idx, char *col) {
+    char *which = (char *) cmd->cmd->cmd_data;
+    config::dir *dir = (config::dir *) m;
+    return named_idx(which, cmd, dir, idx, col);
+  }
+
+  const char *named_idx(char *idxtype, cmd_parms *cmd, config::dir *dir, 
+                        char *idx, char *col) 
   {
     short index_id, col_id;
     config::index *index_rec;
     config::key_col *cols;
     short i;
 
-    config::dir *dir = (config::dir *) m;
-    char *which = (char *) cmd->cmd->cmd_data;
     index_id = get_index_by_name(dir,idx);
 
     /* type-safe test: (is this void pointer really a dir?) */
@@ -506,7 +511,7 @@ namespace config {
       bzero(index_rec, dir->indexes->elt_size);
       index_id = dir->indexes->size() - 1;
       index_rec->name = ap_pstrdup(cmd->pool, idx);
-      index_rec->type = *which;                       
+      index_rec->type = *idxtype;                       
       index_rec->first_col_serial = -1;
       index_rec->first_col = -1;
     }
@@ -556,7 +561,10 @@ namespace config {
     }
     return 0;
   }
-  
+
+
+  /* Compile a user-defined output format 
+  */  
   const char *result_fmt_container(cmd_parms *cmd, void *m, char *args) {
     const char *pos = args;
     char line[MAX_STRING_LEN];
@@ -621,6 +629,57 @@ namespace config {
     return error;
   }
 
+
+  /* Handle an N-SQL query 
+  */
+  const char *sql_container(cmd_parms *cmd, void *m, char *args) {
+    size_t max_query_len = MAX_STRING_LEN * 2;
+    char *pos = args;
+    char c;
+    int end_of_query = 0;
+
+    char *query_buff = (char *) ap_pcalloc(cmd->pool, max_query_len);
+    const char *buff_end = query_buff + max_query_len;
+
+    /* Copy everything from the config file into the query buffer 
+       up to the semicolon that terminates the query 
+    */
+    // First the SELECT keyword 
+    char *end = ap_cpystrn(query_buff, "SELECT ", 10);
+
+    // Then the rest of the current line
+    while((*end = *pos++))
+      if(*end++ == ';') end_of_query = 1;
+    
+    // Then the remaining lines.
+    if(! end_of_query) {
+      while((c = ap_cfg_getc(cmd->config_file))) {
+        *end++ = c;
+        if(c == ';') break;
+        if(end == buff_end) return "N-SQL query too long (missing semicolon?)."; 
+      }
+    }
+    *end=0;
+    log_debug(cmd->server, "N-SQL query: %s", query_buff);
+    
+    NSQL::Scanner *scanner = new NSQL::Scanner(query_buff, max_query_len);
+    NSQL::Parser  *parser  = new NSQL::Parser(scanner);
+    
+    parser->dir = (config::dir *) m;
+    parser->cmd = cmd;
+    parser->errors->http_server = cmd->server;
+    
+    parser->Parse();
+
+    if(parser->errors->count) 
+      return "NSQL parser error.";
+
+    /* success */
+    delete parser;
+    delete scanner;
+    return 0;
+  }
+
 } /* end of namespace config */
 
 
@@ -647,6 +706,13 @@ extern "C" {
     NULL,
     RSRC_CONF | EXEC_ON_READ,      RAW_ARGS,
     "Result Format Definition"
+  },
+  { 
+    "SELECT",  // N-SQL statement
+    (CMD_HAND_TYPE) config::sql_container,
+    NULL,
+    ACCESS_CONF | EXEC_ON_READ,      RAW_ARGS,
+    "N-SQL Satatement"    
   },
   {
     "Database",         // inheritable
