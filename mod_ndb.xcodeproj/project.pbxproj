@@ -18,7 +18,7 @@
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
 		65383BF60C72B6E9001F8451 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = NSQL.atg; sourceTree = "<group>"; };
-		65383BF70C72B6E9001F8451 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Parser.frame; sourceTree = "<group>"; };
+		65383BF70C72B6E9001F8451 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; path = Parser.frame; sourceTree = "<group>"; };
 		65383BF80C72B6E9001F8451 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; path = Scanner.frame; sourceTree = "<group>"; };
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
 		655116C20BC1CAF30009C9E1 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = format_compiler.h; sourceTree = "<group>"; };
@@ -51,6 +51,10 @@
 		6593DA520B83E31300DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example2/README; sourceTree = "<group>"; };
 		65AA7E800BC5841100A5D0A4 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_dumper.cc; sourceTree = "<group>"; };
 		65ADCC4A0BB0FF0A00AEE680 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = output_format.h; sourceTree = "<group>"; };
+		65AFE1620C7390C5004525B9 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
+		65AFE1630C7390CF004525B9 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
+		65AFE1690C7390DE004525B9 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
+		65AFE16A0C7390EC004525B9 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Scanner.cpp; sourceTree = "<group>"; };
 		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
 		65E2E83F0BA218B600B1B8D0 /* conf_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap13; path = templates/conf_ap13; sourceTree = "<group>"; };
@@ -108,6 +112,10 @@
 				65383BF60C72B6E9001F8451 /* NSQL.atg */,
 				65383BF70C72B6E9001F8451 /* Parser.frame */,
 				65383BF80C72B6E9001F8451 /* Scanner.frame */,
+				65AFE1620C7390C5004525B9 /* Parser.h */,
+				65AFE1630C7390CF004525B9 /* Parser.cpp */,
+				65AFE1690C7390DE004525B9 /* Scanner.h */,
+				65AFE16A0C7390EC004525B9 /* Scanner.cpp */,
 			);
 			name = "N-SQL";
 			sourceTree = "<group>";

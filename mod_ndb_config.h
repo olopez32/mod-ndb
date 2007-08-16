@@ -89,6 +89,7 @@ namespace config {
   void * merge_srv(ap_pool *, void *, void *);
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
+  const char * named_idx(char *, cmd_parms *, config::dir *, char *, char *);
   const char * result_format(cmd_parms *, void *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * table(cmd_parms *, void *, char *, char *, char *);
@@ -97,5 +98,6 @@ namespace config {
   const char * connectstring(cmd_parms *, void *, char *);
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
   const char * result_fmt_container(cmd_parms *, void *, char *);
+  const char * sql_container(cmd_parms *, void *, char *);
 }
 
