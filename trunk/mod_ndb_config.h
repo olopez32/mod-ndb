@@ -64,17 +64,15 @@ namespace config {
   /* Coulmn used in a query */
   struct key_col {
       char *name;
+      char *filter_col_name;
       short index_id;
       short serial_no;
       short idx_map_bucket;
-      short filter_col_serial;
-      short filter_col;
       short next_in_key_serial;
       short next_in_key; 
       struct {
         unsigned int in_pk       : 1;
         unsigned int filter      : 1;
-        unsigned int alias       : 1;
         unsigned int in_ord_idx  : 1;
         unsigned int in_hash_idx : 1;
         unsigned int in_pathinfo : 1;
@@ -89,7 +87,7 @@ namespace config {
   void * merge_srv(ap_pool *, void *, void *);
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
-  const char * named_idx(char *, cmd_parms *, config::dir *, char *, char *);
+  const char * named_idx(char *, cmd_parms *, config::dir *, char*,char*,char*);
   const char * result_format(cmd_parms *, void *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * table(cmd_parms *, void *, char *, char *, char *);

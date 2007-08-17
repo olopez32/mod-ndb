@@ -17,6 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Parser.h"
 
+
+/* These operators correspond to the items in NdbScanFilter::BinaryCondition 
+*/
+const char *filter_ops[] = { "<=", "<", ">=", ">", "=", "!=", 0 };
+
+/* NDB scan bounds are defined to "exclude" values outside the bounds, and are
+   either strict or non-strict, so this list of operators maps to the sequence
+   BoundLE, BoundLT, BoundGE, BoundGT in NdbIndexScanOperation::BoundType 
+*/
+const char *relational_ops[] = { ">=" , ">" , "<=" , "<" , 0 };
+
+
 const char *unescape(ap_pool *p, const char *str) {
   /* The unescaped string will never be longer than the original */
   char *res = (char *) ap_pcalloc(p, strlen(str) + 1);
@@ -236,13 +248,7 @@ namespace config {
           } /* End of chain */
         }
       } /* End of indexes */  
-      
-      // Fix the filter_col pointer in each filter alias column
-      for(n = 0 ; n < n_columns ; n++)
-        if(keys[n].is.filter)
-          keys[n].filter_col =
-            keys[(keys[n].filter_col_serial)].idx_map_bucket;
-      
+            
       // Fix the pathinfo chain
       for(n = 0 ; n < dir->pathinfo_size ; n++) 
         dir->pathinfo[n] =
@@ -323,7 +329,7 @@ namespace config {
   
   
   short add_column_to_index(cmd_parms *cmd, config::dir *dir, char *col_name, 
-                            short index_id, bool & col_exists)
+                            short index_id, bool &col_exists, const char *relop)
   {
     config::index *indexes = dir->indexes->items();
     config::key_col *cols;   // do not initialize until after add_key_column()
@@ -352,6 +358,11 @@ namespace config {
         cols[id].is.in_ord_idx = 1;
         cols[id].implied_plan = OrderedIndexScan;
         cols[id].filter_op = NdbIndexScanOperation::BoundEQ;
+        if(*relop != '=') {
+          for(int n = 0 ; relational_ops[n] ; n++)
+            if(!strcmp(relop,relational_ops[n]))
+              cols[id].filter_op = n;
+        }
       }
     }
     cols[id].next_in_key_serial = -1;  
@@ -389,76 +400,35 @@ namespace config {
   }
   
   
-  /* filter(), syntax "Filter column [operator pseudocolumn]"
-     as in (a) "Filter year" or (b) "Filter x > min_x".
+  /* "Filter column operator pseudocolumn"
   */
   const char *filter(cmd_parms *cmd, void *m, char *base_col_name,
                      char *filter_op, char *alias_col_name) {
-    bool base_col_exists, alias_col_exists;
-    short filter_col, base_col_id = -1, alias_col_id = -1;
+    bool alias_col_exists;
+    short alias_col_id = -1;
     config::dir *dir = (config::dir *) m;
-
-    // This must correspond to items 0-5 in NdbScanFilter::BinaryCondition 
-    char *valid_filter_ops[] = { "<=" , "<" , ">=" , ">" , "=" , "!=" , 0 };
             
-    // Create the columns 
-    if(base_col_name)
-      base_col_id = add_key_column(cmd, dir, base_col_name, base_col_exists);    
-    if(alias_col_name) 
-      alias_col_id = add_key_column(cmd, dir, alias_col_name, alias_col_exists);
+    // Create the alias column 
+    alias_col_id = add_key_column(cmd, dir, alias_col_name, alias_col_exists);
 
     config::key_col *columns = dir->key_columns->items();
 
-    if(! base_col_exists)
-      columns[base_col_id].index_id = -1;  
- 
-    if(alias_col_name) {
-      // Three-argument syntax, e.g. "Filter x >= min_x".  This could be 
-      // either an NdbScanFilter or a boundary condition on an OrderedIndex.
-      if((alias_col_exists) && (columns[alias_col_id].index_id >= 0))
-        return ap_psprintf(cmd->pool,"Alias column %s must not be a real column.",
-                           alias_col_name);
+    if(alias_col_exists) return ap_psprintf(cmd->pool,
+      "Filter parameter %s already defined.", alias_col_name);
 
-      // Use the alias column as the filter 
-      filter_col = alias_col_id;
-      columns[alias_col_id].is.alias = 1;
+    columns[alias_col_id].is.filter = 1;
+    columns[alias_col_id].filter_col_name = ap_pstrdup(cmd->pool, base_col_name);
 
-      /* Is the base column part of an ordered index?  (Because of this test, we
-         require the index to be defined before the filter in httpd.conf)
-      */
-      if(columns[base_col_id].implied_plan != OrderedIndexScan) {
-        dir->flag.has_filters = 1;
-        /* ?? columns[base_col_id].is.filter = 1; ?? */
+    // Parse the operator
+    bool found_match = 0;
+    for(int n = 0 ; filter_ops[n] ; n++) {
+      if(!strcmp(filter_op,filter_ops[n])) {
+        columns[alias_col_id].filter_op = n;
+        found_match = 1;
       }
-      // Parse the operator
-      bool found_match = 0;
-      for(int n = 0 ; valid_filter_ops[n] ; n++) {
-        if(!strcmp(filter_op,valid_filter_ops[n])) {
-          columns[alias_col_id].filter_op = n;
-          found_match = 1;
-        }
-      }
-      if(!found_match)
-        return ap_psprintf(cmd->pool,"Error: %s is not a valid filter operator",
-                          filter_op);
     }
-    else {
-      // One-argument syntax, e.g. "Filter year."   This is an NdbScanFilter.
-      if(columns[base_col_id].index_id >= 0) {
-        columns[base_col_id].implied_plan = NoPlan;
-        log_debug(cmd->server,"Column %s is a filter, so including it in a req"
-                  "uest will NOT cause that request to use index %s", base_col_name, 
-                  dir->indexes->item(columns[base_col_id].index_id).name);
-      }
-      dir->flag.has_filters = 1;
-      filter_col = base_col_id;   // Use the base col as the filter 
-      columns[base_col_id].filter_op = NdbScanFilter::COND_EQ; 
-      log_conf_debug(cmd->server,"Creating new filter %s",base_col_name);
-    }
-
-    columns[filter_col].is.filter = 1;
-    columns[filter_col].filter_col = base_col_id;
-    columns[filter_col].filter_col_serial = columns[base_col_id].serial_no;
+    if(!found_match)
+      return ap_psprintf(cmd->pool,"invalid filter operator '%s'", filter_op);
     
     return 0;
   }
@@ -473,7 +443,7 @@ namespace config {
   }
     
     
-  /* cf_named_index():  process Index directives.
+  /* named_index():  process Index directives.
      UniqueIndex index-name column [column ... ]
      OrderedIndex index-name column [column ... ]
 
@@ -484,11 +454,11 @@ namespace config {
   const char *named_index(cmd_parms *cmd, void *m, char *idx, char *col) {
     char *which = (char *) cmd->cmd->cmd_data;
     config::dir *dir = (config::dir *) m;
-    return named_idx(which, cmd, dir, idx, col);
+    return named_idx(which, cmd, dir, idx, col, "=");
   }
 
   const char *named_idx(char *idxtype, cmd_parms *cmd, config::dir *dir, 
-                        char *idx, char *col) 
+                        char *idx, char *col, char *relop) 
   {
     short index_id, col_id;
     config::index *index_rec;
@@ -534,7 +504,7 @@ namespace config {
     
     /* Create a column record */
     bool col_exists = 0;
-    col_id = add_column_to_index(cmd, dir, col, index_id, col_exists);
+    col_id = add_column_to_index(cmd, dir, col, index_id, col_exists, relop);
     cols = dir->key_columns->items();
     index_rec->n_columns++;
     
@@ -795,8 +765,8 @@ extern "C" {
     "Filter",  // Filter col op keyword, e.g. "Filter id < min_id"
     (CMD_HAND_TYPE) config::filter, 
     NULL,
-    ACCESS_CONF,    TAKE13, 
-    "NDB Table"
+    ACCESS_CONF,    TAKE3, 
+    "Result Filter"
   }, 
   {NULL, NULL, NULL, 0, cmd_how(0), NULL}
   };
