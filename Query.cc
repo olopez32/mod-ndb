@@ -115,14 +115,6 @@ inline bool mval_is_usable(request_rec *r, mvalue &mval) {
 }
 
 
-/* Inlined code to allocate memory for the filter list as needed. 
-*/
-inline void init_filters(request_rec *r, config::dir *dir, struct QueryItems *q) {
-  if(! q->filter_list) 
-    q->filter_list = (short *) 
-      ap_pcalloc(r->pool, (dir->key_columns->size() * sizeof(short)));
-}
-
 
 // to do: filters don't work with ordered full-table scans...?
 /* Inlined code (called while processing both pathinfo and request params)
@@ -133,18 +125,11 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 {
   config::key_col &keycol = dir->key_columns->item(n);
 
-  if(keycol.is.alias) {  
-    /* "Filter real_col < col_alias" (Could be ScanFilter or Bounds) */
-    n = keycol.filter_col;  // repoint n from col_alias to real_col
-    keycol = dir->key_columns->item(n);
-    if(keycol.implied_plan != OrderedIndexScan) {  /* ScanFilter */
-      init_filters(r, dir, q);   
-      q->filter_list[q->n_filters++] = n;
-    }
-  }
-  else if(keycol.is.filter && keycol.index_id == -1) {  
-    /* "Filter real_col" (ScanFilter only) */
-    init_filters(r, dir, q);
+  if(keycol.is.filter) {      
+    if(! q->filter_list)  /* Initialize the filter list */
+      q->filter_list = (short *) 
+        ap_pcalloc(r->pool, (dir->key_columns->size() * sizeof(short)));
+    /* Push this filter on to the list */
     q->filter_list[q->n_filters++] = n;
   }
 
@@ -439,17 +424,20 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   if(Q.plan >= Scan && Q.n_filters) {
     NdbScanFilter filter(q->data->op);
     filter.begin(NdbScanFilter::AND);
-    for(int n = 0 ; n < Q.n_filters ; n++) {
-      int m = Q.filter_list[n];
-      runtime_col *filter_col = & Q.keys[m];
-      config::key_col &keycol = dir->key_columns->item(m);
-      
-      ndb_Column = q->tab->getColumn(keycol.name);
-      log_debug(r->server," ** Filter : %s -- value: %s", 
-                 keycol.name, filter_col->value);
+    for(int nfilt = 0 ; nfilt < Q.n_filters ; nfilt++) {
+
+      int n = Q.filter_list[nfilt];  
+      config::key_col &keycol = dir->key_columns->item(n);
+      runtime_col *filter_col = & Q.keys[n];
+      ndb_Column = q->tab->getColumn(keycol.filter_col_name);
+
+      log_debug(r->server," ** Filter %s using %s (%s)", 
+                 keycol.filter_col_name, keycol.name, filter_col->value);
+
       MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
+
       filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
-                 ndb_Column->getColumnNo(), (&mval.u.val_char) ); 
+                   ndb_Column->getColumnNo(), (&mval.u.val_char) ); 
     }                    
     filter.end();
   }

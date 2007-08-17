@@ -4,15 +4,12 @@ COMPILER NSQL
 
 cmd_parms *cmd;
 config::dir *dir;
-char *idxname;
-char *idxtype;
-char * copy_token() {
-  return coco_string_create_char(t->val);
-}
+char *idxname, *idxtype, *rel_op;
+char * copy_token() { return coco_string_create_char(t->val); }
 
 void index_col(char *name) {
-  const char *err = named_idx(idxtype, cmd, dir, idxname, name);
-  log_debug(cmd->server,"SQL index rec (%s,%s,%s)", idxtype, idxname, name);
+  log_conf_debug(cmd->server,"SQL index rec %s:%s,%s", idxtype, idxname, name);
+  const char *err = named_idx(idxtype, cmd, dir, idxname, name, rel_op);
   if(err) SemErr(err);
 }
   
@@ -31,7 +28,8 @@ PRODUCTIONS
   NSQL = SelectClause FromClause WhereClause ";" .
   SelectClause = "SELECT" Column { "," Column } .
   FromClause = "FROM" TableSpec  .
-  WhereClause = "SCAN"  ScanSpec  | "WHERE" IndexSpec .
+  WhereClause = "SCAN"  ScanSpec  | "WHERE" IndexSpecs .
+  IndexSpecs = IndexSpec { "OR" IndexSpec }.
 
   Column = Name                (. *dir->visible->new_item() = copy_token(); .) .
 
@@ -39,25 +37,26 @@ PRODUCTIONS
     [ DBName                               (. dir->database = copy_token(); .)
      "." ] Name                               (. dir->table = copy_token(); .) .
   
-  ScanSpec =                                   (. dir->flag.table_scan = 1; .)
-    "TABLE" | "ordered" "index" ( Name | "primary" )
+  ScanSpec                                     (. dir->flag.table_scan = 1; .)
+    = "TABLE" | "ordered" "index" Name
                     (. config::index *index_rec = dir->indexes->new_item(); .)
                     (. bzero(index_rec, dir->indexes->elt_size);  .)
                     (. index_rec->name = copy_token(); .)
                     (. index_rec->type = 'O';  .) .
 
   IndexSpec                                 
-    = ( "primary" "key"        (. idxtype = "P"; idxname = "*Primary$Key*"; .)
+    = ( Name "key"             (. idxtype = "P"; idxname = "*Primary$Key*"; .)
       | "unique" "index" Name  (. idxtype = "U"; idxname = copy_token();    .)
     ) "=" VarList 
-   |  "ordered" "index" ( Name | "primary" ) 
-                               (.  idxtype = "O"; idxname = copy_token();   .)
-    "=" VarList [ "ORDER" OrderOp ].
+   |  "ordered" "index" Name   (. idxtype = "O"; idxname = copy_token();    .)
+    relop VarList [ "ORDER" OrderOp ].
 
+  /* ASC and DESC are broken; don't document them. */
   OrderOp = "ASC"                                   (.  index_col("[ASC]"); .)
    | "DESC"                                         (. index_col("[DESC]"); .) .
   
-  VarList = Var { "," Var } .
-  Var = Name                                    (. index_col(copy_token()); .) .
+  VarList = var { "," var } .
+  relop = ("=" | "<" | "<=" | ">" | ">=")       (. rel_op = copy_token();   .) .
+  var = Name                                    (. index_col(copy_token()); .) .
   
 END NSQL .
