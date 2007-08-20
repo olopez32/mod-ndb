@@ -25,7 +25,9 @@ COMMENTS FROM "/*" TO "*/"
 IGNORE '\n' + '\r' + '\t' 
 
 PRODUCTIONS
-  NSQL = SelectClause FromClause WhereClause ";" .
+  NSQL = (SelectQuery | DeleteQuery) ";".
+  DeleteQuery = "DELETE" FromClause WhereClause   (. dir->allow_delete = 1; .) .
+  SelectQuery = SelectClause FromClause WhereClause .
   SelectClause = "SELECT" Column { "," Column } .
   FromClause = "FROM" TableSpec  .
   WhereClause = "SCAN"  ScanSpec  | "WHERE" IndexSpecs .
