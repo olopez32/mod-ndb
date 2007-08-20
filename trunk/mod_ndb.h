@@ -184,4 +184,4 @@ char *register_format(ap_pool *, output_format *);
 output_format *get_format_by_name(const char *);
 void register_built_in_formatters(ap_pool *);
 int build_results(request_rec *, data_operation *, result_buffer &);
-int ndb_handle_error(request_rec *, int, data_operation *, const char *);
+int ndb_handle_error(request_rec *, int, const NdbError &);

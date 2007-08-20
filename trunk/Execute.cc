@@ -42,10 +42,10 @@ bool handle_error_from_execute(request_rec *r, int &response_code,
     response_code = 400;  
 
   if(do_log_debug)
-    log_debug(r->server,"tx->execute failed: %s", error().message);
+    log_debug(r->server,"tx->execute failed: %s", error.message);
   if(do_log_error)
-    log_err(r->server,"tx->execute failed: %s", error().message);
-     
+    log_err(r->server,"tx->execute failed: %s %s", error.message, error.details);
+    
   return retry_tx;
 }
 
@@ -90,12 +90,8 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     /* Execute NoCommit */
     if(i->tx->execute(NdbTransaction::NoCommit, TX_ABORT_OPT, 
                       i->conn->ndb_force_send))
-    {        
-      log_debug(r->server, "tx->execute() with BLOB failed: %s", 
-                i->tx->getNdbError().message);
-      response_code = HTTP_GONE;  /* Should be 400? */
-    }
- 
+      handle_error_from_execute(r, response_code, i->tx->getNdbError());
+
     /* Loop over operations & find BLOBs) */
     for(opn = 0 ; opn < i->n_read_ops ; opn++) {
       struct data_operation *data = i->data + opn ;
@@ -110,7 +106,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   if(i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
                     i->conn->ndb_force_send)) 
   {
-    handle_error_from_execute(response_code, i->tx->getNdbError());
+    handle_error_from_execute(r, response_code, i->tx->getNdbError());
     goto cleanup1;
   } 
   
@@ -127,8 +123,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     // Set content-length
     if(my_results.buff)
       ap_set_content_length(r, my_results.sz);
-    else 
+    else {
       ap_set_content_length(r, 0);
+      response_code = 204;
+    }
     
     // Set ETag
     if(i->flag.use_etag && my_results.buff) {
@@ -139,7 +137,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       response_code = ap_meets_conditions(r);
     }
         
-    /* Send the page  (but recheck the response code,
+    /* Send the page (but recheck the response code,
       after ap_meets_conditions) */   
     if(response_code == OK) {
       ap_send_http_header(r);
@@ -149,8 +147,8 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   }
 
   cleanup1:
-  if(response_code != OK) 
-    response_code = ndb_handle_error(r, response_code, ); 
+  if(response_code > 399) 
+    response_code = ndb_handle_error(r, response_code, i->tx->getNdbError()); 
 
   i->tx->close();
   i->tx = 0;  
@@ -159,8 +157,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Clear all used operations */
   i->cleanup();
   
-  log_debug(r->server,"ExecuteAll() returning %d",response_code);
-  if(response_code != OK) 
-    return   return OK;
+  log_debug(r->server,"ExecuteAll() returning %d",response_code);    
+  return response_code;
 }
 
