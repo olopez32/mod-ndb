@@ -427,7 +427,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       int n = Q.filter_list[nfilt];  
       config::key_col &keycol = dir->key_columns->item(n);
       runtime_col *filter_col = & Q.keys[n];
-      ndb_Column = q->tab->getColumn(keycol.filter_col_name);
+      ndb_Column = q->tab->getColumn(keycol.base_col_name);
       mvalue &fval = fvals[nfilt];
 
       MySQL::value(fval, r->pool, ndb_Column, filter_col->value);
@@ -436,13 +436,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         int err = filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
                     ndb_Column->getColumnNo(), fval.u.val_char);
         log_debug(r->server," ** Filter %s using %s (%s) -- returns %d", 
-                  keycol.filter_col_name, keycol.name, fval.u.val_char, err); 
+                  keycol.base_col_name, keycol.name, fval.u.val_char, err); 
       }
       else {
         filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
                     ndb_Column->getColumnNo(), (&fval.u.val_char) ); 
         log_debug(r->server," ** Filter %s using %s (%s)", 
-                  keycol.filter_col_name, keycol.name, filter_col->value);
+                  keycol.base_col_name, keycol.name, filter_col->value);
       }
     } /*for*/                  
     filter.end();

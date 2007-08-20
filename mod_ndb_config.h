@@ -64,7 +64,7 @@ namespace config {
   /* Coulmn used in a query */
   struct key_col {
       char *name;
-      char *filter_col_name;
+      char *base_col_name;
       short index_id;
       short serial_no;
       short idx_map_bucket;

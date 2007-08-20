@@ -418,7 +418,7 @@ namespace config {
       "Filter parameter %s already defined.", alias_col_name);
 
     columns[alias_col_id].is.filter = 1;
-    columns[alias_col_id].filter_col_name = ap_pstrdup(cmd->pool, base_col_name);
+    columns[alias_col_id].base_col_name = ap_pstrdup(cmd->pool, base_col_name);
     dir->flag.has_filters = 1;
 
     // Parse the operator
