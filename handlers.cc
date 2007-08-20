@@ -235,8 +235,7 @@ extern "C" {
 /* This strategy, taken from mod_dav, is to write our own error document,
    set verbose-errors-to=*, and return DONE. 
 */
-int ndb_handle_error(request_rec *r, int status, data_operation *data, 
-                     const char *message) {
+int ndb_handle_error(request_rec *r, int status, NdbError &error) {
   ap_table_setn(r->notes, "verbose-error-to", "*");
   r->status = status;
   r->content_type = "text/plain";
