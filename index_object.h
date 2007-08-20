@@ -33,7 +33,7 @@ public:
     virtual NdbOperation *get_ndb_operation(NdbTransaction *) = 0;
     bool next_key_part() {  return (key_part++ < n_parts); };
     virtual int set_key_part(config::key_col &, mvalue &) = 0;
-    virtual const NdbDictionary::Column *get_column() {
+    virtual const NdbDictionary::Column *get_column(config::key_col &) {
       return q->idx->getColumn(key_part);
     };
 };
@@ -51,14 +51,14 @@ class PK_index_object : public index_object {
     };
      
     int set_key_part(config::key_col &keycol, mvalue &mval) {
-      int col_id = this->get_column()->getColumnNo();
+      int col_id = this->get_column(keycol)->getColumnNo();
       if(mval.use_value == use_char) 
         return q->data->op->equal(col_id, mval.u.val_char);
       else
         return q->data->op->equal(col_id, (const char *) (&mval.u.val_char));
     };
     
-    const NdbDictionary::Column *get_column() {
+    const NdbDictionary::Column *get_column(config::key_col &) {
       return q->tab->getColumn(q->tab->getPrimaryKey(key_part));
     };
 };
@@ -96,6 +96,10 @@ class Ordered_index_object : public index_object {
       q->data->scanop = tx->getNdbIndexScanOperation(q->idx);
       log_debug(server, "Using OrderedIndexScan; key %s", q->idx->getName());
       return q->data->scanop;
+    };
+    
+    const NdbDictionary::Column *get_column(config::key_col &) {
+      return q->idx->getColumn(key_part);
     };
     
     int set_key_part(config::key_col &keycol, mvalue &mval) {
