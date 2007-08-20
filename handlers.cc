@@ -245,6 +245,9 @@ int ndb_handle_error(request_rec *r, int status, const NdbError &error) {
     case 404:
       ap_rprintf(r,"No data could be found.\n");
       break;
+    case 409:
+      ap_rprintf(r, "%s.\n", error.message);
+      break;
     default:
       ap_rprintf(r,"HTTP return code %d.\n", status);
   }

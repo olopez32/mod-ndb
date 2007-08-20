@@ -38,6 +38,8 @@ bool handle_error_from_execute(request_rec *r, int &response_code,
   
   if(error.classification == NdbError::NoDataFound)
     response_code = 404;
+  else if(error.classification == NdbError::ConstraintViolation)
+    response_code = 409;
   else 
     response_code = 400;  
 
