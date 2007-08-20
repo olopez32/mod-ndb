@@ -399,7 +399,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
     while (col >= 0 && Q.key_columns_used-- > 0) {
       config::key_col &keycol = dir->key_columns->item(col);
-      ndb_Column = q->idxobj->get_column();
+      ndb_Column = q->idxobj->get_column(keycol);
 
       log_debug(r->server," ** Request column_alias: %s -- value: %s", 
                  keycol.name, Q.keys[col].value);
