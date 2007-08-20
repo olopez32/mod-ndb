@@ -237,7 +237,7 @@ void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
 
 
 int ScanLoop::Run(data_operation *data, result_buffer &res) {
-  int nrows = 0;
+  register int nrows = 0;
   
   if(data->scanop) {
     while((data->scanop->nextResult(true)) == 0) {

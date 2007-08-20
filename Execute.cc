@@ -89,7 +89,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
                     i->conn->ndb_force_send)) 
   {        
     log_debug(r->server,"tx->execute failed: %s", i->tx->getNdbError().message);
-    response_code = HTTP_GONE;  /* Should be 400? */
+    if(i->tx->getNdbError().code == 626)
+      response_code = 404;
+    else 
+      response_code = 400;  
     goto cleanup1;
   } 
   
