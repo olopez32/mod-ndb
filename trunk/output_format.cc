@@ -169,12 +169,14 @@ int Results_raw(request_rec *r, data_operation *data,
 
 int build_results(request_rec *r, data_operation *data, result_buffer &res) {
   output_format *fmt = data->fmt;
+  int result_code;
   
   if(fmt->flag.is_raw) return Results_raw(r, data, res);
   res.init(r, 8192);
-  for(Node *N = fmt->top_node; N != 0 ; N=N->next_node)
-    N->Run(data, res);
-
+  for(Node *N = fmt->top_node; N != 0 ; N=N->next_node) {
+    result_code = N->Run(data, res);
+    if(result_code != OK) return result_code;
+  }
   res.out("\n"); // should be a node after the scan
   return OK;
 }
@@ -234,7 +236,7 @@ void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
 }
 
 
-void ScanLoop::Run(data_operation *data, result_buffer &res) {
+int ScanLoop::Run(data_operation *data, result_buffer &res) {
   int nrows = 0;
   
   if(data->scanop) {
@@ -244,17 +246,18 @@ void ScanLoop::Run(data_operation *data, result_buffer &res) {
         else begin->chain_out(res);
         core->Run(data, res);
       } while((data->scanop->nextResult(false)) == 0);
+      
       if(nrows) end->chain_out(res);
-      else return; // ?? used to be return HTTP_GONE.  Should be 404.
     }
+    return (nrows ? OK : 404);
   }
   else {  /* not a scan, just a single result row */
-    core->Run(data, res);
+    return core->Run(data, res);
   }
 }
 
 
-void RowLoop::Run(data_operation *data, result_buffer &res) {
+int RowLoop::Run(data_operation *data, result_buffer &res) {
   begin->chain_out(data, res);
   for(unsigned int n = 0; n < data->n_result_cols ; n++) {
     if(n) res.out(*sep);
@@ -262,5 +265,5 @@ void RowLoop::Run(data_operation *data, result_buffer &res) {
     core->out(rec, res);
   }
   end->chain_out(data, res);
+  return OK;
 }
-
