@@ -601,10 +601,20 @@ namespace config {
     return error;
   }
 
+  /* SELECT */
+  const char *sql_select(cmd_parms *cmd, void *m, char *args) {
+    return config::sql_container("SELECT ",cmd, m, args);
+  }
 
+  /* DELETE */
+  const char *sql_delete(cmd_parms *cmd, void *m, char *args) {
+    return config::sql_container("DELETE ",cmd, m, args);
+  }
+  
+  
   /* Handle an N-SQL query 
   */
-  const char *sql_container(cmd_parms *cmd, void *m, char *args) {
+  const char *sql_container(const char *kw, cmd_parms *cmd, void *m, char *args) {
     size_t max_query_len = MAX_STRING_LEN * 2;
     char *pos = args;
     char c;
@@ -616,9 +626,9 @@ namespace config {
     /* Copy everything from the config file into the query buffer 
        up to the semicolon that terminates the query 
     */
-    // First the SELECT keyword 
-    char *end = ap_cpystrn(query_buff, "SELECT ", 10);
-
+    // First the SELECT/DELETE keyword 
+    char *end = ap_cpystrn(query_buff, kw, 10);
+    
     // Then the rest of the current line
     while((*end = *pos++))
       if(*end++ == ';') end_of_query = 1;
@@ -681,11 +691,18 @@ extern "C" {
   },
   { 
     "SELECT",  // N-SQL statement
-    (CMD_HAND_TYPE) config::sql_container,
+    (CMD_HAND_TYPE) config::sql_select,
     NULL,
     ACCESS_CONF | EXEC_ON_READ,      RAW_ARGS,
-    "N-SQL Satatement"    
+    "N-SQL SELECT Query"    
   },
+  { 
+    "DELETE",  // N-SQL statement
+    (CMD_HAND_TYPE) config::sql_delete,
+    NULL,
+    ACCESS_CONF | EXEC_ON_READ,      RAW_ARGS,
+    "N-SQL DELETE Query"    
+  },    
   {
     "Database",         // inheritable
     (CMD_HAND_TYPE) ap_set_string_slot,

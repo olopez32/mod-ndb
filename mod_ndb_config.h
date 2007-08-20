@@ -96,6 +96,6 @@ namespace config {
   const char * connectstring(cmd_parms *, void *, char *);
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
   const char * result_fmt_container(cmd_parms *, void *, char *);
-  const char * sql_container(cmd_parms *, void *, char *);
+  const char * sql_container(const char *, cmd_parms *, void *, char *);
 }
 
