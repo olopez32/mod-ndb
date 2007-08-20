@@ -105,12 +105,15 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   }
   
   /* Execute and Commit the transaction */
-  if(i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
-                    i->conn->ndb_force_send)) 
-  {
+  int exec_err = i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
+                                i->conn->ndb_force_send); 
+  /* After 5.1.15 you can get succesful execute() then NoDataFound */
+  if(exec_err || i->tx->getNdbError().classification == NdbError::NoDataFound) {
     handle_error_from_execute(r, response_code, i->tx->getNdbError());
     goto cleanup1;
   } 
+  
+
   
   /* Loop over the operations and build the result page */
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
