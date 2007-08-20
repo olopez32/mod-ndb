@@ -116,7 +116,6 @@ inline bool mval_is_usable(request_rec *r, mvalue &mval) {
 
 
 
-// to do: filters don't work with ordered full-table scans...?
 /* Inlined code (called while processing both pathinfo and request params)
    which sets the items in the Q.keys array and determines the access plan.
 */
@@ -276,14 +275,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
 
 
+  if(dir->flag.table_scan) Q.plan = Scan;
   /* ===============================================================
      Process arguments, and then pathinfo, to determine an access plan.
      The detailed work is done within the inlined function set_key().
   */
-
-  if(dir->flag.table_scan) 
-    Q.plan = Scan;
-  else if(r->args) {  /* Arguments */
+  if(r->args) {  /* Arguments */
     register const char *c = r->args;
     char *key, *val;
     short n;
@@ -410,7 +407,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
       if(mval_is_usable(r, mval)) {
         if(q->idxobj->set_key_part(keycol, mval)) {
-          log_debug(r->server," op->equal failed, column %s", ndb_Column->getName());
+          log_debug(r->server," set_key_part() failed, column %s", ndb_Column->getName());
           response_code = 404;
           goto abort1;
         }                
@@ -422,23 +419,32 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   
   // Set filters
   if(Q.plan >= Scan && Q.n_filters) {
+    mvalue *fvals = (mvalue *) ap_pcalloc(r->pool, Q.n_filters * sizeof (mvalue));    
     NdbScanFilter filter(q->data->op);
     filter.begin(NdbScanFilter::AND);
+    
     for(int nfilt = 0 ; nfilt < Q.n_filters ; nfilt++) {
-
       int n = Q.filter_list[nfilt];  
       config::key_col &keycol = dir->key_columns->item(n);
       runtime_col *filter_col = & Q.keys[n];
       ndb_Column = q->tab->getColumn(keycol.filter_col_name);
+      mvalue &fval = fvals[nfilt];
 
-      log_debug(r->server," ** Filter %s using %s (%s)", 
-                 keycol.filter_col_name, keycol.name, filter_col->value);
+      MySQL::value(fval, r->pool, ndb_Column, filter_col->value);
 
-      MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
-
-      filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
-                   ndb_Column->getColumnNo(), (&mval.u.val_char) ); 
-    }                    
+      if(fval.use_value == use_char) {
+        int err = filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
+                    ndb_Column->getColumnNo(), fval.u.val_char);
+        log_debug(r->server," ** Filter %s using %s (%s) -- returns %d", 
+                  keycol.filter_col_name, keycol.name, fval.u.val_char, err); 
+      }
+      else {
+        filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
+                    ndb_Column->getColumnNo(), (&fval.u.val_char) ); 
+        log_debug(r->server," ** Filter %s using %s (%s)", 
+                  keycol.filter_col_name, keycol.name, filter_col->value);
+      }
+    } /*for*/                  
     filter.end();
   }
 
