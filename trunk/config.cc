@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* These operators correspond to the items in NdbScanFilter::BinaryCondition 
 */
-const char *filter_ops[] = { "<=", "<", ">=", ">", "=", "!=", 0 };
+const char *filter_ops[] = {"<=","<", ">=",">", "=","!=", "LIKE","NOTLIKE", 0};
 
 /* NDB scan bounds are defined to "exclude" values outside the bounds, and are
    either strict or non-strict, so this list of operators maps to the sequence
@@ -401,6 +401,7 @@ namespace config {
   
   
   /* "Filter column operator pseudocolumn"
+     To do: How to handle "real_column IS [not] NULL" filters?
   */
   const char *filter(cmd_parms *cmd, void *m, char *base_col_name,
                      char *filter_op, char *alias_col_name) {
@@ -418,6 +419,7 @@ namespace config {
 
     columns[alias_col_id].is.filter = 1;
     columns[alias_col_id].filter_col_name = ap_pstrdup(cmd->pool, base_col_name);
+    dir->flag.has_filters = 1;
 
     // Parse the operator
     bool found_match = 0;
