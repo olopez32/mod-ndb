@@ -139,5 +139,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   i->cleanup();
   
   log_debug(r->server,"ExecuteAll() returning %d",response_code);
+  if(response_code == 404) 
+    return ndb_handle_error(r, response_code, (data_operation *) 0, ""); 
   return response_code;
 }

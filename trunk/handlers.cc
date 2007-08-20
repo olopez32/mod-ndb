@@ -239,8 +239,18 @@ int ndb_handle_error(request_rec *r, int status, data_operation *data,
                      const char *message) {
   ap_table_setn(r->notes, "verbose-error-to", "*");
   r->status = status;
-  // r->status_line = ap_get_status_line(status);
-  return 1;  // make the compiler happy for now
+  r->content_type = "text/plain";
+  ap_send_http_header(r);
+  
+  switch(status) {
+    case 404:
+      ap_rprintf(r,"No data could be found.\n");
+      break;
+    default:
+      ap_rprintf(r,"HTTP return code %d.\n", status);
+  }
+  
+  return DONE; 
 }
 
 
