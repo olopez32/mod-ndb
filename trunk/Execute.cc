@@ -19,12 +19,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "util_md5.h"
 #include "ndb_api_compat.h"
 
-
 inline void set_note(request_rec *r, int num, result_buffer &res) {
   char note[32];
   sprintf(note, "ndb_result_%d",num);
   log_debug(r->server,"Setting note %s",note);
   ap_table_set(r->main->notes, note, res.buff);
+}
+
+
+/* handle_error_from_execute():
+   set response code, and return 0 on pass-through or 1 on retry
+*/
+bool handle_error_from_execute(request_rec *r, int &response_code, 
+                               const NdbError &error) {
+  bool do_log_debug = 0;
+  bool do_log_error = 0;
+  bool retry_tx = 0;
+  
+  if(error.classification == NdbError::NoDataFound)
+    response_code = 404;
+  else 
+    response_code = 400;  
+
+  if(do_log_debug)
+    log_debug(r->server,"tx->execute failed: %s", error().message);
+  if(do_log_error)
+    log_err(r->server,"tx->execute failed: %s", error().message);
+     
+  return retry_tx;
 }
 
 
@@ -44,7 +66,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Check for an NdbTransaction */
   if(! i->tx) {
     log_err(r->server, "tx does not exist.");
-    response_code = HTTP_GONE;  /* Should be 400? */
+    response_code = 400;
     goto cleanup2;
   } 
 
@@ -87,12 +109,8 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Execute and Commit the transaction */
   if(i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
                     i->conn->ndb_force_send)) 
-  {        
-    log_debug(r->server,"tx->execute failed: %s", i->tx->getNdbError().message);
-    if(i->tx->getNdbError().code == 626)
-      response_code = 404;
-    else 
-      response_code = 400;  
+  {
+    handle_error_from_execute(response_code, i->tx->getNdbError());
     goto cleanup1;
   } 
   
@@ -131,6 +149,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   }
 
   cleanup1:
+  if(response_code != OK) 
+    response_code = ndb_handle_error(r, response_code, ); 
+
   i->tx->close();
   i->tx = 0;  
   
@@ -139,7 +160,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   i->cleanup();
   
   log_debug(r->server,"ExecuteAll() returning %d",response_code);
-  if(response_code == 404) 
-    return ndb_handle_error(r, response_code, (data_operation *) 0, ""); 
-  return response_code;
+  if(response_code != OK) 
+    return   return OK;
 }
+
