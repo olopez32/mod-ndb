@@ -92,7 +92,8 @@ class Node {
   Node(const char *n, Cell *cell) : name(n), cell(cell), next_node(0) {}
   virtual ~Node() {}
   virtual void compile(output_format *);
-  virtual void Run(struct data_operation *d, result_buffer &b) {cell->out(d,b);}
+  virtual int  Run(struct data_operation *d, result_buffer &b) { 
+    cell->out(d,b); return OK; }
   virtual void out(const NdbRecAttr &r, result_buffer &b) {cell->out(r,b);}
   virtual void dump(ap_pool *p, result_buffer &, int);
   void * operator new(size_t sz, ap_pool *p) {
@@ -129,7 +130,7 @@ class Loop : public Node {
 class RowLoop : public Loop {
 public: 
   RowLoop(const char *c) : Loop(c) {}
-  void Run(struct data_operation *, result_buffer &);
+  int Run(struct data_operation *, result_buffer &);
   void compile(output_format *o) { return Loop::compile(o); }
   void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); }
@@ -139,7 +140,7 @@ public:
 class ScanLoop : public Loop {  
 public:
   ScanLoop(const char *c) : Loop(c) {}
-  void Run(struct data_operation *, result_buffer &);
+  int Run(struct data_operation *, result_buffer &);
   void compile(output_format *o) { return Loop::compile(o); }
   void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); } 
