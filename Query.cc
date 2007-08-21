@@ -221,6 +221,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         if(dir->use_etags) i->flag.use_etag = 1;
         q->data->fmt = dir->fmt;
         q->data->n_result_cols = dir->visible->size();
+        q->data->aliases = dir->aliases->items();
       }
       else {  /* too many read ops.  
         This error can only be fixed be reconfiguring & restarting Apache. */

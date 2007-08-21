@@ -110,10 +110,10 @@
 			isa = PBXGroup;
 			children = (
 				65383BF60C72B6E9001F8451 /* NSQL.atg */,
+				65AFE1630C7390CF004525B9 /* Parser.cpp */,
 				65383BF70C72B6E9001F8451 /* Parser.frame */,
 				65383BF80C72B6E9001F8451 /* Scanner.frame */,
 				65AFE1620C7390C5004525B9 /* Parser.h */,
-				65AFE1630C7390CF004525B9 /* Parser.cpp */,
 				65AFE1690C7390DE004525B9 /* Scanner.h */,
 				65AFE16A0C7390EC004525B9 /* Scanner.cpp */,
 			);

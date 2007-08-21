@@ -112,6 +112,7 @@ struct data_operation {
   NdbBlob *blob;
   unsigned int n_result_cols;
   const NdbRecAttr **result_cols;
+  char **aliases;
   output_format *fmt;
 };
 
