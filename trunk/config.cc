@@ -98,9 +98,6 @@ namespace config {
     // These parts can be inherited from the parent.
     if(! d2->database)  dir->database  = d1->database;
     if(! d2->table)     dir->table     = d1->table;
-    if(! d2->visible)   dir->visible   = d1->visible;
-    if(! d2->aliases)   dir->aliases   = d1->aliases;
-    if(! d2->updatable) dir->updatable = d1->updatable;
     if(! d2->fmt)       dir->fmt       = d1->fmt;
     if(! d2->incr_prefetch) dir->incr_prefetch = d1->incr_prefetch;
  
@@ -379,24 +376,23 @@ namespace config {
     return named_index(cmd, m, "*Primary$Key*", col);
   }
 
-  
+
+  void ordered_index_scan(cmd_parms *cmd, config::dir *dir, const char *name) {
+    dir->index_scan = (config::index *) ap_pcalloc(cmd->pool, sizeof(config::index));
+    bzero(dir->index_scan,sizeof(config::index));
+    dir->index_scan->name = ap_pstrdup(cmd->pool, name);
+    dir->index_scan->type = 'O'; 
+  }
+ 
+   
   const char *table(cmd_parms *cmd, void *m, char *arg1, char *arg2, char *arg3) {
     config::dir *dir = (config::dir *) m;
 
-    dir->table = ap_pstrdup(cmd->pool, arg1);
-    
-    if(arg2) {
+    dir->table = ap_pstrdup(cmd->pool, arg1);    
+    if(arg2) { /* SCAN */
       if(!(ap_strcasecmp_match(arg2,"scan"))) {
-        if(dir->indexes->size())
-          return "Cannot define indexes at the same endpoint as a table scan.";
         dir->flag.table_scan = 1;
-        if(arg3) {
-          /* arg3 is an ordered index, and the scan is actually an index scan */
-          config::index *index_rec = dir->indexes->new_item();
-          bzero(index_rec, dir->indexes->elt_size);
-          index_rec->name = ap_pstrdup(cmd->pool, arg3);
-          index_rec->type = 'O';                     
-        }
+        if(arg3) ordered_index_scan(cmd, dir, arg3);
       }
     }
     return 0;
@@ -470,15 +466,14 @@ namespace config {
     config::key_col *cols;
     short i;
 
-    index_id = get_index_by_name(dir,idx);
-
     /* type-safe test: (is this void pointer really a dir?) */
     assert(dir->magic_number == 0xBABECAFE);
 
-    if(dir->flag.table_scan)
-      return "Cannot define indexes at the same endpoint as a table scan.";
+    index_id = get_index_by_name(dir,idx);
 
-    if(index_id == -1) {
+    if(index_id == -1 && dir->index_scan && ! strcmp(idx, dir->index_scan->name)) 
+      index_rec = dir->index_scan;  // This index is used for a table scan
+    else if(index_id == -1) {
       /* Build the index record */
       log_conf_debug(cmd->server,"Creating new index record \"%s\" at %s:%d",
                      idx, cmd->config_file->name, cmd->config_file->line_number);
@@ -496,16 +491,18 @@ namespace config {
     /* Sometimes a column name is not actually a column, but a flag */
     if(index_rec->type == 'O' && *col == '[') {
       if(!strcmp(col,"[ASC]")) {
-        log_conf_debug(cmd->server,"setting flag: %s",col);
-        index_rec->flag = NdbScanOperation::SF_OrderBy;
+        index_rec->flag.sorted = 1;
         return 0;
       }
       else if(!strcmp(col,"[DESC]")) {
-        log_conf_debug(cmd->server,"setting flag: %s",col);
-        index_rec->flag = NdbScanOperation::SF_Descending;
+        index_rec->flag.sorted = 1;
+        index_rec->flag.descending = 1;
         return 0;
       }
     }
+    /* Setting the sort flag was the only legal thing you can do to a scan */
+    if(index_rec == dir->index_scan) 
+      return "Cannot define key columns for an ordered index scan.";
     
     /* Create a column record */
     bool col_exists = 0;
@@ -651,9 +648,10 @@ namespace config {
     NSQL::Parser  *parser  = new NSQL::Parser(scanner);
     
     parser->dir = (config::dir *) m;
+    assert(parser->dir->magic_number = 0xBABECAFE);
     parser->cmd = cmd;
     parser->errors->http_server = cmd->server;
-    
+
     parser->Parse();
 
     if(parser->errors->count) 
