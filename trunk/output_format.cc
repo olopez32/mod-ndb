@@ -140,8 +140,7 @@ void register_built_in_formatters(ap_pool *p) {
   if(err) {
     fprintf(stderr,err);
     exit(1);
-  }
-  
+  }  
   
   register_format(p, raw_format);
   register_format(p, json_format);
@@ -177,7 +176,6 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
     result_code = N->Run(data, res);
     if(result_code != OK) return result_code;
   }
-  res.out("\n"); // should be a node after the scan
   return OK;
 }
  
