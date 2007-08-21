@@ -182,9 +182,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   dict = i->db->getDictionary();
   q->tab = dict->getTable(dir->table);
   if(q->tab == 0) { 
-    log_err(r->server, "mod_ndb could not find table %s (in database %s) "
-             "in NDB Data Dictionary: %s",dir->table,dir->database,
-             dict->getNdbError().message);
+    log_err(r->server, "Cannot find table %s in database %s: %s.",
+             dir->table,dir->database, dict->getNdbError().message);
     i->errors++;
     return 500;
   }  
@@ -223,9 +222,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         q->data->fmt = dir->fmt;
         q->data->n_result_cols = dir->visible->size();
       }
-      else {
-        log_err(r->server,"Too many read operations in one transaction.");
-        return DECLINED;
+      else {  /* too many read ops.  
+        This error can only be fixed be reconfiguring & restarting Apache. */
+        const char *msg = "Too many read operations in one transaction.";
+        log_err(r->server,msg);        
+        return ndb_handle_error(r, 500, NULL, msg);
       }
       
       ap_discard_request_body(r);
@@ -266,12 +267,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       }
       break;
     case M_DELETE:
-      if(! dir->allow_delete) return DECLINED;
+      if(! dir->allow_delete) 
+        return ndb_handle_error(r, 405, NULL, allowed_methods(r, dir));
       Q.op_setup = Plan::SetupDelete;
       Q.op_action = Plan::Delete;
       break;
     default:
-      return DECLINED;
+      return ndb_handle_error(r, 405, NULL, allowed_methods(r, dir));
   }
 
 

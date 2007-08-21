@@ -235,18 +235,26 @@ extern "C" {
 /* This strategy, taken from mod_dav, is to write our own error document,
    set verbose-errors-to=*, and return DONE. 
 */
-int ndb_handle_error(request_rec *r, int status, const NdbError &error) {
+int ndb_handle_error(request_rec *r, int status, 
+                     const NdbError *error, const char *msg) {
   ap_table_setn(r->notes, "verbose-error-to", "*");
   r->status = status;
   r->content_type = "text/plain";
+  
+  if(status == 405) ap_table_setn(r->headers_out, "Allow", msg);
   ap_send_http_header(r);
   
   switch(status) {
     case 404:
       ap_rprintf(r,"No data could be found.\n");
       break;
+    case 405:
+      break;  // no message
     case 409:
-      ap_rprintf(r, "%s.\n", error.message);
+      ap_rprintf(r, "%s.\n", error->message);
+      break;
+    case 500:
+      if(msg) ap_rprintf(r, "%s\n", msg);
       break;
     default:
       ap_rprintf(r,"HTTP return code %d.\n", status);
@@ -278,3 +286,13 @@ int print_all_params(void *v, const char *key, const char *val) {
 }
 
 
+const char * allowed_methods(request_rec *r, config::dir *dir) {
+  apache_array<char *> *methods = new(r->pool, 4) apache_array<char *>;
+
+  if(dir->visible->size())    *methods->new_item() = "GET";
+  if(dir->use_etags)          *methods->new_item() = "HEAD";
+  if(dir->updatable->size())  *methods->new_item() = "POST";
+  if(dir->allow_delete)       *methods->new_item() = "DELETE";
+  
+  return ap_array_pstrcat(r->pool, methods, ',');
+}
