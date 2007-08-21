@@ -153,7 +153,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
 
   cleanup1:
   if(response_code > 399) 
-    response_code = ndb_handle_error(r, response_code, i->tx->getNdbError()); 
+    response_code = ndb_handle_error(r, response_code, & i->tx->getNdbError(), ""); 
 
   i->tx->close();
   i->tx = 0;  
