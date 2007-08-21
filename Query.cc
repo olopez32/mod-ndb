@@ -79,12 +79,25 @@ short key_col_bin_search(char *, config::dir *);
 /* Some very simple modules are fully defined here:
 */
 int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
+  config::index *index = 0;
   switch(q->plan) {
-    case OrderedIndexScan:
-      return q->data->scanop->readTuples(NdbOperation::LM_CommittedRead, 
-                                         dir->indexes->item(q->active_index).flag);
     case Scan:
-      return q->data->scanop->readTuples();
+      index = dir->index_scan;
+      if(!index) { 
+        log_debug(r->server, "Using table scan");
+        return q->data->scanop->readTuples();
+      }      
+      /* Fall through to OrderedIndexScan */
+    case OrderedIndexScan:
+      if(!index) index = dir->indexes->handle()[q->active_index];
+      /* I'm using an undocumented form of readTuples() here, following the 
+         example from select_all.cpp, because the documented one does not work 
+         as advertised with the sort-flag. 
+      */
+      if(index->flag.sorted) 
+        return q->data->scanop->readTuples(NdbScanOperation::LM_CommittedRead, 
+                                           0, 0, true, index->flag.descending);
+      return q->data->scanop->readTuples(NdbOperation::LM_CommittedRead);
     default:
       return q->data->op->readTuple(NdbOperation::LM_CommittedRead);
   }
@@ -355,12 +368,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   /* Now set the Query Items that depend on the access plan and index type.
      Case 1: Table Scan  */    
   if(Q.plan == Scan) {
-    if(dir->indexes->size() == 1) {
+    if(dir->index_scan) {
       /* "Table scan" using an ordered index: */
-      q->idxobj = & OI_idxobj;
-      idxname = dir->indexes->item(0).name;
+      idxname = dir->index_scan->name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
         goto bad_index;
+      q->idxobj = & OI_idxobj;
     }
     else q->idxobj = & TS_idxobj;  /* true (non-indexed) table scan. */
   }

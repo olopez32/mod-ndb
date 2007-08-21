@@ -44,6 +44,7 @@ namespace config {
       unsigned has_filters : 1;
       unsigned table_scan : 1;
     } flag;
+    struct index *index_scan;
     apache_array<char*> *visible;
     apache_array<char*> *updatable;
     apache_array<char*> *aliases;
@@ -54,12 +55,15 @@ namespace config {
   
   /* NDB Index */
   struct index {
-      char *name;
-      unsigned int flag;
-      unsigned short n_columns;
-      short first_col_serial;
-      short first_col;
-      char type;
+    char *name;
+    unsigned short n_columns;
+    short first_col_serial;
+    short first_col;
+    char type;
+    struct {
+      unsigned sorted     : 1;
+      unsigned descending : 1;
+    } flag;
   };
   
   /* Coulmn used in a query */
@@ -98,5 +102,6 @@ namespace config {
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
   const char * result_fmt_container(cmd_parms *, void *, char *);
   const char * sql_container(const char *, cmd_parms *, void *, char *);
+  void ordered_index_scan(cmd_parms *, config::dir *, const char *);
 }
 
