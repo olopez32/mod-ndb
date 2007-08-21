@@ -46,6 +46,7 @@ namespace config {
     } flag;
     apache_array<char*> *visible;
     apache_array<char*> *updatable;
+    apache_array<char*> *aliases;
     apache_array<config::index> *indexes;
     apache_array<config::key_col> *key_columns;
     unsigned int magic_number;

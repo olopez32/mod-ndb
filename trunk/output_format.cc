@@ -187,17 +187,17 @@ void Cell::out(struct data_operation *data, result_buffer &res) {
     return this->out(res);
   if(i > data->n_result_cols) return; //error?
   const NdbRecAttr &rec = *data->result_cols[i-1]; 
-  this->out(rec, res);
+  char *col_name = data->aliases[i-1];
+  this->out(col_name, rec, res);
   return;
 }
 
-void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
+void Cell::out(char *col_name, const NdbRecAttr &rec, result_buffer &res) {
   if(elem_type == const_string) {
     res.out(len, string);
     return;
   }
   
-  const char *col_name = rec.getColumn()->getName();
   NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
   switch(elem_type) {
     case item_name:
@@ -230,9 +230,9 @@ void Cell::out(const NdbRecAttr &rec, result_buffer &res) {
 }
 
 
-void RecAttr::out(const NdbRecAttr &rec, result_buffer &res) {
+void RecAttr::out(char *col, const NdbRecAttr &rec, result_buffer &res) {
   for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
-    c->out(rec, res);
+    c->out(col, rec, res);
 }
 
 
@@ -262,7 +262,8 @@ int RowLoop::Run(data_operation *data, result_buffer &res) {
   for(unsigned int n = 0; n < data->n_result_cols ; n++) {
     if(n) res.out(*sep);
     const NdbRecAttr &rec = *data->result_cols[n];
-    core->out(rec, res);
+    char *col_alias = data->aliases[n];
+    core->out(col_alias, rec, res);
   }
   end->chain_out(data, res);
   return OK;

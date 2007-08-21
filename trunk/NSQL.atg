@@ -33,7 +33,11 @@ PRODUCTIONS
   WhereClause = "SCAN"  ScanSpec  | "WHERE" IndexSpecs .
   IndexSpecs = IndexSpec { "OR" IndexSpec }.
 
-  Column = Name                (. *dir->visible->new_item() = copy_token(); .) .
+  Column = Name                   (. char *c_name  = copy_token();          .)
+                                  (. char *c_alias = c_name;                .)
+   [ "AS" Name                    (. c_alias = copy_token();                .)
+   ]                              (. *dir->visible->new_item() = c_name;    .)
+                                  (. *dir->aliases->new_item() = c_alias;   .) .
 
   TableSpec = 
     [ DBName                               (. dir->database = copy_token(); .)

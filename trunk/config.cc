@@ -55,6 +55,7 @@ namespace config {
     config::dir *dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
 
     dir->visible     = new(p, 4) apache_array<char *>;
+    dir->aliases     = new(p, 4) apache_array<char *>;
     dir->updatable   = new(p, 4) apache_array<char *>;
     dir->indexes     = new(p, 2) apache_array<config::index>;
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
@@ -98,6 +99,7 @@ namespace config {
     if(! d2->database)  dir->database  = d1->database;
     if(! d2->table)     dir->table     = d1->table;
     if(! d2->visible)   dir->visible   = d1->visible;
+    if(! d2->aliases)   dir->aliases   = d1->aliases;
     if(! d2->updatable) dir->updatable = d1->updatable;
     if(! d2->fmt)       dir->fmt       = d1->fmt;
     if(! d2->incr_prefetch) dir->incr_prefetch = d1->incr_prefetch;
@@ -320,6 +322,7 @@ namespace config {
     switch(*which) {
       case 'R':
         *dir->visible->new_item() = ap_pstrdup(cmd->pool, arg);
+        *dir->aliases->new_item() = ap_pstrdup(cmd->pool, arg);
         break;
       case 'W':
         *dir->updatable->new_item() = ap_pstrdup(cmd->pool, arg);

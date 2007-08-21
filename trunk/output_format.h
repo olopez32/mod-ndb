@@ -70,7 +70,7 @@ class Cell : public len_string {
   }
   void out(result_buffer &res) { res.out(len,string); }
   void out(struct data_operation *, result_buffer &);
-  void out(const NdbRecAttr &, result_buffer &); 
+  void out(char *, const NdbRecAttr &, result_buffer &); 
   void chain_out(struct data_operation *data, result_buffer &res) {
     for(Cell *c = this; c != 0 ; c = c->next) c->out(data,res);
   }
@@ -94,7 +94,8 @@ class Node {
   virtual void compile(output_format *);
   virtual int  Run(struct data_operation *d, result_buffer &b) { 
     cell->out(d,b); return OK; }
-  virtual void out(const NdbRecAttr &r, result_buffer &b) {cell->out(r,b);}
+  virtual void out(char *c, const NdbRecAttr &r, result_buffer &b) {
+    cell->out(c, r, b); }
   virtual void dump(ap_pool *p, result_buffer &, int);
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
@@ -108,7 +109,7 @@ class RecAttr : public Node {
 
   public:
   RecAttr(const char *str1, const char *str2) : Node(str1), unresolved2(str2) {}
-  void out(const NdbRecAttr &rec, result_buffer &res);
+  void out(char *col, const NdbRecAttr &rec, result_buffer &res);
   void compile(output_format *);
   void dump(ap_pool *p, result_buffer &, int);
 };
