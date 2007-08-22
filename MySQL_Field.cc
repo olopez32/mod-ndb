@@ -314,6 +314,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
         * m.u.val_char = len;
         ap_cpystrn(m.u.val_char+1, val, len+1);
         m.use_value = use_char; 
+        m.col_len = col->getLength() + 1;
         return;
         
       case NdbDictionary::Column::Longvarchar:
@@ -324,6 +325,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
         * (m.u.val_char+1) = (char) (s_len & s_hi);
         ap_cpystrn(m.u.val_char+2, val, s_len+1);
         m.use_value = use_char; 
+        m.col_len = col->getLength() + 2;
         return;
         
       case NdbDictionary::Column::Char:
@@ -337,6 +339,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
         while (s < q) *s++ = ' ';
           *q = 0;      
         m.use_value = use_char;
+        m.col_len = col->getLength();
         return;
         
       default:
