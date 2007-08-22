@@ -64,6 +64,7 @@ struct mvalue {
     Uint16              val_unsigned_16;
   } u;
   size_t len;
+  Uint32 col_len;
   mvalue_use use_value;
   mvalue_interpreted interpreted;
   bool over;        /* overflow indicator */

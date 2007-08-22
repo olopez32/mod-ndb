@@ -436,8 +436,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   // Set filters
   if(Q.plan >= Scan && Q.n_filters) {
     mvalue *fvals = (mvalue *) ap_pcalloc(r->pool, Q.n_filters * sizeof (mvalue));    
-    NdbScanFilter filter(q->data->op);
-    filter.begin(NdbScanFilter::AND);
+    NdbScanFilter filter(q->data->scanop);
+    if(Q.n_filters > 1) filter.begin(NdbScanFilter::AND);
+    else filter.begin();
     
     for(int nfilt = 0 ; nfilt < Q.n_filters ; nfilt++) {
       int n = Q.filter_list[nfilt];  
@@ -450,7 +451,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
       if(fval.use_value == use_char) {
         int err = filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
-                    ndb_Column->getColumnNo(), fval.u.val_char);
+                    ndb_Column->getColumnNo(), fval.u.val_char, fval.col_len);
         log_debug(r->server," ** Filter %s using %s (%s) -- returns %d", 
                   keycol.base_col_name, keycol.name, fval.u.val_char, err); 
       }
