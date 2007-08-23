@@ -655,7 +655,7 @@ namespace config {
     parser->Parse();
 
     if(parser->errors->count) 
-      return "NSQL parser error.";
+      return ap_psprintf(cmd->pool,"NSQL parser: %d error(s).", parser->errors->count);
 
     /* success */
     delete parser;
