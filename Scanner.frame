@@ -1,3 +1,6 @@
+/*  customized for mod_ndb */
+
+
 /*----------------------------------------------------------------------
 Compiler Generator Coco/R,
 Copyright (c) 1990, 2004 Hanspeter Moessenboeck, University of Linz
@@ -30,6 +33,7 @@ Coco/R itself) does not fall under the GNU General Public License.
 #if !defined(COCO_SCANNER_H__)
 #define COCO_SCANNER_H__
 
+#include "httpd.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,6 +76,9 @@ int   coco_string_hash(const wchar_t* data);
 wchar_t* coco_string_create(const char *value);
 char* coco_string_create_char(const wchar_t *value);
 void  coco_string_delete(char* &data);
+
+// Added for mod_ndb
+char* coco_string_create_apache(ap_pool *, const wchar_t *);
 
 
 -->namespace_open
@@ -464,6 +471,14 @@ char* coco_string_create_char(const wchar_t *value) {
 	res[len] = 0;
 	return res;
 }
+
+char* coco_string_create_apache(ap_pool *my_pool, const wchar_t *value) {
+	int len = coco_string_length(value);
+	char *res = (char *) ap_pcalloc(my_pool, len + 1);
+	for (int i = 0; i < len; ++i) { res[i] = (char) value[i]; }
+	return res;
+}
+
 
 void coco_string_delete(char* &data) {
 	delete [] data;
