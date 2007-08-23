@@ -435,8 +435,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   
   // Set filters
   if(Q.plan >= Scan && Q.n_filters) {
-    mvalue *fvals = (mvalue *) ap_pcalloc(r->pool, Q.n_filters * sizeof (mvalue));    
     NdbScanFilter filter(q->data->scanop);
+    NdbScanFilter::BinaryCondition cond;
     if(Q.n_filters > 1) filter.begin(NdbScanFilter::AND);
     else filter.begin();
     
@@ -445,21 +445,20 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       config::key_col &keycol = dir->key_columns->item(n);
       runtime_col *filter_col = & Q.keys[n];
       ndb_Column = q->tab->getColumn(keycol.base_col_name);
-      mvalue &fval = fvals[nfilt];
+      int col_id = ndb_Column->getColumnNo();
+      cond = (NdbScanFilter::BinaryCondition) keycol.filter_op;
 
-      MySQL::value(fval, r->pool, ndb_Column, filter_col->value);
+      log_debug(r->server," ** Filter %s using %s (%s)", 
+                keycol.base_col_name, keycol.name, filter_col->value);
 
-      if(fval.use_value == use_char) {
-        int err = filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
-                    ndb_Column->getColumnNo(), fval.u.val_char, fval.col_len);
-        log_debug(r->server," ** Filter %s using %s (%s) -- returns %d", 
-                  keycol.base_col_name, keycol.name, fval.u.val_char, err); 
-      }
-      else {
-        filter.cmp( (NdbScanFilter::BinaryCondition) keycol.filter_op,  
-                    ndb_Column->getColumnNo(), (&fval.u.val_char) ); 
-        log_debug(r->server," ** Filter %s using %s (%s)", 
-                  keycol.base_col_name, keycol.name, filter_col->value);
+      if(cond >= NdbScanFilter::COND_LIKE)  /* LIKE or NOT_LIKE */
+        filter.cmp(cond, col_id, filter_col->value, strlen(filter_col->value));
+      else {        
+        MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
+        if(mval.use_value == use_char)                     
+          filter.cmp(cond, col_id, mval.u.val_char, mval.col_len);
+        else 
+          filter.cmp(cond, col_id, (&mval.u.val_char) ); 
       }
     } /*for*/                  
     filter.end();
