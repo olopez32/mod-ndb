@@ -5,7 +5,13 @@ COMPILER NSQL
 cmd_parms *cmd;
 config::dir *dir;
 char *idxname, *idxtype, *rel_op;
-char * copy_token() { return coco_string_create_char(t->val); } 
+char *tok_temp; 
+char * copy_token() { 
+  tok_temp = coco_string_create_char(t->val); 
+  return tok_temp;
+}
+void free_token(char * &d) { coco_string_delete(d) ; }
+void free_token()          { coco_string_delete(tok_temp); }
 
 void index_col(char *name) {
   log_conf_debug(cmd->server,"SQL index rec %s:%s,%s", idxtype, idxname, name);
@@ -45,8 +51,8 @@ PRODUCTIONS
   ScanSpec                                     (. dir->flag.table_scan = 1; .)
     = "TABLE" | "ordered" "index" Name           (. idxname = copy_token(); .)
                           (. config::ordered_index_scan(cmd, dir, idxname); .) .
-
-  IndexSpec                                 
+                          
+  IndexSpec                   
     = ( Name "key"             (. idxtype = "P"; idxname = "*Primary$Key*"; .)
       | "unique" "index" Name  (. idxtype = "U"; idxname = copy_token();    .)
     ) "=" VarList 
@@ -58,6 +64,16 @@ PRODUCTIONS
   
   VarList = var { "," var } .
   relop = ("=" | "<" | "<=" | ">" | ">=")       (. rel_op = copy_token();   .) .
-  var = Name                                    (. index_col(copy_token()); .) .
+  var = Name                                    (. index_col(copy_token()); .)
+                                                (. free_token();            .) .
   
 END NSQL .
+
+/*       --- About memory leaks in the parser ---
+  dir->xxx->new_item() = copy_token() is not a leak.
+  dir->table or dir->database = copy_token() is not a leak.
+  (Freeing the string in any of these cases would be a terrible bug.)
+  Every index name assigned to idxname is a leak, but these cannot be 
+  freed because they are used later in index_col(), and because idxname 
+  sometimes points to string constants.
+*/
