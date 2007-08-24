@@ -56,13 +56,13 @@ int read_http_post(request_rec *r, table **tab)
   const char *key, *val, *type;
   int rc = OK;
   
-  if(r->method_number != M_POST) {
+  if(r->method_number != M_POST) {   // To do: support PUT here.
     return rc;
   }
   
   type = ap_table_get(r->headers_in, "Content-Type");
   if(strcasecmp(type, DEFAULT_ENCTYPE) != 0) {
-    return DECLINED;
+    return DECLINED;   // To do:  branch off to support multipart/form-data
   }
   
   if((rc = util_read(r, &data)) != OK) {
