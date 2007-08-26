@@ -8,6 +8,8 @@ LIBS=$(APXS_LIBS_SHLIB) -lndbclient -lmystrings $(MY_LIBS) -lmysys -lstdc++
 
 all: mod_ndb.so httpd.conf 
 
+prep: Parser.cpp rev
+
 mod_ndb.so: $(OBJECTS)
 	$(CC) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
