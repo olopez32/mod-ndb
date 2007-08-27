@@ -235,29 +235,35 @@ extern "C" {
 */
 int ndb_handle_error(request_rec *r, int status, 
                      const NdbError *error, const char *msg) {
+  result_buffer page;
+  page.init(r, 4096);
+  
   ap_table_setn(r->notes, "verbose-error-to", "*");
   r->status = status;
   r->content_type = "text/plain";
   
   if(status == 405) ap_table_setn(r->headers_out, "Allow", msg);
-  ap_send_http_header(r);
   
   switch(status) {
     case 404:
-      ap_rprintf(r,"No data could be found.\n");
+      page.out("No data could be found.\n");
       break;
     case 405:
       break;  // no message
     case 409:
-      ap_rprintf(r, "%s.\n", error->message);
+      page.out("%s.\n", error->message);
       break;
     case 500:
-      if(msg) ap_rprintf(r, "%s\n", msg);
+      if(msg) page.out(msg);
       break;
     default:
-      ap_rprintf(r,"HTTP return code %d.\n", status);
+      page.out("HTTP return code %d.\n", status);
   }
-  
+
+  ap_set_content_length(r, page.sz);
+  ap_send_http_header(r);
+  ap_rwrite(page.buff, page.sz, r);
+
   return DONE; 
 }
 
