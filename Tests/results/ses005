@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Content-Length: 469
+ETag: e1f80e6bfe20d095e5303a1102b62ca9
+Content-Type: text/plain
+
+[
+  { "sess_id":2 , "sess_var_name":"user_name" , "sess_var_value":"tk" },
+  { "sess_id":3 , "sess_var_name":"user_name" , "sess_var_value":"brian" },
+  { "sess_id":1 , "sess_var_name":"user_name" , "sess_var_value":"jdd" },
+  { "sess_id":3 , "sess_var_name":"last_page_visited" , "sess_var_value":"maps.php" },
+  { "sess_id":3 , "sess_var_name":"time_zone" , "sess_var_value":"GMT-0400" },
+  { "sess_id":4 , "sess_var_name":"user_name" , "sess_var_value":"roger" } 
+]

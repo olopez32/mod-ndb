@@ -58,7 +58,8 @@ INSERT INTO typ4 VALUES
 
 CREATE TABLE typ5 (
   i int primary key auto_increment not null,
-  c int unsigned NOT NULL
+  c int unsigned NOT NULL,
+  unique index c_idx (c)
 ) engine=ndbcluster ;
 
 CREATE TABLE typ6 (
