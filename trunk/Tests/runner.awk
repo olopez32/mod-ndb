@@ -3,6 +3,7 @@ BEGIN { if(!host) host = "localhost:3080"
         server = "http://" host }
 
 /^#/  { next; }
+/^$/  { next; }
 
 { if( (!test) || ($1 ~ test)) {
      if(mode == "record") outfile = "> results/" $1

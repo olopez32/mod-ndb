@@ -1,6 +1,8 @@
 #
-# test-name filter path curl-args
+# test-name sed-filter url-path curl-args
+
 # "Sesssion" tests
+# change a row, change it back; create a row, delete it
 ses001 f1 ses_ls
 ses002 f1 ses?id=3&var=last_page_visited -d sess_var_value=maps.php
 ses003 f1 ses/3
@@ -9,14 +11,22 @@ ses005 f1 ses_ls
 ses006 f1 ses?id=4&var=user_name -X DELETE
 ses008 f1 ses?id=3&var=last_page_visited -d sess_var_value=index.php
 ses010 f1 ses_ls        # Same as ses001
-typ501 f1 typ5?i=1&c=1
-typ502 f1 typ5 -d 'i=1&c=1'
-typ503 f1 typ5?i=1&c=1
-typ504 f1 typ5?i=1 -d c=@++
-typ505 f1 typ5?i=1&c=1
-typ506 f1 typ5 -d i=@autoinc -d c=@time  # First autoinc: tuple already existed
-typ507 f1 typ5 -d i=@autoinc -d c=@time  # Second autoinc: success
-typ508 f1 typ5?i=1 -X DELETE
-typ509 f1 typ5?i=2 -X DELETE
 
+# typ5 tests: ( i int primary key auto_inc , c int unsigned, unique index c_idx)
+
+typ501 f1 typ5?i=1&c=1       # 404 -- start with empty table
+typ502 f1 typ5 -d 'i=1&c=1'  # 204 -- insert a tuple
+typ503 f1 typ5?i=1&c=1       # 200 -- get (1,1)
+typ504 f1 typ5?i=1 -d c=@++  # 204 -- c=c+1 
+typ505 f1 typ5?i=1&c=1       # 200 -- get (1,2)
+typ506 f1 typ5?i=1 -X DELETE # 204 -- delete the row.  empty again.
+
+# insert two rows with auto_increment keys, then delete them
+typ511 f1 typ5 -d i=@autoinc -d c=33       # OK 
+typ512 f1 typ5 -d i=@autoinc -d c=49       # OK
+typ513 f1 typ5 -d i=@autoinc -d c=33       # 409 Conflict
+typ514 f1 typ5_ls                          # Two rows
+typ515 f1 typ5_del?c=33 -X DELETE
+typ516 f1 typ5_del?c=49 -X DELETE
+typ517 f1 typ5_ls                          # Empty table again.
 
