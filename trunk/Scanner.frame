@@ -34,6 +34,9 @@ Coco/R itself) does not fall under the GNU General Public License.
 #define COCO_SCANNER_H__
 
 #include "httpd.h"
+#include "http_config.h"
+#include "mod_ndb_compat.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
