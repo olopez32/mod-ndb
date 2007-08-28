@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Length: 87
+ETag: 23b5d13ef47a583ed5044e7090dbd483
+Content-Type: text/plain
+
+ { "i":1 , "d1":3.14 , "d2":3.1416 , "d3":3.1 , "d4":3.141592653589793000000000000000 }
