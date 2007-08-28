@@ -4,7 +4,7 @@ format_compiler.o format_dumper.o \
 Parser.o Scanner.o
 
 INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
-LIBS=$(APXS_LIBS_SHLIB) -lndbclient -lmystrings $(MY_LIBS) -lmysys -lstdc++
+LIBS=$(APXS_LIBS_SHLIB) $(MYSQL_LIBS)
 
 all: mod_ndb.so httpd.conf 
 
