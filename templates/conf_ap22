@@ -11,6 +11,7 @@ Group @AP_GROUP@
 PidFile "logs/httpd.pid"
 ScoreBoardFile "logs/httpd.scoreboard"
 
+#-Load-Files
 LoadModule ndb_module         mod_ndb.so
 
 #-Other-Modules
