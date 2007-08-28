@@ -1,0 +1,14 @@
+#!/bin/sh
+
+exe="sh"
+arg=$1 
+while shift
+ do
+   test "$arg" = "-e" && exe="cat"
+   test "$arg" = "-r" && mode="-v mode=record"
+   test "$arg" = "-t" && mode="-v mode=compare"
+   testcase=$arg
+   arg=$1
+done
+
+awk -f runner.awk -v test=$testcase $mode test.list | $exe
