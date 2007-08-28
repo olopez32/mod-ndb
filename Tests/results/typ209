@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Length: 70
+ETag: 2a0132948a26fcaa899d83a05e8b128d
+Content-Type: text/plain
+
+ { "i":5 , "t":-128 , "ut":0 , "s":-900 , "us":0 , "m":-900 , "um":0 }

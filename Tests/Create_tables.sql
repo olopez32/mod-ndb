@@ -8,7 +8,7 @@ CREATE TABLE typ1 (
   name char(8),
   color varchar(16),
   nvisits int unsigned,
-  channel int,
+  channel smallint,
   index (channel)
 ) engine=ndbcluster;
 
@@ -44,6 +44,11 @@ CREATE TABLE typ3 (
   d3 decimal(3,1),
   d4 decimal(65,30)
 ) engine=ndbcluster;
+
+INSERT INTO typ3 
+VALUES (1, pi(), pi(), pi(), pi() ),
+       (2, 1.25, 1234567890.1234, 0, 0 );
+
 
 CREATE TABLE typ4 (
   i int not null primary key,
