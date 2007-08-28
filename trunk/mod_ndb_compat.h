@@ -74,9 +74,9 @@ typedef apr_array_header_t array_header;
 #define log_note(s, ... ) ap_log_error(APLOG_MARK,log::warn,0,s,__VA_ARGS__ );
 
 #ifdef MOD_NDB_DEBUG 
-#define log_debug(s,txt,...) ap_log_error(APLOG_MARK,log::debug,0,s,txt, __VA_ARGS__);
+#define log_debug(s, ...) ap_log_error(APLOG_MARK,log::debug,0,s, __VA_ARGS__);
 #else
-#define log_debug(s,txt,...) 
+#define log_debug(s, ...) 
 #endif
 
 #else 
