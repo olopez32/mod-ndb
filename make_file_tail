@@ -27,7 +27,7 @@ read_http_post.o: read_http_post.cc
 Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h index_object.h
 Execute.o: Execute.cc mod_ndb.h result_buffer.h output_format.h
 MySQL_Field.o: MySQL_Field.cc MySQL_Field.h result_buffer.h
-config.o: config.cc mod_ndb.h mod_ndb_config.h
+config.o: config.cc mod_ndb.h mod_ndb_config.h Parser.cpp
 result_buffer.o: result_buffer.cc mod_ndb.h result_buffer.h
 output_format.o: output_format.cc output_format.h 
 format_compiler.o: output_format.h format_compiler.h
