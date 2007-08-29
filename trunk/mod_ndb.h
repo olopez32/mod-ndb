@@ -187,3 +187,4 @@ void register_built_in_formatters(ap_pool *);
 int build_results(request_rec *, data_operation *, result_buffer &);
 int ndb_handle_error(request_rec *, int, const NdbError *, const char *);
 const char * allowed_methods(request_rec *, config::dir *);
+
