@@ -15,6 +15,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+#define SQL_BUFFER_LEN  MAX_STRING_LEN*2
+
 // Forward declaration
 class output_format;
 
@@ -101,7 +103,7 @@ namespace config {
   const char * connectstring(cmd_parms *, void *, char *);
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
   const char * result_fmt_container(cmd_parms *, void *, char *);
-  const char * sql_container(const char *, cmd_parms *, void *, char *);
+  const char * sql_container(cmd_parms *, void *, char *);
   void ordered_index_scan(cmd_parms *, config::dir *, const char *);
 }
 
