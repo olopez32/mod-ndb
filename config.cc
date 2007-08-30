@@ -599,58 +599,109 @@ namespace config {
     if(!error)
       error = register_format(cmd->pool, fmt);
     return error;
-  }
+  }  
 
-  /* SELECT */
-  const char *sql_select(cmd_parms *cmd, void *m, char *args) {
-    return config::sql_container("SELECT ",cmd, m, args);
-  }
 
-  /* DELETE */
-  const char *sql_delete(cmd_parms *cmd, void *m, char *args) {
-    return config::sql_container("DELETE ",cmd, m, args);
-  }
-  
-  
-  /* Handle an N-SQL query 
+  /* As apache configuration goes, copy_sql_into_buffer() is unusual code.
+
+     The apache 1.3 version calls ap_cfg_getc() to read a whole SQL query 
+     from the actual configuration file, up to the terminating ';'.  
+
+     The apache 2 version cannot read the file, because the file has already 
+     been stored in a configuration tree, but it reads from the tree 
+     starting at cmd->directive, and then resets cmd->directive->next so as
+     to force apache to skip over the lines that it has already processed.
   */
-  const char *sql_container(const char *kw, cmd_parms *cmd, void *m, char *args) {
-    size_t max_query_len = MAX_STRING_LEN * 2;
+
+  #ifdef THIS_IS_APACHE2
+  const char *copy_sql_into_buffer(cmd_parms *cmd, char *args, char *&query_buff) {
+    const char *buff_end = query_buff + SQL_BUFFER_LEN;
+    register char *end = query_buff;
+    const char *pos;
+    ap_directive_t *cfline = cmd->directive;
+    int more_query = 1;
+
+    /* Copy everything from the parsed config tree into the query buffer
+       up to the semicolon that terminates the query */
+
+    while(cfline && more_query && (end < buff_end)) {
+      // copy the first word on the line 
+      pos = cfline->directive;
+      while((*end = *pos++)) 
+        if(*end++ == ';') more_query = 0;
+      
+      if((end < buff_end) && more_query) {        
+        *end++ = ' ';         // add a space       
+        // copy the rest of the line 
+        pos = cfline->args;
+        while((*end = *pos++)) {
+          if(*end++ == ';') more_query = 0;
+        }
+        *end++ = ' ';       // add another space         
+      }
+      cfline = cfline->next;
+    }
+
+    *end = 0;
+    if(end >= buff_end) return "N-SQL query too long (missing semicolon?).";
+    
+    /* Now we muck with the config tree, so that the second and subsequent lines
+       of the query will not get processed again */
+    cmd->directive->next = cfline;
+    
+    return 0;
+  }
+  #else  
+  /* Apache 1.3 */
+  const char *copy_sql_into_buffer(cmd_parms *cmd, char *args, char *&query_buff) {
+    const char *buff_end = query_buff + SQL_BUFFER_LEN;
+    const char *keyword = (const char *) cmd->cmd->cmd_data;
     char *pos = args;
-    char c;
     int end_of_query = 0;
-
-    char *query_buff = (char *) ap_pcalloc(cmd->pool, max_query_len);
-    const char *buff_end = query_buff + max_query_len;
-
+        
     /* Copy everything from the config file into the query buffer 
-       up to the semicolon that terminates the query 
-    */
-    // First the SELECT/DELETE keyword 
-    char *end = ap_cpystrn(query_buff, kw, 10);
+       up to the semicolon that terminates the query */
+       
+    // First the SQL keyword 
+    register char *end = ap_cpystrn(query_buff, keyword, 10);
     
     // Then the rest of the current line
     while((*end = *pos++))
-      if(*end++ == ';') end_of_query = 1;
+      if(*end++ == ';' || end == buff_end) end_of_query = 1;
     
     // Then the remaining lines.
     if(! end_of_query) {
+      register char c;
       while((c = ap_cfg_getc(cmd->config_file))) {
-        *end++ = c;
-        if(c == ';') break;
-        if(end == buff_end) return "N-SQL query too long (missing semicolon?)."; 
+        *end++ = c;         
+        if(c == ';' || end == buff_end) break;
       }
     }
     *end=0;
+    if(end >= buff_end) return "N-SQL query too long (missing semicolon?).";
+    return 0;
+  }  
+  #endif
+  
+  /* Handle an N-SQL query 
+  */
+  const char *sql_container(cmd_parms *cmd, void *m, char *args) {
+    char *query_buff = (char *) ap_pcalloc(cmd->pool, SQL_BUFFER_LEN);
+    const char *err;
+
+    if(! cmd->path) return "N-SQL query found outside of <Location> section";
+    err = copy_sql_into_buffer(cmd, args, query_buff);
+    if(err) return err;
+    
     log_debug(cmd->server, "N-SQL query: %s", query_buff);
     
-    NSQL::Scanner *scanner = new NSQL::Scanner(query_buff, max_query_len);
+    NSQL::Scanner *scanner = new NSQL::Scanner(query_buff, SQL_BUFFER_LEN);
     NSQL::Parser  *parser  = new NSQL::Parser(scanner);
     
-    parser->dir = (config::dir *) m;
-    assert(parser->dir->magic_number = 0xBABECAFE);
     parser->cmd = cmd;
+    parser->dir = (config::dir *) m;
     parser->errors->http_server = cmd->server;
+    assert(parser->dir->magic_number = 0xBABECAFE);
 
     parser->Parse();
 
@@ -692,16 +743,16 @@ extern "C" {
   },
   { 
     "SELECT",  // N-SQL statement
-    (CMD_HAND_TYPE) config::sql_select,
-    NULL,
-    ACCESS_CONF | EXEC_ON_READ,      RAW_ARGS,
+    (CMD_HAND_TYPE) config::sql_container,
+    (void *) "SELECT ",
+    ACCESS_CONF ,      RAW_ARGS,
     "N-SQL SELECT Query"    
   },
   { 
     "DELETE",  // N-SQL statement
-    (CMD_HAND_TYPE) config::sql_delete,
-    NULL,
-    ACCESS_CONF | EXEC_ON_READ,      RAW_ARGS,
+    (CMD_HAND_TYPE) config::sql_container,
+    (void *) "DELETE ",
+    ACCESS_CONF,      RAW_ARGS,
     "N-SQL DELETE Query"    
   },    
   {
