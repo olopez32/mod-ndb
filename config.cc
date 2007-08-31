@@ -693,7 +693,7 @@ namespace config {
     err = copy_sql_into_buffer(cmd, args, query_buff);
     if(err) return err;
     
-    log_debug(cmd->server, "N-SQL query: %s", query_buff);
+    log_conf_debug(cmd->server, "N-SQL query: %s", query_buff);
     
     NSQL::Scanner *scanner = new NSQL::Scanner(query_buff, SQL_BUFFER_LEN);
     NSQL::Parser  *parser  = new NSQL::Parser(scanner);
