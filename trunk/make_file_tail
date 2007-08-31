@@ -11,7 +11,7 @@ all: mod_ndb.so httpd.conf
 prep: Parser.cpp rev
 
 mod_ndb.so: $(OBJECTS)
-	$(CC) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
+	LD_RUN_PATH=$(LDSO_PATH) $(CC) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
 .cc.o:
 	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $< 
@@ -52,13 +52,13 @@ httpd.conf:
 	sed -f template.sed $(TEMPLATE) > httpd.conf
 
 start: mod_ndb.so httpd.conf
-	LD_LIBRARY_PATH=$(LDSO_PATH) $(START_HTTPD)
+	$(START_HTTPD)
         
 stop:
-	LD_LIBRARY_PATH=$(LDSO_PATH) $(STOP_HTTPD)
+	$(STOP_HTTPD)
       
 restart:
-	LD_LIBRARY_PATH=$(LDSO_PATH) $(RESTART_HTTPD)
+	$(RESTART_HTTPD)
 
 configtest:
-	LD_LIBRARY_PATH=$(LDSO_PATH) $(START_HTTPD) -t
+	$(START_HTTPD) -t
