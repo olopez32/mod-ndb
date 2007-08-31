@@ -1,10 +1,19 @@
-#!/bin/sh
+#  Test suite control script for mod_ndb
+
+# run-test[group]  -- where group can be e.g. "ses" or "ses1" or "ses104"
+# If group is blank, then run all tests in test.list
+
+# -r means run and record results (in the results/ directory)
+# -t means run and compare actual result to recorded result -- Pass or Fail
+# -e means just print the commands that would be executed to run the test
+
+[ -d /usr/xpg4/bin ]  && PATH=/usr/xpg4/bin:$PATH
 
 exe="sh"
 arg=$1 
 while shift
  do
-   test "$arg" = "-e" && exe="cat"
+   test "$arg" = "-e" && exe="cat"  
    test "$arg" = "-r" && mode="-v mode=record"
    test "$arg" = "-t" && mode="-v mode=compare"
    testcase=$arg
