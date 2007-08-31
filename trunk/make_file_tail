@@ -16,8 +16,11 @@ mod_ndb.so: $(OBJECTS)
 .cc.o:
 	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $< 
 
-.cpp.o:
-	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $< 
+Scanner.o: Scanner.cpp
+	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ Scanner.cpp
+
+Parser.o: Parser.cpp
+	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ Parser.cpp
 
 mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h revision.h output_format.h
 	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $(MOD_SOURCE)
