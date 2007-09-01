@@ -1,5 +1,9 @@
 /* -- "session handling" tests -- */
 
+use mod_ndb_tests ;
+
+DROP TABLE IF EXISTS ses0;
+
 CREATE TABLE ses0 (
   `sess_id` bigint(20) unsigned NOT NULL,
   `sess_var_name` varchar(20) NOT NULL,
