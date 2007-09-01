@@ -1,6 +1,9 @@
 #
 # test-name sed-filter url-path curl-args
 
+# ------ Prepare the database
+aaa000 sql Create_tables.sql
+
 # ------ Data type tests ------
 # typ1: the most common data types (int, unsigned, smallint, char, varchar)
 typ101 f1 typ1     # Broken!  Should order ASC

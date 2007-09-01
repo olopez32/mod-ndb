@@ -9,6 +9,11 @@ BEGIN { if(!host) host = "localhost:3080"
 /^$/  { next; }
 
 { if( (!test) || ($1 ~ test)) {
+    if($2 == "sql") {
+      printf("mysql --defaults-file=my.cnf < %s \n\n",$3)
+      next
+    }
+
      if(mode == "record")       outfile = "> results/" $1
      else if(mode == "compare") outfile = "> current/" $1
      else outfile = ""
