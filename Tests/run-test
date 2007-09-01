@@ -5,7 +5,8 @@
 
 # -r means run and record results (in the results/ directory)
 # -t means run and compare actual result to recorded result -- Pass or Fail
-# -e means just print the commands that would be executed to run the test
+# -s means run SQL scripts to prepare the test database, instead of actual tests
+# -e means just print the commands that would have been executed
 
 [ -d /usr/xpg4/bin ]  && PATH=/usr/xpg4/bin:$PATH
 
@@ -15,6 +16,7 @@ while shift
  do
    test "$arg" = "-e" && exe="cat"  
    test "$arg" = "-r" && mode="-v mode=record"
+   test "$arg" = "-s" && mode="-v mode=sql"
    test "$arg" = "-t" && mode="-v mode=compare"
    testcase=$arg
    arg=$1
