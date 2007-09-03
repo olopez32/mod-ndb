@@ -34,7 +34,8 @@
 		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
-		657BD1C50B84EFD100A9ED69 /* Create_tables.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Create_tables.sql; path = Tests/Create_tables.sql; sourceTree = "<group>"; };
+		656D04150C89302500A430C6 /* Create_tables.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Create_tables.sql; path = Tests/SQL/Create_tables.sql; sourceTree = "<group>"; };
+		656D04160C89302E00A430C6 /* ses.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ses.sql; path = Tests/SQL/ses.sql; sourceTree = "<group>"; };
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
@@ -123,14 +124,23 @@
 			name = "N-SQL";
 			sourceTree = "<group>";
 		};
+		656D03EA0C89301300A430C6 /* SQL */ = {
+			isa = PBXGroup;
+			children = (
+				656D04150C89302500A430C6 /* Create_tables.sql */,
+				656D04160C89302E00A430C6 /* ses.sql */,
+			);
+			name = SQL;
+			sourceTree = "<group>";
+		};
 		657BD1C30B84EE8600A9ED69 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				651A68C20C824B6500EE077F /* test.list */,
-				657BD1C50B84EFD100A9ED69 /* Create_tables.sql */,
 				657BD1C60B84EFD100A9ED69 /* httpd.conf */,
 				651A69790C826F8D00EE077F /* run-test */,
 				651A68DF0C824E3500EE077F /* runner.awk */,
+				656D03EA0C89301300A430C6 /* SQL */,
 			);
 			name = Tests;
 			sourceTree = "<group>";

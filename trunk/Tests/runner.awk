@@ -9,8 +9,8 @@ BEGIN { if(!host) host = "localhost:3080"
 /^$/  { next; }
 
 { if( (!test) || ($1 ~ test)) {
-    if($2 == "SQL" && mode == "sql") {
-      printf("mysql --defaults-file=my.cnf < SQL/%s \n\n",$3)
+    if(mode == "sql") {
+      if($2 == "SQL") printf("mysql --defaults-file=my.cnf < SQL/%s \n\n",$3)
       next
     }
 

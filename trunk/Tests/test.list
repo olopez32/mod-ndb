@@ -1,5 +1,16 @@
-#
-# test-name sed-filter url-path curl-args
+# test.list 
+# 
+# This set of tests as a whole should be idempotent: able to run repeatedly
+# and get the same results each time.  Any group of tests with the 
+# same 3- or 4- character prefix name should also be idempotent, 
+# e.g. "typ" or "typ2".
+
+# Format of test lines (tests are run against mod_ndb using curl):
+#     test-name sed-filter url-path curl-args
+# 
+# Format of SQL lines, e.g. CREATE TABLE statements, run in mysql client:
+#     test-name "SQL" query-file-name 
+
 
 # ------ Prepare the database
 aaa000 SQL Create_tables.sql

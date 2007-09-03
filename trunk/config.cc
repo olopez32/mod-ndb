@@ -29,6 +29,8 @@ const char *filter_ops[] = {"<=","<", ">=",">", "=","!=", "LIKE","NOTLIKE", 0};
 const char *relational_ops[] = { ">=" , ">" , "<=" , "<" , 0 };
 
 
+/* unescape() handles user-defined output formats that may contain "\n"
+*/
 const char *unescape(ap_pool *p, const char *str) {
   /* The unescaped string will never be longer than the original */
   char *res = (char *) ap_pcalloc(p, strlen(str) + 1);
@@ -42,6 +44,28 @@ const char *unescape(ap_pool *p, const char *str) {
   }
   *c = 0;
   return (const char *) res;
+}
+
+
+/* unquote_qstring() handles quoted strings that come from the N-SQL parser
+*/
+char *unquote_qstring(cmd_parms *cmd, const char *str) {
+  /* The unquoted string will never be longer than the original */
+  char *res = (char *) ap_pcalloc(cmd->pool, strlen(str) + 1);
+  char *c = res;
+
+  assert(*str++ == '"');  /* opening quote */
+  while(*str) {
+    if(*str == '\\') {    /* the next character is a backslash or a quote */
+      str++; 
+      *c++ = *str++;  
+    }
+    else if(*str == '"') break; /* closing quote */
+    else 
+      *c++ = *str++;
+  }
+  *c = 0;
+  return res;
 }
 
 
@@ -59,6 +83,7 @@ namespace config {
     dir->updatable   = new(p, 4) apache_array<char *>;
     dir->indexes     = new(p, 2) apache_array<config::index>;
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
+    dir->index_scan  = (index *) ap_pcalloc(p, sizeof(index));
     dir->fmt = get_format_by_name("JSON");
     dir->use_etags = 1;
     dir->magic_number = 0xBABECAFE ;
@@ -328,14 +353,14 @@ namespace config {
   }    
   
   
-  short add_column_to_index(cmd_parms *cmd, config::dir *dir, char *col_name, 
-                            short index_id, bool &col_exists, const char *relop)
+  short add_column_to_index(cmd_parms *cmd, config::dir *dir, short index_id, 
+                            NSQL::Expr *expr, bool &col_exists)
   {
     config::index *indexes = dir->indexes->items();
     config::key_col *cols;   // do not initialize until after add_key_column()
+    char *col_name = expr->value;
     short id;
     
-    log_conf_debug(cmd->server,"Adding column %s to index",col_name);
     id = add_key_column(cmd, dir, col_name, col_exists);
     cols = dir->key_columns->items();
 
@@ -357,12 +382,7 @@ namespace config {
       else if(indexes[index_id].type == 'O') {
         cols[id].is.in_ord_idx = 1;
         cols[id].implied_plan = OrderedIndexScan;
-        cols[id].filter_op = NdbIndexScanOperation::BoundEQ;
-        if(*relop != '=') {
-          for(int n = 0 ; relational_ops[n] ; n++)
-            if(!strcmp(relop,relational_ops[n]))
-              cols[id].filter_op = n;
-        }
+        cols[id].filter_op = expr->rel_op;
       }
     }
     cols[id].next_in_key_serial = -1;  
@@ -370,21 +390,13 @@ namespace config {
  
     return  id;
   }
-  
+
   
   const char *primary_key(cmd_parms *cmd, void *m, char *col) {
     return named_index(cmd, m, "*Primary$Key*", col);
   }
 
 
-  void ordered_index_scan(cmd_parms *cmd, config::dir *dir, const char *name) {
-    dir->index_scan = (config::index *) ap_pcalloc(cmd->pool, sizeof(config::index));
-    bzero(dir->index_scan,sizeof(config::index));
-    dir->index_scan->name = ap_pstrdup(cmd->pool, name);
-    dir->index_scan->type = 'O'; 
-  }
- 
-   
   const char *table(cmd_parms *cmd, void *m, char *arg1, char *arg2, char *arg3) {
     config::dir *dir = (config::dir *) m;
 
@@ -392,7 +404,7 @@ namespace config {
     if(arg2) { /* SCAN */
       if(!(ap_strcasecmp_match(arg2,"scan"))) {
         dir->flag.table_scan = 1;
-        if(arg3) ordered_index_scan(cmd, dir, arg3);
+        if(arg3) dir->index_scan->name = ap_pstrdup(cmd->pool, arg3);
       }
     }
     return 0;
@@ -442,6 +454,66 @@ namespace config {
         return n;
     return -1;
   }
+
+
+  short build_index_record(cmd_parms *cmd, config::dir *dir, 
+                           char *idxtype, char *name) 
+  {
+    short index_id;
+    
+    config::index *index_rec = dir->indexes->new_item();
+    bzero(index_rec, dir->indexes->elt_size);
+    index_id = dir->indexes->size() - 1;
+    index_rec->name = ap_pstrdup(cmd->pool, name);
+    index_rec->type = *idxtype;                       
+    index_rec->first_col_serial = -1;
+    index_rec->first_col = -1;
+    
+    log_conf_debug(cmd->server,"Creating new index record \"%s\"", name);    
+    return index_id;
+  }
+  
+  
+  /* index_constant() is called from the SQL parser. 
+  */
+  const char *index_constant(cmd_parms *cmd, config::dir *dir, char *idx, 
+                             NSQL::Expr *in_expr) 
+  {
+    short index_id = get_index_by_name(dir, idx);
+    assert(index_id != -1);
+
+    config::index *index_rec = & dir->indexes->item(index_id);
+    NSQL::Expr *expr = new(cmd->pool) NSQL::Expr;
+        
+    expr->type  = NSQL::Relation;
+    expr->vtype = NSQL::Const;
+    expr->base_col_name = in_expr->base_col_name;
+    expr->value = (* (in_expr->value) == '"') ? 
+        unquote_qstring(cmd, in_expr->value) : in_expr->value;
+    expr->rel_op = in_expr->rel_op;
+
+    /* Linked list: */
+    expr->next = index_rec->constants;
+    index_rec->constants = expr;
+    
+    return 0;
+  }
+ 
+    
+  void sort_scan(config::dir *dir, int bounded, char *idxname, int sort_order) {
+    config::index * index_rec;
+    
+    if(bounded) {
+      short index_id = get_index_by_name(dir, idxname);
+      assert(index_id != -1);
+      index_rec = & dir->indexes->item(index_id);
+    }
+    else index_rec = dir->index_scan;
+
+    index_rec->flag.sorted = 1;
+    if(sort_order == NSQL::Desc)
+      index_rec->flag.descending = 1;
+  }
     
     
   /* named_index():  process Index directives.
@@ -451,62 +523,63 @@ namespace config {
      Create an index record for the index, and a key_column record 
      for each column    
   */
-
   const char *named_index(cmd_parms *cmd, void *m, char *idx, char *col) {
     char *which = (char *) cmd->cmd->cmd_data;
     config::dir *dir = (config::dir *) m;
-    return named_idx(which, cmd, dir, idx, col, "=");
+    NSQL::Expr *e = new(cmd->pool) NSQL::Expr;
+
+    /* type-safe test: (is this void pointer really a dir?) */
+    assert(dir->magic_number == 0xBABECAFE);
+
+    if(dir->index_scan->name && ! strcmp(idx, dir->index_scan->name)) 
+      return "Cannot define key columns for an ordered index scan.";
+
+    /* Create the index */
+    short index_id = get_index_by_name(dir, idx);
+    if(index_id == -1)
+      index_id = build_index_record(cmd, dir, which, idx);
+        
+    e->rel_op = NdbIndexScanOperation::BoundEQ;
+    e->base_col_name = "";
+    e->vtype = NSQL::Param;
+    e->value = col;
+
+    return named_idx(cmd, dir, idx, e);
   }
 
-  const char *named_idx(char *idxtype, cmd_parms *cmd, config::dir *dir, 
-                        char *idx, char *col, char *relop) 
+
+  const char *named_idx(cmd_parms *cmd, config::dir *dir, char *idx, 
+                        NSQL::Expr *expr) 
   {
     short index_id, col_id;
     config::index *index_rec;
     config::key_col *cols;
     short i;
+    char *col = expr->value;
 
-    /* type-safe test: (is this void pointer really a dir?) */
-    assert(dir->magic_number == 0xBABECAFE);
-
-    index_id = get_index_by_name(dir,idx);
-
-    if(index_id == -1 && dir->index_scan && ! strcmp(idx, dir->index_scan->name)) 
-      index_rec = dir->index_scan;  // This index is used for a table scan
-    else if(index_id == -1) {
-      /* Build the index record */
-      log_conf_debug(cmd->server,"Creating new index record \"%s\" at %s:%d",
-                     idx, cmd->config_file->name, cmd->config_file->line_number);
-      index_rec = dir->indexes->new_item();
-      bzero(index_rec, dir->indexes->elt_size);
-      index_id = dir->indexes->size() - 1;
-      index_rec->name = ap_pstrdup(cmd->pool, idx);
-      index_rec->type = *idxtype;                       
-      index_rec->first_col_serial = -1;
-      index_rec->first_col = -1;
-    }
-    else 
-      index_rec = & dir->indexes->item(index_id);
-
+    index_id = get_index_by_name(dir, idx);
+    assert(index_id != -1);
+    index_rec = & dir->indexes->item(index_id);
+    assert(index_rec);
+    
     /* Sometimes a column name is not actually a column, but a flag */
     if(index_rec->type == 'O' && *col == '[') {
       if(!strcmp(col,"[ASC]")) {
-        index_rec->flag.sorted = 1;
+        sort_scan(dir, 1, idx, NSQL::Asc);
         return 0;
       }
       else if(!strcmp(col,"[DESC]")) {
-        index_rec->flag.sorted = 1;
-        index_rec->flag.descending = 1;
+        sort_scan(dir, 1, idx, NSQL::Desc);
         return 0;
       }
-    }
-    /* Setting the sort flag was the only legal thing you can do to a scan */
-    if(index_rec == dir->index_scan) 
-      return "Cannot define key columns for an ordered index scan.";
+      return ap_psprintf(cmd->pool,"Unrecognized sort flag: %s.", col);
+    }      
     
     /* Create a column record */
     bool col_exists = 0;
-    col_id = add_column_to_index(cmd, dir, col, index_id, col_exists, relop);
+    log_conf_debug(cmd->server,"Adding key column %s to index %s:%s",
+                   col, dir->table, idx);
+    col_id = add_column_to_index(cmd, dir, index_id, expr, col_exists);
     cols = dir->key_columns->items();
     index_rec->n_columns++;
     
@@ -637,7 +710,7 @@ namespace config {
         while((*end = *pos++)) {
           if(*end++ == ';') more_query = 0;
         }
-        *end++ = ' ';       // add another space         
+        *end++ = '\n';
       }
       cfline = cfline->next;
     }
@@ -706,8 +779,10 @@ namespace config {
     parser->Parse();
 
     if(parser->errors->count) 
-      return ap_psprintf(cmd->pool,"NSQL parser: %d error(s).", parser->errors->count);
-
+      return ap_psprintf(cmd->pool,"NSQL parser: %d error%s in '%s'.",
+                         parser->errors->count, 
+                         parser->errors->count == 1 ? "" : "s",
+                         query_buff);
     /* success */
     delete parser;
     delete scanner;

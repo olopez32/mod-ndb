@@ -22,6 +22,27 @@ class output_format;
 
 typedef const char *(*CMD_HAND_TYPE) ();
 
+namespace NSQL {
+  enum { Relation = 1 };               // expression types
+  enum { Param = 1, Const, Column };   // value types
+  enum { Asc = 1, Desc };              // sort orders
+
+  class Expr {
+  public:
+    short type;
+    short vtype;
+    char *base_col_name;
+    int  rel_op;
+    char *value;
+    apache_array<NSQL::Expr> *args;
+    NSQL::Expr *next;
+
+    void * operator new(size_t sz, ap_pool *p) {
+      return ap_pcalloc(p, sz);
+    };
+  };  
+};
+
 namespace config {
   
   /* Apache per-server configuration  */
@@ -66,6 +87,7 @@ namespace config {
       unsigned sorted     : 1;
       unsigned descending : 1;
     } flag;
+    NSQL::Expr *constants;
   };
   
   /* Coulmn used in a query */
@@ -87,14 +109,15 @@ namespace config {
       int filter_op;
       AccessPlan implied_plan;
   };
-  
+
   void * init_dir(ap_pool *, char *);
   void * init_srv(ap_pool *, server_rec *);
   void * merge_dir(ap_pool *, void *, void *);
   void * merge_srv(ap_pool *, void *, void *);
+  void   sort_scan(config::dir *, int, char *, int);
   const char * non_key_column(cmd_parms *, void *, char *);
   const char * named_index(cmd_parms *, void *, char *, char *);
-  const char * named_idx(char *, cmd_parms *, config::dir *, char*,char*,char*);
+  const char * named_idx(cmd_parms *, config::dir *, char *, NSQL::Expr *);
   const char * result_format(cmd_parms *, void *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * table(cmd_parms *, void *, char *, char *, char *);
@@ -104,6 +127,7 @@ namespace config {
   const char * maxreadsubrequests(cmd_parms *, void *, char *);
   const char * result_fmt_container(cmd_parms *, void *, char *);
   const char * sql_container(cmd_parms *, void *, char *);
-  void ordered_index_scan(cmd_parms *, config::dir *, const char *);
+  const char * index_constant(cmd_parms*,config::dir*, char *, NSQL::Expr *);
+  short get_index_by_name(config::dir *, char *);
+  short build_index_record(cmd_parms*,config::dir*, char *, char*);
 }
-
