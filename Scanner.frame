@@ -81,7 +81,7 @@ char* coco_string_create_char(const wchar_t *value);
 void  coco_string_delete(char* &data);
 
 // Added for mod_ndb
-char* coco_string_create_apache(ap_pool *, const wchar_t *);
+char* coco_create_apache_string(ap_pool *, const wchar_t *);
 
 
 -->namespace_open
@@ -475,7 +475,7 @@ char* coco_string_create_char(const wchar_t *value) {
 	return res;
 }
 
-char* coco_string_create_apache(ap_pool *my_pool, const wchar_t *value) {
+char* coco_create_apache_string(ap_pool *my_pool, const wchar_t *value) {
 	int len = coco_string_length(value);
 	char *res = (char *) ap_pcalloc(my_pool, len + 1);
 	for (int i = 0; i < len; ++i) { res[i] = (char) value[i]; }

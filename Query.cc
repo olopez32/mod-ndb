@@ -83,7 +83,7 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
   switch(q->plan) {
     case Scan:
       index = dir->index_scan;
-      if(!index) { 
+      if(!index->name) { 
         log_debug(r->server, "Using table scan");
         return q->data->scanop->readTuples();
       }      
@@ -368,7 +368,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   /* Now set the Query Items that depend on the access plan and index type.
      Case 1: Table Scan  */    
   if(Q.plan == Scan) {
-    if(dir->index_scan) {
+    if(dir->index_scan->name) {
       /* "Table scan" using an ordered index: */
       idxname = dir->index_scan->name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 

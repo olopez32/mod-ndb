@@ -18,7 +18,7 @@ int util_read(request_rec *r, const char **rbuf)
   int rc = OK;
   
   if ((rc = ap_setup_client_block(r, REQUEST_CHUNKED_ERROR))) {
-    return rc;
+    return rc;    // To do: accept chunked transfers?
   }
   
   if (ap_should_client_block(r)) {
