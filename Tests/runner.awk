@@ -14,7 +14,9 @@ BEGIN { if(!host) host = "localhost:3080"
        next
      }
 
+     if(mode == "list") { print ; next }
      if($2 == "SQL") next;
+     
      if(mode == "record")       outfile = "> results/" $1
      else if(mode == "compare") outfile = "> current/" $1
      else outfile = ""
