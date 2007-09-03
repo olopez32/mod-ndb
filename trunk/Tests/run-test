@@ -1,12 +1,21 @@
 #  Test suite control script for mod_ndb
 
-# run-test[group]  -- where group can be e.g. "ses" or "ses1" or "ses104"
-# If group is blank, then run all tests in test.list
+usage() {
+  cat << __HELP__
 
-# -r means run and record results (in the results/ directory)
-# -t means run and compare actual result to recorded result -- Pass or Fail
-# -s means run SQL scripts to prepare the test database, instead of actual tests
-# -e means just print the commands that would have been executed
+  run-test [group]  -- where group can be e.g. "ses" or "ses1" or "ses104"
+  If group is blank, then run all tests in test.list
+
+    -r means run tests and record results (in the results/ directory)
+    -t means run and compare actual result to recorded result -- Pass or Fail
+    -s means run SQL scripts to prepare the test database, instead of actual tests
+    -e means just print the commands that would have been executed
+    -l means list the test cases in test.list that match [group]
+    -h means print this help
+
+__HELP__
+exit
+}
 
 [ -d /usr/xpg4/bin ]  && PATH=/usr/xpg4/bin:$PATH
 
@@ -18,6 +27,8 @@ while shift
    test "$arg" = "-r" && mode="-v mode=record"
    test "$arg" = "-s" && mode="-v mode=sql"
    test "$arg" = "-t" && mode="-v mode=compare"
+   test "$arg" = "-l" && mode="-v mode=list" && exe="cat"
+   test "$arg" = "-h" && usage 
    testcase=$arg
    arg=$1
 done
