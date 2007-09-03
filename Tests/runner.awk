@@ -16,6 +16,14 @@ BEGIN { if(!host) host = "localhost:3080"
 
      if(mode == "list") { print ; next }
      if($2 == "SQL") next;
+
+     if(mode == "config") {
+        qm = index($3, "?") ; 
+        if (qm) base = substr($3, 0, qm - 1) ">"
+        else base = $3 ">"
+        printf("awk -f config.awk -v 'cfpat=/ndb/test/%s' httpd.conf\n", base)
+        next
+     }
      
      if(mode == "record")       outfile = "> results/" $1
      else if(mode == "compare") outfile = "> current/" $1
@@ -28,8 +36,11 @@ BEGIN { if(!host) host = "localhost:3080"
      filter = "sed -f " $2 ".sed"
 
      printf("%s '==== %s '\n", echo, $1)
+     if(mode == "record") printf("cp %s %s.old\n",outfile, outfile)
      printf("%s | %s %s \n", cmd, filter, outfile)
      if(mode == "compare") 
        printf("cmp -s results/%s current/%s && echo Pass || echo Fail\n",$1,$1)
+     if(diff)
+       printf("diff -C 10 results/%s current/%s \n",$1, $1)
    }
 }

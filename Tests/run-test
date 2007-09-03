@@ -6,13 +6,16 @@ usage() {
   run-test [group]  -- where group can be e.g. "ses" or "ses1" or "ses104"
   If group is blank, then run all tests in test.list
 
-    -R means run tests and record results (in the results/ directory)
-    -t means run and compare actual result to recorded result -- Pass or Fail
-    -s means run SQL scripts to prepare the test database, instead of actual 
-       tests.  (After running these, you must restart apache).
-    -e means just print the commands that would have been executed
-    -l means list the test cases in test.list that match [group]
-    -h means print this help
+  options:
+    -t   run and compare actual result to recorded result -- Pass or Fail
+    -R   run tests and record results (in the results/ directory)
+    -s   run SQL scripts to prepare the test database, instead of actual 
+         tests.  (After running these, you may have to restart apache).
+    -e   just print the commands that would have been executed
+    -l   list the test cases in test.list that match [group]
+    -c   print the relevant section of httpd.conf for each test
+    -d   display difference between current result and recorded result 
+    -h   print this help
 
 __HELP__
 exit
@@ -24,12 +27,14 @@ exe="sh"
 arg=$1 
 while shift
  do
+   test "$arg" = "-c" && mode="-v mode=config"
+   test "$arg" = "-d" && mode="-v mode=compare -v diff=1"
    test "$arg" = "-e" && exe="cat"  
+   test "$arg" = "-h" && usage 
+   test "$arg" = "-l" && mode="-v mode=list" && exe="cat"
    test "$arg" = "-R" && mode="-v mode=record"
    test "$arg" = "-s" && mode="-v mode=sql"
    test "$arg" = "-t" && mode="-v mode=compare"
-   test "$arg" = "-l" && mode="-v mode=list" && exe="cat"
-   test "$arg" = "-h" && usage 
    testcase=$arg
    arg=$1
 done
