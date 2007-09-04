@@ -32,7 +32,7 @@ while shift
    test "$arg" = "-e" && exe="cat"  
    test "$arg" = "-h" && usage 
    test "$arg" = "-l" && mode="-v mode=list" && exe="cat"
-   test "$arg" = "-R" && mode="-v mode=record"
+   test "$arg" = "-R" && mode="-v mode=record" && exe="sh -C" # noclobber
    test "$arg" = "-s" && mode="-v mode=sql"
    test "$arg" = "-t" && mode="-v mode=compare"
    testcase=$arg
