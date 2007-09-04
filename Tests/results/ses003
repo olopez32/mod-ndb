@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+Content-Length: 247
+ETag: f28cd4ccbce427fea3a97408353903aa
+Content-Type: text/plain
+
+[
+  { "sess_id":3 , "sess_var_name":"last_page_visited" , "sess_var_value":"index.php" },
+  { "sess_id":3 , "sess_var_name":"time_zone" , "sess_var_value":"GMT-0400" },
+  { "sess_id":3 , "sess_var_name":"user_name" , "sess_var_value":"brian" } 
+]
