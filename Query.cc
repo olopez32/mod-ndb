@@ -85,6 +85,8 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
       index = dir->index_scan;
       if(!index->name) { 
         log_debug(r->server, "Using table scan");
+        /* To do: it's probably best for performance to use SF_TupScan (the 
+           default) for memory tables, but SF_DiskScan for disk tables */
         return q->data->scanop->readTuples();
       }      
       /* Fall through to OrderedIndexScan */
@@ -373,6 +375,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       idxname = dir->index_scan->name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
         goto bad_index;
+      if(q->idx->getType() != NdbDictionary::Index::OrderedIndex) {
+        log_err(r->server,"Configuration error: index %s:%s is not an "
+                "ordered index.", dir->table, idxname);
+        goto abort1;
+      }
       q->idxobj = & OI_idxobj;
     }
     else q->idxobj = & TS_idxobj;  /* true (non-indexed) table scan. */
@@ -387,14 +394,27 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       goto abort1;
     }
     else {
-      /* Not PK. Look up the active index in the data dictionary to set q->idx */
+      /* Not PK. Look up the active index in the data dictionary to set q->idx 
+      */
       idxname = dir->indexes->item(Q.active_index).name;
       if((q->idx = dict->getIndex(idxname, dir->table)) == 0) 
         goto bad_index;
-      if(Q.plan == UniqueIndexAccess)   // Case 3: Unique Index
+      if(Q.plan == UniqueIndexAccess) {   // Case 3: Unique Index
+        if(q->idx->getType() != NdbDictionary::Index::UniqueHashIndex) {
+          log_err(r->server,"Configuration error: index %s:%s is not a "
+                  "unique hash index.", dir->table, idxname);
+          goto abort1;          
+        }
         q->idxobj = & UI_idxobj;
-      else if (Q.plan == OrderedIndexScan)  // Case 4: Ordered Index
+      }
+      else if (Q.plan == OrderedIndexScan) {  // Case 4: Ordered Index
+        if(q->idx->getType() != NdbDictionary::Index::OrderedIndex) {
+          log_err(r->server,"Configuration error: index %s:%s is not an "
+                  "ordered index.", dir->table, idxname);
+          goto abort1;
+        }        
         q->idxobj = & OI_idxobj;
+      }
     }
   }
   
