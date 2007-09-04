@@ -91,7 +91,7 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
       }      
       /* Fall through to OrderedIndexScan */
     case OrderedIndexScan:
-      if(!index) index = dir->indexes->handle()[q->active_index];
+      if(!index) index = & dir->indexes->item(q->active_index);
       /* I'm using an undocumented form of readTuples() here, following the 
          example from select_all.cpp, because the documented one does not work 
          as advertised with the sort-flag. 
