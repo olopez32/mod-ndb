@@ -57,7 +57,7 @@ PRODUCTIONS
   ScanSpec = OneRowWhereClause | Scan .
   OneRowWhereClause = "WHERE" UniqueIndexSpec .
   Scan = "USING"                   (. idxname = "PRIMARY"; is_bounded = 0;  .)
-     (FullTableScan | IndexScan ) ["ORDER" Order] .
+     (FullTableScan | IndexScan ["ORDER" Order] ).
   
   Column = Name                   (. char *c_name  = copy_token();          .)
                                   (. char *c_alias = c_name;                .)
@@ -84,7 +84,8 @@ PRODUCTIONS
     [ Name                                       (. idxname = copy_token(); .)
       | "PRIMARY" 
     ] ( WhereClause 
-      | /* empty = full index scan */   (. dir->index_scan->name = idxname; .) 
+      | /* empty = full index scan */         (. dir->flag.table_scan = 1;  .)
+                                        (. dir->index_scan->name = idxname; .)
     ) .
 
   WhereClause = "WHERE"                               (. build_index("O");  .)
