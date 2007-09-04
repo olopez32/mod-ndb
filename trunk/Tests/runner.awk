@@ -25,8 +25,8 @@ BEGIN { if(!host) host = "localhost:3080"
         next
      }
      
-     if(mode == "record")       outfile = "> results/" $1
-     else if(mode == "compare") outfile = "> current/" $1
+     if(mode == "compare")      outfile = "> current/" $1
+     else if(mode == "record")  outfile = "| tee results/" $1
      else outfile = " | tee current/" $1
           
      args=""
