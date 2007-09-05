@@ -96,9 +96,11 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
          example from select_all.cpp, because the documented one does not work 
          as advertised with the sort-flag. 
       */
-      if(index->flag.sorted) 
+      if(index->flag.sorted) {
+        log_debug(r->server,"Sorting %s",index->flag.descending ? "DESC":"ASC");
         return q->data->scanop->readTuples(NdbScanOperation::LM_CommittedRead, 
                                            0, 0, true, index->flag.descending);
+      }
       return q->data->scanop->readTuples(NdbOperation::LM_CommittedRead);
     default:
       return q->data->op->readTuple(NdbOperation::LM_CommittedRead);

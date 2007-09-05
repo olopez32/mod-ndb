@@ -58,6 +58,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
  
   int response_code = OK;
   int opn;     // operation number
+  int exec_err; 
   result_buffer my_results;
   my_results.buff = 0;
   bool apache_notes = 0;
@@ -105,7 +106,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   }
   
   /* Execute and Commit the transaction */
-  int exec_err = i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
+  exec_err = i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, 
                                 i->conn->ndb_force_send); 
   /* After 5.1.15 you can get succesful execute() then NoDataFound */
   if(exec_err || i->tx->getNdbError().classification == NdbError::NoDataFound) {
