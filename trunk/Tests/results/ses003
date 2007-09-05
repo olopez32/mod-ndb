@@ -1,10 +1,16 @@
 HTTP/1.1 200 OK
-Content-Length: 247
-ETag: f28cd4ccbce427fea3a97408353903aa
+Content-Length: 509
+ETag: 370a0043cd2eb37f0b6e6e9687a1eed0
 Content-Type: text/plain
 
-[
-  { "sess_id":3 , "sess_var_name":"last_page_visited" , "sess_var_value":"index.php" },
-  { "sess_id":3 , "sess_var_name":"time_zone" , "sess_var_value":"GMT-0400" },
-  { "sess_id":3 , "sess_var_name":"user_name" , "sess_var_value":"brian" } 
-]
+<NDBScan>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="last_page_visited" /> 
+  <Attr name="sess_var_value" value="maps.php" />  </NDBTuple>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="time_zone" /> 
+  <Attr name="sess_var_value" value="GMT-0400" />  </NDBTuple>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="user_name" /> 
+  <Attr name="sess_var_value" value="brian" />  </NDBTuple>
+</NDBScan>

@@ -1,13 +1,13 @@
 HTTP/1.1 200 OK
-Content-Length: 469
-ETag: e1f80e6bfe20d095e5303a1102b62ca9
+Content-Length: 385
+ETag: 13ec8659b46d71cf1ab7d67da06d8833
 Content-Type: text/plain
 
 [
-  { "sess_id":2 , "sess_var_name":"user_name" , "sess_var_value":"tk" },
-  { "sess_id":3 , "sess_var_name":"user_name" , "sess_var_value":"brian" },
-  { "sess_id":1 , "sess_var_name":"user_name" , "sess_var_value":"jdd" },
-  { "sess_id":3 , "sess_var_name":"last_page_visited" , "sess_var_value":"maps.php" },
-  { "sess_id":3 , "sess_var_name":"time_zone" , "sess_var_value":"GMT-0400" },
-  { "sess_id":4 , "sess_var_name":"user_name" , "sess_var_value":"roger" } 
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"maps.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" },
+  { "session":4 , "variable":"user_name" , "value":"roger" } 
 ]
