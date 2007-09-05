@@ -44,5 +44,4 @@ Record data = '<td>$value/x$</td>'
 </ResultFormat>
 
 Include Tests/httpd.conf
-Include example1/ex1_httpd.conf
 Include example2/ex2_httpd.conf
