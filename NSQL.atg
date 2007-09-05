@@ -69,7 +69,7 @@ PRODUCTIONS
     [ DBName                               (. dir->database = copy_token(); .)
      "." ] Name                               (. dir->table = copy_token(); .) .
 
-  UniqueIndexSpec                                         (. char *idxtype; .)
+  UniqueIndexSpec                                    (. char *idxtype = ""; .)
     = ( "PRIMARY" "KEY"        (. idxtype = "P"; idxname = "*Primary$Key*"; .)
       | "UNIQUE" "INDEX" Name  (. idxtype = "U"; idxname = copy_token();    .)
     )                          (. build_index(idxtype);                     .)
