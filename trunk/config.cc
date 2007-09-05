@@ -816,20 +816,6 @@ extern "C" {
     RSRC_CONF | EXEC_ON_READ,      RAW_ARGS,
     "Result Format Definition"
   },
-  { 
-    "SELECT",  // N-SQL statement
-    (CMD_HAND_TYPE) config::sql_container,
-    (void *) "SELECT ",
-    ACCESS_CONF ,      RAW_ARGS,
-    "N-SQL SELECT Query"    
-  },
-  { 
-    "DELETE",  // N-SQL statement
-    (CMD_HAND_TYPE) config::sql_container,
-    (void *) "DELETE ",
-    ACCESS_CONF,      RAW_ARGS,
-    "N-SQL DELETE Query"    
-  },    
   {
     "Database",         // inheritable
     (CMD_HAND_TYPE) ap_set_string_slot,
@@ -914,6 +900,34 @@ extern "C" {
     ACCESS_CONF,    TAKE3, 
     "Result Filter"
   }, 
+  { 
+    "SELECT",  // N-SQL statement
+    (CMD_HAND_TYPE) config::sql_container,
+    (void *) "SELECT ",
+    ACCESS_CONF ,      RAW_ARGS,
+    "N-SQL SELECT Query"    
+  },
+  { 
+    "DELETE",  // N-SQL statement
+    (CMD_HAND_TYPE) config::sql_container,
+    (void *) "DELETE ",
+    ACCESS_CONF,      RAW_ARGS,
+    "N-SQL DELETE Query"    
+  },    
+  { 
+    "WHERE",  // N-SQL statement
+    (CMD_HAND_TYPE) config::sql_container,
+    (void *) "WHERE ",
+    ACCESS_CONF,      RAW_ARGS,
+    "N-SQL one-row query plan"    
+  },    
+  { 
+    "USING",  // N-SQL statement
+    (CMD_HAND_TYPE) config::sql_container,
+    (void *) "USING ",
+    ACCESS_CONF,      RAW_ARGS,
+    "N-SQL query plan"    
+  },     
   {NULL, NULL, NULL, 0, cmd_how(0), NULL}
   };
 }
