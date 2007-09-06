@@ -644,9 +644,12 @@ namespace config {
                            "in result format \"%s\"", word1, word2, name);
       
       word4 = unescape(cmd->pool, word4);
-      if(!strcasecmp(word1,"Scan")) {
-        fmt->top_node = new(cmd->pool) ScanLoop(word4);
-        fmt->symbol(word2, cmd->pool, fmt->top_node);
+      if(!strcasecmp(word1,"Format")) {
+        fmt->top_node = new(cmd->pool) MainLoop(word4);
+        fmt->symbol("_main", cmd->pool, fmt->top_node);
+      }
+      else if(!strcasecmp(word1,"Scan")) {
+        fmt->symbol(word2, cmd->pool, new(cmd->pool) ScanLoop(word4));
       }
       else if(!strcasecmp(word1,"Row")) {
         fmt->symbol(word2, cmd->pool, new(cmd->pool) RowLoop(word4));
@@ -665,7 +668,7 @@ namespace config {
                               "in result format \"%s\".", word1, name);
     }
     if(!fmt->top_node) 
-      return ap_psprintf(cmd->pool,"You must define a Scan object "
+      return ap_psprintf(cmd->pool,"You must define a Format object "
                          "in result format \"%s\"", name);
     
     const char *error = fmt->compile(cmd->pool);
