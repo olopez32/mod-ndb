@@ -322,7 +322,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
         if(s_len > col->getLength()) s_len = col->getLength();
           m.u.val_char = (char *) ap_palloc(p, s_len + 3);
         * m.u.val_char     = (char) (s_len & s_lo);
-        * (m.u.val_char+1) = (char) (s_len & s_hi);
+        * (m.u.val_char+1) = (char) ((s_len & s_hi) >> 8);
         ap_cpystrn(m.u.val_char+2, val, s_len+1);
         m.use_value = use_char; 
         m.col_len = col->getLength() + 2;
@@ -332,7 +332,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
         // Copy the value into the buffer, then right-pad with spaces
         m.len = l_len = strlen(val);
         if(l_len > (unsigned) col->getLength()) l_len = col->getLength();
-          m.u.val_char = (char *) ap_palloc(p,col->getLength() + 1);
+          m.u.val_char = (char *) ap_palloc(p, col->getLength() + 1);
         strcpy(m.u.val_char, val);
         s = m.u.val_char + l_len;
         q = m.u.val_char + col->getLength();
