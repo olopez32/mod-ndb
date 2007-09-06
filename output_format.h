@@ -115,6 +115,7 @@ class RecAttr : public Node {
 };
 
 class Loop : public Node {
+  friend class output_format;
   protected:
   Cell *begin;
   Node *core;
@@ -151,7 +152,8 @@ public:
 class MainLoop : public Loop {
   public: 
   MainLoop(const char *c) : Loop(c) {}
-  void compile(output_format *);
   int Run(struct data_operation *, result_buffer &);
+  void compile(output_format *);
+  void dump(ap_pool *p, result_buffer &r, int i);
   void out(const NdbRecAttr &, result_buffer &) { assert(0); }
 };  

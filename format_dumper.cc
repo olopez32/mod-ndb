@@ -31,25 +31,31 @@ inline char *make_inset(ap_pool *pool, int size) {
 
 
 void output_format::dump(ap_pool *pool, result_buffer &res) {
-  int n = 0;
-  
   res.out("{ \"%s\":\n"
-          "{ is_internal: %d, can_override: %d, is_raw: %d, nodes:\n"
-          "    [", name, flag.is_internal, flag.can_override, flag.is_raw);
-  
-  for(Node *N = top_node ; N != 0 ; N = N->next_node) {
-    if(n++) res.out(1, ",");
-    N->dump(pool, res, 6);
-  }
-  res.out("\n    ]\n  }\n}\n");
+          "  { is_internal: %d, can_override: %d, is_raw: %d, \n",
+           name, flag.is_internal, flag.can_override, flag.is_raw);
+  top_node->dump(pool, res, 0);
+  res.out("  }\n}\n");
+}
+
+
+void MainLoop::dump(ap_pool *pool, result_buffer &res, int) {
+  res.out("    begin: \"%s\", end: \"%s\", core: \n    [ " , 
+          json_str(pool, *begin), json_str(pool, *end));
+  if(core) core->dump(pool, res, 6);
+  else res.out("null");
+  res.out("\n    ]\n");
 }
 
 
 void Node::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  res.out("%s{ \"cell\":",inset);
-  cell->dump(p, res);
-  res.out(" }");
+  if(cell->len) { 
+    res.out("%s{ \"cell\":",inset);
+    cell->dump(p, res);
+    res.out(" }");
+  }
+  else res.out(" null");
 }
 
 
@@ -61,8 +67,7 @@ void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   begin->dump(p, res);
   res.out(" ,%s    core:  ", inset); 
   core->dump(p, res, indent + 4);
-  res.out(" ,%s    sep:   \"%s\" ,",inset, json_str(p, *sep));
-  res.out("%s    end:   ",inset);
+  res.out(" ,%s    sep: \"%s\" , end: ",inset, json_str(p, *sep));
   end->dump(p, res), 
   res.out("%s  }%s}", inset, inset);
 }
