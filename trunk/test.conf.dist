@@ -38,6 +38,7 @@ LogLevel debug
 </Location>
 
 <ResultFormat "HTML">
+Format HTML = '$tab$'
 Scan tab = '<table> $row$ ...</table>\n'
 Row  row = '<tr> $data$ ... </tr>\n'
 Record data = '<td>$value/x$</td>'
