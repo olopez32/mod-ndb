@@ -147,3 +147,11 @@ public:
   void out(const NdbRecAttr &, result_buffer &) { assert(0); } 
 };
 
+
+class MainLoop : public Loop {
+  public: 
+  MainLoop(const char *c) : Loop(c) {}
+  void compile(output_format *);
+  int Run(struct data_operation *, result_buffer &);
+  void out(const NdbRecAttr &, result_buffer &) { assert(0); }
+};  

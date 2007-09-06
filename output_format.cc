@@ -113,12 +113,13 @@ void register_built_in_formatters(ap_pool *p) {
   json_format->flag.is_internal  = 1;
   json_format->flag.can_override = 1;
   
-  ScanLoop *Scan = new(p) ScanLoop("[\n $row$,\n ... \n]\n");
-  json_format->symbol("scan", p, Scan);
+  MainLoop *Main = new(p) MainLoop("$scan$\n");
+  json_format->symbol("_main", p, Main);
+  json_format->symbol("scan", p, new(p) ScanLoop("[\n $row$,\n ... \n]"));
   json_format->symbol("row",  p, new(p) RowLoop(" { $item$ , ... }"));
   json_format->symbol("item", p, new(p) RecAttr(
                                        "$name/Q$:$value/qj$","$name/Q$:null"));
-  json_format->top_node = Scan;
+  json_format->top_node = Main;
   const char *err = json_format->compile(p);
   if(err) {
     fprintf(stderr,err);
@@ -129,13 +130,14 @@ void register_built_in_formatters(ap_pool *p) {
   xml_format->flag.is_internal  = 1;
   xml_format->flag.can_override = 1; 
 
-  Scan = new (p) ScanLoop("<NDBScan>\n$row$\n...\n</NDBScan>\n");   
-  xml_format->symbol("scan", p, Scan);
+  Main = new (p) MainLoop("$scan$\n");
+  xml_format->symbol("_main", p, Main);
+  xml_format->symbol("scan", p, new(p) ScanLoop("<NDBScan>\n$row$\n...\n</NDBScan>"));
   xml_format->symbol("row",  p, new(p) RowLoop(" <NDBTuple> $attr$ \n  ...  </NDBTuple>"));
   xml_format->symbol("attr", p, new(p) RecAttr(
                                     "<Attr name=$name/Q$ value=$value/Qx$ />",
                                     "<Attr name=$name/Q$ isNull=\"1\" />"));
-  xml_format->top_node = Scan;
+  xml_format->top_node = Main;
   err = xml_format->compile(p);
   if(err) {
     fprintf(stderr,err);
@@ -231,6 +233,15 @@ void Cell::out(char *col_name, const NdbRecAttr &rec, result_buffer &res) {
 void RecAttr::out(char *col, const NdbRecAttr &rec, result_buffer &res) {
   for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
     c->out(col, rec, res);
+}
+
+
+int MainLoop::Run(data_operation *data, result_buffer &res) {
+  int status = OK;
+  if(begin) begin->out(res);
+  if(core)  status = core->Run(data, res);
+  if(end)   end->out(res);
+  return status;
 }
 
 

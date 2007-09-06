@@ -38,7 +38,7 @@ BEGIN { if(!host) host = "localhost:3080"
      printf("%s '==== %s '\n", echo, $1)
      printf("%s | %s %s \n", cmd, filter, outfile)
      if(mode == "compare") 
-       printf("cmp -s results/%s current/%s && echo Pass || echo Fail\n",$1,$1)
+       printf("cmp -s results/%s current/%s && echo OK || echo Fail\n",$1,$1)
      if(diff)
        printf("diff -C 10 results/%s current/%s \n",$1, $1)
    }

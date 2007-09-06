@@ -304,3 +304,18 @@ void Loop::compile(output_format *o) {
   parser.the_end(pars_required);
 }
 
+
+/* A MainLoop has start text, a core node, and end text.
+*/
+void MainLoop::compile(output_format *o) {
+  sep = &the_null_string;  /* sep is not used */
+  
+  begin = parser.get_cell(pars_optional, unresolved);
+  if(begin == &the_null_cell) parser.rollback();
+  
+  core = parser.get_node(pars_optional, o);
+  
+  end = parser.get_cell(pars_optional); 
+  parser.the_end(pars_required);
+}
+
