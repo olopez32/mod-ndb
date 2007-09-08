@@ -17,7 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "util_md5.h"
-#include "fnmatch.h"
 
 #ifdef THIS_IS_APACHE2
 #define CheckHandler(r,h) if(strcmp(r->handler,h)) return DECLINED;

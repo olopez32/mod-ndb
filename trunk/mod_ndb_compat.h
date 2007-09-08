@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <unistd.h>
 #include "ap_compat.h"          
 #include "apr_strings.h"
+#include "apr_fnmatch.h"
 
 extern "C" {
 #include "ap_mpm.h"
@@ -63,6 +64,8 @@ typedef apr_array_header_t array_header;
 
 #define ap_destroy_pool apr_pool_destroy
 
+#define ap_fnmatch apr_fnmatch
+
 /* The timeout functions are gone, because of a new I/O model */
 #define ap_hard_timeout(a,b) ;
 #define ap_reset_timeout(a) ;
@@ -84,6 +87,8 @@ typedef apr_array_header_t array_header;
 
 #define AP_MODULE_DECLARE_DATA MODULE_VAR_EXPORT
 #define EXEC_ON_READ 0
+
+#include "fnmatch.h"
 
 /* Apache 1.3 logging defines */
 #define my_ap_log_error(l,s,fmt,arg) ap_log_error(APLOG_MARK,l,s,fmt,arg);
