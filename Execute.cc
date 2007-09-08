@@ -32,7 +32,6 @@ inline void set_note(request_rec *r, int num, result_buffer &res) {
 */
 bool handle_error_from_execute(request_rec *r, int &response_code, 
                                const NdbError &error) {
-  bool do_log_debug = 0;
   bool do_log_error = 0;
   bool retry_tx = 0;
   
@@ -43,8 +42,7 @@ bool handle_error_from_execute(request_rec *r, int &response_code,
   else 
     response_code = 400;  
 
-  if(do_log_debug)
-    log_debug(r->server,"tx->execute failed: %s", error.message);
+  log_debug(r->server,"tx->execute failed: %s", error.message);
   if(do_log_error)
     log_err(r->server,"tx->execute failed: %s %s", error.message, error.details);
     
