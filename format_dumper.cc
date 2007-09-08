@@ -20,13 +20,66 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 extern const char *escape_leaning_toothpicks[256];
 extern const char *escape_xml_entities[256];
 
-
 inline char *make_inset(ap_pool *pool, int size) {
   char *inset = (char *) ap_pcalloc(pool, size + 2);
   inset[0] = '\n'; 
   for(int i = 1 ; i <= size ; i++) 
     inset[i] = ' ';
   return inset;
+}
+
+
+inline void escape_conf_str(result_buffer &res, const char *str) {
+  res.putc('\'');
+  for(const char *c = str; *c ; c++) {
+    if(*c == '\n') res.out("\\n");
+    else {
+      if(*c == '\'') res.putc('\\');
+      res.putc(*c);
+    }
+  }
+  res.putc('\'');
+}
+
+
+void output_format::dump_source(ap_pool *pool, result_buffer &res) {
+  struct symbol *sym;
+
+  res.out("<ResultFormat \"%s\">\n", name);
+  top_node->dump_source(pool, res, name);
+  for(unsigned int h = 0 ; h < SYM_TAB_SZ ; h++)
+    for(sym = symbol_table[h]; sym != 0 ; sym = sym->next_sym)
+      if(strcmp(sym->node->name, "_main"))
+        sym->node->dump_source(pool, res, name);
+  res.out("</ResultFormat>\n\n");
+}
+
+void MainLoop::dump_source(ap_pool *pool, result_buffer &res, const char *fmt) {
+  res.out("    Format  %s = ", fmt);
+  escape_conf_str(res, unresolved);
+  res.out("\n");
+}
+
+void ScanLoop::dump_source(ap_pool *pool, result_buffer &res, const char *fmt) {
+  res.out("    Scan  %s = ", name);
+  escape_conf_str(res, unresolved);
+  res.out("\n");
+}
+
+void RowLoop::dump_source(ap_pool *pool, result_buffer &res, const char *fmt) {
+  res.out("    Row  %s = ", name);
+  escape_conf_str(res, unresolved);
+  res.out("\n");
+}
+
+void RecAttr::dump_source(ap_pool *pool, result_buffer &res, const char *fmt) {
+  res.out("    Record  %s = ", name);
+  escape_conf_str(res, unresolved);  
+  if(unresolved2) {
+    res.out("  or  ");
+    escape_conf_str(res, unresolved2);
+  }
+  res.out("\n");
 }
 
 
@@ -158,3 +211,5 @@ const char *escape_string(ap_pool *pool, const char **escapes, len_string &str) 
 inline const char *json_str(ap_pool *pool, len_string &str) {
   return escape_string(pool, escape_leaning_toothpicks, str);
 }
+
+

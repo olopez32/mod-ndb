@@ -61,8 +61,6 @@ to avoid a linker error
 
 --- FURTHER DOCUMENTATION ---
 
-The README file in example1/ tells you how to load a sample database and run a small suite of tests against it.
-
 More documentation is available at: 
    http://forge.mysql.com/wiki/ProjectPage_mod_ndb
 
