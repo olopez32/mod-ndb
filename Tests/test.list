@@ -102,3 +102,18 @@ err404 f1 typ5?i=1&c=1    # test 501  (table is empty)
 #err409
 #err500
 
+
+# Filters
+fil101 f1 fil1?d1=2        # One row    -- d1 < 2
+fil102 f1 fil1?d2=3.141    # No result  -- d2 = 3.141
+
+fil201 f1 fil2?n1=jen      # Fixed char: name = "jen"
+fil202 f1 fil2?n2=t%       # name like "t%"
+fil203 f1 fil2?n3=fred     # name not like "fred"
+fil204 f1 fil2?c1=brown    # Varchar:  color = "brown"
+fil205 f1 fil2?c2=green%   # color like "green%"   -- also matches null!
+fil206 f1 fil2?c3=bro%     # color not like "bro%"
+fil207 f1 fil2?chan=15     # channel < 15
+fil208 f1 fil2?v1=11       # nvisits = 11
+fil209 f1 fil2?v2=12       # nvisits != 12 
+fil210 f1 fil2?v3=11       # nvisits >= 11

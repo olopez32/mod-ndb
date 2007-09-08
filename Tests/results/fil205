@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Length: 168
+ETag: 133e09100f2bca219496f086cb036285
+Content-Type: text/plain
+
+[
+  { "id":1 , "name":"fred    " , "color":null , "nvisits":5 , "channel":12 },
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 } 
+]
