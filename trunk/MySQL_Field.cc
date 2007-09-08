@@ -529,6 +529,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
 
      string2decimal(val, &dec, &end);
      m.use_value = use_char;
+     m.col_len = 0;   /* For NdbScanFilter::cmp() */
      /* decimal_bin_size() is never greater than 32: */
      m.u.val_char = (char *) ap_pcalloc(p, 32);
      decimal2bin(&dec, m.u.val_char, prec, scale);
