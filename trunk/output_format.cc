@@ -103,11 +103,11 @@ void register_built_in_formatters(ap_pool *p) {
   output_format *json_format = new(p) output_format("JSON");
   output_format *raw_format  = new(p) output_format("raw");
   output_format *xml_format  = new(p) output_format("XML");
+  const char *err;
   
   /* Define the raw format */
   raw_format->flag.is_internal = 1;
-  raw_format->flag.is_raw = 1;
-  raw_format->top_node = &the_null_node;
+  raw_format->flag.is_raw = 1;  
   
   /* Define the internal JSON format */
   json_format->flag.is_internal  = 1;
@@ -120,7 +120,7 @@ void register_built_in_formatters(ap_pool *p) {
   json_format->symbol("item", p, new(p) RecAttr(
                                        "$name/Q$:$value/qj$","$name/Q$:null"));
   json_format->top_node = Main;
-  const char *err = json_format->compile(p);
+  err = json_format->compile(p);
   if(err) {
     fprintf(stderr,err);
     exit(1);
