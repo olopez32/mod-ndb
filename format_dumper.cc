@@ -32,15 +32,16 @@ inline char *make_inset(ap_pool *pool, int size) {
 
 void output_format::dump(ap_pool *pool, result_buffer &res) {
   res.out("{ \"%s\":\n"
-          "  { is_internal: %d, can_override: %d, is_raw: %d, \n",
-           name, flag.is_internal, flag.can_override, flag.is_raw);
-  top_node->dump(pool, res, 0);
+          "  { \"is_internal\": %s, \"can_override\": %s, \"is_raw\": %s \n",
+           name, flag.is_internal ? "true" : "false", 
+           flag.can_override ? "true":"false", flag.is_raw ? "true":"false ,");
+  if(! (flag.is_raw)) top_node->dump(pool, res, 0);
   res.out("  }\n}\n");
 }
 
 
 void MainLoop::dump(ap_pool *pool, result_buffer &res, int) {
-  res.out("    begin: \"%s\", end: \"%s\", core: \n    [ " , 
+  res.out("    \"begin\": \"%s\", \"end\": \"%s\", \"core\": \n    [ " , 
           json_str(pool, *begin), json_str(pool, *end));
   if(core) core->dump(pool, res, 6);
   else res.out("null");
@@ -63,11 +64,11 @@ void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
   res.out(ap_pstrcat(p, "{ \"", name , "\":", 
                     inset, "  {",
-                    inset, "    begin: ", 0));
+                    inset, "    \"begin\": ", 0));
   begin->dump(p, res);
-  res.out(" ,%s    core:  ", inset); 
+  res.out(" ,%s    \"core\":  ", inset); 
   core->dump(p, res, indent + 4);
-  res.out(" ,%s    sep: \"%s\" , end: ",inset, json_str(p, *sep));
+  res.out(" ,%s    \"sep\": \"%s\" , \"end\": ",inset, json_str(p, *sep));
   end->dump(p, res), 
   res.out("%s  }%s}", inset, inset);
 }
@@ -75,9 +76,9 @@ void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
 
 void RecAttr::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  res.out("%s{%s  fmt :     ",inset, inset);
+  res.out("%s{%s  \"fmt\" :     ",inset, inset);
   fmt->dump(p, res);
-  res.out(" ,%s  null_fmt: ",inset);
+  res.out(" ,%s  \"null_fmt\": ",inset);
   null_fmt->dump(p, res), 
   res.out("%s}", inset);
 }
