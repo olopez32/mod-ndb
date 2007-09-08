@@ -50,6 +50,7 @@ public:
   Node * symbol(const char *, ap_pool *, Node *);
   const char *compile(ap_pool *);
   void dump(ap_pool *, result_buffer &);
+  void dump_source(ap_pool *, result_buffer &);
 };
 
 
@@ -96,10 +97,11 @@ class Node {
     cell->out(d,b); return OK; }
   virtual void out(char *c, const NdbRecAttr &r, result_buffer &b) {
     cell->out(c, r, b); }
-  virtual void dump(ap_pool *p, result_buffer &, int);
+  virtual void dump(ap_pool *, result_buffer &, int);
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
   };
+  virtual void dump_source(ap_pool *, result_buffer &, const char *) {};
 };
 
 class RecAttr : public Node {
@@ -111,7 +113,8 @@ class RecAttr : public Node {
   RecAttr(const char *str1, const char *str2) : Node(str1), unresolved2(str2) {}
   void out(char *col, const NdbRecAttr &rec, result_buffer &res);
   void compile(output_format *);
-  void dump(ap_pool *p, result_buffer &, int);
+  void dump(ap_pool *, result_buffer &, int);
+  void dump_source(ap_pool *, result_buffer &, const char *);
 };
 
 class Loop : public Node {
@@ -125,7 +128,8 @@ class Loop : public Node {
   public:
   Loop(const char *c) : Node(c) {}
   void compile(output_format *);
-  void dump(ap_pool *p, result_buffer &, int);
+  void dump(ap_pool *, result_buffer &, int);
+  void dump_source(ap_pool *, result_buffer &, int) { assert(0); };
 };
 
 
@@ -134,8 +138,9 @@ public:
   RowLoop(const char *c) : Loop(c) {}
   int Run(struct data_operation *, result_buffer &);
   void compile(output_format *o) { return Loop::compile(o); }
-  void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); }
+  void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
+  void dump_source(ap_pool *, result_buffer &, const char *);
 };
 
 
@@ -146,6 +151,7 @@ public:
   void compile(output_format *o) { return Loop::compile(o); }
   void dump(ap_pool *p, result_buffer &r, int i) { Loop::dump(p,r,i); }
   void out(const NdbRecAttr &, result_buffer &) { assert(0); } 
+  void dump_source(ap_pool *, result_buffer &, const char *);
 };
 
 
@@ -154,6 +160,7 @@ class MainLoop : public Loop {
   MainLoop(const char *c) : Loop(c) {}
   int Run(struct data_operation *, result_buffer &);
   void compile(output_format *);
-  void dump(ap_pool *p, result_buffer &r, int i);
+  void dump(ap_pool *, result_buffer &r, int i);
   void out(const NdbRecAttr &, result_buffer &) { assert(0); }
+  void dump_source(ap_pool *, result_buffer &, const char *);
 };  

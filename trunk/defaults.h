@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    Undefine these macros to disable debugging output at compile-time.
    Otherwise, set LogLevel to Debug for debugging output.
 */
-#define MOD_NDB_DEBUG 1
+// #define MOD_NDB_DEBUG 1
 // #define CONFIG_DEBUG 1
 
 /* Other Defaults */

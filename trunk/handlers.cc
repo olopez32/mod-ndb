@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "util_md5.h"
+#include "fnmatch.h"
 
 #ifdef THIS_IS_APACHE2
 #define CheckHandler(r,h) if(strcmp(r->handler,h)) return DECLINED;
@@ -88,14 +89,17 @@ extern "C" {
     
     const char *name = r->args;
     output_format *fmt = get_format_by_name(name);
-    if(!fmt) {
-      res.out("Unknown format \"%s\".\n",name);
-    }
-    else {
-      fmt->dump(r->pool, res);
-      etag = ap_md5_binary(r->pool, (const unsigned char *) res.buff, res.sz);
-      ap_table_setn(r->headers_out, "ETag",  etag);
-    }
+    if(!fmt)
+      return ndb_handle_error(r, 404, 0, "Unknown format.\n");
+ 
+    /* If the request path ends in "/source", dump source */
+    if((r->path_info) && (! ap_fnmatch("*/source",r->path_info,0)))
+        fmt->dump_source(r->pool, res);
+    else /* dump parse tree */
+      fmt->dump(r->pool, res);  
+ 
+    etag = ap_md5_binary(r->pool, (const unsigned char *) res.buff, res.sz);
+    ap_table_setn(r->headers_out, "ETag",  etag);
     ap_set_content_length(r, res.sz);
     r->content_type = "text/plain";
     ap_send_http_header(r);
@@ -246,7 +250,7 @@ int ndb_handle_error(request_rec *r, int status,
   
   switch(status) {
     case 404:
-      page.out("No data could be found.\n");
+      page.out(msg ? msg : "No data could be found.\n");
       break;
     case 405:
       break;  // no message
