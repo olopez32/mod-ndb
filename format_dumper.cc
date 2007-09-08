@@ -45,6 +45,7 @@ inline void escape_conf_str(result_buffer &res, const char *str) {
 void output_format::dump_source(ap_pool *pool, result_buffer &res) {
   struct symbol *sym;
 
+  if (flag.is_raw) return;
   res.out("<ResultFormat \"%s\">\n", name);
   top_node->dump_source(pool, res, name);
   for(unsigned int h = 0 ; h < SYM_TAB_SZ ; h++)
