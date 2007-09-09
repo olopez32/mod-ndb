@@ -111,9 +111,10 @@ fil201 f1 fil2?n1=jen      # Fixed char: name = "jen"
 fil202 f1 fil2?n2=t%       # name like "t%"
 fil203 f1 fil2?n3=fred     # name not like "fred"
 fil204 f1 fil2?c1=brown    # Varchar:  color = "brown"
-fil205 f1 fil2?c2=green%   # color like "green%"   -- also matches null!
+fil205 f1 fil2?c2=green%   # color like "green%" 
 fil206 f1 fil2?c3=bro%     # color not like "bro%"
 fil207 f1 fil2?chan=15     # channel < 15
 fil208 f1 fil2?v1=11       # nvisits = 11
 fil209 f1 fil2?v2=12       # nvisits != 12 
 fil210 f1 fil2?v3=11       # nvisits >= 11
+fil211 f1 fil2?c1=brown&v1=12    # color = "brown" and nvisits = 12
