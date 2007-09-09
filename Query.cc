@@ -459,8 +459,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   if(Q.plan >= Scan && Q.n_filters) {
     NdbScanFilter filter(q->data->scanop);
     NdbScanFilter::BinaryCondition cond;
-    if(Q.n_filters > 1) filter.begin(NdbScanFilter::AND);
-    else filter.begin();
+    filter.begin(NdbScanFilter::AND);
     
     for(int nfilt = 0 ; nfilt < Q.n_filters ; nfilt++) {
       int n = Q.filter_list[nfilt];  
@@ -473,8 +472,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       log_debug(r->server," ** Filter %s using %s (%s)", 
                 keycol.base_col_name, keycol.name, filter_col->value);
 
-      if(cond >= NdbScanFilter::COND_LIKE)  /* LIKE or NOT_LIKE */
+      if(cond >= NdbScanFilter::COND_LIKE) {  /* LIKE or NOT LIKE */
+        /* LIKE filters also return nulls, which is not the desired result */
+        if(cond == NdbScanFilter::COND_LIKE && ndb_Column->getNullable())
+          filter.isnotnull(col_id);
         filter.cmp(cond, col_id, filter_col->value, strlen(filter_col->value));
+      }
       else {        
         MySQL::value(mval, r->pool, ndb_Column, filter_col->value);
         if(mval.use_value == use_char)                     
