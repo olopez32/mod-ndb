@@ -127,9 +127,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     // Set content-length
     if(my_results.buff)
       ap_set_content_length(r, my_results.sz);
-    else 
+    else {
+      ap_set_content_length(r, 0);
       response_code = 204;  // No content
-    
+    }
     
     // Set ETag
     if(i->flag.use_etag && my_results.buff) {
