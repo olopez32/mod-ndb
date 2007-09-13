@@ -1,0 +1,23 @@
+#summary Archived news items from the mod_ndb home page
+
+= Older News =
+
+
+== Notes on the 'rev 320' release ==
+  * This release comes a few days before the 2007 MySQL Conference, and it's the basis for my talk there.
+  * It includes user-defined output formats.
+  * There's a new 'Quick Reference Card' PDF file in the distribution.
+
+== New mailing list ==
+I created a general discussion list -- you can join it by following the 'Groups' link on this page.
+
+== Notes on the 'rev 284' release ==
+  * This release adds support for many MySQL data types, including decimal, tinyint, smallint, mediumint, date, time, and datetime
+  * Internally, the architecture of mod_ndb's output formats has changed, as a first step towards allowing user-defined  formats.
+
+== Notes on the 'rev 254' release ==
+  * See the [http://forge.mysql.com/wiki/ProjectPage_mod_ndb mod_ndb wiki] over at MySQL Forge for documentation.
+  * This one compiles properly with MySQL 5.1.16. 
+  * It introduces rudimentary XML output, plus correct encoding of escaped characters (quote and backslash) in both XML and JSON.
+  * It introduces support for table scans.
+  * After you build the module, 'vi test.conf' + 'make start' should succesfully start the server now on many more platforms than before. 
