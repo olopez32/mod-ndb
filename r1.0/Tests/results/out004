@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+ETag: ed08cc94c54c16f99085353ea391837b
+Content-Length: 187
+Content-Type: text/plain
+
+{ "HAL":
+  { "is_internal": false, "can_override": false, "is_raw": false , 
+    "begin": "HAL says, \"I'm afraid I can't do that, Dave.\"\n", "end": "", "core": 
+    [  null
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Content-Length: 336
+ETag: 61a3d486128a1a96c8bc5c5f3096ba50
+Content-Type: text/plain
+
+[
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 },
+  { "id":3 , "name":"joe     " , "color":"yellow" , "nvisits":12 , "channel":19 },
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 },
+  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 } 
+]

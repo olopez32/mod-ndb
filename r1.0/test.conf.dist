@@ -1,0 +1,48 @@
+# This file is included into httpd.conf 
+# It contains everything you might want to edit or change pertaining to mod_ndb 
+# You can make changes here and they will persist after "configure" and "make"
+# (whereas httpd.conf will be rewritten)
+
+
+#### MySQL Cluster connect string
+# ndb-connectstring mgmhost
+
+# Maximum number of subrequests that can return results to a script
+# ndb-max-read-subrequests 25
+
+#### Port
+Listen 3080
+
+#### Log Level for error log :
+# debug, info, notice, warn, error, crit, alert, emerg.
+LogLevel debug
+
+#### PHP -- choose the correct version...
+# LoadModule php5_module        modules/libphp5.so
+# or
+# LoadModule php4_module        modules/libphp4.so
+
+
+# -------- mod_ndb configuration ---------
+#
+<Location /ndb>
+  SetHandler ndb-cluster
+</Location>
+ 
+<Location /ndb-commit-all>
+  SetHandler ndb-exec-batch
+</Location>
+
+<Location /ndb/format>
+  SetHandler ndb-dump-format
+</Location>
+
+<ResultFormat "HTML">
+Format HTML = '$tab$'
+Scan tab = '<table> $row$ ...</table>\n'
+Row  row = '<tr> $data$ ... </tr>\n'
+Record data = '<td>$value/x$</td>'
+</ResultFormat>
+
+Include Tests/httpd.conf
+Include example2/ex2_httpd.conf
