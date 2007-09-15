@@ -202,7 +202,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     log_err(r->server, "Cannot find table %s in database %s: %s.",
              dir->table,dir->database, dict->getNdbError().message);
     i->errors++;
-    return 500;
+    return ndb_handle_error(r, 500, NULL, "Configuration error.");
   }  
   
   /* Initialize q->keys, the runtime array of key columns which is used
@@ -233,9 +233,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
          stored in the ndb_instance, so that we can be access it after the
          batch of transactions is executed and fetch the results.
       */
-      if(i->n_read_ops < i->max_read_ops) {
+      if(i->n_read_ops < i->server_config->max_read_operations) {
         q->data = i->data + i->n_read_ops++;
-        if(dir->use_etags) i->flag.use_etag = 1;
+        if(dir->flag.use_etags) i->flag.use_etag = 1;
         q->data->fmt = dir->fmt;
         q->data->n_result_cols = dir->visible->size();
         q->data->aliases = dir->aliases->items();
@@ -285,7 +285,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       }
       break;
     case M_DELETE:
-      if(! dir->allow_delete) 
+      if(! dir->flag.allow_delete) 
         return ndb_handle_error(r, 405, NULL, allowed_methods(r, dir));
       Q.op_setup = Plan::SetupDelete;
       Q.op_action = Plan::Delete;
