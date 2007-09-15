@@ -25,6 +25,8 @@ int apache_is_threaded = 0;
 int ndb_force_send = 0;
 apr_status_t mod_ndb_child_exit(void *);
 
+int will_restart = 0;
+apr_thread_mutex_t *restart_lock;
 
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
@@ -42,9 +44,6 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
   /* Get server configuration */
   config::srv *srv = (config::srv *)
     ap_get_module_config(s->module_config, &ndb_module);
-           
-  log_debug(s,"srv->conenct_string: %s", srv->connect_string);
-  log_debug(s,"srv->max_read_operations: %d", srv->max_read_operations);
   
   /* Multi-threaded? */
   ap_mpm_query(AP_MPMQ_IS_THREADED, &apache_is_threaded);
@@ -70,8 +69,7 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
     /* Create an instance */
     process.conn.instances[i] = 
       (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-    Ndb *ndbp = init_instance(& process.conn , process.conn.instances[i],
-                              srv->max_read_operations, p);
+    Ndb *ndbp = init_instance(& process.conn, process.conn.instances[i], srv,p);
     if(ndbp) n_ok++;
     else n_fail++;
   }
@@ -87,6 +85,10 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
   apr_pool_cleanup_register(p, (const void *) s, 
                             mod_ndb_child_exit, mod_ndb_child_exit);
                             
+
+  /* We have one mutex, used when forcing the module to restart. */
+  apr_thread_mutex_create(&restart_lock, APR_THREAD_MUTEX_UNNESTED, p);
+
   return /* APR_SUCCESS */;
 }
 
@@ -155,7 +157,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   /* Succesfully connected */
   c->connected=1;
   ap_log_error(APLOG_MARK, log::err, 0, s,
-               "PID %d: mod_ndb (r%s) connected to NDB Cluster as node %d "
+               "PID %d : mod_ndb (r%s) connected to NDB Cluster as node %d "
                "(%d thread%s; hard limit: %d)", 
                getpid(), REVISION, c->connection->node_id(),
                process.n_threads, 
@@ -171,14 +173,14 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 
 
 Ndb *init_instance(ndb_connection *c, ndb_instance *i, 
-                   unsigned int max_ops, ap_pool *p) {
+                   config::srv *srv, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */
   i->db = new Ndb(c->connection);
 
   if(i->db) {
     /* init(n) where n is max no. of active transactions; default is 4 */
-    i->db->init();
+    i->db->init(2);
   }
 
   /* i->conn is a pointer back to the parent connection */
@@ -187,12 +189,12 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i,
   /* i->n_ops is a counter of operations in the current transaction */
   i->n_read_ops = 0;
  
-  /* i->max_ops denotes the number of operations in i->data */
-  i->max_read_ops = max_ops;
+  /* Pointer to the server configuration */
+  i->server_config = srv;
     
   /* i->data is an array of operations */
   i->data = (struct data_operation *) 
-    ap_pcalloc(p, max_ops * sizeof(struct data_operation));
+    ap_pcalloc(p, srv->max_read_operations * sizeof(struct data_operation));
     
   return i->db;
 }
@@ -225,12 +227,21 @@ ndb_instance *my_instance(request_rec *r) {
 }
 
 
+void module_must_restart() {
+  apr_thread_mutex_lock(restart_lock);  
+  if(! will_restart++)  
+    kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
+  apr_thread_mutex_unlock(restart_lock);
+}
+
+
 extern "C" {
 
   extern command_rec configuration_commands[];
   extern int ndb_handler(request_rec *);
   extern int ndb_exec_batch_handler(request_rec *);
   extern int ndb_dump_format_handler(request_rec *);
+  extern int ndb_status_handler(request_rec *);
   
  /************************
   *       Hooks          *
@@ -245,9 +256,11 @@ extern "C" {
   void mod_ndb_register_hooks(ap_pool *p) {
     ap_hook_post_config(mod_ndb_post_config, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
+
     ap_hook_handler(ndb_handler, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(ndb_exec_batch_handler, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_handler(ndb_dump_format_handler, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_handler(ndb_status_handler, NULL, NULL, APR_HOOK_MIDDLE);
   }
     
   /************************

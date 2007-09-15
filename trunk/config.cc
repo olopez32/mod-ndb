@@ -85,7 +85,7 @@ namespace config {
     dir->key_columns = new(p, 3) apache_array<config::key_col>;
     dir->index_scan  = (index *) ap_pcalloc(p, sizeof(index));
     dir->fmt = get_format_by_name("JSON");
-    dir->use_etags = 1;
+    dir->flag.use_etags = 1;
     dir->magic_number = 0xBABECAFE ;
     
     return (void *) dir;
@@ -99,6 +99,8 @@ namespace config {
 
     srv->connect_string = 0;
     srv->max_read_operations = DEFAULT_MAX_READ_OPERATIONS;
+    srv->max_retry_ms = DEFAULT_MAX_RETRY_MS ;
+    srv->force_restart = DEFAULT_FORCE_RESTART ;
     srv->magic_number = 0xCAFEBABE ;
 
     initialize_output_formats(p);
@@ -162,16 +164,31 @@ namespace config {
   }
 
 
-  const char *maxreadsubrequests(cmd_parms *cmd, void *m, char *arg) {
+  const char *srv_set_int(cmd_parms *cmd, void *m, char *arg) {
     config::srv *srv = (config::srv *) 
       ap_get_module_config(cmd->server->module_config, &ndb_module);
     
     assert(srv->magic_number == 0xCAFEBABE);
-    srv->max_read_operations = atoi(arg);
+    if(!strcmp(cmd->cmd->name, "ndb-max-read-subrequests"))
+       srv->max_read_operations = atoi(arg);
+    else if(!strcmp(cmd->cmd->name, "ndb-retry-ms"))
+       srv->max_retry_ms = atoi(arg);
+    else assert(0);
+    
     return 0;
   }
 
 
+  const char *force_restart(cmd_parms *cmd, void *m, int flag) {
+    config::srv *srv = (config::srv *) 
+    ap_get_module_config(cmd->server->module_config, &ndb_module);
+    
+    assert(srv->magic_number == 0xCAFEBABE);
+    srv->force_restart = flag;
+    return 0;
+  }
+
+  
   const char *result_format(cmd_parms *cmd, void *m, char *format)
   {    
     config::dir *dir = (config::dir *) m;
@@ -183,6 +200,19 @@ namespace config {
     return 0;
   }
 
+
+  const char *dir_set_flag(cmd_parms *cmd, void *m, int flag) {
+    config::dir *dir = (config::dir *) m;
+
+    if(!strcmp(cmd->cmd->name, "Deletes"))
+      dir->flag.allow_delete = flag;
+    else if(!strcmp(cmd->cmd->name, "ETags"))
+      dir->flag.use_etags = flag;
+    else assert(0);
+
+    return 0;
+  }
+  
   
   /*  add_key_column():
       While building the dir->key_columns array, we want to keep
@@ -806,12 +836,26 @@ extern "C" {
     "NDB Connection String" 
   },
   {   // Per-server
-     "ndb-max-read-subrequests",
-     (CMD_HAND_TYPE) config::maxreadsubrequests,
-     NULL,
-     RSRC_CONF,     TAKE1,
-     "Limit to number of read subrequests in mod_ndb scripts"
+    "ndb-max-read-subrequests",
+    (CMD_HAND_TYPE) config::srv_set_int,
+    NULL,
+    RSRC_CONF,     TAKE1,
+    "Limit to number of read subrequests in mod_ndb scripts"
   },  
+  {   // Per-server
+    "ndb-retry-ms",
+    (CMD_HAND_TYPE) config::srv_set_int,
+    NULL,
+    RSRC_CONF,     TAKE1,
+    "Milliseconds to spend re-trying a transaction before returning 503 error."
+  },  
+  {   // Per-server
+    "ndb-force-restart",
+    (CMD_HAND_TYPE) config::force_restart,
+    NULL,
+    RSRC_CONF,     FLAG,
+    "Whether to force an apache graceful restart after ALTER TABLE."
+  }, 
   {
     "<ResultFormat",  // Define a result format 
     (CMD_HAND_TYPE) config::result_fmt_container,
@@ -827,7 +871,7 @@ extern "C" {
     "MySQL database schema" 
   },
   {
-    "Table",            // inheritable
+    "Table",            // NOT inheritable
     (CMD_HAND_TYPE) config::table,
     NULL,
     ACCESS_CONF,    TAKE123, 
@@ -835,15 +879,15 @@ extern "C" {
   },            
   {
     "Deletes",          // NOT inheritable, defaults to 0
-    (CMD_HAND_TYPE) ap_set_flag_slot,
-    (void *)XtOffsetOf(config::dir, allow_delete),
+    (CMD_HAND_TYPE) config::dir_set_flag,
+    NULL,
     ACCESS_CONF,     FLAG,
     "Allow DELETE over HTTP"
   },
   {
     "ETags",          // Inheritable, defaults to 1
-    (CMD_HAND_TYPE) ap_set_flag_slot,
-    (void *)XtOffsetOf(config::dir, use_etags),
+    (CMD_HAND_TYPE) config::dir_set_flag,
+    NULL,
     ACCESS_CONF,     FLAG,
     "Compute and set ETag header in response"
   },    
@@ -855,7 +899,7 @@ extern "C" {
     "Result Set Format"
   },     
   {
-    "Columns",          // inheritable
+    "Columns",          // NOT inheritable
     (CMD_HAND_TYPE) config::non_key_column,
     (void *) "R",
     ACCESS_CONF,    ITERATE,

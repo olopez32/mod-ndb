@@ -18,15 +18,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "revision.h"
+#include <signal.h>
 
-//
-// Forward declarations for this file only: */
-//
      /* Single-threaded (Apache 1.3) version: */
 ndb_instance *instance1;
 struct mod_ndb_process process;
 int ndb_force_send = 1;
-
+int will_restart = 0;
 
 //
 // INITIALIZATION & CLEAN-UP FUNCTIONS:
@@ -43,10 +41,6 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
   /* Get server configuration */
   config::srv *srv = (config::srv *)
     ap_get_module_config(s->module_config, &ndb_module);
-
-  log_debug(s,"srv->conenct_string: %s", srv->connect_string);
-  log_debug(s,"srv->max_read_operations: %d", srv->max_read_operations);
-  
   
   /* Connect to the cluster */
   connect_to_cluster(& process.conn, s, srv, p);
@@ -58,7 +52,7 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
 
   /* Create an ndb instance */
   instance1 = (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-  init_instance(& process.conn, instance1, srv->max_read_operations, p);
+  init_instance(& process.conn, instance1, srv, p);
 }
 
 
@@ -135,7 +129,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 
 
 Ndb *init_instance(ndb_connection *c, ndb_instance *i, 
-                   unsigned int max_ops, ap_pool *p) {
+                   config::srv *srv_config, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */
   i->db = new Ndb(c->connection);
@@ -151,10 +145,9 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i,
   /* i->n_read_ops is a counter of read operations in the current transaction */
   i->n_read_ops = 0;
   
-  /* i->max_read_ops denotes the maximum number of read operations in i->data 
-     and the size of the array
+  /* Pointer to the configuration
   */
-  i->max_read_ops = max_ops;
+  i->server_config = srv_config;
   
   /* i->data is an array of data_operations */
   i->data = (struct data_operation *) 
@@ -188,6 +181,16 @@ ndb_instance *my_instance(request_rec *r) {
 }
 
 
+void module_must_restart(config::srv *conf) {
+  if(conf->force_restart) {
+    if(! will_restart++)  /* this is a semaphore */
+      kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
+  }
+  else 
+    log_error(
+}
+
+
 extern "C" {
 
   void mod_ndb_initializer(server_rec* s, ap_pool * p) {
@@ -201,14 +204,12 @@ extern "C" {
   /* The handlers are in handlers.cc: */
   extern int ndb_handler(request_rec *);
   extern int ndb_status_handler(request_rec *);
-  extern int ndb_config_check_handler(request_rec *);
   extern int ndb_exec_batch_handler(request_rec *);
   extern int ndb_dump_format_handler(request_rec *);
 
   static const handler_rec mod_ndb_handlers[] = { 
       { "ndb-cluster", ndb_handler },
       { "ndb-status", ndb_status_handler },
-      { "ndb-config-check", ndb_config_check_handler },
       { "ndb-exec-batch", ndb_exec_batch_handler },
       { "ndb-dump-format", ndb_dump_format_handler },
       { NULL, NULL }

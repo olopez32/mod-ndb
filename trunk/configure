@@ -6,12 +6,11 @@ MYSQLCFG=`which mysql_config`
 GET_LIBS='--libs'
 CONFIG_CMD="$0 $@"
 OPT='-O3'
-LINK=1
 
 usage() {
   echo
   echo "Building mod_ndb requires an installed copy of MySQL, including "
-  echo "NDB Cluster, libraries header files, and the mysql_config utility, "
+  echo "NDB Cluster, libraries, header files, and the mysql_config utility, "
   echo "plus an installed copy of Apache including apxs. "
   echo 
   echo "Required: "
@@ -23,7 +22,6 @@ usage() {
   echo "       --aprconfig=/path/to/apr-config"
   echo "       --thread-safe"
   echo "       --debug"
-  echo "       --no-link"
 }
 
 long_help() {
@@ -39,9 +37,6 @@ long_help() {
   echo "Use --debug to compile with '-g -O0'; otherwise compile with '-O3'."
   echo "(see also: defaults.h for logging of debug messages)."
   echo 
-  echo "With --no-link, mod_ndb will not be linked with any NDB or MySQL"
-  echo "libraries, but will try to load them from httpd.conf using LoadFile." 
-  echo
 }
 
 fail() { 
@@ -82,9 +77,6 @@ do
       APRCONFIG=$conf_arg
       test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
       ;;
-    --no-link)
-      LINK=0
-      ;;
     --help)
       usage
       long_help
@@ -102,7 +94,7 @@ test -d /usr/xpg4/bin && PATH=/usr/xpg4/bin:$PATH
 
 ## Check the Apache version
 HTTPD="`$APXS -q SBINDIR`/`$APXS -q TARGET`"
-START_APACHE="$HTTPD -f `pwd`/httpd.conf"
+START_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf"
 $HTTPD -v
 if $HTTPD -v | grep -q "Apache/1.3" 
  then 
@@ -122,8 +114,8 @@ if $HTTPD -v | grep -q "Apache/1.3"
     echo "Using Apache 2.0"
     APACHE_VER=ap20
   fi
-  STOP_APACHE="$HTTPD -f `pwd`/httpd.conf -k stop"
-  RESTART_APACHE="$HTTPD -f `pwd`/httpd.conf -k restart"  
+  STOP_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k stop"
+  RESTART_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k restart"  
 fi
 echo
 
@@ -175,18 +167,6 @@ awk ' !/^#/ {print $2}' templates/modules_$APACHE_VER | sort > modules_desired
 join -2 2 modules_avail templates/modules_$APACHE_VER | \
  awk '{printf("LoadModule\t%s \t\t modules/%s \n",$2,$1) }' > modules_conf
 
-# In a "no-link" build, create the LoadFile directives:
-> loadfiles_conf
-if [ $LINK -eq 0 ]
- then 
-  BasePath=`echo $MY_LIBS | awk '{ for(i=1;i < NF;i++) if($i ~ /^-L/) print substr($i,3)}'`
-  # Don't bother to check for .dylib instead of .so here: --no-link just
-  # does not work on OS X anyway.
-  (for lf in libndbclient libmystrings libmysqlclient libmysys 
-    do echo LoadFile $BasePath/$lf.so
-  done
-  ) > loadfiles_conf
-fi
 
 # Create the sed script which will generate httpd.conf from the template:
 (
@@ -207,15 +187,13 @@ echo
 echo CC=g++
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE
+echo SRCDIR=`pwd`
 echo
 echo MY_INC1=$MY_INC
 echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
-if [ $LINK -eq 1 ]
- then
-  echo MY_LIBS=$MY_LIBS
-  echo MYSQL_LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
-fi
+echo MY_LIBS=$MY_LIBS
+echo MYSQL_LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
 echo 
 echo OPT=$OPT
 echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
