@@ -151,7 +151,7 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i,
   
   /* i->data is an array of data_operations */
   i->data = (struct data_operation *) 
-    ap_pcalloc(p, max_ops * sizeof(struct data_operation));
+    ap_pcalloc(p, srv_config->max_read_operations * sizeof(struct data_operation));
   
   return i->db;
 }
@@ -186,8 +186,6 @@ void module_must_restart(config::srv *conf) {
     if(! will_restart++)  /* this is a semaphore */
       kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
   }
-  else 
-    log_error(
 }
 
 

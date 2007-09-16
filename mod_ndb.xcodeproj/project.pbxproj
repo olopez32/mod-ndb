@@ -41,9 +41,6 @@
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
-		6593DA500B83E31300DDE22C /* ex2_httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ex2_httpd.conf; path = example2/ex2_httpd.conf; sourceTree = "<group>"; };
-		6593DA510B83E31300DDE22C /* load_icons.sql.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = load_icons.sql.gz; path = example2/load_icons.sql.gz; sourceTree = "<group>"; };
-		6593DA520B83E31300DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example2/README; sourceTree = "<group>"; };
 		65AA7E800BC5841100A5D0A4 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_dumper.cc; sourceTree = "<group>"; };
 		65ADCC4A0BB0FF0A00AEE680 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = output_format.h; sourceTree = "<group>"; };
 		65AFE1620C7390C5004525B9 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
@@ -94,8 +91,6 @@
 				65383BF30C72B69B001F8451 /* N-SQL */,
 				65E2E83C0BA2186700B1B8D0 /* templates */,
 				657BD1C30B84EE8600A9ED69 /* Tests */,
-				6593D9EC0B83D83500DDE22C /* Example1 */,
-				6593DA4F0B83E2F000DDE22C /* Example2 */,
 				657BD2920B853B7000A9ED69 /* PHP */,
 			);
 			name = mod_ndb;
@@ -145,23 +140,6 @@
 				657BD2940B853B9200A9ED69 /* test_note.php */,
 			);
 			name = PHP;
-			sourceTree = "<group>";
-		};
-		6593D9EC0B83D83500DDE22C /* Example1 */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Example1;
-			sourceTree = "<group>";
-		};
-		6593DA4F0B83E2F000DDE22C /* Example2 */ = {
-			isa = PBXGroup;
-			children = (
-				6593DA520B83E31300DDE22C /* README */,
-				6593DA500B83E31300DDE22C /* ex2_httpd.conf */,
-				6593DA510B83E31300DDE22C /* load_icons.sql.gz */,
-			);
-			name = Example2;
 			sourceTree = "<group>";
 		};
 		65E2E83C0BA2186700B1B8D0 /* templates */ = {
