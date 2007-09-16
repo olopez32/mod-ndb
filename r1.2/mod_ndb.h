@@ -127,7 +127,7 @@ class ndb_instance {
   Ndb *db;
   NdbTransaction *tx;
   int n_read_ops;
-  int max_read_ops;
+  config::srv *server_config;
   struct data_operation *data;
   struct {
     unsigned int has_blob : 1 ;
@@ -174,7 +174,7 @@ struct mod_ndb_process {
 
 ndb_instance *my_instance(request_rec *r);
 void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, ap_pool *);
-Ndb * init_instance(ndb_connection *, ndb_instance *, uint, ap_pool *);
+Ndb * init_instance(ndb_connection *, ndb_instance *, config::srv *, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
 table *http_param_table(request_rec *r, const char *c);
 int Query(request_rec *, config::dir *, ndb_instance *);
@@ -187,4 +187,4 @@ void register_built_in_formatters(ap_pool *);
 int build_results(request_rec *, data_operation *, result_buffer &);
 int ndb_handle_error(request_rec *, int, const NdbError *, const char *);
 const char * allowed_methods(request_rec *, config::dir *);
-
+void module_must_restart(void);

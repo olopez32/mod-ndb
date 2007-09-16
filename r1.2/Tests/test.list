@@ -13,8 +13,8 @@
 
 
 # ------ Prepare the database
-sql000 SQL test_connection.sql
-aaa000 SQL Create_tables.sql
+sql000 SQL connection.sql
+typ000 SQL typ.sql
 
 # ------ Data type tests ------
 # typ1: the most common data types (int, unsigned, smallint, char, varchar)
@@ -59,8 +59,8 @@ typ515 f1 typ5_del?c=33 -X DELETE
 typ516 f1 typ5_del?c=49 -X DELETE
 typ517 f1 typ5_ls                          # Empty table again.
 
+<<<<<<< .working
 # LONGVARCHAR
-typ700 SQL typ7.sql
 typ701 f1 typ7tab   # 404 -- empty table
 typ702 f1 typ7 -d "id=1" -d "vc01=ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -d "ts=@time"
 typ703 f1 typ7 -d "id=2" -d "vc01=B..BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAA" -d "ts=@time"
@@ -69,6 +69,22 @@ typ705 f1 typ7tab
 typ706 f1 typ7?id=1 -X DELETE
 typ707 f1 typ7?id=2 -X DELETE
 typ708 f1 typ7?id=3 -X DELETE
+=======
+# LONGVARCHAR
+typ701 f1 typ7tab   # 404 -- empty table
+typ702 f1 typ7 -d "id=1" -d "vc01=ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -d "ts=@time"
+typ703 f1 typ7 -d "id=2" -d "vc01=B..BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAA" -d "ts=@time"
+typ704 f1 typ7 -d "id=3" -d "vc01=C..BAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAA" -d "ts=@time"
+typ705 f1 typ7tab
+typ706 f1 typ7?id=1 -X DELETE
+typ707 f1 typ7?id=2 -X DELETE
+typ708 f1 typ7?id=3 -X DELETE
+>>>>>>> .merge-right.r424
+
+# BLOB/TEXT column (raw output)
+typ800 SQL typ8.sql
+typ801 f1 typ8?id=1
+typ802 f1 typ8?id=1 -I    # Header only, no response body.
 
 # "--------- Sesssion" tests
 #
@@ -84,6 +100,7 @@ ses005 f1 ses_list       # will see the row that was inserted in ses004
 ses006 f1 ses?id=4&var=user_name -X DELETE
 ses007 f1 ses?id=3&var=last_page_visited -d sess_var_value=index.php 
 ses008 f1 ses_list       # Same results as ses001
+ses009 f1 sesu?skey=2    # Using a constant in the WHERE clause
 
 ### Output format tests
 # Dump output formats

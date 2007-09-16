@@ -10,6 +10,9 @@
 		650143780AED89750074CA65 /* mod_ndb_ap20.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap20.cc; sourceTree = "<group>"; };
 		650143DC0AED95E80074CA65 /* mod_ndb_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mod_ndb_compat.h; sourceTree = "<group>"; };
 		650383CF0B911A4C00097A98 /* result_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = result_buffer.h; sourceTree = "<group>"; };
+		6503B3FC0C9DB4DC00490CCC /* connection.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = connection.sql; path = Tests/SQL/connection.sql; sourceTree = "<group>"; };
+		6503B3FD0C9DB4E400490CCC /* typ.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = typ.sql; path = Tests/SQL/typ.sql; sourceTree = "<group>"; };
+		6503B4020C9DB91600490CCC /* typ8.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = typ8.sql; path = Tests/SQL/typ8.sql; sourceTree = "<group>"; };
 		6513067E0B8299CC00A70BDA /* Execute.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Execute.cc; sourceTree = "<group>"; };
 		651343640A91869800B041A0 /* read_http_post.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = read_http_post.cc; sourceTree = "<group>"; };
 		6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap13.cc; sourceTree = "<group>"; };
@@ -34,22 +37,10 @@
 		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
-		656D04150C89302500A430C6 /* Create_tables.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Create_tables.sql; path = Tests/SQL/Create_tables.sql; sourceTree = "<group>"; };
 		656D04160C89302E00A430C6 /* ses.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ses.sql; path = Tests/SQL/ses.sql; sourceTree = "<group>"; };
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
-		6593D9EE0B83D87800DDE22C /* base.test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = base.test; path = example1/base.test; sourceTree = "<group>"; };
-		6593D9EF0B83D87800DDE22C /* ex1_httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ex1_httpd.conf; path = example1/ex1_httpd.conf; sourceTree = "<group>"; };
-		6593D9F10B83D87800DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example1/README; sourceTree = "<group>"; };
-		6593D9F20B83D87800DDE22C /* t1_read_sess.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t1_read_sess.sh; path = example1/t1_read_sess.sh; sourceTree = "<group>"; };
-		6593D9F30B83D87800DDE22C /* t2_update_sess.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t2_update_sess.sh; path = example1/t2_update_sess.sh; sourceTree = "<group>"; };
-		6593D9F40B83D87800DDE22C /* t3_read_sess.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t3_read_sess.sh; path = example1/t3_read_sess.sh; sourceTree = "<group>"; };
-		6593D9F50B83D87800DDE22C /* t4_insert_sess.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t4_insert_sess.sh; path = example1/t4_insert_sess.sh; sourceTree = "<group>"; };
-		6593D9F60B83D87800DDE22C /* t5_ndb_all.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t5_ndb_all.sh; path = example1/t5_ndb_all.sh; sourceTree = "<group>"; };
-		6593D9F70B83D87800DDE22C /* t6_delete_sess.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t6_delete_sess.sh; path = example1/t6_delete_sess.sh; sourceTree = "<group>"; };
-		6593D9F80B83D87800DDE22C /* t7_ndb_all.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = t7_ndb_all.sh; path = example1/t7_ndb_all.sh; sourceTree = "<group>"; };
-		6593DA350B83DBDF00DDE22C /* Load_sessions.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Load_sessions.sql; path = example1/Load_sessions.sql; sourceTree = "<group>"; };
 		6593DA500B83E31300DDE22C /* ex2_httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ex2_httpd.conf; path = example2/ex2_httpd.conf; sourceTree = "<group>"; };
 		6593DA510B83E31300DDE22C /* load_icons.sql.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = load_icons.sql.gz; path = example2/load_icons.sql.gz; sourceTree = "<group>"; };
 		6593DA520B83E31300DDE22C /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = example2/README; sourceTree = "<group>"; };
@@ -127,7 +118,9 @@
 		656D03EA0C89301300A430C6 /* SQL */ = {
 			isa = PBXGroup;
 			children = (
-				656D04150C89302500A430C6 /* Create_tables.sql */,
+				6503B3FC0C9DB4DC00490CCC /* connection.sql */,
+				6503B3FD0C9DB4E400490CCC /* typ.sql */,
+				6503B4020C9DB91600490CCC /* typ8.sql */,
 				656D04160C89302E00A430C6 /* ses.sql */,
 			);
 			name = SQL;
@@ -157,17 +150,6 @@
 		6593D9EC0B83D83500DDE22C /* Example1 */ = {
 			isa = PBXGroup;
 			children = (
-				6593DA350B83DBDF00DDE22C /* Load_sessions.sql */,
-				6593D9F10B83D87800DDE22C /* README */,
-				6593D9EE0B83D87800DDE22C /* base.test */,
-				6593D9EF0B83D87800DDE22C /* ex1_httpd.conf */,
-				6593D9F20B83D87800DDE22C /* t1_read_sess.sh */,
-				6593D9F30B83D87800DDE22C /* t2_update_sess.sh */,
-				6593D9F40B83D87800DDE22C /* t3_read_sess.sh */,
-				6593D9F50B83D87800DDE22C /* t4_insert_sess.sh */,
-				6593D9F60B83D87800DDE22C /* t5_ndb_all.sh */,
-				6593D9F70B83D87800DDE22C /* t6_delete_sess.sh */,
-				6593D9F80B83D87800DDE22C /* t7_ndb_all.sh */,
 			);
 			name = Example1;
 			sourceTree = "<group>";

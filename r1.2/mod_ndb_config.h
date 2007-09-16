@@ -49,6 +49,8 @@ namespace config {
   struct srv {
     char *connect_string;
     int max_read_operations;
+    unsigned int max_retry_ms;
+    unsigned int force_restart;
     unsigned int magic_number;
   };
     
@@ -58,14 +60,14 @@ namespace config {
     char *table;
     int pathinfo_size;
     short *pathinfo;
-    int allow_delete;
-    int use_etags;
     output_format *fmt;
     int incr_prefetch;
     struct {
-      unsigned pathinfo_always : 1;
-      unsigned has_filters : 1;
-      unsigned table_scan : 1;
+      unsigned pathinfo_always  : 1;
+      unsigned has_filters      : 1;
+      unsigned table_scan       : 1;
+      unsigned use_etags        : 1;
+      unsigned allow_delete     : 1;
     } flag;
     struct index *index_scan;
     apache_array<char*> *visible;
