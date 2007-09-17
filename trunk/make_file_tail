@@ -14,7 +14,7 @@ mod_ndb.so: $(OBJECTS)
 	LD_RUN_PATH=$(LDSO_PATH) $(CC) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
 .cc.o:
-	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $< 
+	$(CC) $(DEFINE) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $< 
 
 Scanner.o: Scanner.cpp
 	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ Scanner.cpp
@@ -23,7 +23,7 @@ Parser.o: Parser.cpp
 	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ Parser.cpp
 
 mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h revision.h output_format.h
-	$(CC) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $(MOD_SOURCE)
+	$(CC) $(DEFINE) -c $(INCLUDES) $(APXS_CFLAGS) $(APXS_CFLAGS_SHLIB) -Wall $(OPT) -o $@ $(MOD_SOURCE)
 
 handlers.o: handlers.cc mod_ndb.h
 read_http_post.o: read_http_post.cc
