@@ -34,8 +34,8 @@ long_help() {
   echo "Use --thread-safe if you have a thread-safe mysql client library."
   echo "If your apr is installed outside of apache2, use --aprconfig."
   echo
-  echo "Use --debug to compile with '-g -O0'; otherwise compile with '-O3'."
-  echo "(see also: defaults.h for logging of debug messages)."
+  echo "Use --debug to compile with '-g -O0', and enable debug log "
+  echo "messages; otherwise compile with '-O3'."
   echo 
 }
 
@@ -60,6 +60,7 @@ do
   case $conf_option in 
     --debug)
       OPT='-g -O0'
+      DEFINE='-DMOD_NDB_DEBUG=1'
       ;;
     --mysql)
       MYSQLCFG=$conf_arg
@@ -185,6 +186,7 @@ echo '#' Makefile for mod_ndb.  Automatically generated from:
 echo '#' $CONFIG_CMD
 echo
 echo CC=g++
+echo DEFINE=$DEFINE
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE
 echo SRCDIR=`pwd`

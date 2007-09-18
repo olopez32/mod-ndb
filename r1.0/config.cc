@@ -86,6 +86,7 @@ namespace config {
     dir->index_scan  = (index *) ap_pcalloc(p, sizeof(index));
     dir->fmt = get_format_by_name("JSON");
     dir->flag.use_etags = 1;
+    dir->default_key = -1;
     dir->magic_number = 0xBABECAFE ;
     
     return (void *) dir;
@@ -398,7 +399,7 @@ namespace config {
       if((cols[id].index_id != -1) && (index_id != -1))
         log_err(cmd->server, "Reassociating column %s with index %s", 
             col_name, indexes[index_id].name);
-    }    
+    }
     cols[id].index_id = index_id;
     if(index_id >= 0) {
       if(indexes[index_id].type == 'P') {
@@ -412,13 +413,14 @@ namespace config {
       else if(indexes[index_id].type == 'O') {
         cols[id].is.in_ord_idx = 1;
         cols[id].implied_plan = OrderedIndexScan;
-        cols[id].filter_op = expr->rel_op;
+        cols[id].rel_op = expr->rel_op;
+        cols[id].base_col_name = expr->base_col_name;
       }
     }
     cols[id].next_in_key_serial = -1;  
     cols[id].next_in_key = -1; 
  
-    return  id;
+    return id;
   }
 
   
@@ -466,7 +468,7 @@ namespace config {
     bool found_match = 0;
     for(int n = 0 ; filter_ops[n] ; n++) {
       if(!strcmp(filter_op,filter_ops[n])) {
-        columns[alias_col_id].filter_op = n;
+        columns[alias_col_id].rel_op = n;
         found_match = 1;
       }
     }
@@ -510,18 +512,29 @@ namespace config {
                              NSQL::Expr *in_expr) 
   {
     short index_id = get_index_by_name(dir, idx);
-    assert(index_id != -1);
-
+    assert(index_id != -1);    
+    
+    dir->default_key = index_id;
     config::index *index_rec = & dir->indexes->item(index_id);
     NSQL::Expr *expr = new(cmd->pool) NSQL::Expr;
-        
+
+    // fix me:
+    if(index_rec->type =='P' || index_rec->type =='U')
+      return "Sorry, you cannot compare a primary key or unique index "
+             "to a constant value in mod_ndb 1.0";
+    
     expr->type  = NSQL::Relation;
     expr->vtype = NSQL::Const;
     expr->base_col_name = in_expr->base_col_name;
     expr->value = (* (in_expr->value) == '"') ? 
         unquote_qstring(cmd, in_expr->value) : in_expr->value;
-    expr->rel_op = in_expr->rel_op;
-
+    expr->rel_op= in_expr->rel_op;
+    
+    if(index_rec->type =='P')     expr->implied_plan = PrimaryKey;
+    else if(index_rec->type =='U')expr->implied_plan = UniqueIndexAccess;
+    else if(index_rec->type =='O')expr->implied_plan = OrderedIndexScan;
+    else assert(0);
+      
     /* Linked list: */
     expr->next = index_rec->constants;
     index_rec->constants = expr;

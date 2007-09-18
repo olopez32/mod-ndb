@@ -16,8 +16,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 /* ================================================================== 
-   Undefine these macros to disable debugging output at compile-time.
-   Otherwise, set LogLevel to Debug for debugging output.
+   MOD_NDB_DEBUG is defined by "./configure --debug" and generates
+   apache log messages at log level debug.
+   CONFIG_DEBUG generates extra debugging messages (some to STDOUT) 
+   related to configuration handling and parsing.
 */
 // #define MOD_NDB_DEBUG 1
 // #define CONFIG_DEBUG 1

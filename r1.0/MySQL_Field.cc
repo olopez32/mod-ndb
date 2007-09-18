@@ -286,11 +286,16 @@ void MySQL::value(mvalue &m, ap_pool *p,
   unsigned short s_len;
   unsigned int l_len;
   char *s, *q;
+  int aux_int;
+
+  if(col == 0) {
+    m.use_value = err_bad_column;
+    return;
+  }
   bool is_char_col = 
     ( (col->getType() == NdbDictionary::Column::Varchar) ||
       (col->getType() == NdbDictionary::Column::Longvarchar) ||
       (col->getType() == NdbDictionary::Column::Char));        
-  int aux_int;
 
   m.ndb_column = col;
   
@@ -393,7 +398,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
 
   /* Numeric columns */  
   if(! val) {  // You can't do anything with a null pointer
-    m.use_value = can_not_use;
+    m.use_value = err_bad_user_value;
     return;
   }
 
@@ -548,7 +553,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       /* Olddecimal types are just strings.  But you cannot create old decimal
          columns with MySQL 5, so this is difficult to test. */
     default:
-      m.use_value = can_not_use;
+      m.use_value = err_bad_data_type;
       return;
   }
 }
