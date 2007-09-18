@@ -33,7 +33,9 @@ enum ndb_string_packing {
 };  
 
 enum mvalue_use {
-  can_not_use, use_char,
+  err_bad_user_value, err_bad_data_type, err_bad_column, 
+  mvalue_is_good,  /* everything greater than this is OK */
+  use_char,
   use_signed, use_unsigned, 
   use_64, use_unsigned_64,
   use_float, use_double,

@@ -17,31 +17,58 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #define SQL_BUFFER_LEN  MAX_STRING_LEN*2
 
-// Forward declaration
-class output_format;
-
 typedef const char *(*CMD_HAND_TYPE) ();
+
+class output_format;  // Forward declaration
 
 namespace NSQL {
   enum { Relation = 1 };               // expression types
   enum { Param = 1, Const, Column };   // value types
   enum { Asc = 1, Desc };              // sort orders
-
-  class Expr {
-  public:
-    short type;
-    short vtype;
-    char *base_col_name;
-    int  rel_op;
-    char *value;
-    apache_array<NSQL::Expr> *args;
-    NSQL::Expr *next;
-
-    void * operator new(size_t sz, ap_pool *p) {
-      return ap_pcalloc(p, sz);
-    };
-  };  
+  class Expr;   // forward declaration
 };
+
+
+class base_expr {
+ public:
+  char *name;
+  char *base_col_name;
+  int rel_op;
+  AccessPlan implied_plan;
+  short index_id;
+};
+
+
+/* Coulmn used in a query */
+class config::key_col : public base_expr {
+ public:
+  short serial_no;
+  short idx_map_bucket;
+  short next_in_key_serial;
+  short next_in_key; 
+  struct {
+    unsigned int in_pk       : 1;
+    unsigned int filter      : 1;
+    unsigned int in_ord_idx  : 1;
+    unsigned int in_hash_idx : 1;
+    unsigned int in_pathinfo : 1;
+  } is;
+};
+
+
+class NSQL::Expr : public base_expr {
+ public:
+  short type;
+  short vtype;
+  char *value;
+  apache_array<NSQL::Expr> *args;
+  NSQL::Expr *next;
+  
+  void * operator new(size_t sz, ap_pool *p) {
+    return ap_pcalloc(p, sz);
+  };
+};  
+
 
 namespace config {
   
@@ -62,6 +89,7 @@ namespace config {
     short *pathinfo;
     output_format *fmt;
     int incr_prefetch;
+    short default_key;
     struct {
       unsigned pathinfo_always  : 1;
       unsigned has_filters      : 1;
@@ -92,26 +120,6 @@ namespace config {
     NSQL::Expr *constants;
   };
   
-  /* Coulmn used in a query */
-  struct key_col {
-      char *name;
-      char *base_col_name;
-      short index_id;
-      short serial_no;
-      short idx_map_bucket;
-      short next_in_key_serial;
-      short next_in_key; 
-      struct {
-        unsigned int in_pk       : 1;
-        unsigned int filter      : 1;
-        unsigned int in_ord_idx  : 1;
-        unsigned int in_hash_idx : 1;
-        unsigned int in_pathinfo : 1;
-      } is;
-      int filter_op;
-      AccessPlan implied_plan;
-  };
-
   void * init_dir(ap_pool *, char *);
   void * init_srv(ap_pool *, server_rec *);
   void * merge_dir(ap_pool *, void *, void *);
