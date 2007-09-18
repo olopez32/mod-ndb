@@ -123,12 +123,21 @@ int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) {
 /* Inlined code to test the usability of an mvalue
 */
 inline bool mval_is_usable(request_rec *r, mvalue &mval) {
-  if(mval.use_value == can_not_use) {
-    log_err(r->server, "Cannot use MySQL column %s in query -- data type "
-             "not supported by mod_ndb",mval.ndb_column->getName());
-    return 0;
+  if(mval.use_value > mvalue_is_good) return 1;  
+  else switch(mval.use_value) {
+    case err_bad_user_value:
+      return 0;
+    case err_bad_column:
+      log_err(r->server, "Attempt to use nonexistent column in query (%s).",
+              r->unparsed_uri);
+      return 0;
+    case err_bad_data_type:
+      log_err(r->server, "Cannot use column %s: unsupported data type (%s).",
+              mval.ndb_column->getName(), r->unparsed_uri);
+      return 0;
+    default:
+      assert(0);
   }
-  else return 1;
 }
 
 
@@ -296,6 +305,15 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
 
   if(dir->flag.table_scan) Q.plan = Scan;
+
+  /* A default key might have been picked during configuration.
+  */
+  if(dir->default_key >= 0) {
+    q->active_index = dir->default_key;
+    NSQL::Expr *e = dir->indexes->item(Q.active_index).constants;
+    if(e) q->plan = e->implied_plan;
+  }
+
   /* ===============================================================
      Process arguments, and then pathinfo, to determine an access plan.
      The detailed work is done within the inlined function set_key().
@@ -340,14 +358,12 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
   /* ===============================================================*/
 
-  /* At this point, a GET query must either be a table scan or have
-     used a key column.
+  /* At this point, a GET query must have some kind of plan
   */
   if(r->method_number == M_GET && 
-     ! ( dir->flag.table_scan || Q.key_columns_used)) {
-    log_debug(r->server,"No key column aliases found in request %s", 
-              r->unparsed_uri);
-    response_code = NOT_FOUND;
+     ! ( dir->flag.table_scan || Q.active_index >= 0)) {
+    log_debug(r->server,"No plan found for request %s", r->unparsed_uri);
+    response_code = 404;
     goto abort2;
   }
   
@@ -437,23 +453,43 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
     while (col >= 0 && Q.key_columns_used-- > 0) {
       config::key_col &keycol = dir->key_columns->item(col);
-      ndb_Column = q->idxobj->get_column(keycol);
+      ndb_Column = keycol.base_col_name ?
+        q->tab->getColumn(keycol.base_col_name) :
+        q->idxobj->get_column(keycol);    
 
       log_debug(r->server," ** Request column_alias: %s -- value: %s", 
                  keycol.name, Q.keys[col].value);
       
       MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
-      if(mval_is_usable(r, mval)) {
-        if(q->idxobj->set_key_part(keycol, mval)) {
-          log_debug(r->server," set_key_part() failed, column %s", ndb_Column->getName());
-          response_code = 404;
+      if( (! mval_is_usable(r, mval))  ||
+          (q->idxobj->set(ndb_Column->getColumnNo(), keycol.rel_op, mval))) 
+      {
+          log_debug(r->server," set key failed for column %s", ndb_Column->getName())
+          response_code = ndb_handle_error(r, 500, NULL, "Configuration error");;
           goto abort1;
-        }                
-      }     
+      }
       col = dir->key_columns->item(col).next_in_key;
       if(! q->idxobj->next_key_part()) break;
     }
-  }
+    
+    /* Constants */
+    NSQL::Expr *constant = dir->indexes->item(Q.active_index).constants ;
+    while(constant) {
+      ndb_Column = constant->base_col_name ?
+        q->tab->getColumn(constant->base_col_name) :
+        q->idxobj->get_column(*constant);    
+      MySQL::value(mval, r->pool, ndb_Column, constant->value);
+      if( (!mval_is_usable(r, mval)) ||
+          (q->idxobj->set(ndb_Column->getColumnNo(), constant->rel_op, mval)))
+      {
+          log_err(r->server, "Failed setting column to constant %s",
+                  constant->value);
+          response_code = ndb_handle_error(r, 500, NULL, "Configuration error.");
+          goto abort1;
+      }
+      constant = constant->next;
+    }
+  } /* if (plan != Scan) */
   
   // Set filters
   if(Q.plan >= Scan && Q.n_filters) {
@@ -467,7 +503,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       runtime_col *filter_col = & Q.keys[n];
       ndb_Column = q->tab->getColumn(keycol.base_col_name);
       int col_id = ndb_Column->getColumnNo();
-      cond = (NdbScanFilter::BinaryCondition) keycol.filter_op;
+      cond = (NdbScanFilter::BinaryCondition) keycol.rel_op;
 
       log_debug(r->server," ** Filter %s using %s (%s)", 
                 keycol.base_col_name, keycol.name, filter_col->value);
