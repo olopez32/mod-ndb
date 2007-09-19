@@ -17,7 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 #include "mod_ndb.h"
-#include "revision.h"
 #include <signal.h>
 
      /* Single-threaded (Apache 1.3) version: */

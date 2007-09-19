@@ -159,7 +159,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
   }
 
   q->keys[n].value = value; 
-  log_debug(r->server, "set value for key column %d [%s]",n,keycol.name);
+  log_debug(r->server, "Request in: $%s=%s", keycol.name, value);
   q->key_columns_used++;
  
   if(keycol.implied_plan > q->plan) {
@@ -211,7 +211,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     log_err(r->server, "Cannot find table %s in database %s: %s.",
              dir->table,dir->database, dict->getNdbError().message);
     i->errors++;
-    return ndb_handle_error(r, 500, NULL, "Configuration error.");
+    return ndb_handle_error(r, 500, & dict->getNdbError(), "Configuration error.");
   }  
   
   /* Initialize q->keys, the runtime array of key columns which is used
@@ -453,19 +453,18 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
     while (col >= 0 && Q.key_columns_used-- > 0) {
       config::key_col &keycol = dir->key_columns->item(col);
-      ndb_Column = keycol.base_col_name ?
-        q->tab->getColumn(keycol.base_col_name) :
-        q->idxobj->get_column(keycol);    
+      ndb_Column = q->idxobj->get_column(keycol);    
 
-      log_debug(r->server," ** Request column_alias: %s -- value: %s", 
-                 keycol.name, Q.keys[col].value);
+      log_debug(r->server," ** Request column_alias: %s [%s] -- value: %s", 
+                 keycol.name, ndb_Column->getName(), Q.keys[col].value);
       
       MySQL::value(mval, r->pool, ndb_Column, Q.keys[col].value);
       if( (! mval_is_usable(r, mval))  ||
-          (q->idxobj->set(ndb_Column->getColumnNo(), keycol.rel_op, mval))) 
+          (q->idxobj->set_key_part(keycol.rel_op, mval))) 
       {
           log_debug(r->server," set key failed for column %s", ndb_Column->getName())
-          response_code = ndb_handle_error(r, 500, NULL, "Configuration error");;
+          response_code = ndb_handle_error(r, 500, & q->data->op->getNdbError(), 
+                                           "Configuration error");;
           goto abort1;
       }
       col = dir->key_columns->item(col).next_in_key;
@@ -475,16 +474,15 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     /* Constants */
     NSQL::Expr *constant = dir->indexes->item(Q.active_index).constants ;
     while(constant) {
-      ndb_Column = constant->base_col_name ?
-        q->tab->getColumn(constant->base_col_name) :
-        q->idxobj->get_column(*constant);    
+      ndb_Column = q->idxobj->get_column(*constant);    
       MySQL::value(mval, r->pool, ndb_Column, constant->value);
       if( (!mval_is_usable(r, mval)) ||
-          (q->idxobj->set(ndb_Column->getColumnNo(), constant->rel_op, mval)))
+          (q->idxobj->set_key_part(constant->rel_op, mval)))
       {
           log_err(r->server, "Failed setting column to constant %s",
                   constant->value);
-          response_code = ndb_handle_error(r, 500, NULL, "Configuration error.");
+          response_code = ndb_handle_error(r, 500, & q->data->op->getNdbError(),
+                                           "Configuration error.");
           goto abort1;
       }
       constant = constant->next;
