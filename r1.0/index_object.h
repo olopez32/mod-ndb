@@ -111,18 +111,29 @@ class Ordered_index_object : public index_object {
     
     const NdbDictionary::Column *get_column(base_expr &expr) {
       key_part_name = expr.base_col_name;
-      return q->tab->getColumn(key_part_name);      
+      return (*key_part_name ? 
+              q->tab->getColumn(key_part_name) : 
+              q->idx->getColumn(key_part) );
     };
 
     int set_key_part(int rel_op, mvalue &mval) {
       parts_used++;
-      if(mval.use_value == use_char) 
-        return q->data->scanop->setBound(key_part_name, rel_op, mval.u.val_char);
-      else 
-        return q->data->scanop->setBound(key_part_name, rel_op, &mval.u.val_char);    
+      if(*key_part_name) {
+        if(mval.use_value == use_char) 
+          return q->data->scanop->setBound(key_part_name, rel_op, mval.u.val_char);
+        else 
+          return q->data->scanop->setBound(key_part_name, rel_op, &mval.u.val_char);    
+      }
+      else {
+        if(mval.use_value == use_char) 
+          return q->data->scanop->setBound(key_part, rel_op, mval.u.val_char);
+        else 
+          return q->data->scanop->setBound(key_part, rel_op, &mval.u.val_char);
+      }
     };
     
     bool next_key_part() {  
+      key_part++;
       return (parts_used < n_parts); 
     };
 };
