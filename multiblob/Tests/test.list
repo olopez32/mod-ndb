@@ -1,0 +1,167 @@
+# test.list 
+# 
+# This set of tests as a whole should be idempotent: able to run repeatedly
+# and get the same results each time.  Any group of tests with the 
+# same 3- or 4- character prefix name should also be idempotent, 
+# e.g. "typ" or "typ2".
+
+# Format of test lines (tests are run against mod_ndb using curl):
+#     test-name sed-filter url-path curl-args
+# 
+# Format of SQL lines, e.g. CREATE TABLE statements, run in mysql client:
+#     test-name "SQL" query-file-name 
+
+
+# ------ Prepare the database
+sql000 SQL connection.sql
+typ000 SQL typ.sql
+
+# ------ Data type tests ------
+# typ1: the most common data types (int, unsigned, smallint, char, varchar)
+typ101 f1 typ1  # sorted on "channel"
+
+# typ2 -- ints: tiny/small/medium signed & unsigned 
+typ201 f1 typ2?i=1
+typ202 f1 typ2?i=2
+typ203 f1 typ2?i=3
+typ204 f1 typ2?i=4
+typ205 f1 typ2?i=5
+typ206 f1 typ2 -d 'i=6&t=-30&ut=30&s=-300&us=300&m=-300000&um=350000'  # all valid
+typ207 f1 typ2?i=5 -d 't=-900&ut=-900&s=-900&us=-900&m=-900&um=-900'  # no change
+typ208 f1 typ2?i=6
+typ209 f1 typ2?i=5
+typ210 f1 typ2?i=6 -X DELETE
+
+# typ3 -- decimals 
+typ301 f1 typ3?i=1
+typ302 f1 typ3?i=2
+typ303 f1 typ3 -d 'i=3&d1=1.25&d2=2.375&d3=3.5&d4=4.9865' 
+typ304 f1 typ3?i=3 
+typ305 f1 typ3?i=3 -X DELETE
+
+# typ4 -- times & dates
+typ401 f1 typ4?i=1 
+
+# typ5: ( i int primary key auto_inc, c int unsigned, unique index c_idx)
+typ501 f1 typ5?i=1&c=1          # 404 -- start with empty table
+typ502 f1 typ5 -d 'i=1&c=1'     # 204 -- insert a tuple
+typ503 f1 typ5?i=1&c=1          # 200 -- get (1,1)
+typ504 f1 typ5?i=1 -d c=@++     # 204 -- c=c+1 
+typ505 f1 typ5?i=1&c=1          # 200 -- get (1,2)
+typ506 f1 typ5?i=1 -X DELETE    # 204 -- delete the row.  empty again.
+
+# insert two rows with auto_increment keys, then delete them
+typ511 f1 typ5 -d i=@autoinc -d c=33       # OK 
+typ512 f1 typ5 -d i=@autoinc -d c=49       # OK
+typ513 f1 typ5 -d i=@autoinc -d c=33       # 409 Conflict
+typ514 f1 typ5_ls                          # Two rows
+typ515 f1 typ5_del?c=33 -X DELETE
+typ516 f1 typ5_del?c=49 -X DELETE
+typ517 f1 typ5_ls                          # Empty table again.
+
+# LONGVARCHAR
+typ701 f1 typ7tab   # 404 -- empty table
+typ702 f1 typ7 -d "id=1" -d "vc01=ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -d "ts=@time"
+typ703 f1 typ7 -d "id=2" -d "vc01=B..BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAA" -d "ts=@time"
+typ704 f1 typ7 -d "id=3" -d "vc01=C..BAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAA" -d "ts=@time"
+typ705 f1 typ7tab
+typ706 f1 typ7?id=1 -X DELETE
+typ707 f1 typ7?id=2 -X DELETE
+typ708 f1 typ7?id=3 -X DELETE
+
+# BLOB/TEXT column (raw output)
+typ800 SQL typ8.sql
+typ801 f1 typ8?id=1
+typ802 f1 typ8?id=1 -I    # Header only, no response body.
+
+###  --- column and index tests
+col000 SQL col.sql
+col101 f1 colPK?p1=0&p2=50         # green
+col102 f1 colPK?p1=6&p2=56         # cyan
+col103 f1 colPK?p1=0&p2=10         # 404 NOT FOUND
+col111 f1 col0?pk1=0&pk2=50        # green
+col112 f1 col0?pk1=6&pk2=56        # cyan
+col113 f1 col0?pk1=0&pk2=10        # 404 NOT FOUND
+
+col201 f1 colUI?p1=1004&p2=5004    # indigo
+col202 f1 colUI?p2=5001&p1=1001    # blue
+col203 f1 colUI?p1=1&p2=11         # 404 NOT FOUND
+col211 f1 col0?ui1=1004&ui2=5004   # indigo
+col212 f1 col0?ui2=5001&ui1=1001   # blue
+col213 f1 col0?ui1=1&ui2=11        # 404 NOT FOUND
+
+col301 f1 colOI?p1=12&p2=102       # red
+col302 f1 colOI?p1=15&p2=105       # yellow
+col303 f1 colOI?p1=13              # orange
+col304 f1 colOI?p1=2&p2=12         # 404 NOT FOUND
+col311 f1 col0?oi1=12&oi2=102      # red
+col312 f1 col0?oi1=15&oi2=105      # yellow
+col313 f1 col0?oi1=13              # orange
+col314 f1 col0?oi1=2&oi2=12        # 404 NOT FOUND
+
+col401 f1 col_ge?ge=14
+col402 f1 col_gt?gt=14
+col403 f1 col_lt?lt=14
+col404 f1 col_le?le=14
+
+
+# "--------- Sesssion" tests
+#
+ses000 SQL ses.sql
+#
+# change a row, change it back; create a row, delete it
+#
+ses001 f1 ses_list       # should return 5 rows 
+ses002 f1 ses?id=3&var=last_page_visited -d sess_var_value=maps.php   # UPDATE
+ses003 f1 sesx/3         # "/3" is pathinfo. Return 3 rows in XML format.
+ses004 f1 ses -d sess_id=4 -d sess_var_name=user_name -d sess_var_value=roger
+ses005 f1 ses_list       # will see the row that was inserted in ses004
+ses006 f1 ses?id=4&var=user_name -X DELETE
+ses007 f1 ses?id=3&var=last_page_visited -d sess_var_value=index.php 
+ses008 f1 ses_list       # Same results as ses001
+ses010 f1 ord1?sid=3&sval=user_name       # WHERE clause in index order
+ses011 f1 ord2?sid=3&sval=user_name       # WHERE clause out of order
+
+### Output format tests
+# Dump output formats
+out001 f1 format?JSON
+out002 f1 format?XML
+out003 f1 format?raw
+out004 f1 format?HAL
+out005 f1 format/source?raw
+out006 f1 format/source?JSON
+out007 f1 format/source?HAL
+out100 f1 hal            # Uses the ses0 table
+out101 f1 out1           # Uses the typ1 table.  Shouldn't segfault.
+# custom error documents
+err404 f1 typ5?i=1&c=1                # typ501  (table is empty)
+err405 f1 colPK?p1=0&p2=50 -X DELETE  # col101  (DELETE not allowed) 
+err409 f1 typ2 -d i=1                 # typ201  (duplicate primary key)
+
+# Filters
+fil101 f1 fil1?d1=2        # One row    -- d1 < 2
+fil102 f1 fil1?d2=3.141    # No result  -- d2 = 3.141
+
+fil201 f1 fil2?n1=jen      # Fixed char: name = "jen"
+fil202 f1 fil2?n2=t%       # name like "t%"
+fil203 f1 fil2?n3=fred     # name not like "fred"
+fil204 f1 fil2?c1=brown    # Varchar:  color = "brown"
+fil205 f1 fil2?c2=green%   # color like "green%" 
+fil206 f1 fil2?c3=bro%     # color not like "bro%"
+fil207 f1 fil2?chan=15     # channel < 15
+fil208 f1 fil2?v1=11       # nvisits = 11
+fil209 f1 fil2?v2=12       # nvisits != 12 
+fil210 f1 fil2?v3=11       # nvisits >= 11
+fil211 f1 fil2?c1=brown&v1=12    # color = "brown" and nvisits = 12
+
+# Constants
+con101 f1 sesu?skey=3         # 2nd part of ordered index = string constant
+con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
+
+## Not yet supported:
+# con111   # 1 part primary key = numeric constant 
+# con112   # 1 part primary key = string constant 
+# con113   # 2 part primary key = (var, constant) 
+# con114   # 2 part primary key = (constant, var) 
+# con121   # Unique index = (constant, var)
+

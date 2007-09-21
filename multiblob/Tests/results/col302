@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-Length: 24
+ETag: 281351f9bf053a5dbdf0432e991a67e2
+Content-Type: text/plain
+
+[
+  { "a":"yellow" } 
+]
