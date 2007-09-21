@@ -17,51 +17,55 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 class index_object {
-public:
+  protected:
     int key_part;
     server_rec *server;
     struct QueryItems *q;
     int n_parts;
     
+  public:
     index_object(struct QueryItems *queryitems, request_rec *r) {  
       q = queryitems;
       server = r->server;
       key_part = 0; 
     };
     virtual ~index_object() {};
-
     virtual NdbOperation *get_ndb_operation(NdbTransaction *) = 0;
-    bool next_key_part() {  return (key_part++ < n_parts); };
-    virtual int set(int col_id, int, mvalue &mval) {
-      if(mval.use_value == use_char) {
-        log_debug(server, "Set key: %d = %s", col_id, mval.u.val_char);
-        return q->data->op->equal(col_id, mval.u.val_char);
-      }
-      else {
-        log_debug(server, "Set key: %d = %d", col_id, mval.u.val_signed);
-        return q->data->op->equal(col_id, (const char *) (&mval.u.val_char));      
-      }
-    };    
-    virtual const NdbDictionary::Column *get_column(base_expr &) {
-      return q->idx->getColumn(key_part);
+    virtual bool next_key_part() {  return (key_part++ < n_parts); };
+    virtual const NdbDictionary::Column *get_column(base_expr &) = 0;
+    virtual int set_key_part(int, mvalue &mval) = 0;
+    int set_key_num(int num, mvalue &mval) {
+      if(mval.use_value == use_char) 
+        return q->data->op->equal(num, mval.u.val_char);
+      else 
+        return q->data->op->equal(num, (const char *) (&mval.u.val_char)); 
     };
 };
 
 
 class PK_index_object : public index_object {
+  private:
+    int attr_id;
   public:
     PK_index_object(struct QueryItems *queryitems, request_rec *r) :
       index_object(queryitems, r) { } ;
       
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
-      log_debug(server, "Using primary key lookup; key %d", q->active_index);
+      log_debug(server, "Using primary key lookup.");
       n_parts = q->tab->getNoOfPrimaryKeys();
       return tx->getNdbOperation(q->tab);
     };
      
     const NdbDictionary::Column *get_column(base_expr &) {
-      return q->tab->getColumn(q->tab->getPrimaryKey(key_part));
+      const NdbDictionary::Column *col = 
+        q->tab->getColumn(q->tab->getPrimaryKey(key_part));
+      attr_id = col->getColumnNo();
+      return col;
     };
+
+    int set_key_part(int, mvalue &mval) {
+      return set_key_num(attr_id, mval);
+    }
 };
 
   
@@ -76,13 +80,27 @@ class Unique_index_object : public index_object {
       NdbOperation *op = tx->getNdbIndexOperation(q->idx);
       return op;
     };
+
+    const NdbDictionary::Column *get_column(base_expr &) {
+      return q->idx->getColumn(key_part);
+    };
+
+    int set_key_part(int, mvalue &mval) {
+      return set_key_num(key_part, mval);
+    }
 };
 
 
 class Ordered_index_object : public index_object {
+  private:
+    int parts_used;
+    const char *key_part_name;
   public:
     Ordered_index_object(struct QueryItems *queryitems, request_rec *r) :
-      index_object(queryitems, r) { } ;
+      index_object(queryitems, r) 
+    { 
+      parts_used = 0;
+    };
 
     NdbOperation *get_ndb_operation(NdbTransaction *tx) {
       n_parts = q->idx->getNoOfColumns(); 
@@ -91,19 +109,32 @@ class Ordered_index_object : public index_object {
       return q->data->scanop;
     };
     
-    const NdbDictionary::Column *get_column(base_expr &) {
-      return q->idx->getColumn(key_part);
+    const NdbDictionary::Column *get_column(base_expr &expr) {
+      key_part_name = expr.base_col_name;
+      return (*key_part_name ? 
+              q->tab->getColumn(key_part_name) : 
+              q->idx->getColumn(key_part) );
     };
 
-    int set(int col_id, int rel_op, mvalue &mval) {
-      if(mval.use_value == use_char) {
-        log_debug(server, "OI set: %d %d %s", col_id, rel_op, mval.u.val_char);
-        return q->data->scanop->setBound(col_id, rel_op, mval.u.val_char);
+    int set_key_part(int rel_op, mvalue &mval) {
+      parts_used++;
+      if(*key_part_name) {
+        if(mval.use_value == use_char) 
+          return q->data->scanop->setBound(key_part_name, rel_op, mval.u.val_char);
+        else 
+          return q->data->scanop->setBound(key_part_name, rel_op, &mval.u.val_char);    
       }
       else {
-        log_debug(server, "OI set: %d %d %d", col_id, rel_op, mval.u.val_signed);       
-        return q->data->scanop->setBound(col_id, rel_op, &mval.u.val_char);    
+        if(mval.use_value == use_char) 
+          return q->data->scanop->setBound(key_part, rel_op, mval.u.val_char);
+        else 
+          return q->data->scanop->setBound(key_part, rel_op, &mval.u.val_char);
       }
+    };
+    
+    bool next_key_part() {  
+      key_part++;
+      return (parts_used < n_parts); 
     };
 };
 
@@ -121,10 +152,9 @@ public:
     return ts_op;
   };
 
-  int set(int col_id, int rel_op, mvalue &mval) {   
-    log_debug(server, "In Table_Scan_Object::set()");
-    return 0;
-  };
+  const NdbDictionary::Column *get_column(base_expr &) { assert(0); };
+  int set_key_part(int rel_op, mvalue &mval) { assert(0); };
+  
 };
 
 

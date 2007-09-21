@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-Length: 21
+ETag: 9522b011003c0e5524b6fa627e8a6803
+Content-Type: text/plain
+
+[
+  { "a":"red" } 
+]

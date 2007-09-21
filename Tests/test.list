@@ -74,6 +74,37 @@ typ800 SQL typ8.sql
 typ801 f1 typ8?id=1
 typ802 f1 typ8?id=1 -I    # Header only, no response body.
 
+###  --- column and index tests
+col000 SQL col.sql
+col101 f1 colPK?p1=0&p2=50         # green
+col102 f1 colPK?p1=6&p2=56         # cyan
+col103 f1 colPK?p1=0&p2=10         # 404 NOT FOUND
+col111 f1 col0?pk1=0&pk2=50        # green
+col112 f1 col0?pk1=6&pk2=56        # cyan
+col113 f1 col0?pk1=0&pk2=10        # 404 NOT FOUND
+
+col201 f1 colUI?p1=1004&p2=5004    # indigo
+col202 f1 colUI?p2=5001&p1=1001    # blue
+col203 f1 colUI?p1=1&p2=11         # 404 NOT FOUND
+col211 f1 col0?ui1=1004&ui2=5004   # indigo
+col212 f1 col0?ui2=5001&ui1=1001   # blue
+col213 f1 col0?ui1=1&ui2=11        # 404 NOT FOUND
+
+col301 f1 colOI?p1=12&p2=102       # red
+col302 f1 colOI?p1=15&p2=105       # yellow
+col303 f1 colOI?p1=13              # orange
+col304 f1 colOI?p1=2&p2=12         # 404 NOT FOUND
+col311 f1 col0?oi1=12&oi2=102      # red
+col312 f1 col0?oi1=15&oi2=105      # yellow
+col313 f1 col0?oi1=13              # orange
+col314 f1 col0?oi1=2&oi2=12        # 404 NOT FOUND
+
+col401 f1 col_ge?ge=14
+col402 f1 col_gt?gt=14
+col403 f1 col_lt?lt=14
+col404 f1 col_le?le=14
+
+
 # "--------- Sesssion" tests
 #
 ses000 SQL ses.sql
@@ -100,13 +131,12 @@ out004 f1 format?HAL
 out005 f1 format/source?raw
 out006 f1 format/source?JSON
 out007 f1 format/source?HAL
-out100 f1 hal            # Requires the ses0 table
-
+out100 f1 hal            # Uses the ses0 table
+out101 f1 out1           # Uses the typ1 table.  Shouldn't segfault.
 # custom error documents
-err404 f1 typ5?i=1&c=1    # test 501  (table is empty)
-#err405
-#err409
-#err500
+err404 f1 typ5?i=1&c=1                # typ501  (table is empty)
+err405 f1 colPK?p1=0&p2=50 -X DELETE  # col101  (DELETE not allowed) 
+err409 f1 typ2 -d i=1                 # typ201  (duplicate primary key)
 
 # Filters
 fil101 f1 fil1?d1=2        # One row    -- d1 < 2
@@ -134,3 +164,4 @@ con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
 # con113   # 2 part primary key = (var, constant) 
 # con114   # 2 part primary key = (constant, var) 
 # con121   # Unique index = (constant, var)
+

@@ -314,7 +314,9 @@ void MainLoop::compile(output_format *o) {
   if(begin == &the_null_cell) parser.rollback();
   
   core = parser.get_node(pars_optional, o);
-  
+  if(core != &the_null_node) 
+    if(core->type != loop_node) 
+      throw ParserError("The core of a Format object must be a Row or Scan object.");
   end = parser.get_cell(pars_optional); 
   parser.the_end(pars_required);
 }

@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 enum re_type { const_string, item_name, item_value };
 enum re_esc  { no_esc, esc_xml, esc_json };
 enum re_quot { no_quot, quote_char, quote_all };
+enum node_type { top_node, loop_node, simple_node };
 
 const char **get_escapes(re_esc);
 const char *json_str(ap_pool *, len_string &);
@@ -88,8 +89,9 @@ class Node {
   const char *unresolved;
   Cell *cell;
   Node *next_node;
+  node_type type;
   
-  Node(const char *c) : unresolved (c) {}
+  Node(const char *c, node_type t) : unresolved(c) , type(t) {}
   Node(const char *n, Cell *cell) : name(n), cell(cell), next_node(0) {}
   virtual ~Node() {}
   virtual void compile(output_format *);
@@ -110,7 +112,7 @@ class RecAttr : public Node {
   Cell *null_fmt;
 
   public:
-  RecAttr(const char *str1, const char *str2) : Node(str1), unresolved2(str2) {}
+  RecAttr(const char *str1, const char *str2) : Node(str1, simple_node), unresolved2(str2) {}
   void out(char *col, const NdbRecAttr &rec, result_buffer &res);
   void compile(output_format *);
   void dump(ap_pool *, result_buffer &, int);
@@ -126,7 +128,7 @@ class Loop : public Node {
   Cell *end;
  
   public:
-  Loop(const char *c) : Node(c) {}
+  Loop(const char *c, node_type t = loop_node) : Node(c, t) {}
   void compile(output_format *);
   void dump(ap_pool *, result_buffer &, int);
   void dump_source(ap_pool *, result_buffer &, int) { assert(0); };
@@ -157,7 +159,7 @@ public:
 
 class MainLoop : public Loop {
   public: 
-  MainLoop(const char *c) : Loop(c) {}
+  MainLoop(const char *c) : Loop(c, top_node) {}
   int Run(struct data_operation *, result_buffer &);
   void compile(output_format *);
   void dump(ap_pool *, result_buffer &r, int i);

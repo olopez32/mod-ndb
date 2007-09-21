@@ -150,6 +150,8 @@ int ndb_handle_error(request_rec *r, int status,
                      const NdbError *error, const char *msg) {
   result_buffer page;
   page.init(r, 4096);
+
+  if(error) log_debug(r->server, "Error %d %s",error->code, error->message);
   
   ap_table_setn(r->notes, "verbose-error-to", "*");
   r->status = status;
