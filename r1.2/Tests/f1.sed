@@ -1,3 +1,0 @@
-/^Server:/d
-/^Date:/d
-

@@ -1,6 +1,0 @@
-HTTP/1.1 200 OK
-Content-Length: 19
-ETag: 8204f0c0f92e6f2c227d0b5c5b802950
-Content-Type: text/plain
-
- { "i":1 , "c":1 }
