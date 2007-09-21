@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Length: 17
+ETag: 5fe71234e64f6b2ffead24d720cae1fa
+Content-Type: text/plain
+
+ { "a":"green" }

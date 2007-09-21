@@ -5,21 +5,24 @@
 TESTDIR=`pwd`
 
 t.huh() {
-  echo "t.lis       list test cases"
-  echo "t.run       run test case and display results"
-  echo "t.est       run test and print OK or Fail"
-  echo "t.dif       run test and display difference"
+  echo "t.list      list test cases"
+  echo "t.run       run test case and display server response"
+  echo "t.test      run test and print OK or Fail"
+  echo "t.diff      run test and display difference"
+  echo "t.echo      display command used for test case"
+  echo "t.conf      show apache configuration for test case"
   echo "t.REM       remove existing results file"
   echo "t.rec       run test and record results as official"
+  echo "t.sql       run SQL queries used to prepare database for test"
 }
 
-t.lis() {         # list test cases
+t.list() {         # list test cases
   pushd $TESTDIR > /dev/null 
   awk -f runner.awk -v test=$1 -v mode=list test.list
   popd >  /dev/null
 }
 
-t.dif() {         # run test & print difference 
+t.diff() {         # run test & print difference 
   pushd $TESTDIR > /dev/null
   awk -f runner.awk -v test=$1 -v mode=compare -v diff=1 test.list | sh
   popd > /dev/null
@@ -28,6 +31,12 @@ t.dif() {         # run test & print difference
 t.run() {         # run test
   pushd $TESTDIR > /dev/null
   awk -f runner.awk -v test=$1 test.list | sh
+  popd > /dev/null
+}
+
+t.echo() {         # run test
+  pushd $TESTDIR > /dev/null
+  awk -f runner.awk -v test=$1 test.list
   popd > /dev/null
 }
 

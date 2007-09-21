@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Length: 18
+ETag: e29e6fd18b9dac6649b62936f1dba6f7
+Content-Type: text/plain
+
+ { "a":"indigo" }

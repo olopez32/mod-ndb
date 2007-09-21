@@ -661,9 +661,12 @@ namespace config {
     const char *name = ap_getword_conf(cmd->pool, &pos);
     fmt = new(cmd->pool) output_format(name);
 
-    /* skip to the end of line) */
-    while(*(ap_getword_conf(cmd->pool, &pos)) != 0);
-    
+    /* This line must end with a closing bracket */
+    if(!(ap_find_last_token(cmd->pool, pos, ">")))
+       return ap_psprintf(cmd->pool, "Could not find closing '>' at top line "
+                          "of result format \"%s\". (Put the format name in " 
+                          "quotes?)", name);
+
     /* read lines */
     while(!ap_cfg_getline(line, sizeof(line), cmd->config_file)) {
       if(!strcasecmp(line,"</ResultFormat>")) break;
@@ -676,9 +679,9 @@ namespace config {
 
       /* Syntax check */
       if( (! *word1) || (*word1 == '#')) continue;
-      if(*word2 == 0)
+      if((*word2 == 0) || (ap_ind(word2, '$') != -1))
         return ap_psprintf(cmd->pool,"Syntax error at \"%s\" "
-                           "in result format \"%s\"", word1, name);
+                           "in result format \"%s\"", word1, name);      
       if(*word3 != '=') 
         return ap_psprintf(cmd->pool, "Expected '=' after \"%s %s\" "
                            "in result format \"%s\"", word1, word2, name);

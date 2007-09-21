@@ -85,9 +85,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   result_buffer my_results;
   my_results.buff = 0;
   
-  log_debug(r->server, "Entering ExecuteAll() with %d read operations",
-            i->n_read_ops);
-            
+  log_debug(r->server, "Ready to execute transaction with %d read operation%s",
+            i->n_read_ops, i->n_read_ops == 1 ? "" : "s");
+
   /* Check for an NdbTransaction */
   if(! i->tx) {
     log_err(r->server, "tx does not exist.");
@@ -196,11 +196,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   i->tx = 0;  
   
   cleanup2:
-  /* Clear all used operations */
-  i->cleanup();
-  
-  log_debug(r->server, "ExecuteAll() returning %d%s", response_code,
-            (response_code == DONE) ? " (DONE)":"");    
+  log_debug(r->server, "Returning %d%s", response_code,
+            response_code ? (response_code == -2 ? " (DONE)":"") : " (OK)");
+  i->cleanup(); // Clear all used operations
   return response_code;
 }
 
