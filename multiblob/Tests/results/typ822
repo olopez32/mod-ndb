@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Length: 61
+ETag: 22f418d9b0c775983f4d8daf6def9d36
+Content-Type: text/plain
+
+user2 :
+  Here is "a quoted string"
+  my contacts
+  my notes
