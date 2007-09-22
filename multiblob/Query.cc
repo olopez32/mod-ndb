@@ -558,19 +558,26 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
   char **column_list;
+  int n;
 
   // Call op->getValue() for each desired result column
   column_list = dir->visible->items();
-  for(int n = 0; n < dir->visible->size() ; n++) {
+  for(n = 0; n < dir->visible->size() ; n++) {
     q->data->result_cols[n] = q->data->op->getValue(column_list[n], 0);
-
-    /* If the result format is "raw", check for BLOBs */
-    if(dir->fmt->flag.is_raw) {
-      int isz = q->tab->getColumn(column_list[n])->getInlineSize();
-      if(isz) {   /* then the column is a blob... */
-        log_debug(r->server,"Treating column %s as a blob",column_list[n])
-        q->data->blob = q->data->op->getBlobHandle(column_list[n]);
-        q->i->flag.has_blob = 1;
+    const NdbDictionary::Column *col = q->tab->getColumn(column_list[n]);
+    if((col->getType() == NdbDictionary::Column::Blob) ||
+       (col->getType() == NdbDictionary::Column::Text)) 
+      q->data->flag.has_blob = 1;
+  }
+  
+  if(q->data->flag.has_blob) { 
+    q->i->flag.has_blob = 1;
+    q->data->blobs = (NdbBlob **) 
+      ap_pcalloc(r->pool, dir->visible->size() * sizeof (NdbBlob *));
+    for(n = 0; n < dir->visible->size() ; n++) {
+      if(q->tab->getColumn(column_list[n])->getInlineSize()) {
+        log_debug(r->server,"Column %s is a blob",column_list[n]);
+        q->data->blobs[n] = q->data->op->getBlobHandle(column_list[n]);
       }
     }
   }

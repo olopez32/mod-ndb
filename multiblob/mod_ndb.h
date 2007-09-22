@@ -109,11 +109,14 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 struct data_operation {
   NdbOperation *op;
   NdbIndexScanOperation *scanop;
-  NdbBlob *blob;
   unsigned int n_result_cols;
   const NdbRecAttr **result_cols;
+  NdbBlob **blobs;
   char **aliases;
   output_format *fmt;
+  struct {
+    unsigned int has_blob : 1;
+  } flag;
 };
 
 

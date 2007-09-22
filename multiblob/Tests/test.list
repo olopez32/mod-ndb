@@ -73,6 +73,10 @@ typ708 f1 typ7?id=3 -X DELETE
 typ800 SQL typ8.sql
 typ801 f1 typ8?id=1
 typ802 f1 typ8?id=1 -I    # Header only, no response body.
+typ811 f1 multitext?name=user1
+typ812 f1 multitext?name=user2
+typ813 f1 multitext?name=user3
+
 
 ###  --- column and index tests
 col000 SQL col.sql
