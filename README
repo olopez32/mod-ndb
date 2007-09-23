@@ -50,6 +50,21 @@ one or more notices in the Apache server log file, such as
 [notice] Process 457 connected to NDB Cluster as node 5
 
 
+
+--- USING THE TEST SUITE ---
+
+cd Tests
+
+# Run the SQL queries to create the test database
+./run-test -s
+
+# Run all tests
+./run-test -t 
+
+# Run a single test 
+./run-test typ101
+
+
 --- BUILD NOTES FOR VARIOUS PLATFORMS ---
 
 If you have a thread-safe mysql client library, configure mod_ndb with --thread-safe 
