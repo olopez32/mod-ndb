@@ -448,7 +448,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   }
 
   // Traverse the index parts and build the query
-  if(Q.plan != Scan) {
+  if(Q.plan != Scan && Q.active_index >= 0) {
     col = dir->indexes->item(Q.active_index).first_col;
 
     while (col >= 0 && Q.key_columns_used-- > 0) {
