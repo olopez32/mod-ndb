@@ -59,7 +59,8 @@ CREATE TABLE typ4 (
 ) engine=ndbcluster;
 
 INSERT INTO typ4 VALUES 
-  (1,'10:30:00','2007-11-01','2007-11-01 10:30:00', '2007-11-01 10:30:00');
+  (1,'10:30:00','2007-11-01','2007-11-01 10:30:00', 
+  from_unixtime(1193938200)); 
 
 CREATE TABLE typ5 (
   i int primary key auto_increment not null,
