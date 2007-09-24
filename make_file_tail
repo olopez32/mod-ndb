@@ -8,7 +8,7 @@ LIBS=$(APXS_LIBS_SHLIB) $(MYSQL_LIBS)
 
 all: mod_ndb.so httpd.conf 
 
-prep: Parser.cpp rev
+prep: Parser.cpp 
 
 mod_ndb.so: $(OBJECTS)
 	LD_RUN_PATH=$(LDSO_PATH) $(CC) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
@@ -38,9 +38,6 @@ format_dumper.o: output_format.h format_compiler.h
 
 Parser.cpp: NSQL.atg Parser.frame Scanner.frame
 	Coco -namespace NSQL NSQL.atg
-
-rev:
-	sh create_rev_h.sh
 
 install: mod_ndb.so
 	$(APXS) -i -n 'ndb' mod_ndb.so
