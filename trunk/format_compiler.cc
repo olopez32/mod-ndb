@@ -187,6 +187,7 @@ Cell * Parser::build_cell() {
     assert(0);
   }
   assert(0);
+  return 0;
 }
 
 
