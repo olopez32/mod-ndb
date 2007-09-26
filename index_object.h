@@ -152,8 +152,8 @@ public:
     return ts_op;
   };
 
-  const NdbDictionary::Column *get_column(base_expr &) { assert(0); };
-  int set_key_part(int rel_op, mvalue &mval) { assert(0); };
+  const NdbDictionary::Column *get_column(base_expr &) { assert(0); return 0; };
+  int set_key_part(int rel_op, mvalue &mval) { assert(0); return 0; };
   
 };
 

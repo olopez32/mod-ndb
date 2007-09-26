@@ -17,7 +17,7 @@ void build_index(char *idxtype) {
 }
 
 void index_condition()  {
-  const char *cf_err;
+  const char *cf_err = 0;
   if(e.vtype == NSQL::Param) 
     cf_err = config::named_idx(cmd, dir, idxname, &e);
   else if(e.vtype == NSQL::Const)
