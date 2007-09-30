@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Length: 110
+ETag: 6b4eb6f4464cee757aa1e0f5ec36faaa
+Content-Type: text/plain
+
+ { "id_col":"user2" , "text01":"Here is \"a quoted string\"" , "text02":"my contacts" , "text03":"my notes" }

@@ -1,0 +1,16 @@
+HTTP/1.1 200 OK
+Content-Length: 509
+ETag: 370a0043cd2eb37f0b6e6e9687a1eed0
+Content-Type: text/plain
+
+<NDBScan>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="last_page_visited" /> 
+  <Attr name="sess_var_value" value="maps.php" />  </NDBTuple>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="time_zone" /> 
+  <Attr name="sess_var_value" value="GMT-0400" />  </NDBTuple>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="user_name" /> 
+  <Attr name="sess_var_value" value="brian" />  </NDBTuple>
+</NDBScan>

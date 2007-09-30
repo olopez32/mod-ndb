@@ -1,0 +1,42 @@
+#  Test suite control script for mod_ndb
+
+usage() {
+  cat << __HELP__
+
+  run-test [group]  -- where group can be e.g. "ses" or "ses1" or "ses104"
+  If group is blank, then run all tests in test.list
+
+  options:
+    -t   run and compare actual result to recorded result -- Pass or Fail
+    -R   run tests and record results (in the results/ directory)
+    -s   run SQL scripts to prepare the test database, instead of actual 
+         tests.  (After running these, you may have to restart apache).
+    -e   just print the commands that would have been executed
+    -l   list the test cases in test.list that match [group]
+    -c   print the relevant section of httpd.conf for each test
+    -d   display difference between current result and recorded result 
+    -h   print this help
+
+__HELP__
+exit
+}
+
+[ -d /usr/xpg4/bin ]  && PATH=/usr/xpg4/bin:$PATH
+
+exe="sh"
+arg=$1 
+while shift
+ do
+   test "$arg" = "-c" && mode="-v mode=config"
+   test "$arg" = "-d" && mode="-v mode=compare -v diff=1"
+   test "$arg" = "-e" && exe="cat"  
+   test "$arg" = "-h" && usage 
+   test "$arg" = "-l" && mode="-v mode=list" && exe="cat"
+   test "$arg" = "-R" && mode="-v mode=record" && exe="sh -C" # noclobber
+   test "$arg" = "-s" && mode="-v mode=sql"
+   test "$arg" = "-t" && mode="-v mode=compare"
+   testcase=$arg
+   arg=$1
+done
+
+awk -f runner.awk -v test=$testcase $mode test.list | $exe

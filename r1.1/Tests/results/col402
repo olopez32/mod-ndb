@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Length: 60
+ETag: 56be2aeb7754408bf33e9b1d1d34003f
+Content-Type: text/plain
+
+[
+  { "c":15 , "a":"yellow" },
+  { "c":16 , "a":"cyan" } 
+]

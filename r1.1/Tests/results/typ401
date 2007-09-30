@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Length: 94
+ETag: 6fe103afd8f4ce29b1a57f717e111776
+Content-Type: text/plain
+
+ { "i":1 , "t":"10:30:00" , "d":"2007-11-01" , "dt":"2007-11-01 10:30:00" , "ts":1193938200 }
