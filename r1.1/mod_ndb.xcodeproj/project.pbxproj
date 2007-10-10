@@ -158,8 +158,8 @@
 			isa = PBXGroup;
 			children = (
 				65D8B4820CBD849500BD24E7 /* JSON.atg */,
-				65D8B4840CBD849500BD24E7 /* Parser.frame */,
 				65D8B4870CBD849500BD24E7 /* Scanner.frame */,
+				65D8B4840CBD849500BD24E7 /* Parser.frame */,
 				65D8B4850CBD849500BD24E7 /* Parser.h */,
 				65D8B4830CBD849500BD24E7 /* Parser.cpp */,
 				65D8B4880CBD849500BD24E7 /* Scanner.h */,
