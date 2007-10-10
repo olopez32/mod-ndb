@@ -1,0 +1,27 @@
+COMPILER JSON
+  
+CHARACTERS
+  bslash = '\\' .
+  quote = '"' .
+  control = '\u0000' .. '\u001f' .  
+  char = ANY - control - bslash - quote .
+  zero = '0'.
+  digit = "123456789" .
+  dec = zero + digit .
+  hex = dec + "ABCDEF" + "abcdef" .
+  escapecode = quote + bslash + "/bfnrt" .
+
+
+TOKENS 
+  string = quote { char | (bslash (escapecode | 'u' hex hex hex hex)) } quote .
+  number = ['-'] (zero|digit{dec}) ['.' dec{dec}] [('e'|'E')['+'|'-'] dec{dec}].
+
+IGNORE '\r' + '\t' + '\n' 
+  
+PRODUCTIONS  
+  JSON = object | array . 
+  object = '{' [ string ':' value {',' string ':' value} ] '}' .
+  array = '[' [ value { ',' value }  ] ']' .
+  value = string | number | object | array | "true" | "false" | "null" .
+  
+END JSON .

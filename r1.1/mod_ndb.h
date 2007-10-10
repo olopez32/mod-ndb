@@ -182,7 +182,7 @@ int print_all_params(void *v, const char *key, const char *val);
 table *http_param_table(request_rec *r, const char *c);
 int Query(request_rec *, config::dir *, ndb_instance *);
 int ExecuteAll(request_rec *, ndb_instance *);
-int read_http_post(request_rec *r, table **tab);
+int read_request_body(request_rec *r, table **tab);
 void initialize_output_formats(ap_pool *);
 char *register_format(ap_pool *, output_format *);
 output_format *get_format_by_name(const char *);

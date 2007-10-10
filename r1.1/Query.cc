@@ -284,7 +284,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       }
       else {
         /* Fetch the update request from the client */
-        response_code = read_http_post(r, & Q.form_data);
+        response_code = read_request_body(r, & Q.form_data);
         if(response_code != OK) return response_code;
       }
       /* An INSERT has a primary key plan: */
