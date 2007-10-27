@@ -89,6 +89,8 @@ public:
 	int line;     // token line (starting at 1)
 	wchar_t* val; // token value
 	Token *next;  // ML 2005-03-11 Peek tokens are kept in linked list
+        
+        int len;      // JSON / mod_ndb
 
 	Token();
 	~Token();
@@ -109,7 +111,7 @@ public:
 	static const int EoF = COCO_WCHAR_MAX + 1;
 
 	Buffer(FILE* s, bool isUserStream);
-	Buffer(char* buf, int len);
+	Buffer(const char* buf, int len);
 	Buffer(Buffer *b);
 	virtual ~Buffer();
 	
@@ -121,11 +123,6 @@ public:
 	virtual void SetPos(int value);
 };
 
-class UTF8Buffer : public Buffer {
-public:
-	UTF8Buffer(Buffer *b) : Buffer(b) {};
-	virtual int Read();
-};
 
 //-----------------------------------------------------------------------------------
 // StartStates  -- maps charactes to start states of tokens
@@ -254,7 +251,7 @@ private:
 public:
 	Buffer *buffer;   // scanner buffer
 	
-	Scanner(char* buf, int len);
+	Scanner(const char* buf, int len);
 	Scanner(const wchar_t* fileName);
 	Scanner(FILE* s);
 	~Scanner();
@@ -508,9 +505,9 @@ Buffer::Buffer(Buffer *b) {
 	isUserStream = b->isUserStream;
 }
 
-Buffer::Buffer(char* buf, int len) {
+Buffer::Buffer(const char* buf, int len) {
         /* JSON/mod_ndb: no need to copy */        
-        this->buf = buf;
+        this->buf = (char *) buf;
 	bufStart = 0;
 	bufLen = len;
 	fileLen = len;
@@ -575,38 +572,7 @@ void Buffer::SetPos(int value) {
 	}
 }
 
-int UTF8Buffer::Read() {
-	int ch;
-	do {
-		ch = Buffer::Read();
-		// until we find a uft8 start (0xxxxxxx or 11xxxxxx)
-	} while ((ch >= 128) && ((ch & 0xC0) != 0xC0) && (ch != EOF));
-	if (ch < 128 || ch == EOF) {
-		// nothing to do, first 127 chars are the same in ascii and utf8
-		// 0xxxxxxx or end of file character
-	} else if ((ch & 0xF0) == 0xF0) {
-		// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-		int c1 = ch & 0x07; ch = Buffer::Read();
-		int c2 = ch & 0x3F; ch = Buffer::Read();
-		int c3 = ch & 0x3F; ch = Buffer::Read();
-		int c4 = ch & 0x3F;
-		ch = (((((c1 << 6) | c2) << 6) | c3) << 6) | c4;
-	} else if ((ch & 0xE0) == 0xE0) {
-		// 1110xxxx 10xxxxxx 10xxxxxx
-		int c1 = ch & 0x0F; ch = Buffer::Read();
-		int c2 = ch & 0x3F; ch = Buffer::Read();
-		int c3 = ch & 0x3F;
-		ch = (((c1 << 6) | c2) << 6) | c3;
-	} else if ((ch & 0xC0) == 0xC0) {
-		// 110xxxxx 10xxxxxx
-		int c1 = ch & 0x1F; ch = Buffer::Read();
-		int c2 = ch & 0x3F;
-		ch = (c1 << 6) | c2;
-	}
-	return ch;
-}
-
-Scanner::Scanner(char* buf, int len) {
+Scanner::Scanner(const char* buf, int len) {
 	buffer = new Buffer(buf, len);
 	Init();
 }
@@ -655,14 +621,6 @@ void Scanner::Init() {
 	pos = -1; line = 1; col = 0;
 	oldEols = 0;
 	NextCh();
-
-        /* ALWAYS USE UTF-8 for JSON */
-        
-        Buffer *oldBuf = buffer;
-	buffer = new UTF8Buffer(buffer); 
-        col = 0;
-	delete oldBuf; 
-        oldBuf = NULL;
 
 -->initialization
 	pt = tokens = CreateToken(); // first token is a dummy
@@ -739,6 +697,7 @@ void Scanner::AppendVal(Token *t) {
 	heapTop = (void*) ((char*) heapTop + reqMem);
 
 	wcsncpy(t->val, tval, tlen);
+        t->len = tlen;
 	t->val[tlen] = L'\0';
 }
 

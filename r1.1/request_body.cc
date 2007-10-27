@@ -1,5 +1,19 @@
-#include "mod_ndb.h"
+/* Copyright (C) 2007 MySQL AB
 
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+*/
 
 
 /* util_read() and some other code in this file is originally from mod_hello.cc, 
@@ -8,10 +22,13 @@
    Originally by Doug MacEachern.
 */
 
+#include "JSON/Parser.h"
 
-typedef int BODY_READER(request_rec *, table **, const char *);
 
-int read_urlencoded(request_rec *r, table **tab, const char *data) {
+typedef int BODY_READER(request_rec *, table **, const char *, int);
+
+
+int read_urlencoded(request_rec *r, table **tab, const char *data, int) {
   const char *key, *val;
   
   while(*data && (val = ap_getword(r->pool, &data, '&'))) {
@@ -19,21 +36,31 @@ int read_urlencoded(request_rec *r, table **tab, const char *data) {
     
     ap_unescape_url((char*)key);
     ap_unescape_url((char*)val);
-    
-    ap_table_merge(*tab, key, val);
+
+    /* ap_getword() already made a copy, so use ap_table_mergen() */
+    ap_table_mergen(*tab, key, val);
   }
   
   return OK;
 }
 
 
-int read_jsonrequest(request_rec *r, table **tab, const char *data) {
-   return OK;
+int read_jsonrequest(request_rec *r, table **tab, const char *data, int length){
+  JSON::Scanner scanner(data, length);
+  JSON::Parser parser(&scanner);
+  
+  parser.pool = r->pool;
+  parser.tabl = *tab;
+  
+  parser.Parse();
+  
+  if(parser.errors->count) return 400;
+  return OK;
 }
 
 
 
-int util_read(request_rec *r, const char **rbuf)
+int util_read(request_rec *r, const char **rbuf, int *len)
 {
   int rc = OK;
   
@@ -63,6 +90,7 @@ int util_read(request_rec *r, const char **rbuf)
     }
     
     ap_kill_timeout(r);
+    *len = rpos;
   }
   
   return rc;
@@ -74,20 +102,23 @@ int read_request_body(request_rec *r, table **tab) {
   const char *data;
   const char *type = ap_table_get(r->headers_in, "Content-Type");
   BODY_READER *reader = 0;  
+  int buf_size = 0;
   
   // To do: support PUT  
   if(r->method_number != M_POST) 
     return OK;
 
-  // To do:  support multipart/form-data
+  // To do: support multipart/form-data
   if(strcasecmp(type, "application/x-www-form-urlencoded") == 0) 
     reader = read_urlencoded;
   else if(strcasecmp(type, "application/jsonrequest") == 0)
     reader = read_jsonrequest;
-  else
+  else {
+    log_debug(r->server, "Unsupported request body: %s", type);
     return DECLINED;   
+  }
   
-  if((rc = util_read(r, &data)) != OK)
+  if((rc = util_read(r, &data, &buf_size)) != OK)
     return rc;
 
   if(*tab)
@@ -95,6 +126,5 @@ int read_request_body(request_rec *r, table **tab) {
   else
     *tab = ap_make_table(r->pool, 8);
   
-  return reader(r, tab, data);
+  return reader(r, tab, data, buf_size);
 }
-

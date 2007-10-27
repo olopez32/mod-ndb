@@ -58,6 +58,7 @@
 		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
 		65D8B4880CBD849500BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = JSON/Scanner.h; sourceTree = "<group>"; };
 		65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = request_body.cc; sourceTree = "<group>"; };
+		65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON_encoding.cc; sourceTree = "<group>"; };
 		65E2E83F0BA218B600B1B8D0 /* conf_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap13; path = templates/conf_ap13; sourceTree = "<group>"; };
 		65E2E8400BA218B600B1B8D0 /* conf_ap20 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap20; path = templates/conf_ap20; sourceTree = "<group>"; };
 		65E2E8410BA218B600B1B8D0 /* conf_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = conf_ap22; path = templates/conf_ap22; sourceTree = "<group>"; };
@@ -72,6 +73,8 @@
 			isa = PBXGroup;
 			children = (
 				655A3FF20AC35A0300FC573F /* README */,
+				655CEC240A8C4C9500DB8284 /* configure */,
+				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
 				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
@@ -84,21 +87,20 @@
 				655116C20BC1CAF30009C9E1 /* format_compiler.h */,
 				651D4C760BC02D69007E9007 /* format_compiler.cc */,
 				65AA7E800BC5841100A5D0A4 /* format_dumper.cc */,
-				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
 				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,
 				656167AB0A8F78CB00A664A0 /* config.cc */,
 				65364C080AB25F5200C355E4 /* handlers.cc */,
-				65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */,
+				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
+				65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */,
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
 				6513067E0B8299CC00A70BDA /* Execute.cc */,
-				655CEC240A8C4C9500DB8284 /* configure */,
-				655CEC250A8C4CA400DB8284 /* make_file_tail */,
-				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
+				65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */,
 				65D8B47D0CBD847300BD24E7 /* JSON */,
 				65383BF30C72B69B001F8451 /* N-SQL */,
+				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
 				65E2E83C0BA2186700B1B8D0 /* templates */,
 				657BD1C30B84EE8600A9ED69 /* Tests */,
 				657BD2920B853B7000A9ED69 /* PHP */,
