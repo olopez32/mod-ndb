@@ -163,6 +163,9 @@ fil209 f1 fil2?v2=12       # nvisits != 12
 fil210 f1 fil2?v3=11       # nvisits >= 11
 fil211 f1 fil2?c1=brown&v1=12    # color = "brown" and nvisits = 12
 
+# SELECT *
+star01 f1 star01 
+
 # Constants
 con101 f1 sesu?skey=3         # 2nd part of ordered index = string constant
 con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant

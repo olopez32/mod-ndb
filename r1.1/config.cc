@@ -379,8 +379,11 @@ namespace config {
     
     switch(*which) {
       case 'R':
-        *dir->visible->new_item() = ap_pstrdup(cmd->pool, arg);
-        *dir->aliases->new_item() = ap_pstrdup(cmd->pool, arg);
+        if(! strcmp(arg,"*")) dir->flag.select_star = 1;
+        else {
+          *dir->visible->new_item() = ap_pstrdup(cmd->pool, arg);
+          *dir->aliases->new_item() = ap_pstrdup(cmd->pool, arg);
+        }
         break;
       case 'W':
         *dir->updatable->new_item() = ap_pstrdup(cmd->pool, arg);

@@ -246,7 +246,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         q->data = i->data + i->n_read_ops++;
         if(dir->flag.use_etags) i->flag.use_etag = 1;
         q->data->fmt = dir->fmt;
-        q->data->n_result_cols = dir->visible->size();
+        if(dir->flag.select_star) 
+          q->data->n_result_cols = q->tab->getNoOfColumns();
+        else
+          q->data->n_result_cols = dir->visible->size();
         q->data->aliases = dir->aliases->items();
       }
       else {  /* too many read ops.  
@@ -262,7 +265,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       // from r->connection->pool, not r->pool
       q->data->result_cols =  (const NdbRecAttr**)
         ap_pcalloc(r->connection->pool, 
-                   dir->visible->size() * sizeof(NdbRecAttr *));
+                   q->data->n_result_cols * sizeof(NdbRecAttr *));
       break;
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
@@ -557,28 +560,30 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
 
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
-  char **column_list;
-  int n;
+  char **column_list = dir->visible->items();;
+  const NdbDictionary::Column *col;
+  unsigned int n = 0;
+  const int select_star = dir->flag.select_star;
 
   // Call op->getValue() for each desired result column
-  column_list = dir->visible->items();
-  for(n = 0; n < dir->visible->size() ; n++) {
-    q->data->result_cols[n] = q->data->op->getValue(column_list[n], 0);
-    const NdbDictionary::Column *col = q->tab->getColumn(column_list[n]);
+  for( ; n < q->data->n_result_cols ; n++) {
+    col = select_star ? 
+      q->tab->getColumn(n) : q->tab->getColumn(column_list[n]);
+    q->data->result_cols[n] = q->data->op->getValue(col, 0);
+
+    /* BLOB handling */
     if((col->getType() == NdbDictionary::Column::Blob) ||
-       (col->getType() == NdbDictionary::Column::Text)) 
-      q->data->flag.has_blob = 1;
-  }
-  
-  if(q->data->flag.has_blob) { 
-    q->i->flag.has_blob = 1;
-    q->data->blobs = (NdbBlob **) 
-      ap_pcalloc(r->pool, dir->visible->size() * sizeof (NdbBlob *));
-    for(n = 0; n < dir->visible->size() ; n++) {
-      if(q->tab->getColumn(column_list[n])->getInlineSize()) {
-        log_debug(r->server,"Column %s is a blob",column_list[n]);
-        q->data->blobs[n] = q->data->op->getBlobHandle(column_list[n]);
-      }
+       (col->getType() == NdbDictionary::Column::Text)) {
+          if(! q->data->flag.has_blob) 
+            q->data->blobs = (NdbBlob **) 
+               ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
+          
+          q->data->flag.has_blob = 1;
+          q->i->flag.has_blob = 1;
+          if(col->getInlineSize()) 
+            q->data->blobs[n] = select_star ? 
+              q->data->op->getBlobHandle(n) : 
+              q->data->op->getBlobHandle(column_list[n]);
     }
   }
   return 0;
