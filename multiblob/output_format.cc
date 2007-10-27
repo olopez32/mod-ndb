@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* Globals */
 const char *escape_leaning_toothpicks[256];
 const char *escape_xml_entities[256];
-table *global_format_names = 0;
+apr_table_t *global_format_names = 0;
 apache_array<struct output_format *> *global_output_formats = 0;
 
 extern Node the_null_node;  /* from format_compiler.cc */

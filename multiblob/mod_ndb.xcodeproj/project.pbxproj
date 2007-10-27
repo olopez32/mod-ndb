@@ -28,6 +28,8 @@
 		65383BF60C72B6E9001F8451 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = NSQL.atg; sourceTree = "<group>"; };
 		65383BF70C72B6E9001F8451 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; path = Parser.frame; sourceTree = "<group>"; };
 		65383BF80C72B6E9001F8451 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; path = Scanner.frame; sourceTree = "<group>"; };
+		654691B00CAE345500CEF3C7 /* query_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query_source.h; sourceTree = "<group>"; };
+		654693670CAEE5F200CEF3C7 /* query_source.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = query_source.cc; sourceTree = "<group>"; };
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
 		655116C20BC1CAF30009C9E1 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = format_compiler.h; sourceTree = "<group>"; };
 		655A3FF20AC35A0300FC573F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -85,6 +87,8 @@
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
 				651343640A91869800B041A0 /* read_http_post.cc */,
+				654691B00CAE345500CEF3C7 /* query_source.h */,
+				654693670CAEE5F200CEF3C7 /* query_source.cc */,
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
 				6513067E0B8299CC00A70BDA /* Execute.cc */,
 				655CEC240A8C4C9500DB8284 /* configure */,

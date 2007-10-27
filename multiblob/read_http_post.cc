@@ -50,7 +50,7 @@ int util_read(request_rec *r, const char **rbuf)
 
 #define DEFAULT_ENCTYPE "application/x-www-form-urlencoded"
 
-int read_http_post(request_rec *r, table **tab)
+int read_http_post(request_rec *r, apr_table_t **tab)
 {
   const char *data;
   const char *key, *val, *type;
@@ -67,13 +67,6 @@ int read_http_post(request_rec *r, table **tab)
   
   if((rc = util_read(r, &data)) != OK) {
     return rc;
-  }
-  
-  if(*tab) {
-    ap_clear_table(*tab);
-  }
-  else {
-    *tab = ap_make_table(r->pool, 8);
   }
   
   while(*data && (val = ap_getword(r->pool, &data, '&'))) {

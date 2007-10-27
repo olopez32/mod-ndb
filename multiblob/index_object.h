@@ -15,6 +15,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
+/*  This code is only used in Query.cc, and, following GCC's "vague linkage" 
+    rules, it puts the vtable and object code in Query.o
+*/
 
 class index_object {
   protected:
