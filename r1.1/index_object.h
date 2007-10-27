@@ -22,6 +22,12 @@ class index_object {
     server_rec *server;
     struct QueryItems *q;
     int n_parts;
+    int set_key_num(int num, mvalue &mval) {
+      if(mval.use_value == use_char) 
+        return q->data->op->equal(num, mval.u.val_char);
+      else 
+        return q->data->op->equal(num, (const char *) (&mval.u.val_char)); 
+    };
     
   public:
     index_object(struct QueryItems *queryitems, request_rec *r) {  
@@ -34,12 +40,6 @@ class index_object {
     virtual bool next_key_part() {  return (key_part++ < n_parts); };
     virtual const NdbDictionary::Column *get_column(base_expr &) = 0;
     virtual int set_key_part(int, mvalue &mval) = 0;
-    int set_key_num(int num, mvalue &mval) {
-      if(mval.use_value == use_char) 
-        return q->data->op->equal(num, mval.u.val_char);
-      else 
-        return q->data->op->equal(num, (const char *) (&mval.u.val_char)); 
-    };
 };
 
 
@@ -152,8 +152,8 @@ public:
     return ts_op;
   };
 
-  const NdbDictionary::Column *get_column(base_expr &) { assert(0); };
-  int set_key_part(int rel_op, mvalue &mval) { assert(0); };
+  const NdbDictionary::Column *get_column(base_expr &) { assert(0); return 0; };
+  int set_key_part(int rel_op, mvalue &mval) { assert(0); return 0; };
   
 };
 

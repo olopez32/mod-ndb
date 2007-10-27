@@ -24,13 +24,13 @@ t.list() {         # list test cases
 
 t.diff() {         # run test & print difference 
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=compare -v diff=1 test.list | sh
+  awk -f runner.awk -v test=$1 -v mode=compare -v diff=1 test.list | $SHELL
   popd > /dev/null
 }
 
 t.run() {         # run test
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 test.list | sh
+  awk -f runner.awk -v test=$1 test.list | $SHELL
   popd > /dev/null
 }
 
@@ -42,13 +42,13 @@ t.echo() {         # run test
 
 t.test() {        # run test and print OK or fail
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=compare test.list | sh
+  awk -f runner.awk -v test=$1 -v mode=compare test.list | $SHELL
   popd > /dev/null
 }
 
 t.conf() {
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=config test.list | sh
+  awk -f runner.awk -v test=$1 -v mode=config test.list | $SHELL
   popd > /dev/null
 }
   
@@ -58,12 +58,12 @@ t.REM() {       # remove results file
 
 t.rec() {      # run test and record results as official
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=record test.list | sh -C
+  awk -f runner.awk -v test=$1 -v mode=record test.list | $SHELL -C
   popd > /dev/null
 }
 
 t.sql() {
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=sql | sh 
+  awk -f runner.awk -v test=$1 -v mode=sql | $SHELL 
   popd > /dev/null
 } 
