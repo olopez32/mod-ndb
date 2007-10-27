@@ -30,7 +30,6 @@ extern "C" {
 #include "ap_mpm.h"
 }
 
-typedef apr_table_t table;
 typedef apr_pool_t  ap_pool;
 typedef apr_array_header_t array_header;
 
@@ -88,6 +87,8 @@ typedef apr_array_header_t array_header;
 
 #define AP_MODULE_DECLARE_DATA MODULE_VAR_EXPORT
 #define EXEC_ON_READ 0
+
+typedef table apr_table_t;
 
 #include "fnmatch.h"
 

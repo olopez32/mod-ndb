@@ -24,6 +24,8 @@
 		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
+		654691B00CAE345500CEF3C7 /* query_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query_source.h; sourceTree = "<group>"; };
+		654693670CAEE5F200CEF3C7 /* query_source.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = query_source.cc; sourceTree = "<group>"; };
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
 		655116C20BC1CAF30009C9E1 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = format_compiler.h; sourceTree = "<group>"; };
 		655A3FF20AC35A0300FC573F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -95,6 +97,8 @@
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
 				65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */,
+				654691B00CAE345500CEF3C7 /* query_source.h */,
+				654693670CAEE5F200CEF3C7 /* query_source.cc */,
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
 				6513067E0B8299CC00A70BDA /* Execute.cc */,
 				65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */,
@@ -205,7 +209,6 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 658358210A8CE1C40023B465 /* Build configuration list for PBXProject "mod_ndb" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* mod_ndb */;
 			projectDirPath = "";

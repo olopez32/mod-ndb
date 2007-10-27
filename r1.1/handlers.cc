@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "util_md5.h"
+#include "query_source.h"
 
 #ifdef THIS_IS_APACHE2
 #define CheckHandler(r,h) if(strcmp(r->handler,h)) return DECLINED;
@@ -29,6 +30,8 @@ extern struct mod_ndb_process process;      /* from mod_ndb.cc */
 extern config::dir *all_endpoints[MAX_ENDPOINTS];
 extern int n_endp;
 
+extern int Query(request_rec *, config::dir *, ndb_instance *, query_source &);
+
 // 
 // Content handlers
 //
@@ -37,6 +40,7 @@ extern "C" {
   int ndb_handler(request_rec *r) {
     config::dir *dir;
     ndb_instance *i;
+    query_source *qsource;
     
     // Apache 2 Handler name check
     CheckHandler(r,"ndb-cluster");
@@ -61,7 +65,12 @@ extern "C" {
     
     i->requests++;
     
-    return Query(r,dir,i);
+    if(r->main) 
+      qsource = new(r->pool) Apache_subrequest_query_source(r);
+    else 
+      qsource = new(r->pool) HTTP_query_source(r);
+    
+    return Query(r, dir, i, *qsource);
   }
 
   int ndb_exec_batch_handler(request_rec *r) {
@@ -196,8 +205,8 @@ int ndb_handle_error(request_rec *r, int status,
 }
 
 
-table *http_param_table(request_rec *r, const char *c) {
-  table *t = ap_make_table(r->pool, 4);
+apr_table_t *http_param_table(request_rec *r, const char *c) {
+  apr_table_t *t = ap_make_table(r->pool, 4);
   char *key, *val;
   if(c == 0) return 0;
   
