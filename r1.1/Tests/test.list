@@ -165,6 +165,7 @@ fil211 f1 fil2?c1=brown&v1=12    # color = "brown" and nvisits = 12
 
 # SELECT *
 star01 f1 star01 
+star02 f1 star02
 
 # Constants
 con101 f1 sesu?skey=3         # 2nd part of ordered index = string constant
@@ -177,3 +178,11 @@ con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
 # con114   # 2 part primary key = (constant, var) 
 # con121   # Unique index = (constant, var)
 
+
+# JSONRequest
+# TO DO: change filter to "JR/f1" and let the test system add the header
+json01 f1 ses_list -H 'Content-Type: application/jsonrequest'  # GET; 200 
+json02 f1 sesx/3  -H 'Content-Type: application/jsonrequest'   # GET; 406 
+json03 f1 typ5 --data-binary ' { "i":1,"c":5 }' -H 'Content-type: application/jsonrequest'
+json04 f1 typ5?i=1 -H 'Content-Type: application/jsonrequest'
+json05 f1 typ5?i=1 -X DELETE  

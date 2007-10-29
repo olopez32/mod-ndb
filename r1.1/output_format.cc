@@ -112,6 +112,7 @@ void register_built_in_formatters(ap_pool *p) {
   /* Define the internal JSON format */
   json_format->flag.is_internal  = 1;
   json_format->flag.can_override = 1;
+  json_format->flag.is_JSON      = 1;
   
   MainLoop *Main = new(p) MainLoop("$scan$\n");
   json_format->symbol("_main", p, Main);
@@ -206,8 +207,9 @@ void Cell::out(data_operation *data, unsigned int n, result_buffer &res) {
     return;
   }
 
-  char *col_name = data->aliases[n];
   const NdbRecAttr &rec = *data->result_cols[n];
+  const char *col_name = data->flag.select_star ? 
+    rec.getColumn()->getName() : data->aliases[n] ;
   NdbBlob *blob = data->flag.has_blob ? data->blobs[n] : 0;
     
   NdbDictionary::Column::Type col_type = rec.getColumn()->getType();

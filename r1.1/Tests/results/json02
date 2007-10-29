@@ -1,0 +1,4 @@
+HTTP/1.1 406 Not Acceptable
+Content-Length: 0
+Content-Type: text/plain
+

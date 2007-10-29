@@ -40,6 +40,7 @@ public:
     unsigned int is_internal  : 1;
     unsigned int can_override : 1;
     unsigned int is_raw       : 1;
+    unsigned int is_JSON      : 1;
   } flag;
   Node *top_node;
   struct symbol *symbol_table[SYM_TAB_SZ];

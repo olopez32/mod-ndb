@@ -115,7 +115,8 @@ struct data_operation {
   char **aliases;
   output_format *fmt;
   struct {
-    unsigned int has_blob : 1;
+    unsigned int has_blob    : 1;
+    unsigned int select_star : 1;
   } flag;
 };
 
@@ -133,18 +134,20 @@ class ndb_instance {
   config::srv *server_config;
   struct data_operation *data;
   struct {
-    unsigned int has_blob : 1 ;
-    unsigned int aborted  : 1 ;
-    unsigned int use_etag : 1 ;
+    unsigned int has_blob    : 1 ;
+    unsigned int aborted     : 1 ;
+    unsigned int use_etag    : 1 ;
+    unsigned int jsonrequest : 1 ;
   } flag;
   unsigned int requests;
   unsigned int errors;
   void cleanup() {
     bzero(data, n_read_ops * sizeof(struct data_operation));
-    n_read_ops = 0;
-    flag.has_blob = 0;
-    flag.aborted = 0;
-    flag.use_etag = 0;
+    n_read_ops    =    0;
+    flag.has_blob =    0;
+    flag.aborted  =    0;
+    flag.use_etag =    0;
+    flag.jsonrequest = 0;
   }
 };
 // typedef struct mod_ndb_instance ndb_instance;
@@ -181,7 +184,7 @@ Ndb * init_instance(ndb_connection *, ndb_instance *, config::srv *, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
 apr_table_t *http_param_table(request_rec *r, const char *c);
 int ExecuteAll(request_rec *, ndb_instance *);
-int read_request_body(request_rec *r, table **tab);
+int read_request_body(request_rec *, table **, const char *);
 void initialize_output_formats(ap_pool *);
 char *register_format(ap_pool *, output_format *);
 output_format *get_format_by_name(const char *);

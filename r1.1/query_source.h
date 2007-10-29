@@ -21,6 +21,7 @@ class query_source {
   request_rec *r;
  public:
   int req_method;
+  const char *content_type;
   bool keep_tx_open;
   virtual int get_form_data(apr_table_t **tab) = 0;
   virtual ~query_source() {};
@@ -36,11 +37,12 @@ class HTTP_query_source : public query_source {
   HTTP_query_source(request_rec *req) {
     r = req;
     req_method = r->method_number;
+    content_type = ap_table_get(r->headers_in, "Content-Type");
     keep_tx_open = FALSE;
   };
     
   int get_form_data(apr_table_t **tab) {
-    return read_request_body(r, tab);
+    return read_request_body(r, tab, content_type);
   };
 };
 

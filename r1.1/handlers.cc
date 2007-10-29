@@ -184,6 +184,7 @@ int ndb_handle_error(request_rec *r, int status,
       page.out(msg ? msg : "No data could be found.\n");
       break;
     case 405:
+    case 406: 
       break;  // no message
     case 409:
       page.out("%s.\n", error->message);

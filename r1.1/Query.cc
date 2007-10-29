@@ -232,11 +232,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
         q->data = i->data + i->n_read_ops++;
         if(dir->flag.use_etags) i->flag.use_etag = 1;
         q->data->fmt = dir->fmt;
-        if(dir->flag.select_star) 
+        q->data->flag.select_star = dir->flag.select_star;
+        if(dir->flag.select_star)
           q->data->n_result_cols = q->tab->getNoOfColumns();
-        else
+        else {
           q->data->n_result_cols = dir->visible->size();
-        q->data->aliases = dir->aliases->items();
+          q->data->aliases = dir->aliases->items();
+        }
       }
       else {  /* too many read ops.  
         This error can only be fixed be reconfiguring & restarting Apache. */
@@ -495,6 +497,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       }
     } /*for*/                  
     filter.end();
+  }
+  
+  // Check whether this is a JSONRequest
+  if(qsource.content_type && 
+     ! strcasecmp(qsource.content_type, "application/jsonrequest")) {
+      log_debug(r->server, "This is a JSONRequest.");
+      i->flag.jsonrequest = 1;
   }
 
   // Perform the action; i.e. get the value of each column

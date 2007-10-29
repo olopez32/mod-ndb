@@ -24,9 +24,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "JSON/Parser.h"
 
+#ifdef MOD_NDB_DEBUG
+int walk_tab(void *rec, const char *k, const char *v) {
+  request_rec *r = (request_rec *) rec;
+  log_debug(r->server,"%s => %s",k, v);  
+  return TRUE;
+}
+#define DEBUG_LOG_TABLE(A, B) ap_table_do(walk_tab, A, B, NULL);
+#else
+#define DEBUG_LOG_TABLE(A, B)
+#endif
+
 
 typedef int BODY_READER(request_rec *, table **, const char *, int);
-
+int walk_tab(void *, const char *, const char *);
 
 int read_urlencoded(request_rec *r, table **tab, const char *data, int) {
   const char *key, *val;
@@ -97,10 +108,9 @@ int util_read(request_rec *r, const char **rbuf, int *len)
 }
 
 
-int read_request_body(request_rec *r, table **tab) {
+int read_request_body(request_rec *r, table **tab, const char *type) {
   int rc = OK;
   const char *data;
-  const char *type = ap_table_get(r->headers_in, "Content-Type");
   BODY_READER *reader = 0;  
   int buf_size = 0;
   
@@ -111,7 +121,7 @@ int read_request_body(request_rec *r, table **tab) {
   // To do: support multipart/form-data
   if(strcasecmp(type, "application/x-www-form-urlencoded") == 0) 
     reader = read_urlencoded;
-  else if(strcasecmp(type, "application/jsonrequest") == 0)
+  else if(strcasecmp(type, "application/jsonrequest") == 0) 
     reader = read_jsonrequest;
   else {
     log_debug(r->server, "Unsupported request body: %s", type);
@@ -126,5 +136,11 @@ int read_request_body(request_rec *r, table **tab) {
   else
     *tab = ap_make_table(r->pool, 8);
   
-  return reader(r, tab, data, buf_size);
+  rc = reader(r, tab, data, buf_size);
+  
+  DEBUG_LOG_TABLE(r, *tab);
+  
+  return rc;
 }
+
+

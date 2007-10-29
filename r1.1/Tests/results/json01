@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Content-Length: 324
+ETag: 0071aea61d0bd0baa9fab37be6d10492
+Content-Type: application/jsonrequest
+
+[
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"index.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" } 
+]
