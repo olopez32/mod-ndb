@@ -6,10 +6,15 @@
 # e.g. "typ" or "typ2".
 
 # Format of test lines (tests are run against mod_ndb using curl):
-#     test-name sed-filter url-path curl-args
+#     test-name test-flags url-path curl-args
 # 
+# test-flags:  fx  -- use filter x, i.e. "sed -f fx.sed" 
+#              JR  -- application/jsonrequest
+#              SQL -- line is a SQL line
+#
 # Format of SQL lines, e.g. CREATE TABLE statements, run in mysql client:
 #     test-name "SQL" query-file-name 
+
 
 
 # ------ Prepare the database
@@ -180,9 +185,8 @@ con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
 
 
 # JSONRequest
-# TO DO: change filter to "JR/f1" and let the test system add the header
-json01 f1 ses_list -H 'Content-Type: application/jsonrequest'  # GET; 200 
-json02 f1 sesx/3  -H 'Content-Type: application/jsonrequest'   # GET; 406 
-json03 f1 typ5 --data-binary ' { "i":1,"c":5 }' -H 'Content-type: application/jsonrequest'
-json04 f1 typ5?i=1 -H 'Content-Type: application/jsonrequest'
+json01 JR/f1 ses_list     # GET; 200 
+json02 JR/f1 sesx/3       # GET; 406, because XML is not JSON
+json03 JR/f1 typ5 --data-binary ' { "i":1,"c":5 }'
+json04 JR/f1 typ5?i=1 
 json05 f1 typ5?i=1 -X DELETE  
