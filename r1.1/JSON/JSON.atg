@@ -3,7 +3,7 @@
 COMPILER JSON
 
 ap_pool *pool;
-table *tabl;
+apr_table_t *tabl;
 char *key, *val;  
 
   

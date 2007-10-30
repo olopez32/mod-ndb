@@ -184,7 +184,7 @@ Ndb * init_instance(ndb_connection *, ndb_instance *, config::srv *, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
 apr_table_t *http_param_table(request_rec *r, const char *c);
 int ExecuteAll(request_rec *, ndb_instance *);
-int read_request_body(request_rec *, table **, const char *);
+int read_request_body(request_rec *, apr_table_t **, const char *);
 void initialize_output_formats(ap_pool *);
 char *register_format(ap_pool *, output_format *);
 output_format *get_format_by_name(const char *);
@@ -193,3 +193,6 @@ int build_results(request_rec *, data_operation *, result_buffer &);
 int ndb_handle_error(request_rec *, int, const NdbError *, const char *);
 const char * allowed_methods(request_rec *, config::dir *);
 void module_must_restart(void);
+
+extern "C" int cmp_swap_int(int *, int, int);
+extern "C" int cmp_swap_ptr(void *, void *, void *);

@@ -36,10 +36,9 @@ int walk_tab(void *rec, const char *k, const char *v) {
 #endif
 
 
-typedef int BODY_READER(request_rec *, table **, const char *, int);
-int walk_tab(void *, const char *, const char *);
+typedef int BODY_READER(request_rec *, apr_table_t **, const char *, int);
 
-int read_urlencoded(request_rec *r, table **tab, const char *data, int) {
+int read_urlencoded(request_rec *r, apr_table_t **tab, const char *data, int) {
   const char *key, *val;
   
   while(*data && (val = ap_getword(r->pool, &data, '&'))) {
@@ -56,7 +55,7 @@ int read_urlencoded(request_rec *r, table **tab, const char *data, int) {
 }
 
 
-int read_jsonrequest(request_rec *r, table **tab, const char *data, int length){
+int read_jsonrequest(request_rec *r, apr_table_t **tab, const char *data, int length){
   JSON::Scanner scanner(data, length);
   JSON::Parser parser(&scanner);
   
@@ -108,7 +107,7 @@ int util_read(request_rec *r, const char **rbuf, int *len)
 }
 
 
-int read_request_body(request_rec *r, table **tab, const char *type) {
+int read_request_body(request_rec *r, apr_table_t **tab, const char *type) {
   int rc = OK;
   const char *data;
   BODY_READER *reader = 0;  
