@@ -1,0 +1,36 @@
+# ++begin++ __err404__
+err404() { 
+  cat <<'__err404__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__err404__
+}
+# ++end++ __err404__
+
+# ++begin++ __err405__
+err405() { 
+  cat <<'__err405__'
+HTTP/1.1 405 Method Not Allowed
+Allow: GET,HEAD
+Content-Length: 0
+Content-Type: text/plain
+
+__err405__
+}
+# ++end++ __err405__
+
+# ++begin++ __err409__
+err409() { 
+  cat <<'__err409__'
+HTTP/1.1 409 Conflict
+Content-Length: 49
+Content-Type: text/plain
+
+Tuple already existed when attempting to insert.
+__err409__
+}
+# ++end++ __err409__
+

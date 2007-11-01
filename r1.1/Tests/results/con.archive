@@ -1,0 +1,30 @@
+# ++begin++ __con101__
+con101() { 
+  cat <<'__con101__'
+HTTP/1.1 200 OK
+Content-Length: 40
+ETag: fddea21959a83f1f515f0f0a8ad209f1
+Content-Type: text/plain
+
+[
+  { "sess_id":3 , "user":"brian" } 
+]
+__con101__
+}
+# ++end++ __con101__
+
+# ++begin++ __con102__
+con102() { 
+  cat <<'__con102__'
+HTTP/1.1 200 OK
+Content-Length: 40
+ETag: fddea21959a83f1f515f0f0a8ad209f1
+Content-Type: text/plain
+
+[
+  { "sess_id":3 , "user":"brian" } 
+]
+__con102__
+}
+# ++end++ __con102__
+

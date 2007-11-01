@@ -1,9 +1,0 @@
-HTTP/1.1 200 OK
-Content-Length: 68
-ETag: cdbd63f1b75d52a8d43407bdcf73d354
-Content-Type: text/plain
-
-user1 :
-  all my personal data information
-  my contacts
-  my notes

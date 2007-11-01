@@ -1,0 +1,204 @@
+# ++begin++ __fil101__
+fil101() { 
+  cat <<'__fil101__'
+HTTP/1.1 200 OK
+Content-Length: 52
+ETag: 7e236e8aa3dbc42f078a5b0a487df220
+Content-Type: text/plain
+
+[
+  { "i":2 , "d1":1.25 , "d2":1234567890.1234 } 
+]
+__fil101__
+}
+# ++end++ __fil101__
+
+# ++begin++ __fil102__
+fil102() { 
+  cat <<'__fil102__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__fil102__
+}
+# ++end++ __fil102__
+
+# ++begin++ __fil201__
+fil201() { 
+  cat <<'__fil201__'
+HTTP/1.1 200 OK
+Content-Length: 86
+ETag: 030c19d29aa72b079c831e9e32177938
+Content-Type: text/plain
+
+[
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 } 
+]
+__fil201__
+}
+# ++end++ __fil201__
+
+# ++begin++ __fil202__
+fil202() { 
+  cat <<'__fil202__'
+HTTP/1.1 200 OK
+Content-Length: 85
+ETag: 5c1d4f2b2b03ee9b58c5a22901ddc916
+Content-Type: text/plain
+
+[
+  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 } 
+]
+__fil202__
+}
+# ++end++ __fil202__
+
+# ++begin++ __fil203__
+fil203() { 
+  cat <<'__fil203__'
+HTTP/1.1 200 OK
+Content-Length: 336
+ETag: 61a3d486128a1a96c8bc5c5f3096ba50
+Content-Type: text/plain
+
+[
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 },
+  { "id":3 , "name":"joe     " , "color":"yellow" , "nvisits":12 , "channel":19 },
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 },
+  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 } 
+]
+__fil203__
+}
+# ++end++ __fil203__
+
+# ++begin++ __fil204__
+fil204() { 
+  cat <<'__fil204__'
+HTTP/1.1 200 OK
+Content-Length: 167
+ETag: 12c2d22947bbf40d61e2eaea35b98d0b
+Content-Type: text/plain
+
+[
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 },
+  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 } 
+]
+__fil204__
+}
+# ++end++ __fil204__
+
+# ++begin++ __fil205__
+fil205() { 
+  cat <<'__fil205__'
+HTTP/1.1 200 OK
+Content-Length: 90
+ETag: 5ef8f57803c1242d786088b79e90c8c1
+Content-Type: text/plain
+
+[
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 } 
+]
+__fil205__
+}
+# ++end++ __fil205__
+
+# ++begin++ __fil206__
+fil206() { 
+  cat <<'__fil206__'
+HTTP/1.1 200 OK
+Content-Length: 251
+ETag: 933ad5a4cb1b150af1868f21c077b677
+Content-Type: text/plain
+
+[
+  { "id":1 , "name":"fred    " , "color":null , "nvisits":5 , "channel":12 },
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 },
+  { "id":3 , "name":"joe     " , "color":"yellow" , "nvisits":12 , "channel":19 } 
+]
+__fil206__
+}
+# ++end++ __fil206__
+
+# ++begin++ __fil207__
+fil207() { 
+  cat <<'__fil207__'
+HTTP/1.1 200 OK
+Content-Length: 245
+ETag: 78dc549a3fcf4fc2b86217402df51294
+Content-Type: text/plain
+
+[
+  { "id":1 , "name":"fred    " , "color":null , "nvisits":5 , "channel":12 },
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 },
+  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 } 
+]
+__fil207__
+}
+# ++end++ __fil207__
+
+# ++begin++ __fil208__
+fil208() { 
+  cat <<'__fil208__'
+HTTP/1.1 200 OK
+Content-Length: 90
+ETag: 5ef8f57803c1242d786088b79e90c8c1
+Content-Type: text/plain
+
+[
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 } 
+]
+__fil208__
+}
+# ++end++ __fil208__
+
+# ++begin++ __fil209__
+fil209() { 
+  cat <<'__fil209__'
+HTTP/1.1 200 OK
+Content-Length: 249
+ETag: 23e68ade3712c57bdadc1d6225236581
+Content-Type: text/plain
+
+[
+  { "id":1 , "name":"fred    " , "color":null , "nvisits":5 , "channel":12 },
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 },
+  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 } 
+]
+__fil209__
+}
+# ++end++ __fil209__
+
+# ++begin++ __fil210__
+fil210() { 
+  cat <<'__fil210__'
+HTTP/1.1 200 OK
+Content-Length: 255
+ETag: f5607460be763a35353144f9832b2617
+Content-Type: text/plain
+
+[
+  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 },
+  { "id":3 , "name":"joe     " , "color":"yellow" , "nvisits":12 , "channel":19 },
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 } 
+]
+__fil210__
+}
+# ++end++ __fil210__
+
+# ++begin++ __fil211__
+fil211() { 
+  cat <<'__fil211__'
+HTTP/1.1 200 OK
+Content-Length: 86
+ETag: 030c19d29aa72b079c831e9e32177938
+Content-Type: text/plain
+
+[
+  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 } 
+]
+__fil211__
+}
+# ++end++ __fil211__
+

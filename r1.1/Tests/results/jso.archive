@@ -1,0 +1,65 @@
+# ++begin++ __json01__
+json01() { 
+  cat <<'__json01__'
+HTTP/1.1 200 OK
+Content-Length: 324
+ETag: 0071aea61d0bd0baa9fab37be6d10492
+Content-Type: application/jsonrequest
+
+[
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"index.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" } 
+]
+__json01__
+}
+# ++end++ __json01__
+
+# ++begin++ __json02__
+json02() { 
+  cat <<'__json02__'
+HTTP/1.1 406 Not Acceptable
+Content-Length: 0
+Content-Type: text/plain
+
+__json02__
+}
+# ++end++ __json02__
+
+# ++begin++ __json03__
+json03() { 
+  cat <<'__json03__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: application/jsonrequest
+
+__json03__
+}
+# ++end++ __json03__
+
+# ++begin++ __json04__
+json04() { 
+  cat <<'__json04__'
+HTTP/1.1 200 OK
+Content-Length: 19
+ETag: 0fb050e86331bc8d16e23fa03b8d382d
+Content-Type: application/jsonrequest
+
+ { "i":1 , "c":5 }
+__json04__
+}
+# ++end++ __json04__
+
+# ++begin++ __json05__
+json05() { 
+  cat <<'__json05__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json05__
+}
+# ++end++ __json05__
+

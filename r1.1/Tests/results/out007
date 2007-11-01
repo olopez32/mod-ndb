@@ -1,9 +1,0 @@
-HTTP/1.1 200 OK
-ETag: 5673489f196228bc3fab5368f649fef3
-Content-Length: 108
-Content-Type: text/plain
-
-<ResultFormat "HAL">
-    Format  HAL = 'HAL says, "I\'m afraid I can\'t do that, Dave."\n'
-</ResultFormat>
-

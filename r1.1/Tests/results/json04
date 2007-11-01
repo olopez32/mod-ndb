@@ -1,6 +1,0 @@
-HTTP/1.1 200 OK
-Content-Length: 19
-ETag: 0fb050e86331bc8d16e23fa03b8d382d
-Content-Type: application/jsonrequest
-
- { "i":1 , "c":5 }

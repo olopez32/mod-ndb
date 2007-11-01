@@ -1,0 +1,336 @@
+# ++begin++ __col101__
+col101() { 
+  cat <<'__col101__'
+HTTP/1.1 200 OK
+Content-Length: 17
+ETag: 5fe71234e64f6b2ffead24d720cae1fa
+Content-Type: text/plain
+
+ { "a":"green" }
+__col101__
+}
+# ++end++ __col101__
+
+# ++begin++ __col102__
+col102() { 
+  cat <<'__col102__'
+HTTP/1.1 200 OK
+Content-Length: 16
+ETag: a54956f01845d22281926bfe6c4f675e
+Content-Type: text/plain
+
+ { "a":"cyan" }
+__col102__
+}
+# ++end++ __col102__
+
+# ++begin++ __col103__
+col103() { 
+  cat <<'__col103__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__col103__
+}
+# ++end++ __col103__
+
+# ++begin++ __col111__
+col111() { 
+  cat <<'__col111__'
+HTTP/1.1 200 OK
+Content-Length: 17
+ETag: 5fe71234e64f6b2ffead24d720cae1fa
+Content-Type: text/plain
+
+ { "a":"green" }
+__col111__
+}
+# ++end++ __col111__
+
+# ++begin++ __col112__
+col112() { 
+  cat <<'__col112__'
+HTTP/1.1 200 OK
+Content-Length: 16
+ETag: a54956f01845d22281926bfe6c4f675e
+Content-Type: text/plain
+
+ { "a":"cyan" }
+__col112__
+}
+# ++end++ __col112__
+
+# ++begin++ __col113__
+col113() { 
+  cat <<'__col113__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__col113__
+}
+# ++end++ __col113__
+
+# ++begin++ __col201__
+col201() { 
+  cat <<'__col201__'
+HTTP/1.1 200 OK
+Content-Length: 18
+ETag: e29e6fd18b9dac6649b62936f1dba6f7
+Content-Type: text/plain
+
+ { "a":"indigo" }
+__col201__
+}
+# ++end++ __col201__
+
+# ++begin++ __col202__
+col202() { 
+  cat <<'__col202__'
+HTTP/1.1 200 OK
+Content-Length: 16
+ETag: 2742d67bc11c45459c2d81b0abfb0ad1
+Content-Type: text/plain
+
+ { "a":"blue" }
+__col202__
+}
+# ++end++ __col202__
+
+# ++begin++ __col203__
+col203() { 
+  cat <<'__col203__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__col203__
+}
+# ++end++ __col203__
+
+# ++begin++ __col211__
+col211() { 
+  cat <<'__col211__'
+HTTP/1.1 200 OK
+Content-Length: 18
+ETag: e29e6fd18b9dac6649b62936f1dba6f7
+Content-Type: text/plain
+
+ { "a":"indigo" }
+__col211__
+}
+# ++end++ __col211__
+
+# ++begin++ __col212__
+col212() { 
+  cat <<'__col212__'
+HTTP/1.1 200 OK
+Content-Length: 16
+ETag: 2742d67bc11c45459c2d81b0abfb0ad1
+Content-Type: text/plain
+
+ { "a":"blue" }
+__col212__
+}
+# ++end++ __col212__
+
+# ++begin++ __col213__
+col213() { 
+  cat <<'__col213__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__col213__
+}
+# ++end++ __col213__
+
+# ++begin++ __col301__
+col301() { 
+  cat <<'__col301__'
+HTTP/1.1 200 OK
+Content-Length: 21
+ETag: 9522b011003c0e5524b6fa627e8a6803
+Content-Type: text/plain
+
+[
+  { "a":"red" } 
+]
+__col301__
+}
+# ++end++ __col301__
+
+# ++begin++ __col302__
+col302() { 
+  cat <<'__col302__'
+HTTP/1.1 200 OK
+Content-Length: 24
+ETag: 281351f9bf053a5dbdf0432e991a67e2
+Content-Type: text/plain
+
+[
+  { "a":"yellow" } 
+]
+__col302__
+}
+# ++end++ __col302__
+
+# ++begin++ __col303__
+col303() { 
+  cat <<'__col303__'
+HTTP/1.1 200 OK
+Content-Length: 24
+ETag: b7cd6afa1482abf57323511e32c89913
+Content-Type: text/plain
+
+[
+  { "a":"orange" } 
+]
+__col303__
+}
+# ++end++ __col303__
+
+# ++begin++ __col304__
+col304() { 
+  cat <<'__col304__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__col304__
+}
+# ++end++ __col304__
+
+# ++begin++ __col311__
+col311() { 
+  cat <<'__col311__'
+HTTP/1.1 200 OK
+Content-Length: 21
+ETag: 9522b011003c0e5524b6fa627e8a6803
+Content-Type: text/plain
+
+[
+  { "a":"red" } 
+]
+__col311__
+}
+# ++end++ __col311__
+
+# ++begin++ __col312__
+col312() { 
+  cat <<'__col312__'
+HTTP/1.1 200 OK
+Content-Length: 24
+ETag: 281351f9bf053a5dbdf0432e991a67e2
+Content-Type: text/plain
+
+[
+  { "a":"yellow" } 
+]
+__col312__
+}
+# ++end++ __col312__
+
+# ++begin++ __col313__
+col313() { 
+  cat <<'__col313__'
+HTTP/1.1 200 OK
+Content-Length: 24
+ETag: b7cd6afa1482abf57323511e32c89913
+Content-Type: text/plain
+
+[
+  { "a":"orange" } 
+]
+__col313__
+}
+# ++end++ __col313__
+
+# ++begin++ __col314__
+col314() { 
+  cat <<'__col314__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__col314__
+}
+# ++end++ __col314__
+
+# ++begin++ __col401__
+col401() { 
+  cat <<'__col401__'
+HTTP/1.1 200 OK
+Content-Length: 89
+ETag: 0a05ebd859e7607f6c05017d8db92d81
+Content-Type: text/plain
+
+[
+  { "c":14 , "a":"indigo" },
+  { "c":15 , "a":"yellow" },
+  { "c":16 , "a":"cyan" } 
+]
+__col401__
+}
+# ++end++ __col401__
+
+# ++begin++ __col402__
+col402() { 
+  cat <<'__col402__'
+HTTP/1.1 200 OK
+Content-Length: 60
+ETag: 56be2aeb7754408bf33e9b1d1d34003f
+Content-Type: text/plain
+
+[
+  { "c":15 , "a":"yellow" },
+  { "c":16 , "a":"cyan" } 
+]
+__col402__
+}
+# ++end++ __col402__
+
+# ++begin++ __col403__
+col403() { 
+  cat <<'__col403__'
+HTTP/1.1 200 OK
+Content-Length: 114
+ETag: a745c05228b4fc894fd6825c72c8b807
+Content-Type: text/plain
+
+[
+  { "c":10 , "a":"green" },
+  { "c":11 , "a":"blue" },
+  { "c":12 , "a":"red" },
+  { "c":13 , "a":"orange" } 
+]
+__col403__
+}
+# ++end++ __col403__
+
+# ++begin++ __col404__
+col404() { 
+  cat <<'__col404__'
+HTTP/1.1 200 OK
+Content-Length: 143
+ETag: 34116b0d1777898d234e88491ac35a46
+Content-Type: text/plain
+
+[
+  { "c":10 , "a":"green" },
+  { "c":11 , "a":"blue" },
+  { "c":12 , "a":"red" },
+  { "c":13 , "a":"orange" },
+  { "c":14 , "a":"indigo" } 
+]
+__col404__
+}
+# ++end++ __col404__
+

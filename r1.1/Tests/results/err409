@@ -1,5 +1,0 @@
-HTTP/1.1 409 Conflict
-Content-Length: 49
-Content-Type: text/plain
-
-Tuple already existed when attempting to insert.
