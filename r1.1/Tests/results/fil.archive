@@ -1,5 +1,5 @@
-# ++begin++ __fil101__
-fil101() { 
+# _BEGIN_ fil101
+r.fil101() {
   cat <<'__fil101__'
 HTTP/1.1 200 OK
 Content-Length: 52
@@ -11,10 +11,10 @@ Content-Type: text/plain
 ]
 __fil101__
 }
-# ++end++ __fil101__
+# __END__ fil101
 
-# ++begin++ __fil102__
-fil102() { 
+# _BEGIN_ fil102
+r.fil102() {
   cat <<'__fil102__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -23,10 +23,10 @@ Content-Type: text/plain
 No data could be found.
 __fil102__
 }
-# ++end++ __fil102__
+# __END__ fil102
 
-# ++begin++ __fil201__
-fil201() { 
+# _BEGIN_ fil201
+r.fil201() {
   cat <<'__fil201__'
 HTTP/1.1 200 OK
 Content-Length: 86
@@ -38,10 +38,10 @@ Content-Type: text/plain
 ]
 __fil201__
 }
-# ++end++ __fil201__
+# __END__ fil201
 
-# ++begin++ __fil202__
-fil202() { 
+# _BEGIN_ fil202
+r.fil202() {
   cat <<'__fil202__'
 HTTP/1.1 200 OK
 Content-Length: 85
@@ -53,10 +53,10 @@ Content-Type: text/plain
 ]
 __fil202__
 }
-# ++end++ __fil202__
+# __END__ fil202
 
-# ++begin++ __fil203__
-fil203() { 
+# _BEGIN_ fil203
+r.fil203() {
   cat <<'__fil203__'
 HTTP/1.1 200 OK
 Content-Length: 336
@@ -71,10 +71,10 @@ Content-Type: text/plain
 ]
 __fil203__
 }
-# ++end++ __fil203__
+# __END__ fil203
 
-# ++begin++ __fil204__
-fil204() { 
+# _BEGIN_ fil204
+r.fil204() {
   cat <<'__fil204__'
 HTTP/1.1 200 OK
 Content-Length: 167
@@ -87,10 +87,10 @@ Content-Type: text/plain
 ]
 __fil204__
 }
-# ++end++ __fil204__
+# __END__ fil204
 
-# ++begin++ __fil205__
-fil205() { 
+# _BEGIN_ fil205
+r.fil205() {
   cat <<'__fil205__'
 HTTP/1.1 200 OK
 Content-Length: 90
@@ -102,10 +102,10 @@ Content-Type: text/plain
 ]
 __fil205__
 }
-# ++end++ __fil205__
+# __END__ fil205
 
-# ++begin++ __fil206__
-fil206() { 
+# _BEGIN_ fil206
+r.fil206() {
   cat <<'__fil206__'
 HTTP/1.1 200 OK
 Content-Length: 251
@@ -119,10 +119,10 @@ Content-Type: text/plain
 ]
 __fil206__
 }
-# ++end++ __fil206__
+# __END__ fil206
 
-# ++begin++ __fil207__
-fil207() { 
+# _BEGIN_ fil207
+r.fil207() {
   cat <<'__fil207__'
 HTTP/1.1 200 OK
 Content-Length: 245
@@ -136,10 +136,10 @@ Content-Type: text/plain
 ]
 __fil207__
 }
-# ++end++ __fil207__
+# __END__ fil207
 
-# ++begin++ __fil208__
-fil208() { 
+# _BEGIN_ fil208
+r.fil208() {
   cat <<'__fil208__'
 HTTP/1.1 200 OK
 Content-Length: 90
@@ -151,10 +151,10 @@ Content-Type: text/plain
 ]
 __fil208__
 }
-# ++end++ __fil208__
+# __END__ fil208
 
-# ++begin++ __fil209__
-fil209() { 
+# _BEGIN_ fil209
+r.fil209() {
   cat <<'__fil209__'
 HTTP/1.1 200 OK
 Content-Length: 249
@@ -168,10 +168,10 @@ Content-Type: text/plain
 ]
 __fil209__
 }
-# ++end++ __fil209__
+# __END__ fil209
 
-# ++begin++ __fil210__
-fil210() { 
+# _BEGIN_ fil210
+r.fil210() {
   cat <<'__fil210__'
 HTTP/1.1 200 OK
 Content-Length: 255
@@ -185,10 +185,10 @@ Content-Type: text/plain
 ]
 __fil210__
 }
-# ++end++ __fil210__
+# __END__ fil210
 
-# ++begin++ __fil211__
-fil211() { 
+# _BEGIN_ fil211
+r.fil211() {
   cat <<'__fil211__'
 HTTP/1.1 200 OK
 Content-Length: 86
@@ -200,5 +200,5 @@ Content-Type: text/plain
 ]
 __fil211__
 }
-# ++end++ __fil211__
+# __END__ fil211
 

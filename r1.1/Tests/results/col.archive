@@ -1,5 +1,5 @@
-# ++begin++ __col101__
-col101() { 
+# _BEGIN_ col101
+r.col101() {
   cat <<'__col101__'
 HTTP/1.1 200 OK
 Content-Length: 17
@@ -9,10 +9,10 @@ Content-Type: text/plain
  { "a":"green" }
 __col101__
 }
-# ++end++ __col101__
+# __END__ col101
 
-# ++begin++ __col102__
-col102() { 
+# _BEGIN_ col102
+r.col102() {
   cat <<'__col102__'
 HTTP/1.1 200 OK
 Content-Length: 16
@@ -22,10 +22,10 @@ Content-Type: text/plain
  { "a":"cyan" }
 __col102__
 }
-# ++end++ __col102__
+# __END__ col102
 
-# ++begin++ __col103__
-col103() { 
+# _BEGIN_ col103
+r.col103() {
   cat <<'__col103__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -34,10 +34,10 @@ Content-Type: text/plain
 No data could be found.
 __col103__
 }
-# ++end++ __col103__
+# __END__ col103
 
-# ++begin++ __col111__
-col111() { 
+# _BEGIN_ col111
+r.col111() {
   cat <<'__col111__'
 HTTP/1.1 200 OK
 Content-Length: 17
@@ -47,10 +47,10 @@ Content-Type: text/plain
  { "a":"green" }
 __col111__
 }
-# ++end++ __col111__
+# __END__ col111
 
-# ++begin++ __col112__
-col112() { 
+# _BEGIN_ col112
+r.col112() {
   cat <<'__col112__'
 HTTP/1.1 200 OK
 Content-Length: 16
@@ -60,10 +60,10 @@ Content-Type: text/plain
  { "a":"cyan" }
 __col112__
 }
-# ++end++ __col112__
+# __END__ col112
 
-# ++begin++ __col113__
-col113() { 
+# _BEGIN_ col113
+r.col113() {
   cat <<'__col113__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -72,10 +72,10 @@ Content-Type: text/plain
 No data could be found.
 __col113__
 }
-# ++end++ __col113__
+# __END__ col113
 
-# ++begin++ __col201__
-col201() { 
+# _BEGIN_ col201
+r.col201() {
   cat <<'__col201__'
 HTTP/1.1 200 OK
 Content-Length: 18
@@ -85,10 +85,10 @@ Content-Type: text/plain
  { "a":"indigo" }
 __col201__
 }
-# ++end++ __col201__
+# __END__ col201
 
-# ++begin++ __col202__
-col202() { 
+# _BEGIN_ col202
+r.col202() {
   cat <<'__col202__'
 HTTP/1.1 200 OK
 Content-Length: 16
@@ -98,10 +98,10 @@ Content-Type: text/plain
  { "a":"blue" }
 __col202__
 }
-# ++end++ __col202__
+# __END__ col202
 
-# ++begin++ __col203__
-col203() { 
+# _BEGIN_ col203
+r.col203() {
   cat <<'__col203__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -110,10 +110,10 @@ Content-Type: text/plain
 No data could be found.
 __col203__
 }
-# ++end++ __col203__
+# __END__ col203
 
-# ++begin++ __col211__
-col211() { 
+# _BEGIN_ col211
+r.col211() {
   cat <<'__col211__'
 HTTP/1.1 200 OK
 Content-Length: 18
@@ -123,10 +123,10 @@ Content-Type: text/plain
  { "a":"indigo" }
 __col211__
 }
-# ++end++ __col211__
+# __END__ col211
 
-# ++begin++ __col212__
-col212() { 
+# _BEGIN_ col212
+r.col212() {
   cat <<'__col212__'
 HTTP/1.1 200 OK
 Content-Length: 16
@@ -136,10 +136,10 @@ Content-Type: text/plain
  { "a":"blue" }
 __col212__
 }
-# ++end++ __col212__
+# __END__ col212
 
-# ++begin++ __col213__
-col213() { 
+# _BEGIN_ col213
+r.col213() {
   cat <<'__col213__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -148,10 +148,10 @@ Content-Type: text/plain
 No data could be found.
 __col213__
 }
-# ++end++ __col213__
+# __END__ col213
 
-# ++begin++ __col301__
-col301() { 
+# _BEGIN_ col301
+r.col301() {
   cat <<'__col301__'
 HTTP/1.1 200 OK
 Content-Length: 21
@@ -163,10 +163,10 @@ Content-Type: text/plain
 ]
 __col301__
 }
-# ++end++ __col301__
+# __END__ col301
 
-# ++begin++ __col302__
-col302() { 
+# _BEGIN_ col302
+r.col302() {
   cat <<'__col302__'
 HTTP/1.1 200 OK
 Content-Length: 24
@@ -178,10 +178,10 @@ Content-Type: text/plain
 ]
 __col302__
 }
-# ++end++ __col302__
+# __END__ col302
 
-# ++begin++ __col303__
-col303() { 
+# _BEGIN_ col303
+r.col303() {
   cat <<'__col303__'
 HTTP/1.1 200 OK
 Content-Length: 24
@@ -193,10 +193,10 @@ Content-Type: text/plain
 ]
 __col303__
 }
-# ++end++ __col303__
+# __END__ col303
 
-# ++begin++ __col304__
-col304() { 
+# _BEGIN_ col304
+r.col304() {
   cat <<'__col304__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -205,10 +205,10 @@ Content-Type: text/plain
 No data could be found.
 __col304__
 }
-# ++end++ __col304__
+# __END__ col304
 
-# ++begin++ __col311__
-col311() { 
+# _BEGIN_ col311
+r.col311() {
   cat <<'__col311__'
 HTTP/1.1 200 OK
 Content-Length: 21
@@ -220,10 +220,10 @@ Content-Type: text/plain
 ]
 __col311__
 }
-# ++end++ __col311__
+# __END__ col311
 
-# ++begin++ __col312__
-col312() { 
+# _BEGIN_ col312
+r.col312() {
   cat <<'__col312__'
 HTTP/1.1 200 OK
 Content-Length: 24
@@ -235,10 +235,10 @@ Content-Type: text/plain
 ]
 __col312__
 }
-# ++end++ __col312__
+# __END__ col312
 
-# ++begin++ __col313__
-col313() { 
+# _BEGIN_ col313
+r.col313() {
   cat <<'__col313__'
 HTTP/1.1 200 OK
 Content-Length: 24
@@ -250,10 +250,10 @@ Content-Type: text/plain
 ]
 __col313__
 }
-# ++end++ __col313__
+# __END__ col313
 
-# ++begin++ __col314__
-col314() { 
+# _BEGIN_ col314
+r.col314() {
   cat <<'__col314__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -262,10 +262,10 @@ Content-Type: text/plain
 No data could be found.
 __col314__
 }
-# ++end++ __col314__
+# __END__ col314
 
-# ++begin++ __col401__
-col401() { 
+# _BEGIN_ col401
+r.col401() {
   cat <<'__col401__'
 HTTP/1.1 200 OK
 Content-Length: 89
@@ -279,10 +279,10 @@ Content-Type: text/plain
 ]
 __col401__
 }
-# ++end++ __col401__
+# __END__ col401
 
-# ++begin++ __col402__
-col402() { 
+# _BEGIN_ col402
+r.col402() {
   cat <<'__col402__'
 HTTP/1.1 200 OK
 Content-Length: 60
@@ -295,10 +295,10 @@ Content-Type: text/plain
 ]
 __col402__
 }
-# ++end++ __col402__
+# __END__ col402
 
-# ++begin++ __col403__
-col403() { 
+# _BEGIN_ col403
+r.col403() {
   cat <<'__col403__'
 HTTP/1.1 200 OK
 Content-Length: 114
@@ -313,10 +313,10 @@ Content-Type: text/plain
 ]
 __col403__
 }
-# ++end++ __col403__
+# __END__ col403
 
-# ++begin++ __col404__
-col404() { 
+# _BEGIN_ col404
+r.col404() {
   cat <<'__col404__'
 HTTP/1.1 200 OK
 Content-Length: 143
@@ -332,5 +332,5 @@ Content-Type: text/plain
 ]
 __col404__
 }
-# ++end++ __col404__
+# __END__ col404
 

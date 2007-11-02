@@ -1,5 +1,5 @@
-# ++begin++ __star01__
-star01() { 
+# _BEGIN_ star01
+r.star01() {
   cat <<'__star01__'
 HTTP/1.1 200 OK
 Content-Length: 414
@@ -15,10 +15,10 @@ Content-Type: text/plain
 ]
 __star01__
 }
-# ++end++ __star01__
+# __END__ star01
 
-# ++begin++ __star02__
-star02() { 
+# _BEGIN_ star02
+r.star02() {
   cat <<'__star02__'
 HTTP/1.1 200 OK
 Content-Length: 414
@@ -34,5 +34,5 @@ Content-Type: text/plain
 ]
 __star02__
 }
-# ++end++ __star02__
+# __END__ star02
 

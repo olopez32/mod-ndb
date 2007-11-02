@@ -1,5 +1,5 @@
-# ++begin++ __typ101__
-typ101() { 
+# _BEGIN_ typ101
+r.typ101() {
   cat <<'__typ101__'
 HTTP/1.1 200 OK
 Content-Length: 414
@@ -15,10 +15,10 @@ Content-Type: text/plain
 ]
 __typ101__
 }
-# ++end++ __typ101__
+# __END__ typ101
 
-# ++begin++ __typ201__
-typ201() { 
+# _BEGIN_ typ201
+r.typ201() {
   cat <<'__typ201__'
 HTTP/1.1 200 OK
 Content-Length: 62
@@ -28,10 +28,10 @@ Content-Type: text/plain
  { "i":1 , "t":1 , "ut":1 , "s":1 , "us":1 , "m":1 , "um":1 }
 __typ201__
 }
-# ++end++ __typ201__
+# __END__ typ201
 
-# ++begin++ __typ202__
-typ202() { 
+# _BEGIN_ typ202
+r.typ202() {
   cat <<'__typ202__'
 HTTP/1.1 200 OK
 Content-Length: 74
@@ -41,10 +41,10 @@ Content-Type: text/plain
  { "i":2 , "t":127 , "ut":255 , "s":500 , "us":500 , "m":500 , "um":500 }
 __typ202__
 }
-# ++end++ __typ202__
+# __END__ typ202
 
-# ++begin++ __typ203__
-typ203() { 
+# _BEGIN_ typ203
+r.typ203() {
   cat <<'__typ203__'
 HTTP/1.1 200 OK
 Content-Length: 68
@@ -54,10 +54,10 @@ Content-Type: text/plain
  { "i":3 , "t":-40 , "ut":0 , "s":-40 , "us":0 , "m":-40 , "um":0 }
 __typ203__
 }
-# ++end++ __typ203__
+# __END__ typ203
 
-# ++begin++ __typ204__
-typ204() { 
+# _BEGIN_ typ204
+r.typ204() {
   cat <<'__typ204__'
 HTTP/1.1 200 OK
 Content-Length: 74
@@ -67,10 +67,10 @@ Content-Type: text/plain
  { "i":4 , "t":127 , "ut":255 , "s":900 , "us":900 , "m":900 , "um":900 }
 __typ204__
 }
-# ++end++ __typ204__
+# __END__ typ204
 
-# ++begin++ __typ205__
-typ205() { 
+# _BEGIN_ typ205
+r.typ205() {
   cat <<'__typ205__'
 HTTP/1.1 200 OK
 Content-Length: 71
@@ -80,10 +80,10 @@ Content-Type: text/plain
  { "i":5 , "t":-128 , "ut":0 , "s":-900 , "us":0 , "m":-900 , "um":0 }
 __typ205__
 }
-# ++end++ __typ205__
+# __END__ typ205
 
-# ++begin++ __typ206__
-typ206() { 
+# _BEGIN_ typ206
+r.typ206() {
   cat <<'__typ206__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -91,10 +91,10 @@ Content-Type: text/plain
 
 __typ206__
 }
-# ++end++ __typ206__
+# __END__ typ206
 
-# ++begin++ __typ207__
-typ207() { 
+# _BEGIN_ typ207
+r.typ207() {
   cat <<'__typ207__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -102,10 +102,10 @@ Content-Type: text/plain
 
 __typ207__
 }
-# ++end++ __typ207__
+# __END__ typ207
 
-# ++begin++ __typ208__
-typ208() { 
+# _BEGIN_ typ208
+r.typ208() {
   cat <<'__typ208__'
 HTTP/1.1 200 OK
 Content-Length: 81
@@ -115,10 +115,10 @@ Content-Type: text/plain
  { "i":6 , "t":-30 , "ut":30 , "s":-300 , "us":300 , "m":-300000 , "um":350000 }
 __typ208__
 }
-# ++end++ __typ208__
+# __END__ typ208
 
-# ++begin++ __typ209__
-typ209() { 
+# _BEGIN_ typ209
+r.typ209() {
   cat <<'__typ209__'
 HTTP/1.1 200 OK
 Content-Length: 71
@@ -128,10 +128,10 @@ Content-Type: text/plain
  { "i":5 , "t":-128 , "ut":0 , "s":-900 , "us":0 , "m":-900 , "um":0 }
 __typ209__
 }
-# ++end++ __typ209__
+# __END__ typ209
 
-# ++begin++ __typ210__
-typ210() { 
+# _BEGIN_ typ210
+r.typ210() {
   cat <<'__typ210__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -139,10 +139,10 @@ Content-Type: text/plain
 
 __typ210__
 }
-# ++end++ __typ210__
+# __END__ typ210
 
-# ++begin++ __typ301__
-typ301() { 
+# _BEGIN_ typ301
+r.typ301() {
   cat <<'__typ301__'
 HTTP/1.1 200 OK
 Content-Length: 88
@@ -152,10 +152,10 @@ Content-Type: text/plain
  { "i":1 , "d1":3.14 , "d2":3.1416 , "d3":3.1 , "d4":3.141592653589793000000000000000 }
 __typ301__
 }
-# ++end++ __typ301__
+# __END__ typ301
 
-# ++begin++ __typ302__
-typ302() { 
+# _BEGIN_ typ302
+r.typ302() {
   cat <<'__typ302__'
 HTTP/1.1 200 OK
 Content-Length: 97
@@ -165,10 +165,10 @@ Content-Type: text/plain
  { "i":2 , "d1":1.25 , "d2":1234567890.1234 , "d3":0.0 , "d4":0.000000000000000000000000000000 }
 __typ302__
 }
-# ++end++ __typ302__
+# __END__ typ302
 
-# ++begin++ __typ303__
-typ303() { 
+# _BEGIN_ typ303
+r.typ303() {
   cat <<'__typ303__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -176,10 +176,10 @@ Content-Type: text/plain
 
 __typ303__
 }
-# ++end++ __typ303__
+# __END__ typ303
 
-# ++begin++ __typ304__
-typ304() { 
+# _BEGIN_ typ304
+r.typ304() {
   cat <<'__typ304__'
 HTTP/1.1 200 OK
 Content-Length: 88
@@ -189,10 +189,10 @@ Content-Type: text/plain
  { "i":3 , "d1":1.25 , "d2":2.3750 , "d3":3.5 , "d4":4.986500000000000000000000000000 }
 __typ304__
 }
-# ++end++ __typ304__
+# __END__ typ304
 
-# ++begin++ __typ305__
-typ305() { 
+# _BEGIN_ typ305
+r.typ305() {
   cat <<'__typ305__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -200,10 +200,10 @@ Content-Type: text/plain
 
 __typ305__
 }
-# ++end++ __typ305__
+# __END__ typ305
 
-# ++begin++ __typ401__
-typ401() { 
+# _BEGIN_ typ401
+r.typ401() {
   cat <<'__typ401__'
 HTTP/1.1 200 OK
 Content-Length: 94
@@ -213,10 +213,10 @@ Content-Type: text/plain
  { "i":1 , "t":"10:30:00" , "d":"2007-11-01" , "dt":"2007-11-01 10:30:00" , "ts":1193938200 }
 __typ401__
 }
-# ++end++ __typ401__
+# __END__ typ401
 
-# ++begin++ __typ501__
-typ501() { 
+# _BEGIN_ typ501
+r.typ501() {
   cat <<'__typ501__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -225,10 +225,10 @@ Content-Type: text/plain
 No data could be found.
 __typ501__
 }
-# ++end++ __typ501__
+# __END__ typ501
 
-# ++begin++ __typ502__
-typ502() { 
+# _BEGIN_ typ502
+r.typ502() {
   cat <<'__typ502__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -236,10 +236,10 @@ Content-Type: text/plain
 
 __typ502__
 }
-# ++end++ __typ502__
+# __END__ typ502
 
-# ++begin++ __typ503__
-typ503() { 
+# _BEGIN_ typ503
+r.typ503() {
   cat <<'__typ503__'
 HTTP/1.1 200 OK
 Content-Length: 19
@@ -249,10 +249,10 @@ Content-Type: text/plain
  { "i":1 , "c":1 }
 __typ503__
 }
-# ++end++ __typ503__
+# __END__ typ503
 
-# ++begin++ __typ504__
-typ504() { 
+# _BEGIN_ typ504
+r.typ504() {
   cat <<'__typ504__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -260,10 +260,10 @@ Content-Type: text/plain
 
 __typ504__
 }
-# ++end++ __typ504__
+# __END__ typ504
 
-# ++begin++ __typ505__
-typ505() { 
+# _BEGIN_ typ505
+r.typ505() {
   cat <<'__typ505__'
 HTTP/1.1 200 OK
 Content-Length: 19
@@ -273,10 +273,10 @@ Content-Type: text/plain
  { "i":1 , "c":2 }
 __typ505__
 }
-# ++end++ __typ505__
+# __END__ typ505
 
-# ++begin++ __typ506__
-typ506() { 
+# _BEGIN_ typ506
+r.typ506() {
   cat <<'__typ506__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -284,10 +284,10 @@ Content-Type: text/plain
 
 __typ506__
 }
-# ++end++ __typ506__
+# __END__ typ506
 
-# ++begin++ __typ511__
-typ511() { 
+# _BEGIN_ typ511
+r.typ511() {
   cat <<'__typ511__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -295,10 +295,10 @@ Content-Type: text/plain
 
 __typ511__
 }
-# ++end++ __typ511__
+# __END__ typ511
 
-# ++begin++ __typ512__
-typ512() { 
+# _BEGIN_ typ512
+r.typ512() {
   cat <<'__typ512__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -306,10 +306,10 @@ Content-Type: text/plain
 
 __typ512__
 }
-# ++end++ __typ512__
+# __END__ typ512
 
-# ++begin++ __typ513__
-typ513() { 
+# _BEGIN_ typ513
+r.typ513() {
   cat <<'__typ513__'
 HTTP/1.1 409 Conflict
 Content-Length: 59
@@ -318,10 +318,10 @@ Content-Type: text/plain
 Constraint violation e.g. duplicate value in unique index.
 __typ513__
 }
-# ++end++ __typ513__
+# __END__ typ513
 
-# ++begin++ __typ514__
-typ514() { 
+# _BEGIN_ typ514
+r.typ514() {
   cat <<'__typ514__'
 HTTP/1.1 200 OK
 Content-Length: 32
@@ -334,10 +334,10 @@ Content-Type: text/plain
 ]
 __typ514__
 }
-# ++end++ __typ514__
+# __END__ typ514
 
-# ++begin++ __typ515__
-typ515() { 
+# _BEGIN_ typ515
+r.typ515() {
   cat <<'__typ515__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -345,10 +345,10 @@ Content-Type: text/plain
 
 __typ515__
 }
-# ++end++ __typ515__
+# __END__ typ515
 
-# ++begin++ __typ516__
-typ516() { 
+# _BEGIN_ typ516
+r.typ516() {
   cat <<'__typ516__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -356,10 +356,10 @@ Content-Type: text/plain
 
 __typ516__
 }
-# ++end++ __typ516__
+# __END__ typ516
 
-# ++begin++ __typ517__
-typ517() { 
+# _BEGIN_ typ517
+r.typ517() {
   cat <<'__typ517__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -368,10 +368,10 @@ Content-Type: text/plain
 No data could be found.
 __typ517__
 }
-# ++end++ __typ517__
+# __END__ typ517
 
-# ++begin++ __typ701__
-typ701() { 
+# _BEGIN_ typ701
+r.typ701() {
   cat <<'__typ701__'
 HTTP/1.1 404 Not Found
 Content-Length: 24
@@ -380,10 +380,10 @@ Content-Type: text/plain
 No data could be found.
 __typ701__
 }
-# ++end++ __typ701__
+# __END__ typ701
 
-# ++begin++ __typ702__
-typ702() { 
+# _BEGIN_ typ702
+r.typ702() {
   cat <<'__typ702__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -391,10 +391,10 @@ Content-Type: text/plain
 
 __typ702__
 }
-# ++end++ __typ702__
+# __END__ typ702
 
-# ++begin++ __typ703__
-typ703() { 
+# _BEGIN_ typ703
+r.typ703() {
   cat <<'__typ703__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -402,10 +402,10 @@ Content-Type: text/plain
 
 __typ703__
 }
-# ++end++ __typ703__
+# __END__ typ703
 
-# ++begin++ __typ704__
-typ704() { 
+# _BEGIN_ typ704
+r.typ704() {
   cat <<'__typ704__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -413,10 +413,10 @@ Content-Type: text/plain
 
 __typ704__
 }
-# ++end++ __typ704__
+# __END__ typ704
 
-# ++begin++ __typ705__
-typ705() { 
+# _BEGIN_ typ705
+r.typ705() {
   cat <<'__typ705__'
 HTTP/1.1 200 OK
 Content-Length: 691
@@ -430,10 +430,10 @@ Content-Type: text/plain
 ]
 __typ705__
 }
-# ++end++ __typ705__
+# __END__ typ705
 
-# ++begin++ __typ706__
-typ706() { 
+# _BEGIN_ typ706
+r.typ706() {
   cat <<'__typ706__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -441,10 +441,10 @@ Content-Type: text/plain
 
 __typ706__
 }
-# ++end++ __typ706__
+# __END__ typ706
 
-# ++begin++ __typ707__
-typ707() { 
+# _BEGIN_ typ707
+r.typ707() {
   cat <<'__typ707__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -452,10 +452,10 @@ Content-Type: text/plain
 
 __typ707__
 }
-# ++end++ __typ707__
+# __END__ typ707
 
-# ++begin++ __typ708__
-typ708() { 
+# _BEGIN_ typ708
+r.typ708() {
   cat <<'__typ708__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -463,10 +463,10 @@ Content-Type: text/plain
 
 __typ708__
 }
-# ++end++ __typ708__
+# __END__ typ708
 
-# ++begin++ __typ801__
-typ801() { 
+# _BEGIN_ typ801
+r.typ801() {
   cat <<'__typ801__'
 HTTP/1.1 200 OK
 Content-Length: 5953
@@ -497,10 +497,10 @@ Johannes dei gracia rex Anglie, dominus Hibernie, dux Normannie, Aquitannie et c
 10.Si quis mutuo ceperit aliquid a Judeis, plus vel minus, et moriatur antequam debitum illud solvatur, debitum non usuret quamdiu heres fuerit infra etatem, de quocumque teneat; et si debitum illud inciderit in manus nostras, nos non capiemus nisi catallum contentum in carta. [Articles, C. 34.]
 __typ801__
 }
-# ++end++ __typ801__
+# __END__ typ801
 
-# ++begin++ __typ802__
-typ802() { 
+# _BEGIN_ typ802
+r.typ802() {
   cat <<'__typ802__'
 HTTP/1.1 200 OK
 Content-Length: 5953
@@ -509,10 +509,10 @@ Content-Type: text/plain
 
 __typ802__
 }
-# ++end++ __typ802__
+# __END__ typ802
 
-# ++begin++ __typ811__
-typ811() { 
+# _BEGIN_ typ811
+r.typ811() {
   cat <<'__typ811__'
 HTTP/1.1 200 OK
 Content-Length: 115
@@ -522,10 +522,10 @@ Content-Type: text/plain
  { "id_col":"user1" , "text01":"all my personal data information" , "text02":"my contacts" , "text03":"my notes" }
 __typ811__
 }
-# ++end++ __typ811__
+# __END__ typ811
 
-# ++begin++ __typ812__
-typ812() { 
+# _BEGIN_ typ812
+r.typ812() {
   cat <<'__typ812__'
 HTTP/1.1 200 OK
 Content-Length: 110
@@ -535,10 +535,10 @@ Content-Type: text/plain
  { "id_col":"user2" , "text01":"Here is \"a quoted string\"" , "text02":"my contacts" , "text03":"my notes" }
 __typ812__
 }
-# ++end++ __typ812__
+# __END__ typ812
 
-# ++begin++ __typ813__
-typ813() { 
+# _BEGIN_ typ813
+r.typ813() {
   cat <<'__typ813__'
 HTTP/1.1 200 OK
 Content-Length: 4487
@@ -548,10 +548,10 @@ Content-Type: text/plain
  { "id_col":"user3" , "text01":"\nJohannes dei gracia rex Anglie, dominus Hibernie, dux Normannie, Aquitannie et comes Andegavie, archiepiscopis, episcopis, abbatibus, comitibus, baronibus, justiciariis, forestariis, vicecomitibus, prepositis, ministris et omnibus ballivis et fidelibus suis salutem. Sciatis nos intuitu Dei et pro salute anime nostre et omnium antecessorum et heredum nostrorum ad honorem Dei et exaltacionem sancte Ecclesie, et emendacionem regni nostri, per consilium venerabilium patrum nostrorum, Stephani Cantuariensis archiepiscopi totius Anglie primatis et sancte Romane ecclesie cardinalis, Henrici Dublinensis archiepiscopi, Willelmi Londoniensis, Petri Wintoniensis, Joscelini Bathoniensis et Glastoniensis, Hugonis Lincolniensis, Walteri Wygorniensis, Willelmi Coventrensis, et Benedicti Roffensis, episcoporum; magistri Pandulfi domini pape subdiaconi et familiaris, fratris Aymerici magistri milicie Templi in Anglia; et nobilium virorum Willelmi Mariscalli comitis Penbrocie, Willelmi comitis Sarrisberie, Willelmi comitis Warennie, Willelmi comitis Arundellie, Alani de Galeweya constabularii Scocie, Warini filii Geroldi, Petri filii Hereberti, Huberti de Burgo senescalli Pictavie, Hugonis de Nevilla, Mathei filli Hereberti, Thome Basset, Alani Basset, Philippi de Albiniaco, Roberti de Roppel', Johannis Mariscalli, Johannis filii Hugonis et aliorum fidelium nostrorum:\n\n1. In primis concessisse Deo et hac presenti carta nostra confirmasse, pro nobis et heredibus nostris in perpetuum, quod Anglicana ecclesie libera sit, et habeat jura sua integra, et libertates suas illesas; et ita volumus observari; quod apparet ex eo quod libertatem electionum, que maxima et magis necessaria reputatur ecclesie Anglicane, mera et spontanea voluntate, ante discordiam inter nos et barones nostros motam, concessimus et carta nostra confirmavimus, et eam obtinuimus a domino papa Innocentio tercio confirmari; quam et nos observabimus et ab heredibus nostris in perpetuum bona fide volumus observari. Concessimus eciam omnibus liberis hominibus regni nostri, pro nobis et heredibus nostris in perpetuum, omnes libertates subscriptas, habendas et tenendas eis et heredibus suis, de nobis et heredibus nostris.\n\n2. Si quis comitum vel baronum nostrorum, sive aliorum tenencium de nobis in capite per servicium militare, mortuus fuerit, et cum decesserit heres suus plene etatis fuerit et relevium debeat, habeat hereditatem suam per antiquum relevium; scilicet heres vel heredes comitis de baronia comitis integra per centum libras; heres veI heredes baronis de baronia integra per centum libras; heres vel heredes militis de feodo militis integro per centum solidos ad plus; et qui minus debuerit minus det secundum antiquam consuetudinem feodorum. [Articles, c. 1; 1225, c. 2.]\n" , "text02":"\n3. Si autem heres alicujus talium fuerit infra etatem et fuerit in custodia, cum ad etatem pervenerit, habeat hereditatem suam sine relevio et sine fine. [Articles, c. 2; 1225, c. 3.]\n\n4. Custos terre hujusmodi heredis qui infra etatem fuerit, non capiat de terra heredis nisi racionabiles exitus, et racionabiles consuetudines, et racionabilia servicia, et hoc sine destructione et vasto hominum vel rerum; et si nos commiserimus custodiam alicujus talis terre vicecomiti vel alicui alii qui de exitibus illius nobis respondere debeat, et ille destructionem de custodia fecerit veI vastum, nos ab illo capiemus emendam, et terra committatur duobus legalibus et discretis hominibus de feodo illo, qui de exitibus respondeant nobis vel ei cui eos assignaverimus; et si dederimus vel vendiderimus alicui custodiam alicujus talis terre, et ille destructionem inde fecerit vel vastum, amittat ipsam custodiam, et tradatur duobus legalibus et discretis hominibus de feodo illo qui similiter nobis respondeant sicut predictum est. [Articles, c. 3; 1225, c. 4.]\n" , "text03":"\n5. Custos autem, quamdiu custodiam terre habuerit, sustentet domos, parcos, vivaria, stagna, molendina, et cetera ad terram illam pertinencia, de exitibus terre ejusdem; et reddat heredi cum ad plenam etatem pervenerit, terram suam totam instauratam de carucis et waynagiis, secundum quod tempus waynagii exiget et exitus terre racionabiliter poterunt sustinere. [Articles, cc. 3, 35; 1225, c. 5.]\n\n6. Heredes maritentur absque disparagacione, ita tamen quod, antequam contrahatur matrimonium, ostendatur propinquis de consanguinitate ipsius heredis. [Articles, c. 3; 1225, c. 6.]\n" }
 __typ813__
 }
-# ++end++ __typ813__
+# __END__ typ813
 
-# ++begin++ __typ821__
-typ821() { 
+# _BEGIN_ typ821
+r.typ821() {
   cat <<'__typ821__'
 HTTP/1.1 200 OK
 Content-Length: 68
@@ -564,10 +564,10 @@ user1 :
   my notes
 __typ821__
 }
-# ++end++ __typ821__
+# __END__ typ821
 
-# ++begin++ __typ822__
-typ822() { 
+# _BEGIN_ typ822
+r.typ822() {
   cat <<'__typ822__'
 HTTP/1.1 200 OK
 Content-Length: 61
@@ -580,10 +580,10 @@ user2 :
   my notes
 __typ822__
 }
-# ++end++ __typ822__
+# __END__ typ822
 
-# ++begin++ __typ823__
-typ823() { 
+# _BEGIN_ typ823
+r.typ823() {
   cat <<'__typ823__'
 HTTP/1.1 200 OK
 Content-Length: 4426
@@ -610,5 +610,5 @@ Johannes dei gracia rex Anglie, dominus Hibernie, dux Normannie, Aquitannie et c
 
 __typ823__
 }
-# ++end++ __typ823__
+# __END__ typ823
 

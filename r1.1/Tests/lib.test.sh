@@ -53,7 +53,9 @@ t.conf() {
 }
   
 t.REM() {       # remove results file
-  rm -i $TESTDIR/results/$1*
+  pushd $TESTDIR > /dev/null
+  ./erase.sh $1
+  popd > /dev/null
 }
 
 t.rec() {      # run test and record results as official

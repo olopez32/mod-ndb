@@ -1,5 +1,5 @@
-# ++begin++ __ses001__
-ses001() { 
+# _BEGIN_ ses001
+r.ses001() {
   cat <<'__ses001__'
 HTTP/1.1 200 OK
 Content-Length: 324
@@ -15,10 +15,10 @@ Content-Type: text/plain
 ]
 __ses001__
 }
-# ++end++ __ses001__
+# __END__ ses001
 
-# ++begin++ __ses002__
-ses002() { 
+# _BEGIN_ ses002
+r.ses002() {
   cat <<'__ses002__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -26,10 +26,10 @@ Content-Type: text/plain
 
 __ses002__
 }
-# ++end++ __ses002__
+# __END__ ses002
 
-# ++begin++ __ses003__
-ses003() { 
+# _BEGIN_ ses003
+r.ses003() {
   cat <<'__ses003__'
 HTTP/1.1 200 OK
 Content-Length: 509
@@ -49,10 +49,10 @@ Content-Type: text/plain
 </NDBScan>
 __ses003__
 }
-# ++end++ __ses003__
+# __END__ ses003
 
-# ++begin++ __ses004__
-ses004() { 
+# _BEGIN_ ses004
+r.ses004() {
   cat <<'__ses004__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -60,10 +60,10 @@ Content-Type: text/plain
 
 __ses004__
 }
-# ++end++ __ses004__
+# __END__ ses004
 
-# ++begin++ __ses005__
-ses005() { 
+# _BEGIN_ ses005
+r.ses005() {
   cat <<'__ses005__'
 HTTP/1.1 200 OK
 Content-Length: 385
@@ -80,10 +80,10 @@ Content-Type: text/plain
 ]
 __ses005__
 }
-# ++end++ __ses005__
+# __END__ ses005
 
-# ++begin++ __ses006__
-ses006() { 
+# _BEGIN_ ses006
+r.ses006() {
   cat <<'__ses006__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -91,10 +91,10 @@ Content-Type: text/plain
 
 __ses006__
 }
-# ++end++ __ses006__
+# __END__ ses006
 
-# ++begin++ __ses007__
-ses007() { 
+# _BEGIN_ ses007
+r.ses007() {
   cat <<'__ses007__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -102,10 +102,10 @@ Content-Type: text/plain
 
 __ses007__
 }
-# ++end++ __ses007__
+# __END__ ses007
 
-# ++begin++ __ses008__
-ses008() { 
+# _BEGIN_ ses008
+r.ses008() {
   cat <<'__ses008__'
 HTTP/1.1 200 OK
 Content-Length: 324
@@ -121,10 +121,10 @@ Content-Type: text/plain
 ]
 __ses008__
 }
-# ++end++ __ses008__
+# __END__ ses008
 
-# ++begin++ __ses010__
-ses010() { 
+# _BEGIN_ ses010
+r.ses010() {
   cat <<'__ses010__'
 HTTP/1.1 200 OK
 Content-Length: 27
@@ -136,10 +136,10 @@ Content-Type: text/plain
 ]
 __ses010__
 }
-# ++end++ __ses010__
+# __END__ ses010
 
-# ++begin++ __ses011__
-ses011() { 
+# _BEGIN_ ses011
+r.ses011() {
   cat <<'__ses011__'
 HTTP/1.1 200 OK
 Content-Length: 27
@@ -151,5 +151,5 @@ Content-Type: text/plain
 ]
 __ses011__
 }
-# ++end++ __ses011__
+# __END__ ses011
 

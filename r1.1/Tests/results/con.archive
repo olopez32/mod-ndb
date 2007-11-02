@@ -1,5 +1,5 @@
-# ++begin++ __con101__
-con101() { 
+# _BEGIN_ con101
+r.con101() {
   cat <<'__con101__'
 HTTP/1.1 200 OK
 Content-Length: 40
@@ -11,10 +11,10 @@ Content-Type: text/plain
 ]
 __con101__
 }
-# ++end++ __con101__
+# __END__ con101
 
-# ++begin++ __con102__
-con102() { 
+# _BEGIN_ con102
+r.con102() {
   cat <<'__con102__'
 HTTP/1.1 200 OK
 Content-Length: 40
@@ -26,5 +26,5 @@ Content-Type: text/plain
 ]
 __con102__
 }
-# ++end++ __con102__
+# __END__ con102
 

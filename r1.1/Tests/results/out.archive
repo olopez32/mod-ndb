@@ -1,5 +1,5 @@
-# ++begin++ __out001__
-out001() { 
+# _BEGIN_ out001
+r.out001() {
   cat <<'__out001__'
 HTTP/1.1 200 OK
 ETag: b67cc1c688a25601d0e285d9e1ab8274
@@ -31,10 +31,10 @@ Content-Type: text/plain
 }
 __out001__
 }
-# ++end++ __out001__
+# __END__ out001
 
-# ++begin++ __out002__
-out002() { 
+# _BEGIN_ out002
+r.out002() {
   cat <<'__out002__'
 HTTP/1.1 200 OK
 ETag: a4c6d5120818b2ffebaa261f595feb80
@@ -66,10 +66,10 @@ Content-Type: text/plain
 }
 __out002__
 }
-# ++end++ __out002__
+# __END__ out002
 
-# ++begin++ __out003__
-out003() { 
+# _BEGIN_ out003
+r.out003() {
   cat <<'__out003__'
 HTTP/1.1 200 OK
 ETag: 2ad4d908c0d111910316583e30c9fe6d
@@ -82,10 +82,10 @@ Content-Type: text/plain
 }
 __out003__
 }
-# ++end++ __out003__
+# __END__ out003
 
-# ++begin++ __out004__
-out004() { 
+# _BEGIN_ out004
+r.out004() {
   cat <<'__out004__'
 HTTP/1.1 200 OK
 ETag: ed08cc94c54c16f99085353ea391837b
@@ -101,10 +101,10 @@ Content-Type: text/plain
 }
 __out004__
 }
-# ++end++ __out004__
+# __END__ out004
 
-# ++begin++ __out005__
-out005() { 
+# _BEGIN_ out005
+r.out005() {
   cat <<'__out005__'
 HTTP/1.1 200 OK
 ETag: d41d8cd98f00b204e9800998ecf8427e
@@ -113,10 +113,10 @@ Content-Type: text/plain
 
 __out005__
 }
-# ++end++ __out005__
+# __END__ out005
 
-# ++begin++ __out006__
-out006() { 
+# _BEGIN_ out006
+r.out006() {
   cat <<'__out006__'
 HTTP/1.1 200 OK
 ETag: 38be67f5297de0841a93ec9733ee7151
@@ -132,10 +132,10 @@ Content-Type: text/plain
 
 __out006__
 }
-# ++end++ __out006__
+# __END__ out006
 
-# ++begin++ __out007__
-out007() { 
+# _BEGIN_ out007
+r.out007() {
   cat <<'__out007__'
 HTTP/1.1 200 OK
 ETag: 5673489f196228bc3fab5368f649fef3
@@ -148,10 +148,10 @@ Content-Type: text/plain
 
 __out007__
 }
-# ++end++ __out007__
+# __END__ out007
 
-# ++begin++ __out100__
-out100() { 
+# _BEGIN_ out100
+r.out100() {
   cat <<'__out100__'
 HTTP/1.1 200 OK
 Content-Length: 46
@@ -161,10 +161,10 @@ Content-Type: text/plain
 HAL says, "I'm afraid I can't do that, Dave."
 __out100__
 }
-# ++end++ __out100__
+# __END__ out100
 
-# ++begin++ __out101__
-out101() { 
+# _BEGIN_ out101
+r.out101() {
   cat <<'__out101__'
 HTTP/1.1 200 OK
 Content-Length: 0
@@ -173,5 +173,5 @@ Content-Type: text/plain
 
 __out101__
 }
-# ++end++ __out101__
+# __END__ out101
 

@@ -1,5 +1,5 @@
-# ++begin++ __json01__
-json01() { 
+# _BEGIN_ json01
+r.json01() {
   cat <<'__json01__'
 HTTP/1.1 200 OK
 Content-Length: 324
@@ -15,10 +15,10 @@ Content-Type: application/jsonrequest
 ]
 __json01__
 }
-# ++end++ __json01__
+# __END__ json01
 
-# ++begin++ __json02__
-json02() { 
+# _BEGIN_ json02
+r.json02() {
   cat <<'__json02__'
 HTTP/1.1 406 Not Acceptable
 Content-Length: 0
@@ -26,10 +26,10 @@ Content-Type: text/plain
 
 __json02__
 }
-# ++end++ __json02__
+# __END__ json02
 
-# ++begin++ __json03__
-json03() { 
+# _BEGIN_ json03
+r.json03() {
   cat <<'__json03__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -37,10 +37,10 @@ Content-Type: application/jsonrequest
 
 __json03__
 }
-# ++end++ __json03__
+# __END__ json03
 
-# ++begin++ __json04__
-json04() { 
+# _BEGIN_ json04
+r.json04() {
   cat <<'__json04__'
 HTTP/1.1 200 OK
 Content-Length: 19
@@ -50,10 +50,10 @@ Content-Type: application/jsonrequest
  { "i":1 , "c":5 }
 __json04__
 }
-# ++end++ __json04__
+# __END__ json04
 
-# ++begin++ __json05__
-json05() { 
+# _BEGIN_ json05
+r.json05() {
   cat <<'__json05__'
 HTTP/1.1 204 No Content
 Content-Length: 0
@@ -61,5 +61,5 @@ Content-Type: text/plain
 
 __json05__
 }
-# ++end++ __json05__
+# __END__ json05
 

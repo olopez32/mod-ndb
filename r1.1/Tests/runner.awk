@@ -3,6 +3,8 @@ BEGIN { if(!host) host = "localhost:3080"
         server = "http://" host 
         if(test ~ /^-/) test = ""
         echo = (mode == "compare") ? "echo -n" : "echo";
+        
+        recorder = "awk -f record.awk -v obj="
       }
 
 /^#/  { next; }
@@ -40,8 +42,11 @@ BEGIN { if(!host) host = "localhost:3080"
 
      if(flag_SQL) next;
      
+     prefix = substr($1,0,3)
+     archive_file = "results/" prefix ".archive"
+     
      if(mode == "compare")      outfile = "> current/" $1
-     else if(mode == "record")  outfile = "| tee results/" $1
+     else if(mode == "record")  outfile = "| " recorder $1 " >> " archive_file
      else outfile = " | tee current/" $1
           
      if(NF > 3) for(i=4; i <= NF; i++) args = args $i " ";
@@ -51,9 +56,15 @@ BEGIN { if(!host) host = "localhost:3080"
 
      printf("%s '==== %s '\n", echo, $1)
      printf("%s | %s %s \n", cmd, filter, outfile)
+
+     if((diff || mode == "compare") && ! have_source[prefix]) {
+       print "source " archive_file
+       have_source[prefix] = 1
+     }
+     
      if(mode == "compare") 
-       printf("cmp -s results/%s current/%s && echo OK || echo Fail\n",$1,$1)
+       printf("r.%s | cmp -s - current/%s && echo OK || echo Fail\n", $1, $1)
      if(diff)
-       printf("diff -C 10 results/%s current/%s \n",$1, $1)
+       printf("r.%s |diff -C 10 - current/%s \n",$1, $1)
    }
 }
