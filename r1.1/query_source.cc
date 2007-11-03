@@ -6,7 +6,7 @@
 Apache_subrequest_query_source::Apache_subrequest_query_source(request_rec *req)
 {
   r = req;
-  keep_tx_open = TRUE;
+  keep_tx_open = true;
   const char *note = ap_table_get(r->main->notes,"ndb_request_method");
   if(note)  {
     if(!strcmp(note,"POST")) req_method = M_POST;

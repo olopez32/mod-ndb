@@ -38,7 +38,7 @@ class HTTP_query_source : public query_source {
     r = req;
     req_method = r->method_number;
     content_type = ap_table_get(r->headers_in, "Content-Type");
-    keep_tx_open = FALSE;
+    keep_tx_open = false;
   };
     
   int get_form_data(apr_table_t **tab) {

@@ -130,7 +130,7 @@ extern "C" {
     r->content_type = "text/plain";
     ap_send_http_header(r);
     
-    ap_rprintf(r, "Process ID: %d\n", getpid());
+    ap_rprintf(r, "Process ID: %d\n", (int) getpid());
     ap_rprintf(r, "Connect string: %s\n", srv->connect_string);
     ap_rprintf(r, "NDB Cluster Connections: %d\n", process.n_connections);
     ap_rprintf(r, "Apache Threads: %d\n", process.n_threads);
