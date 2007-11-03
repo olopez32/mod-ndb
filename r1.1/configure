@@ -6,6 +6,7 @@ MYSQLCFG=`which mysql_config`
 GET_LIBS='--libs'
 CONFIG_CMD="$0 $@"
 OPT='-O3'
+HELPER=0
 
 usage() {
   echo
@@ -22,6 +23,7 @@ usage() {
   echo "       --aprconfig=/path/to/apr-config"
   echo "       --thread-safe"
   echo "       --debug"
+  echo "       --helper"
 }
 
 long_help() {
@@ -31,6 +33,8 @@ long_help() {
   echo
   echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS --apxs1=$APXS"
   echo 
+  echo "Use --helper to link against libndbhelper."
+  echo  
   echo "Use --thread-safe if you have a thread-safe mysql client library."
   echo "If your apr is installed outside of apache2, use --aprconfig."
   echo
@@ -56,7 +60,7 @@ do
     shift
     ;;
   esac
-  
+     
   case $conf_option in 
     --debug)
       OPT='-g -O0'
@@ -77,6 +81,9 @@ do
     --aprconfig)
       APRCONFIG=$conf_arg
       test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
+      ;;
+    --helper)
+      HELPER=1
       ;;
     --help)
       usage
@@ -125,6 +132,7 @@ echo "    apxs =         " $APXS
 echo "    apxs 1.3 =     " $APXS1
 echo "    mysql_config = " $MYSQLCFG 
 [ -n "$APRCONFIG" ] && echo "    apr-config =   " $APRCONFIG
+[ $HELPER -eq 1 ] &&   echo "    Using ndbhelper library"
 echo "    libs         = " $GET_LIBS
 echo
 
@@ -194,8 +202,12 @@ echo
 echo MY_INC1=$MY_INC
 echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
-echo MY_LIBS=$MY_LIBS
-echo MYSQL_LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+if test $HELPER -eq 1 
+ then 
+   echo MYSQL_LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient -lndbhelper"
+ else
+   echo MYSQL_LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+fi
 echo 
 echo OPT=$OPT
 echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
