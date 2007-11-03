@@ -64,6 +64,6 @@ t.rec() {      # run test and record results as official
 
 t.sql() {
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=sql | $SHELL 
+  awk -f runner.awk -v test=$1 -v mode=sql test.list | $SHELL 
   popd > /dev/null
 } 
