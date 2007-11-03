@@ -44,7 +44,7 @@ long_help() {
 }
 
 fail() { 
- echo ; echo "Error: $1" ; echo ; exit 1
+ echo ; echo "Error: $@" ; echo ; exit 1
 }
 
 while test $# != 0
