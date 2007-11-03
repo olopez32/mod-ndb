@@ -19,7 +19,7 @@ BEGIN { if(!host) host = "localhost:3080"
 
      if(mode == "config") {
         qm = index($3, "?") ; 
-        if (qm) base = substr($3, 0, qm - 1) ">"
+        if (qm) base = substr($3, 1, qm - 1) ">"
         else base = $3 ">"
         printf("awk -f config.awk -v 'cfpat=/ndb/test/%s' httpd.conf\n", base)
         next
