@@ -3,7 +3,7 @@ BEGIN { if(!host) host = "localhost:3080"
         server = "http://" host 
         if(test ~ /^-/) test = ""
         echo = (mode == "compare") ? "echo -n" : "echo";
-        
+       
         recorder = "awk -f record.awk -v obj="
       }
 
@@ -34,15 +34,15 @@ BEGIN { if(!host) host = "localhost:3080"
      }
      else if(mode == "config") {
         qm = index($3, "?") ; 
-        if (qm) base = substr($3, 0, qm - 1) ">"
+        if (qm) base = substr($3, 1, qm - 1) ">"
         else base = $3 ">"
         printf("awk -f config.awk -v 'cfpat=/ndb/test/%s' httpd.conf\n", base)
         next
      }
 
-     if(flag_SQL) next;
+     if(flag_SQL || mode == "sql") next;
      
-     prefix = substr($1,0,3)
+     prefix = substr($1,1,3)
      archive_file = "results/" prefix ".archive"
      
      if(mode == "compare")      outfile = "> current/" $1
