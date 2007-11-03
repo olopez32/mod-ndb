@@ -15,7 +15,7 @@ prep: parsers
 
 parsers: N-SQL/Parser.cpp JSON/Parser.cpp 
 
-mod_ndb.so: $(OBJECTS)
+mod_ndb.so: parsers $(OBJECTS)
 	LD_RUN_PATH=$(LDSO_PATH) $(CC) $(APXS_LDFLAGS_SHLIB) -o $@ $(OBJECTS) $(LIBS)
 
 .cc.o:
