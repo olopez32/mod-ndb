@@ -33,8 +33,8 @@
 		655CEC210A8C4C4C00DB8284 /* Query.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Query.cc; sourceTree = "<group>"; };
 		655CEC220A8C4C6100DB8284 /* MySQL_Field.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MySQL_Field.h; sourceTree = "<group>"; };
 		655CEC230A8C4C6B00DB8284 /* mod_ndb.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mod_ndb.h; sourceTree = "<group>"; };
-		655CEC240A8C4C9500DB8284 /* configure */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
-		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = make; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.make; };
+		655CEC240A8C4C9500DB8284 /* configure */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.sh; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
+		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = make; lastKnownFileType = text; path = make_file_tail; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
 		656D04160C89302E00A430C6 /* ses.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ses.sql; path = Tests/SQL/ses.sql; sourceTree = "<group>"; };
@@ -42,6 +42,9 @@
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
 		65AA7E800BC5841100A5D0A4 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_dumper.cc; sourceTree = "<group>"; };
+		65AB5C180CD81AF700DAEACB /* config.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = config.awk; path = Tests/config.awk; sourceTree = "<group>"; };
+		65AB5C190CD98C0D00DAEACB /* record.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = record.awk; path = Tests/record.awk; sourceTree = "<group>"; };
+		65AB5C470CDA5C3000DAEACB /* erase.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = erase.sh; path = Tests/erase.sh; sourceTree = "<group>"; };
 		65ADCC4A0BB0FF0A00AEE680 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = output_format.h; sourceTree = "<group>"; };
 		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
@@ -143,11 +146,14 @@
 		657BD1C30B84EE8600A9ED69 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				651A69790C826F8D00EE077F /* run-test */,
+				6503B7940C9F58CC00490CCC /* lib.test.sh */,
 				651A68C20C824B6500EE077F /* test.list */,
 				657BD1C60B84EFD100A9ED69 /* httpd.conf */,
-				651A69790C826F8D00EE077F /* run-test */,
 				651A68DF0C824E3500EE077F /* runner.awk */,
-				6503B7940C9F58CC00490CCC /* lib.test.sh */,
+				65AB5C180CD81AF700DAEACB /* config.awk */,
+				65AB5C190CD98C0D00DAEACB /* record.awk */,
+				65AB5C470CDA5C3000DAEACB /* erase.sh */,
 				656D03EA0C89301300A430C6 /* SQL */,
 			);
 			name = Tests;
@@ -211,7 +217,6 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 658358210A8CE1C40023B465 /* Build configuration list for PBXProject "mod_ndb" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* mod_ndb */;
 			projectDirPath = "";
