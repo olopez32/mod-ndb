@@ -46,6 +46,7 @@ Coco/R itself) does not fall under the GNU General Public License.
 #define coco_swprintf _snwprintf
 #else 
 #define coco_swprintf swprintf
+#endif
 
 #define COCO_WCHAR_MAX 65535
 #define MAX_BUFFER_LENGTH (64*1024)
