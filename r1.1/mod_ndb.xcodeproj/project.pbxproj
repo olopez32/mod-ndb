@@ -217,6 +217,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 658358210A8CE1C40023B465 /* Build configuration list for PBXProject "mod_ndb" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* mod_ndb */;
 			projectDirPath = "";
