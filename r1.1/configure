@@ -98,6 +98,7 @@ do
     --sun-cc) 
       CXX="CC"
       dso_cc_fl="-KPIC"
+      dso_ld_fl="-G -lCrun -R $LDSO_PATH"
       ;;
     --help)
       usage
@@ -169,7 +170,7 @@ LDSO_PATH=`$MYSQLCFG --libs | perl -n -e 'if(/-L(\S*)/) { print $1 }'`
 
 if test -z "$dsl_ld_fl" 
  then  
-  if test -n "$APXS1" 
+  if test -n "$APXS1" -a $CXX = "g++" 
    then 
     # For Apache 1.3, get the flags from APXS
     dso_cc_fl=`$APXS1 -q CFLAGS`' '`$APXS1 -q CFLAGS_SHLIB` 
