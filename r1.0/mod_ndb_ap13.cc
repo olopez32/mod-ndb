@@ -180,11 +180,9 @@ ndb_instance *my_instance(request_rec *r) {
 }
 
 
-void module_must_restart(config::srv *conf) {
-  if(conf->force_restart) {
-    if(! will_restart++)  /* this is a semaphore */
-      kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
-  }
+void module_must_restart() {
+  if(! will_restart++)  /* this is a semaphore */
+    kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
 }
 
 
