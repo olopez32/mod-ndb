@@ -1,6 +1,9 @@
+#  (C) 2007 MySQL 
+#  
+#  This is an auxilliary script in the mod_ndb test suite.
 #
-# Take test result on stdin 
-# Reformat for archive 
+#  It takes a test result on input, and reformats the result 
+#  for storage in an archive file.
 
 BEGIN {  
       if(! obj) {

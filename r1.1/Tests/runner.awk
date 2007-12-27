@@ -1,3 +1,10 @@
+#  (C) 2007 MySQL 
+#  
+#  This is the main engine of the test suite.  It takes a test.list file 
+#  on input, and writes shell commands to output. 
+#
+#  Command line arguments, supplied through awk using -v, control the details.
+#
 
 BEGIN { if(!host) host = "localhost:3080" 
         server = "http://" host 
