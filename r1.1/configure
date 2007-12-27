@@ -115,6 +115,8 @@ done
 ## including the "grep" that understands the "-q" option.
 test -d /usr/xpg4/bin && PATH=/usr/xpg4/bin:$PATH
 
+test -z "$APXS" && fail "Cannot configure without apxs."
+
 ## Check the Apache version
 HTTPD="`$APXS -q SBINDIR`/`$APXS -q TARGET`"
 START_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf"
