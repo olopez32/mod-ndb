@@ -72,6 +72,7 @@
 		65E2E85F0BA2252E00B1B8D0 /* modules_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap13; path = templates/modules_ap13; sourceTree = "<group>"; };
 		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
 		65EFD0180CD421CE0079CEEB /* cmp_swap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmp_swap.c; sourceTree = "<group>"; };
+		65EFD0F20CE3E46E0079CEEB /* bench.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bench.sql; path = Tests/SQL/bench.sql; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -139,6 +140,7 @@
 				6503B4020C9DB91600490CCC /* typ8.sql */,
 				656D04160C89302E00A430C6 /* ses.sql */,
 				6503B8BE0CA08C9A00490CCC /* col.sql */,
+				65EFD0F20CE3E46E0079CEEB /* bench.sql */,
 			);
 			name = SQL;
 			sourceTree = "<group>";
