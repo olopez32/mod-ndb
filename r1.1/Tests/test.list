@@ -64,6 +64,12 @@ typ515 f1 typ5_del?c=33 -X DELETE
 typ516 f1 typ5_del?c=49 -X DELETE
 typ517 f1 typ5_ls                          # Empty table again.
 
+# typ6: (i int, j int, name varchar(20), primary key (i,j) using hash)
+typ601 f1 typ6 -d 'i=3&j=4&name=larry'
+typ602 f1 typ6?i=3&j=4
+typ603 f1 typ6?i=3&j=4 -X DELETE
+
+
 # LONGVARCHAR
 typ701 f1 typ7tab   # 404 -- empty table
 typ702 f1 typ7 -d "id=1" -d "vc01=ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -d "ts=@time"
@@ -190,3 +196,7 @@ json02 JR/f1 sesx/3       # GET; 406, because XML is not JSON
 json03 JR/f1 typ5 --data-binary ' { "i":1,"c":5 }'
 json04 JR/f1 typ5?i=1 
 json05 f1 typ5?i=1 -X DELETE  
+json06 JR/f1 typ6 --data-binary ' { "i":2, "j":3, "name":"rasmus"}'
+json07 f1 typ6?i=2&j=3
+json08 f1 typ6?i=2&j=3 -X DELETE
+

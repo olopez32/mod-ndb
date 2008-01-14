@@ -612,3 +612,38 @@ __typ823__
 }
 # __END__ typ823
 
+# _BEGIN_ typ601
+r.typ601() {
+  cat <<'__typ601__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ601__
+}
+# __END__ typ601
+
+# _BEGIN_ typ602
+r.typ602() {
+  cat <<'__typ602__'
+HTTP/1.1 200 OK
+Content-Length: 36
+ETag: 2edf9edc9d6398ead062fcba329cfca6
+Content-Type: text/plain
+
+ { "i":3 , "j":4 , "name":"larry" }
+__typ602__
+}
+# __END__ typ602
+
+# _BEGIN_ typ603
+r.typ603() {
+  cat <<'__typ603__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ603__
+}
+# __END__ typ603
+
