@@ -43,9 +43,9 @@ long_help() {
   echo "      messages; otherwise compile with '-O3'."
   echo 
   echo "    --sun-cc to compile using Sun C++ compiler rather than g++"
+  echo "      (requires mysql and apache to also be built with Sun CC)"
   echo 
   echo "    --helper to link with libndbhelper."
-  echo
   echo 
 }
 
