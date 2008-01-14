@@ -8,19 +8,16 @@ function next()      { if(idx+1 < ids.length) { idx++ ; get_emperor() } }
 function prev()      { if(idx > 0)            { idx-- ; get_emperor() } }
 function fmt_year(y) { return Math.abs(y) + (y < 0 ? " B.C." : ""); }
 function load_ids()  { JSONRequest.get(http_srv + "/demo/emperors", set_ids); }
-function comments()  { show_comments(); }
 
 function get_emperor() { 
   cur_id = ids[idx].id;
   JSONRequest.get(http_srv + "/demo/emperor/" + cur_id, show_emperor);
-  comments();
+  show_comments();
 }
 
 function set_ids(reqNo, value, exception) {
   if(exception) alert("set_ids exception: " + exception.message);
-  else alert("set_ids value: " + value.toJSONString());
-  ids = value;
-  alert("ids: " + ids);
+  if(value) ids = value;
   idx = 0;
   get_emperor();
 }
@@ -37,20 +34,24 @@ function show_emperor(reqNo, value, exception) {
 }
 
 function show_comments() {
-  //  &bull; $1/x$ <br />\n
-  $("comments").innerHTML = "";
-  $("comments").innerHTML = request("/demo/comment?emp=" +ids[idx].id);
+  JSONRequest.get(http_srv + "/demo/json/comment?emp=" + cur_id, 
+                  function(reqNo, value, exception){
+    $("comments").innerHTML = "";
+    var n;
+    if(value) 
+      for(n = 0 ; n < value.length ; n++) 
+        $("comments").innerHTML += "&bull; " + value[n].comment + "<br />\n";
+  });
 }
 
 function add_comment() {
-  var comment;
+  var comment = new Object();
   comment.id = "@autoinc";
   comment.emp_id = cur_id;
   comment.comment = $("textbox").value;
   $("textbox").value = "";
   JSONRequest.post(http_srv + "/demo/comment", comment, 
       function(reqNo, value, exception) {
-          if(exception) alert("add_comment exception: " + exception.message);
           show_comments();
       }
   );
