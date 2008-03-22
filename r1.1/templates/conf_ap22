@@ -16,8 +16,8 @@ LoadModule ndb_module         mod_ndb.so
 
 #-Other-Modules
 
-AddType application/x-httpd-php .php
 DefaultType text/plain
+TypesConfig mime-types
 
 TransferLog "logs/ndb_access_log" 
 ErrorLog "logs/ndb_error_log"
@@ -32,6 +32,5 @@ ErrorLog "logs/ndb_error_log"
 </IfModule>
 
 DirectoryIndex index.html
-TypesConfig mime-types
 
 Include test.conf
