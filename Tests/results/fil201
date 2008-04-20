@@ -1,8 +1,0 @@
-HTTP/1.1 200 OK
-Content-Length: 86
-ETag: 030c19d29aa72b079c831e9e32177938
-Content-Type: text/plain
-
-[
-  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 } 
-]

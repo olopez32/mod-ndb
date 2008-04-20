@@ -1,9 +1,0 @@
-HTTP/1.1 200 OK
-ETag: 2ad4d908c0d111910316583e30c9fe6d
-Content-Length: 79
-Content-Type: text/plain
-
-{ "raw":
-  { "is_internal": true, "can_override": false, "is_raw": true 
-  }
-}
