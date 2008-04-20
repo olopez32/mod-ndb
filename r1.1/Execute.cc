@@ -167,10 +167,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       ap_set_content_length(r, 0);
       response_code = 204;  // No content
     }
-    
-    // Set response Content-Type for JSONRequest 
-    if(i->flag.jsonrequest) r->content_type = "application/jsonrequest";
-    
+      
     // Set ETag
     if(i->flag.use_etag && my_results.buff) {
       char *etag = ap_md5_binary(r->pool, (const unsigned char *) 
@@ -179,7 +176,18 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       // If the ETag matches the client's cache, the page should not be returned 
       response_code = ap_meets_conditions(r);
     }
-        
+
+    // Special handling for JSONRequest 
+    if(i->flag.jsonrequest) {
+      r->content_type = "application/jsonrequest";  // Set content-type
+      if(! my_results.buff) {         // Build dummy non-empty response
+        my_results.init(r, 8);
+        my_results.out(2, "1\n");
+        response_code = OK;
+        ap_set_content_length(r, 2);
+      }
+    }
+                
     /* Send the page (but recheck the response code,
       after ap_meets_conditions) */   
     if(response_code == OK) {

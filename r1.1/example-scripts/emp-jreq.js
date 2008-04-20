@@ -16,14 +16,14 @@ function get_emperor() {
 }
 
 function set_ids(reqNo, value, exception) {
-  if(exception) alert("set_ids exception: " + exception.message);
+  if(exception && !value) alert("set_ids exception: " + exception.message);
   if(value) ids = value;
   idx = 0;
   get_emperor();
 }
 
 function show_emperor(reqNo, value, exception) {
-  if(exception) alert("show_emperor exception: " + exception.message);
+  if(exception && ! value) alert("show_emperor exception: " + exception.message);
   else {
     $("photo").src = "/demo/photo/" + cur_id;
     var desc = "<b><big>" + value.name + "</big></b><br />" +
