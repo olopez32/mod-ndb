@@ -6,10 +6,15 @@
 # e.g. "typ" or "typ2".
 
 # Format of test lines (tests are run against mod_ndb using curl):
-#     test-name sed-filter url-path curl-args
+#     test-name test-flags url-path curl-args
 # 
+# test-flags:  fx  -- use filter x, i.e. "sed -f fx.sed" 
+#              JR  -- application/jsonrequest
+#              SQL -- line is a SQL line
+#
 # Format of SQL lines, e.g. CREATE TABLE statements, run in mysql client:
 #     test-name "SQL" query-file-name 
+
 
 
 # ------ Prepare the database
@@ -59,6 +64,12 @@ typ515 f1 typ5_del?c=33 -X DELETE
 typ516 f1 typ5_del?c=49 -X DELETE
 typ517 f1 typ5_ls                          # Empty table again.
 
+# typ6: (i int, j int, name varchar(20), primary key (i,j) using hash)
+typ601 f1 typ6 -d 'i=3&j=4&name=larry'
+typ602 f1 typ6?i=3&j=4
+typ603 f1 typ6?i=3&j=4 -X DELETE
+
+
 # LONGVARCHAR
 typ701 f1 typ7tab   # 404 -- empty table
 typ702 f1 typ7 -d "id=1" -d "vc01=ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" -d "ts=@time"
@@ -73,6 +84,15 @@ typ708 f1 typ7?id=3 -X DELETE
 typ800 SQL typ8.sql
 typ801 f1 typ8?id=1
 typ802 f1 typ8?id=1 -I    # Header only, no response body.
+#  Multiple text columns
+typ811 f1 multitext?name=user1
+typ812 f1 multitext?name=user2
+typ813 f1 multitext?name=user3
+#  Multiple text columns without encoding
+typ821 f1 multitext_no_esc?name=user1
+typ822 f1 multitext_no_esc?name=user2
+typ823 f1 multitext_no_esc?name=user3
+
 
 ###  --- column and index tests
 col000 SQL col.sql
@@ -154,6 +174,10 @@ fil209 f1 fil2?v2=12       # nvisits != 12
 fil210 f1 fil2?v3=11       # nvisits >= 11
 fil211 f1 fil2?c1=brown&v1=12    # color = "brown" and nvisits = 12
 
+# SELECT *
+star01 f1 star01 
+star02 f1 star02
+
 # Constants
 con101 f1 sesu?skey=3         # 2nd part of ordered index = string constant
 con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
@@ -164,4 +188,15 @@ con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
 # con113   # 2 part primary key = (var, constant) 
 # con114   # 2 part primary key = (constant, var) 
 # con121   # Unique index = (constant, var)
+
+
+# JSONRequest
+json01 JR/f1 ses_list     # GET; 200 
+json02 JR/f1 sesx/3       # GET; 406, because XML is not JSON
+json03 JR/f1 typ5 --data-binary ' { "i":1,"c":5 }'
+json04 JR/f1 typ5?i=1 
+json05 f1 typ5?i=1 -X DELETE  
+json06 JR/f1 typ6 --data-binary ' { "i":2, "j":3, "name":"rasmus"}'
+json07 f1 typ6?i=2&j=3
+json08 f1 typ6?i=2&j=3 -X DELETE
 

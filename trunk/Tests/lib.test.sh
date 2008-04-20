@@ -53,7 +53,9 @@ t.conf() {
 }
   
 t.REM() {       # remove results file
-  rm -i $TESTDIR/results/$1*
+  pushd $TESTDIR > /dev/null
+  ./erase.sh $1
+  popd > /dev/null
 }
 
 t.rec() {      # run test and record results as official
@@ -64,6 +66,6 @@ t.rec() {      # run test and record results as official
 
 t.sql() {
   pushd $TESTDIR > /dev/null
-  awk -f runner.awk -v test=$1 -v mode=sql | $SHELL 
+  awk -f runner.awk -v test=$1 -v mode=sql test.list | $SHELL 
   popd > /dev/null
 } 
