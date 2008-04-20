@@ -1,6 +1,0 @@
-HTTP/1.1 200 OK
-Content-Length: 16
-ETag: 2742d67bc11c45459c2d81b0abfb0ad1
-Content-Type: text/plain
-
- { "a":"blue" }

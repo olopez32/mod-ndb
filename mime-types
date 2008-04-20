@@ -2,11 +2,13 @@
 # because some httpd servers will have a hardcoded path to conf/mime.types
 # which must be overridden
 
-application/x-httpd-php .php
-text/html		.html
-image/gif		.gif
-image/jpeg		.jpeg
+application/x-httpd-php php
+text/html		html
+image/gif		gif
+image/jpeg		jpeg
 text/json
 application/json
+application/javascript	js
+
 
 

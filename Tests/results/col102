@@ -1,6 +1,0 @@
-HTTP/1.1 200 OK
-Content-Length: 16
-ETag: a54956f01845d22281926bfe6c4f675e
-Content-Type: text/plain
-
- { "a":"cyan" }

@@ -1,4 +1,4 @@
-/*  customized for mod_ndb */
+/* JSON Scanner.frame customized by jdd for mod_ndb  */
 
 
 /*----------------------------------------------------------------------
@@ -33,25 +33,20 @@ Coco/R itself) does not fall under the GNU General Public License.
 #if !defined(COCO_SCANNER_H__)
 #define COCO_SCANNER_H__
 
-#include "httpd.h"
-#include "http_config.h"
-#include "mod_ndb_compat.h"
-
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
+#include <assert.h>
 
 #if _MSC_VER >= 1400
 #define coco_swprintf swprintf_s
 #elif _MSC_VER >= 1300
 #define coco_swprintf _snwprintf
-#elif defined __GNUC__
-#define coco_swprintf swprintf
 #else 
-#error unknown compiler!
-#endif 
+#define coco_swprintf swprintf
+#endif
 
 #define COCO_WCHAR_MAX 65535
 #define MAX_BUFFER_LENGTH (64*1024)
@@ -80,9 +75,6 @@ wchar_t* coco_string_create(const char *value);
 char* coco_string_create_char(const wchar_t *value);
 void  coco_string_delete(char* &data);
 
-// Added for mod_ndb
-char* coco_create_apache_string(ap_pool *, const wchar_t *);
-
 
 -->namespace_open
 
@@ -95,6 +87,8 @@ public:
 	int line;     // token line (starting at 1)
 	wchar_t* val; // token value
 	Token *next;  // ML 2005-03-11 Peek tokens are kept in linked list
+        
+        int len;      // JSON / mod_ndb
 
 	Token();
 	~Token();
@@ -127,11 +121,6 @@ public:
 	virtual void SetPos(int value);
 };
 
-class UTF8Buffer : public Buffer {
-public:
-	UTF8Buffer(Buffer *b) : Buffer(b) {};
-	virtual int Read();
-};
 
 //-----------------------------------------------------------------------------------
 // StartStates  -- maps charactes to start states of tokens
@@ -475,14 +464,6 @@ char* coco_string_create_char(const wchar_t *value) {
 	return res;
 }
 
-char* coco_create_apache_string(ap_pool *my_pool, const wchar_t *value) {
-	int len = coco_string_length(value);
-	char *res = (char *) ap_pcalloc(my_pool, len + 1);
-	for (int i = 0; i < len; ++i) { res[i] = (char) value[i]; }
-	return res;
-}
-
-
 void coco_string_delete(char* &data) {
 	delete [] data;
 	data = NULL;
@@ -506,14 +487,8 @@ Token::~Token() {
 
 
 Buffer::Buffer(FILE* s, bool isUserStream) {
-	stream = s; this->isUserStream = isUserStream;
-	fseek(s, 0, SEEK_END);
-	fileLen = bufLen = ftell(s);
-	fseek(s, 0, SEEK_SET);
-	buf = new char[MAX_BUFFER_LENGTH];
-	bufStart = INT_MAX; // nothing in the buffer so far
-	SetPos(0);          // setup  buffer to position 0 (start)
-	if (bufLen == fileLen) Close();
+        /* JSON/mod_ndb: we don't use this kind of buffer */
+        assert(0);
 }
 
 Buffer::Buffer(Buffer *b) {
@@ -529,8 +504,8 @@ Buffer::Buffer(Buffer *b) {
 }
 
 Buffer::Buffer(const char* buf, int len) {
-	this->buf = new char[len];
-	memcpy(this->buf, buf, len*sizeof(char));
+        /* JSON/mod_ndb: no need to copy */        
+        this->buf = (char *) buf;
 	bufStart = 0;
 	bufLen = len;
 	fileLen = len;
@@ -540,10 +515,6 @@ Buffer::Buffer(const char* buf, int len) {
 
 Buffer::~Buffer() {
 	Close(); 
-	if (buf != NULL) {
-		delete [] buf;
-		buf = NULL;
-	}
 }
 
 void Buffer::Close() {
@@ -599,57 +570,19 @@ void Buffer::SetPos(int value) {
 	}
 }
 
-int UTF8Buffer::Read() {
-	int ch;
-	do {
-		ch = Buffer::Read();
-		// until we find a uft8 start (0xxxxxxx or 11xxxxxx)
-	} while ((ch >= 128) && ((ch & 0xC0) != 0xC0) && (ch != EOF));
-	if (ch < 128 || ch == EOF) {
-		// nothing to do, first 127 chars are the same in ascii and utf8
-		// 0xxxxxxx or end of file character
-	} else if ((ch & 0xF0) == 0xF0) {
-		// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-		int c1 = ch & 0x07; ch = Buffer::Read();
-		int c2 = ch & 0x3F; ch = Buffer::Read();
-		int c3 = ch & 0x3F; ch = Buffer::Read();
-		int c4 = ch & 0x3F;
-		ch = (((((c1 << 6) | c2) << 6) | c3) << 6) | c4;
-	} else if ((ch & 0xE0) == 0xE0) {
-		// 1110xxxx 10xxxxxx 10xxxxxx
-		int c1 = ch & 0x0F; ch = Buffer::Read();
-		int c2 = ch & 0x3F; ch = Buffer::Read();
-		int c3 = ch & 0x3F;
-		ch = (((c1 << 6) | c2) << 6) | c3;
-	} else if ((ch & 0xC0) == 0xC0) {
-		// 110xxxxx 10xxxxxx
-		int c1 = ch & 0x1F; ch = Buffer::Read();
-		int c2 = ch & 0x3F;
-		ch = (c1 << 6) | c2;
-	}
-	return ch;
-}
-
 Scanner::Scanner(const char* buf, int len) {
 	buffer = new Buffer(buf, len);
 	Init();
 }
 
 Scanner::Scanner(const wchar_t* fileName) {
-	FILE* stream;
-	char *chFileName = coco_string_create_char(fileName);
-	if ((stream = fopen(chFileName, "rb")) == NULL) {
-		wprintf(L"--- Cannot open file %ls\n", fileName);
-		exit(1);
-	}
-	coco_string_delete(chFileName);
-	buffer = new Buffer(stream, false);
-	Init();
+        /* JSON/mod_ndb: we don't use this */
+        assert(0);
 }
 	
 Scanner::Scanner(FILE* s) {
-	buffer = new Buffer(s, true);
-	Init();
+        /* JSON/mod_ndb: we don't use this */
+        assert(0);
 }
 
 Scanner::~Scanner() {
@@ -686,18 +619,6 @@ void Scanner::Init() {
 	pos = -1; line = 1; col = 0;
 	oldEols = 0;
 	NextCh();
-	if (ch == 0xEF) { // check optional byte order mark for UTF-8
-		NextCh(); int ch1 = ch;
-		NextCh(); int ch2 = ch;
-		if (ch1 != 0xBB || ch2 != 0xBF) {
-			wprintf(L"Illegal byte order mark at start of file");
-			exit(1);
-		}
-		Buffer *oldBuf = buffer;
-		buffer = new UTF8Buffer(buffer); col = 0;
-		delete oldBuf; oldBuf = NULL;
-		NextCh();
-	}
 
 -->initialization
 	pt = tokens = CreateToken(); // first token is a dummy
@@ -774,6 +695,7 @@ void Scanner::AppendVal(Token *t) {
 	heapTop = (void*) ((char*) heapTop + reqMem);
 
 	wcsncpy(t->val, tval, tlen);
+        t->len = tlen;
 	t->val[tlen] = L'\0';
 }
 

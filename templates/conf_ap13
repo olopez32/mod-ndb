@@ -16,7 +16,6 @@ LoadModule ndb_module         mod_ndb.so
 #-Other-Modules
 
 DefaultType text/plain
-AddType application/x-httpd-php .php
 TypesConfig mime-types
 
 PidFile "logs/httpd.pid"

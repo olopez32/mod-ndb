@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* Globals */
 const char *escape_leaning_toothpicks[256];
 const char *escape_xml_entities[256];
-table *global_format_names = 0;
+apr_table_t *global_format_names = 0;
 apache_array<struct output_format *> *global_output_formats = 0;
 
 extern Node the_null_node;  /* from format_compiler.cc */
@@ -112,6 +112,7 @@ void register_built_in_formatters(ap_pool *p) {
   /* Define the internal JSON format */
   json_format->flag.is_internal  = 1;
   json_format->flag.can_override = 1;
+  json_format->flag.is_JSON      = 1;
   
   MainLoop *Main = new(p) MainLoop("$scan$\n");
   json_format->symbol("_main", p, Main);
@@ -150,21 +151,30 @@ void register_built_in_formatters(ap_pool *p) {
 }
 
 
+/* Results_raw() uses a special optimization for getting a single blob.
+   Initialize a buffer (which happens to also be a result_buffer) big enough
+   for the blob, and call NdbBlob::readData() to read the blob directly into
+   it.
+*/
 int Results_raw(request_rec *r, data_operation *data, 
                 result_buffer &res) {
   unsigned long long size64 = 0;
   unsigned int size;
   
-  if(data->blob) {
-    data->blob->getLength(size64);  //passed by reference
+  if(data->blobs[0]) {
+    data->blobs[0]->getLength(size64);  //passed by reference
     size = (unsigned int) size64;
     res.init(r, size);
-    if(data->blob->readData(res.buff, size)) 
+    if(data->blobs[0]->readData(res.buff, size)) 
       log_debug(r->server,"Error reading blob data: %s",
-                data->blob->getNdbError().message);
+                data->blobs[0]->getNdbError().message);
     res.sz = size;
+    return OK;
   }
-  return OK;
+  else {
+    log_err(r->server, "Cannot use raw output format at %s", r->uri);
+    return 500;
+  }
 }
 
 
@@ -186,18 +196,22 @@ void Cell::out(struct data_operation *data, result_buffer &res) {
   if(elem_type == const_string) 
     return this->out(res);
   if(i > data->n_result_cols) return; //error?
-  const NdbRecAttr &rec = *data->result_cols[i-1]; 
-  char *col_name = data->aliases[i-1];
-  this->out(col_name, rec, res);
+  this->out(data, i-1, res);
   return;
 }
 
-void Cell::out(char *col_name, const NdbRecAttr &rec, result_buffer &res) {
+
+void Cell::out(data_operation *data, unsigned int n, result_buffer &res) {
   if(elem_type == const_string) {
     res.out(len, string);
     return;
   }
-  
+
+  const NdbRecAttr &rec = *data->result_cols[n];
+  const char *col_name = data->flag.select_star ? 
+    rec.getColumn()->getName() : data->aliases[n] ;
+  NdbBlob *blob = data->flag.has_blob ? data->blobs[n] : 0;
+    
   NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
   switch(elem_type) {
     case item_name:
@@ -219,10 +233,10 @@ void Cell::out(char *col_name, const NdbRecAttr &rec, result_buffer &res) {
               ))) {
         /* Quoted Value */
         res.out(1,"\"");
-        MySQL::result(res, rec, escapes);
+        MySQL::result(res, rec, blob, escapes);
         res.out(1,"\"");            
       }
-      else MySQL::result(res, rec, escapes);  /* No Quotes */
+      else MySQL::result(res, rec, blob, escapes);  /* No Quotes */
       break;
     default:
       assert(0);      
@@ -230,9 +244,10 @@ void Cell::out(char *col_name, const NdbRecAttr &rec, result_buffer &res) {
 }
 
 
-void RecAttr::out(char *col, const NdbRecAttr &rec, result_buffer &res) {
+void RecAttr::out(data_operation *data, unsigned int n, result_buffer &res) {
+  const NdbRecAttr &rec = *data->result_cols[n];
   for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
-    c->out(col, rec, res);
+    c->out(data, n, res);
 }
 
 
@@ -270,9 +285,7 @@ int RowLoop::Run(data_operation *data, result_buffer &res) {
   begin->chain_out(data, res);
   for(unsigned int n = 0; n < data->n_result_cols ; n++) {
     if(n) res.out(*sep);
-    const NdbRecAttr &rec = *data->result_cols[n];
-    char *col_alias = data->aliases[n];
-    core->out(col_alias, rec, res);
+    core->out(data, n, res);
   }
   end->chain_out(data, res);
   return OK;

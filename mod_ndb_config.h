@@ -83,6 +83,7 @@ namespace config {
     
   /* Apache per-directory configuration */
   struct dir {
+    char *path;
     char *database;
     char *table;
     int pathinfo_size;
@@ -96,6 +97,8 @@ namespace config {
       unsigned table_scan       : 1;
       unsigned use_etags        : 1;
       unsigned allow_delete     : 1;
+      unsigned select_star      : 1;
+      unsigned is_resolved      : 1; // basic optimizer has run 
     } flag;
     struct index *index_scan;
     apache_array<char*> *visible;

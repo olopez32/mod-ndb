@@ -29,5 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define DEFAULT_MAX_RETRY_MS        50
 #define DEFAULT_FORCE_RESTART       0
 
+#define MAX_ENDPOINTS 500
+
 /* Release Number */
-#define REVISION "1.0.0-rc"
+#define REVISION "1.1-beta"

@@ -1,4 +1,5 @@
-/* Parser.frame customized by jdd for mod_ndb */
+/* JSON Parser.frame customized by jdd for mod_ndb */
+
 
 /*-------------------------------------------------------------------------
 Compiler Generator Coco/R,
@@ -36,6 +37,8 @@ Coco/R itself) does not fall under the GNU General Public License.
 -->headerdef
 
 #include "Scanner.h"
+char *JSON_string(ap_pool *, JSON::Token *);
+
 
 -->namespace_open
 
@@ -45,11 +48,10 @@ public:
 
 	Errors();
 	void SynErr(int line, int col, int n);
-	void Error(int line, int col, const char *s);
+	void Error(int line, int col, const wchar_t *s);
 	void Warning(int line, int col, const wchar_t *s);
 	void Warning(const wchar_t *s);
 	void Exception(const wchar_t *s);
-        server_rec *http_server;
 
 }; // Errors
 
@@ -78,7 +80,7 @@ public:
 
 	Parser(Scanner *scanner);
 	~Parser();
-	void SemErr(const char *msg);
+	void SemErr(const wchar_t* msg);
 
 -->productionsheader
 	void Parse();
@@ -131,7 +133,7 @@ void Parser::SynErr(int n) {
 	errDist = 0;
 }
 
-void Parser::SemErr(const char* msg) {
+void Parser::SemErr(const wchar_t* msg) {
 	if (errDist >= minErrDist) errors->Error(t->line, t->col, msg);
 	errDist = 0;
 }
@@ -188,6 +190,7 @@ void Parser::Parse() {
 	la->val = coco_string_create(L"Dummy Token");
 	Get();
 -->parseRoot
+	Expect(0);
 }
 
 Parser::Parser(Scanner *scanner) {
@@ -217,6 +220,10 @@ Errors::Errors() {
 }
 
 void Errors::SynErr(int line, int col, int n) {
+        // In mod_ndb we do not remark upon client's JSON errors
+        count++;
+        return;
+        
 	wchar_t* s;
 	switch (n) {
 -->errors
@@ -228,25 +235,19 @@ void Errors::SynErr(int line, int col, int n) {
 		}
 		break;
 	}
-
-        char *cstring = coco_string_create_char(s);
-        log_err(http_server,"[Col %d] %s", col, cstring);
+	wprintf(L"-- line %d col %d: %ls\n", line, col, s);
 	coco_string_delete(s);
-        delete cstring;
 	count++;
 }
 
-void Errors::Error(int line, int col, const char *s) {
-        log_err(http_server,"[Col %d] %s", col, s);
+void Errors::Error(int line, int col, const wchar_t *s) {
 	count++;
 }
 
 void Errors::Warning(int line, int col, const wchar_t *s) {
-	wprintf(L"-- line %d col %d: %ls\n", line, col, s);
 }
 
 void Errors::Warning(const wchar_t *s) {
-	wprintf(L"%ls\n", s);
 }
 
 void Errors::Exception(const wchar_t* s) {

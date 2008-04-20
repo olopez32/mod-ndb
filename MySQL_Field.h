@@ -74,8 +74,8 @@ struct mvalue {
 typedef struct mvalue mvalue;
 
 namespace MySQL { 
-  void result(result_buffer &, const NdbRecAttr &, const char **);
-  void  value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
+  void result(result_buffer &, const NdbRecAttr &, NdbBlob *, const char **);
+  void value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
 };
 
 /* --------------------------------------------------------------------

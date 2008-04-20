@@ -97,7 +97,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 
   /* Set name that appears in the cluster log file */
   c->connection->set_name(ap_psprintf(p, "Apache mod_ndb %s/%d",
-                                      s->server_hostname, getpid()));
+                                      s->server_hostname, (int) getpid()));
     
   // To do: arguments to connect() ???
   if (c->connection->connect()) {
@@ -117,7 +117,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   c->connected=1;
   ap_log_error(APLOG_MARK, log::err, s, 
                "PID %d: mod_ndb (r%s) connected to NDB Cluster as node %d", 
-               getpid(), REVISION, c->connection->node_id());
+               (int) getpid(), REVISION, c->connection->node_id());
   log_debug(s,"*--  %s --*","DEBUGGING ENABLED");
 
   /* In multi-threaded apache 2 this might be configurable */
@@ -180,11 +180,9 @@ ndb_instance *my_instance(request_rec *r) {
 }
 
 
-void module_must_restart(config::srv *conf) {
-  if(conf->force_restart) {
-    if(! will_restart++)  /* this is a semaphore */
-      kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
-  }
+void module_must_restart() {
+  if(! will_restart++)  /* this is a semaphore */
+    kill(getppid(), SIGUSR1);  /* Tells parent apache to restart gracefully */
 }
 
 
