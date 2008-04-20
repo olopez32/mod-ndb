@@ -86,6 +86,18 @@ void result_buffer::out(const char *fmt, ... ) {
 }
 
 
+void result_buffer::read_blob(NdbBlob *blob) {
+  unsigned long long size64 = 0;
+
+  blob->getLength(size64);
+  unsigned int size = (unsigned int) size64;
+
+  prepare(size);
+  blob->readData((void *) (buff + sz), size);
+  sz += size;
+}
+
+
 result_buffer::~result_buffer() {
   if(buff) free(buff);
 }

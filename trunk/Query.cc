@@ -17,6 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 #include "ndb_api_compat.h"
+#include "query_source.h"
 
 /* There are many varieties of query: 
    read, insert, update, and delete (e.g. HTTP GET, POST, and DELETE);
@@ -62,7 +63,7 @@ struct QueryItems {
   AccessPlan plan;
   PlanMethod *op_setup;
   PlanMethod *op_action;
-  table *form_data;
+  apr_table_t *form_data;
   mvalue *set_vals;
   data_operation *data;
 };  
@@ -173,7 +174,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 /* Query():
    Process an HTTP request, then formulate and run an NDB execution plan.
 */
-int Query(request_rec *r, config::dir *dir, ndb_instance *i) 
+int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsource) 
 {
   const NdbDictionary::Dictionary *dict;
   data_operation local_data_op = { 0, 0, 0, 0, 0, 0};
@@ -189,12 +190,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
-  bool keep_tx_open = false;
   int response_code = 0;
   mvalue mval;
   short col;
-  int req_method = r->method_number;
-  const char *subrequest_data = 0;
   register const char * idxname;
   
   // Initialize all four of these, but only one will be needed: 
@@ -219,25 +217,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   q->keys = (runtime_col *) ap_pcalloc(r->pool, 
            (dir->key_columns->size() * sizeof(runtime_col)));
 
-  /* Is this request an Apache sub-request? 
-  */
-  if(r->main) {
-    keep_tx_open = true;
-    const char *note = ap_table_get(r->main->notes,"ndb_request_method");
-    if(note) {
-      if(!strcmp(note,"POST")) req_method = M_POST;
-      else if(!strcmp(note,"DELETE")) req_method = M_DELETE;
-      ap_table_unset(r->main->notes,"ndb_request_method");
-    }
-    subrequest_data = ap_table_get(r->main->notes,"ndb_request_data");
-  }
-  
+    
   /* Many elements of the query plan depend on the HTTP operation --
      GET, POST, or DELETE.  Set these up here.
   */
-  switch(req_method) {
+  switch(qsource.req_method) {
     case M_GET:
-      /* Write requests use the local data_operations structure (which is 
+      /* Write requests use the local data_operation structure (which is 
          discarded after the request), but read requests use one that is 
          stored in the ndb_instance, so that we can be access it after the
          batch of transactions is executed and fetch the results.
@@ -246,8 +232,13 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
         q->data = i->data + i->n_read_ops++;
         if(dir->flag.use_etags) i->flag.use_etag = 1;
         q->data->fmt = dir->fmt;
-        q->data->n_result_cols = dir->visible->size();
-        q->data->aliases = dir->aliases->items();
+        q->data->flag.select_star = dir->flag.select_star;
+        if(dir->flag.select_star)
+          q->data->n_result_cols = q->tab->getNoOfColumns();
+        else {
+          q->data->n_result_cols = dir->visible->size();
+          q->data->aliases = dir->aliases->items();
+        }
       }
       else {  /* too many read ops.  
         This error can only be fixed be reconfiguring & restarting Apache. */
@@ -262,32 +253,17 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
       // from r->connection->pool, not r->pool
       q->data->result_cols =  (const NdbRecAttr**)
         ap_pcalloc(r->connection->pool, 
-                   dir->visible->size() * sizeof(NdbRecAttr *));
+                   q->data->n_result_cols * sizeof(NdbRecAttr *));
       break;
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
       Q.op_action = Plan::Write;
-      Q.form_data = 0;
+      Q.form_data = ap_make_table(r->pool, 6);
       Q.set_vals = (mvalue *) ap_pcalloc(r->pool, dir->updatable->size() * sizeof (mvalue));
-      if(r->main && subrequest_data) {
-        /* The POST data is in the "ndb_request_data" note. */
-        Q.form_data = ap_make_table(r->pool, 4);
-        register const char *c = subrequest_data;
-        char *key, *val;
-        while(*c && (val = ap_getword(r->pool, &c, '&'))) {
-          key = ap_getword(r->pool, (const char **) &val, '=');
-          ap_unescape_url(key);
-          ap_unescape_url(val);
-          ap_table_merge(Q.form_data, key, val);
-        }
-        ap_table_unset(r->main->notes,"ndb_request_data");
-      }
-      else {
-        /* Fetch the update request from the client */
-        response_code = read_http_post(r, & Q.form_data);
-        if(response_code != OK) return response_code;
-      }
-      /* An INSERT has a primary key plan: */
+      response_code = qsource.get_form_data(& Q.form_data);
+      if(response_code != OK) return response_code;
+      /* A POST with no keys is an insert, and  
+         an insert has a primary key plan: */
       if(! (r->args || dir->pathinfo_size)) {
         Q.plan = PrimaryKey;
         Q.op_setup = Plan::SetupInsert;
@@ -522,13 +498,20 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
     } /*for*/                  
     filter.end();
   }
+  
+  // Check whether this is a JSONRequest
+  if(qsource.content_type && 
+     ! strcasecmp(qsource.content_type, "application/jsonrequest")) {
+      log_debug(r->server, "This is a JSONRequest.");
+      i->flag.jsonrequest = 1;
+  }
 
   // Perform the action; i.e. get the value of each column
   if(Q.op_action(r, dir, &Q)) {
     response_code = 404;
     goto abort1;
   }
-  if(keep_tx_open) 
+  if(qsource.keep_tx_open) 
     return OK;
   else
     return ExecuteAll(r, i);
@@ -542,7 +525,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
   log_debug(r->server,"Aborting open transaction at '%s'",r->unparsed_uri);
   if(! response_code) response_code = 500;
   i->tx = 0;  // every other op in the tx will see this and fail
-  if(keep_tx_open)
+  if(qsource.keep_tx_open)
     i->flag.aborted = 1;  // this will only trigger the msg on line 356.  what is the point?
   else
     i->cleanup();
@@ -557,21 +540,30 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i)
 
 
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
-  char **column_list;
+  char **column_list = dir->visible->items();;
+  const NdbDictionary::Column *col;
+  unsigned int n = 0;
+  const int select_star = dir->flag.select_star;
 
   // Call op->getValue() for each desired result column
-  column_list = dir->visible->items();
-  for(int n = 0; n < dir->visible->size() ; n++) {
-    q->data->result_cols[n] = q->data->op->getValue(column_list[n], 0);
+  for( ; n < q->data->n_result_cols ; n++) {
+    col = select_star ? 
+      q->tab->getColumn(n) : q->tab->getColumn(column_list[n]);
+    q->data->result_cols[n] = q->data->op->getValue(col, 0);
 
-    /* If the result format is "raw", check for BLOBs */
-    if(dir->fmt->flag.is_raw) {
-      int isz = q->tab->getColumn(column_list[n])->getInlineSize();
-      if(isz) {   /* then the column is a blob... */
-        log_debug(r->server,"Treating column %s as a blob",column_list[n])
-        q->data->blob = q->data->op->getBlobHandle(column_list[n]);
-        q->i->flag.has_blob = 1;
-      }
+    /* BLOB handling */
+    if((col->getType() == NdbDictionary::Column::Blob) ||
+       (col->getType() == NdbDictionary::Column::Text)) {
+          if(! q->data->flag.has_blob) 
+            q->data->blobs = (NdbBlob **) 
+               ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
+          
+          q->data->flag.has_blob = 1;
+          q->i->flag.has_blob = 1;
+          if(col->getInlineSize()) 
+            q->data->blobs[n] = select_star ? 
+              q->data->op->getBlobHandle(n) : 
+              q->data->op->getBlobHandle(column_list[n]);
     }
   }
   return 0;

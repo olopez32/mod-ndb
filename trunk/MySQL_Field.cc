@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 MySQL AB
+/* Copyright (C) 2007 MySQL AB
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -52,11 +52,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 namespace MySQL {
   /* Prototypes of private functions implemented here: */
-  void field_to_tm(MYSQL_TIME *tm, const NdbRecAttr &rec);
-  void Decimal(result_buffer &rbuf, const NdbRecAttr &rec);
-  void String(result_buffer &rbuf, const NdbRecAttr &rec, 
-              enum ndb_string_packing packing, const char **escapes); 
+  void field_to_tm(MYSQL_TIME *, const NdbRecAttr &);
+  void Decimal(result_buffer &, const NdbRecAttr &);
+  void String(result_buffer &, const NdbRecAttr &, 
+              enum ndb_string_packing, const char **); 
+  void Text(result_buffer &, NdbBlob *, const char **);
 }
+void escape_string(char *, unsigned, result_buffer &, const char **);
 
 inline void factor_HHMMSS(MYSQL_TIME *tm, int int_time) {
   if(int_time < 0) {
@@ -113,6 +115,7 @@ void MySQL::Decimal(result_buffer &rbuf, const NdbRecAttr &rec) {
   return;
 }  
 
+
 void result_buffer::out(decimal_t *decimal) {
   int to_len = decimal_string_size(decimal);
   this->prepare(to_len);
@@ -121,7 +124,7 @@ void result_buffer::out(decimal_t *decimal) {
 }
 
 
-void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
+void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec, NdbBlob *blob,
                    const char **escapes) {
   MYSQL_TIME tm;
 
@@ -196,14 +199,63 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec,
     case NdbDictionary::Column::Decimalunsigned:
       return MySQL::Decimal(rbuf,rec);
 
-    case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Text:
+      if(escapes) return MySQL::Text(rbuf, blob, escapes);
+      return rbuf.read_blob(blob);
+      
     case NdbDictionary::Column::Blob:
+      if(escapes) return rbuf.out("++ CANNOT ESCAPE BLOB ++");
+      return rbuf.read_blob(blob);
+  
+    case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
     default:
       return;
   
+  }
+}
+
+
+void MySQL::Text(result_buffer &rbuf, NdbBlob *blob, const char **escapes) {
+  unsigned long long size64 = 0;
+  
+  blob->getLength(size64);
+  unsigned int size = (unsigned int) size64;
+
+  char *read_buff = (char *) malloc(size);
+  blob->readData(read_buff, size);  
+  
+  escape_string(read_buff, size, rbuf, escapes);
+  free(read_buff);
+}
+
+
+void escape_string(char *ref, unsigned sz, result_buffer &rbuf, 
+                   const char **escapes) {
+  size_t escaped_size = 0;
+  
+  /* How long will the string be when it is escaped? */
+  for(unsigned int i = 0; i < sz ; i++) {
+    const char *esc = escapes[ref[i]];
+    if(esc) escaped_size += esc[0];
+    else escaped_size++;
+  }
+  
+  /* Prepare the buffer.  This returns false only after a malloc error. */
+  if(!rbuf.prepare(escaped_size)) return;
+  
+  /* Now copy the string from NDB into the result buffer,
+    encoded appropriately according to the escapes 
+    */
+  for(unsigned int i = 0; i < sz ; i++) {
+    const unsigned char c = ref[i];
+    const char *esc = escapes[c];
+    if(esc) {
+      for(char j = 1 ; j <= esc[0]; j++) 
+        rbuf.putc(esc[j]);
+    }
+    else rbuf.putc(c);
   }
 }
 
@@ -242,33 +294,9 @@ void MySQL::String(result_buffer &rbuf, const NdbRecAttr &rec,
     else break;
   }
   
-  if(escapes) {
-    size_t escaped_size = 0;
-
-    /* How long will the string be when it is escaped? */
-    for(unsigned int i = 0; i < sz ; i++) {
-      const char *esc = escapes[ref[i]];
-      if(esc) escaped_size += esc[0];
-      else escaped_size++;
-    }
-    
-    /* Prepare the buffer.  This returns false only after a malloc error. */
-    if(!rbuf.prepare(escaped_size)) return;
-
-    /* Now copy the string from NDB into the result buffer,
-       encoded appropriately according to the escapes 
-     */
-    for(unsigned int i = 0; i < sz ; i++) {
-      const unsigned char c = ref[i];
-      const char *esc = escapes[c];
-      if(esc) {
-        for(char j = 1 ; j <= esc[0]; j++) 
-          rbuf.putc(esc[j]);
-      }
-      else rbuf.putc(c);
-    }
-  }
-  else                /* alternate code path -- no escapes */   
+  if(escapes) 
+    escape_string(ref, sz, rbuf, escapes);
+  else 
     rbuf.out(sz, ref);
 }
 

@@ -109,11 +109,15 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 struct data_operation {
   NdbOperation *op;
   NdbIndexScanOperation *scanop;
-  NdbBlob *blob;
   unsigned int n_result_cols;
   const NdbRecAttr **result_cols;
+  NdbBlob **blobs;
   char **aliases;
   output_format *fmt;
+  struct {
+    unsigned int has_blob    : 1;
+    unsigned int select_star : 1;
+  } flag;
 };
 
 
@@ -130,18 +134,20 @@ class ndb_instance {
   config::srv *server_config;
   struct data_operation *data;
   struct {
-    unsigned int has_blob : 1 ;
-    unsigned int aborted  : 1 ;
-    unsigned int use_etag : 1 ;
+    unsigned int has_blob    : 1 ;
+    unsigned int aborted     : 1 ;
+    unsigned int use_etag    : 1 ;
+    unsigned int jsonrequest : 1 ;
   } flag;
   unsigned int requests;
   unsigned int errors;
   void cleanup() {
     bzero(data, n_read_ops * sizeof(struct data_operation));
-    n_read_ops = 0;
-    flag.has_blob = 0;
-    flag.aborted = 0;
-    flag.use_etag = 0;
+    n_read_ops    =    0;
+    flag.has_blob =    0;
+    flag.aborted  =    0;
+    flag.use_etag =    0;
+    flag.jsonrequest = 0;
   }
 };
 // typedef struct mod_ndb_instance ndb_instance;
@@ -176,10 +182,9 @@ ndb_instance *my_instance(request_rec *r);
 void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, ap_pool *);
 Ndb * init_instance(ndb_connection *, ndb_instance *, config::srv *, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
-table *http_param_table(request_rec *r, const char *c);
-int Query(request_rec *, config::dir *, ndb_instance *);
+apr_table_t *http_param_table(request_rec *r, const char *c);
 int ExecuteAll(request_rec *, ndb_instance *);
-int read_http_post(request_rec *r, table **tab);
+int read_request_body(request_rec *, apr_table_t **, const char *);
 void initialize_output_formats(ap_pool *);
 char *register_format(ap_pool *, output_format *);
 output_format *get_format_by_name(const char *);
@@ -188,3 +193,6 @@ int build_results(request_rec *, data_operation *, result_buffer &);
 int ndb_handle_error(request_rec *, int, const NdbError *, const char *);
 const char * allowed_methods(request_rec *, config::dir *);
 void module_must_restart(void);
+
+extern "C" int cmp_swap_int(int *, int, int);
+extern "C" int cmp_swap_ptr(void *, void *, void *);

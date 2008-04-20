@@ -1,11 +1,13 @@
 #!/bin/sh
 
 APXS=`which apxs`
-APXS1=`which apxs`
 MYSQLCFG=`which mysql_config`
 GET_LIBS='--libs'
 CONFIG_CMD="$0 $@"
+CXX=g++
 OPT='-O3'
+HELPER=0
+dso_cc_fl=-fPIC
 
 usage() {
   echo
@@ -20,27 +22,35 @@ usage() {
   echo "Options:  "
   echo "       --apxs1=/path/to/apache13/apxs"
   echo "       --aprconfig=/path/to/apr-config"
+  echo "       --linkopt='DSO linker options'"
   echo "       --thread-safe"
   echo "       --debug"
+  echo "       --helper"
+  echo "       --sun-cc"
 }
 
 long_help() {
   echo 
-  echo "To build an Apache 2 module, you must use apxs from *both* apache 1.3 and 2:"
-  echo "  $0 --apxs=/apache/2/apxs --apxs1=/apache/1.3/apxs "
-  echo
-  echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS --apxs1=$APXS"
+  echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS"
   echo 
-  echo "Use --thread-safe if you have a thread-safe mysql client library."
-  echo "If your apr is installed outside of apache2, use --aprconfig."
+  echo "Use: "
+  echo  
+  echo "    --aprconfig if your APR is installed outside of apache2."
   echo
-  echo "Use --debug to compile with '-g -O0', and enable debug log "
-  echo "messages; otherwise compile with '-O3'."
+  echo "    --thread-safe if you have a thread-safe mysql client library."
+  echo 
+  echo "    --debug to compile with '-g -O0', and enable debug log "
+  echo "      messages; otherwise compile with '-O3'."
+  echo 
+  echo "    --sun-cc to compile using Sun C++ compiler rather than g++"
+  echo "      (requires mysql and apache to also be built with Sun CC)"
+  echo 
+  echo "    --helper to link with libndbhelper."
   echo 
 }
 
 fail() { 
- echo ; echo "Error: $1" ; echo ; exit 1
+ echo ; echo "Error: $@" ; echo ; exit 1
 }
 
 while test $# != 0
@@ -56,11 +66,12 @@ do
     shift
     ;;
   esac
-  
+     
   case $conf_option in 
     --debug)
       OPT='-g -O0'
       DEFINE='-DMOD_NDB_DEBUG=1'
+      opt_debug="1"
       ;;
     --mysql)
       MYSQLCFG=$conf_arg
@@ -71,12 +82,23 @@ do
     --apxs1)
       APXS1=$conf_arg
       ;;
+    --linkopt)
+      dso_ld_fl=$conf_arg
+      ;;
     --thread-safe)
       GET_LIBS='--libs_r'
       ;;
     --aprconfig)
       APRCONFIG=$conf_arg
       test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
+      ;;
+    --helper)
+      HELPER=1
+      ;;
+    --sun-cc) 
+      CXX="CC"
+      dso_cc_fl="-KPIC"
+      dso_ld_fl="-G -lCrun -R $LDSO_PATH"
       ;;
     --help)
       usage
@@ -93,6 +115,8 @@ done
 ## including the "grep" that understands the "-q" option.
 test -d /usr/xpg4/bin && PATH=/usr/xpg4/bin:$PATH
 
+test -z "$APXS" && fail "Cannot configure without apxs."
+
 ## Check the Apache version
 HTTPD="`$APXS -q SBINDIR`/`$APXS -q TARGET`"
 START_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf"
@@ -102,6 +126,7 @@ if $HTTPD -v | grep -q "Apache/1.3"
   echo "Using Apache 1.3"
   MOD_SOURCE=mod_ndb_ap13.cc
   APACHE_VER=ap13
+  [ "$opt_debug" -eq 1 ] && START_APACHE="$START_APACHE -X"
   STOP_APACHE='kill `cat logs/httpd.pid`'
   RESTART_APACHE='kill -HUP `cat logs/httpd.pid`'
   APXS1=$APXS
@@ -121,20 +146,16 @@ fi
 echo
 
 echo "Configuring with"
-echo "    apxs =         " $APXS 
-echo "    apxs 1.3 =     " $APXS1
 echo "    mysql_config = " $MYSQLCFG 
+echo "    apxs         = " $APXS 
+[ -n "$APXS1" ]     && echo "    apxs 1.3 =     " $APXS1
 [ -n "$APRCONFIG" ] && echo "    apr-config =   " $APRCONFIG
-echo "    libs         = " $GET_LIBS
+[ $HELPER -eq 1 ]   && echo "    Using ndbhelper library"
 echo
 
 if [ ! -x "$APXS" ]
  then 
   fail "Error: apxs path is not valid."
-fi
-if [ ! -x "$APXS1" ]
- then
-   fail "Error: apxs1 path is not valid.  (Apache 1.3 apxs is also required)"
 fi
 if [ ! -x "$MYSQLCFG" ] 
  then
@@ -145,10 +166,38 @@ if [ -x "$APRCONFIG" ]
   APRLD=`$APRCONFIG --ldflags`
   APRINC=`$APRCONFIG --includes`
 fi
- 
+
 MY_INC=`$MYSQLCFG --include`
 MY_LIBS=`$MYSQLCFG $GET_LIBS`
 LDSO_PATH=`$MYSQLCFG --libs | perl -n -e 'if(/-L(\S*)/) { print $1 }'`
+
+if test -n "$APXS1" 
+ then 
+  # For Apache 1.3, get the flags from APXS
+  dso_cc_fl="$dso_cc_fl "`$APXS1 -q CFLAGS`' '`$APXS1 -q CFLAGS_SHLIB` 
+  dso_ld_fl="$dso_ld_fl "`$APXS1 -q LDFLAGS_SHLIB`
+ else 
+  # Platform-specific linker flags
+  case `uname -s` in 
+    Darwin) 
+      # Apple Linker
+      if test -n "$opt_debug" 
+       then
+        dso_ld_fl="-flat_namespace -bundle -undefined warning -bind_at_load"
+       else
+        dso_ld_fl="-flat_namespace -bundle -undefined suppress -bind_at_load"
+      fi
+      ;;
+    SunOS)
+      # Solaris Linker
+      test -z "$dso_ld_fl" && dso_ld_fl="-G -R $LDSO_PATH"
+      ;;
+    *)
+      # Default to the GNU linker
+      dso_ld_fl="-shared"    
+      ;;
+  esac
+fi
 
 if $MYSQLCFG --version | grep -q '^5.1.' 
  then NDB_PATH=storage/ndb 
@@ -185,7 +234,7 @@ echo '/#-Load-Files/r loadfiles_conf'
 echo '#' Makefile for mod_ndb.  Automatically generated from:
 echo '#' $CONFIG_CMD
 echo
-echo CC=g++
+echo CC=$CXX
 echo DEFINE=$DEFINE
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE
@@ -194,15 +243,17 @@ echo
 echo MY_INC1=$MY_INC
 echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
-echo MY_LIBS=$MY_LIBS
-echo MYSQL_LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+if test $HELPER -eq 1 
+ then 
+   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient -lndbhelper"
+ else
+   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+fi
 echo 
 echo OPT=$OPT
 echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
-echo APXS_CFLAGS=`$APXS1 -q CFLAGS`   
-echo APXS_CFLAGS_SHLIB=`$APXS1 -q CFLAGS_SHLIB`   
-echo APXS_LDFLAGS_SHLIB=`$APXS1 -q LDFLAGS_SHLIB`
-echo APXS_LIBS_SHLIB=`$APXS1 -q LIBS_SHLIB`
+echo DSO_CC_FLAGS=$dso_cc_fl
+echo DSO_LD_FLAGS=$dso_ld_fl   
 echo
 echo LDSO_PATH=$LDSO_PATH
 echo TEMPLATE=templates/conf_$APACHE_VER

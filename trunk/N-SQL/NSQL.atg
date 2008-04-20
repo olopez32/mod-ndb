@@ -1,4 +1,4 @@
-#include "mod_ndb.h"
+#include "../mod_ndb.h"
 
 COMPILER NSQL
 
@@ -17,7 +17,7 @@ void build_index(char *idxtype) {
 }
 
 void index_condition()  {
-  const char *cf_err = 0;
+  const char *cf_err;
   if(e.vtype == NSQL::Param) 
     cf_err = config::named_idx(cmd, dir, idxname, &e);
   else if(e.vtype == NSQL::Const)
@@ -49,7 +49,8 @@ IGNORE '\n' + '\r' + '\t'
 
 PRODUCTIONS
   NSQL = (SelectQuery | DeleteQuery | QueryPlan) ";".
-  SelectQuery = "SELECT" Column { "," Column } "FROM" TableSpec [ QueryPlan ].
+  SelectQuery = "SELECT" ("*"                 (. dir->flag.select_star = 1; .)
+    | (Column { "," Column })) "FROM" TableSpec [ QueryPlan ] .
   DeleteQuery = "DELETE" "FROM" TableSpec OneRowWhereClause
                                              (. dir->flag.allow_delete = 1; .) .
   QueryPlan = OneRowWhereClause | Scan .
@@ -58,7 +59,7 @@ PRODUCTIONS
   Scan = "USING"                   (. idxname = "PRIMARY"; is_bounded = 0;  .)
      ("TABLE" "SCAN"               (. dir->flag.table_scan = 1;             .) 
      | IndexScan ["ORDER" Order] ).
-  
+
   Column = Name                   (. char *c_name  = copy_token();          .)
                                   (. char *c_alias = c_name;                .)
    [ "AS" Name                    (. c_alias = copy_token();                .)

@@ -107,7 +107,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   }
  
   /* If an operation involves reading a BLOB, then some special cases apply:
-     - There can only be one operation in the transaction.
+     - There can only be one operation in the transaction. (??)
      - The transaction must be executed "NoCommit" before reading the BLOB
      - BLOBs that are truly binary cannot be returned as Apache notes 
   */
@@ -120,7 +120,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     /* Loop over operations & find BLOBs) */
     for(opn = 0 ; opn < i->n_read_ops ; opn++) {
       struct data_operation *data = i->data + opn ;
-      if(data->blob && data->result_cols) {
+      if(data->flag.has_blob && data->result_cols) {
         response_code = build_results(r, data, my_results);
         if(apache_notes) set_note(r, opn, my_results);
       }
@@ -151,8 +151,10 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Loop over the operations and build the result page */
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
     struct data_operation *data = i->data + opn ;
-    if(data->result_cols && (! data->blob) && data->fmt) {
-      response_code = build_results(r, data, my_results);
+    if(data->result_cols && (! data->flag.has_blob) && data->fmt) {
+      if(i->flag.jsonrequest && (! data->fmt->flag.is_JSON))
+        response_code = 406;  // "406 NOT ACCEPTABLE"
+      else response_code = build_results(r, data, my_results);
       if(apache_notes) set_note(r, opn, my_results);
     }
   }
@@ -165,6 +167,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       ap_set_content_length(r, 0);
       response_code = 204;  // No content
     }
+    
+    // Set response Content-Type for JSONRequest 
+    if(i->flag.jsonrequest) r->content_type = "application/jsonrequest";
     
     // Set ETag
     if(i->flag.use_etag && my_results.buff) {

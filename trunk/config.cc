@@ -15,8 +15,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
-#include "Parser.h"
+#include "N-SQL/Parser.h"
 
+config::dir *all_endpoints[MAX_ENDPOINTS];
+int n_endp = 0;
 
 /* These operators correspond to the items in NdbScanFilter::BinaryCondition 
 */
@@ -78,6 +80,7 @@ namespace config {
     // Initialize everything to zero with ap_pcalloc()
     config::dir *dir = (config::dir *) ap_pcalloc(p, sizeof(config::dir));
 
+    dir->path        = ap_pstrdup(p, path);
     dir->visible     = new(p, 4) apache_array<char *>;
     dir->aliases     = new(p, 4) apache_array<char *>;
     dir->updatable   = new(p, 4) apache_array<char *>;
@@ -88,7 +91,9 @@ namespace config {
     dir->flag.use_etags = 1;
     dir->default_key = -1;
     dir->magic_number = 0xBABECAFE ;
-    
+  
+    all_endpoints[n_endp++] = dir;
+  
     return (void *) dir;
   }
   
@@ -374,8 +379,11 @@ namespace config {
     
     switch(*which) {
       case 'R':
-        *dir->visible->new_item() = ap_pstrdup(cmd->pool, arg);
-        *dir->aliases->new_item() = ap_pstrdup(cmd->pool, arg);
+        if(! strcmp(arg,"*")) dir->flag.select_star = 1;
+        else {
+          *dir->visible->new_item() = ap_pstrdup(cmd->pool, arg);
+          *dir->aliases->new_item() = ap_pstrdup(cmd->pool, arg);
+        }
         break;
       case 'W':
         *dir->updatable->new_item() = ap_pstrdup(cmd->pool, arg);

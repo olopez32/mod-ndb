@@ -40,6 +40,7 @@ public:
     unsigned int is_internal  : 1;
     unsigned int can_override : 1;
     unsigned int is_raw       : 1;
+    unsigned int is_JSON      : 1;
   } flag;
   Node *top_node;
   struct symbol *symbol_table[SYM_TAB_SZ];
@@ -72,7 +73,7 @@ class Cell : public len_string {
   }
   void out(result_buffer &res) { res.out(len,string); }
   void out(struct data_operation *, result_buffer &);
-  void out(char *, const NdbRecAttr &, result_buffer &); 
+  void out(struct data_operation *, unsigned int, result_buffer &); 
   void chain_out(struct data_operation *data, result_buffer &res) {
     for(Cell *c = this; c != 0 ; c = c->next) c->out(data,res);
   }
@@ -97,8 +98,8 @@ class Node {
   virtual void compile(output_format *);
   virtual int  Run(struct data_operation *d, result_buffer &b) { 
     cell->out(d,b); return OK; }
-  virtual void out(char *c, const NdbRecAttr &r, result_buffer &b) {
-    cell->out(c, r, b); }
+  virtual void out(struct data_operation *d, unsigned int n, result_buffer &b) {
+    cell->out(d, n, b); }
   virtual void dump(ap_pool *, result_buffer &, int);
   void * operator new(size_t sz, ap_pool *p) {
     return ap_pcalloc(p, sz);
@@ -113,7 +114,7 @@ class RecAttr : public Node {
 
   public:
   RecAttr(const char *str1, const char *str2) : Node(str1, simple_node), unresolved2(str2) {}
-  void out(char *col, const NdbRecAttr &rec, result_buffer &res);
+  void out(struct data_operation *, unsigned int, result_buffer &);
   void compile(output_format *);
   void dump(ap_pool *, result_buffer &, int);
   void dump_source(ap_pool *, result_buffer &, const char *);
