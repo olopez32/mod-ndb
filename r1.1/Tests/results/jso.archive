@@ -63,3 +63,38 @@ __json05__
 }
 # __END__ json05
 
+# _BEGIN_ json06
+r.json06() {
+  cat <<'__json06__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: application/jsonrequest
+
+__json06__
+}
+# __END__ json06
+
+# _BEGIN_ json07
+r.json07() {
+  cat <<'__json07__'
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: b34339b889877d21bac6e16a1445d810
+Content-Type: text/plain
+
+ { "i":2 , "j":3 , "name":"rasmus" }
+__json07__
+}
+# __END__ json07
+
+# _BEGIN_ json08
+r.json08() {
+  cat <<'__json08__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json08__
+}
+# __END__ json08
+
