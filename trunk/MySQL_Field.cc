@@ -173,7 +173,7 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec, NdbBlob *blob,
       return rbuf.out("%u", (int) rec.u_char_value());
       
     case NdbDictionary::Column::Bigint:
-      return rbuf.out("%ll", rec.int64_value());
+      return rbuf.out("%lld", rec.int64_value());
       
     case NdbDictionary::Column::Smallint:
       return rbuf.out("%hd", (short) rec.short_value());
