@@ -118,7 +118,15 @@ int read_request_body(request_rec *r, apr_table_t **tab, const char *type) {
     return OK;
 
   // To do: support multipart/form-data
-  if(strcasecmp(type, "application/x-www-form-urlencoded") == 0) 
+  if(!type) {
+    /* This is a POST or PUT with an entity body but no content-type.
+       As far as I can tell, HTTP allows this -- neither sec. 4-3 (Message Body)
+       nor sec. 9-5 (POST) requires the client to send a content-type.
+       No real client sends such a request, but the httperf benchmark tool does.
+    */
+    reader = read_urlencoded;
+  }
+  else if(strcasecmp(type, "application/x-www-form-urlencoded") == 0) 
     reader = read_urlencoded;
   else if(strcasecmp(type, "application/jsonrequest") == 0) 
     reader = read_jsonrequest;
