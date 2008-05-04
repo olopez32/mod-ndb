@@ -1,6 +1,8 @@
-CREATE DATABASE IF NOT EXISTS mod_ndb_bench;
+CREATE DATABASE IF NOT EXISTS mod_ndb_tests;
 
-USE mod_ndb_bench; 
+USE mod_ndb_tests; 
+
+DROP TABLE IF EXISTS perf1;
 
 CREATE TABLE perf1 (
   i int not null,
@@ -9,10 +11,12 @@ CREATE TABLE perf1 (
   o1 int,
   o2 int,
   m1 decimal(4,2),
-  m2 int,
+  m2 int unsigned NOT NULL,
   PRIMARY KEY USING HASH (i),
   INDEX USING BTREE (o1, o2)
 ) engine = ndbcluster;
+
+DROP TABLE IF EXISTS perf2;
 
 CREATE TABLE perf2 (
   i int not null,
