@@ -7,6 +7,7 @@ CONFIG_CMD="$0 $@"
 CXX=g++
 OPT='-O3'
 HELPER=0
+LINK_MYSYS=1
 dso_cc_fl=-fPIC
 
 usage() {
@@ -25,7 +26,7 @@ usage() {
   echo "       --linkopt='DSO linker options'"
   echo "       --thread-safe"
   echo "       --debug"
-  echo "       --helper"
+  echo "       --mysys=[yes|no] { default is yes}"
   echo "       --sun-cc"
 }
 
@@ -45,7 +46,8 @@ long_help() {
   echo "    --sun-cc to compile using Sun C++ compiler rather than g++"
   echo "      (requires mysql and apache to also be built with Sun CC)"
   echo 
-  echo "    --helper to link with libndbhelper."
+  echo "    --mysys=yes|no for whether mod_ndb.so should be linked with"
+  echo "      the mysys and mystrings libraries"
   echo 
 }
 
@@ -92,8 +94,11 @@ do
       APRCONFIG=$conf_arg
       test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
       ;;
-    --helper)
-      HELPER=1
+    --mysys)
+      case "$conf_arg" in 
+        [Yy][Ee][Ss] ) LINK_MYSYS=1 ;;
+        [Nn][Oo]     ) LINK_MYSYS=0 ;;
+      esac             
       ;;
     --sun-cc) 
       CXX="CC"
@@ -148,10 +153,11 @@ echo
 echo "Configuring with"
 echo "    mysql_config = " $MYSQLCFG 
 echo "    apxs         = " $APXS 
-[ -n "$APXS1" ]     && echo "    apxs 1.3 =     " $APXS1
-[ -n "$APRCONFIG" ] && echo "    apr-config =   " $APRCONFIG
-[ $HELPER -eq 1 ]   && echo "    Using ndbhelper library"
+[ -n "$APXS1" ]       && echo "    apxs 1.3 =     " $APXS1
+[ -n "$APRCONFIG" ]   && echo "    apr-config =   " $APRCONFIG
 echo
+
+[ $LINK_MYSYS -eq 1 ] && echo "Linking with -lmysys and -lmystrings" && echo
 
 if [ ! -x "$APXS" ]
  then 
@@ -243,11 +249,11 @@ echo
 echo MY_INC1=$MY_INC
 echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
-if test $HELPER -eq 1 
+if test $LINK_MYSYS -eq 1 
  then 
-   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient -lndbhelper"
- else
    echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+ else
+   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient"
 fi
 echo 
 echo OPT=$OPT
@@ -266,6 +272,8 @@ echo
 
 
 cat make_file_tail >> Makefile
+
+echo $CONFIG_CMD > config.log
 
 echo "Created Makefile."
 echo
