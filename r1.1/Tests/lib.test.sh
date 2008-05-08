@@ -14,6 +14,7 @@ t.huh() {
   echo "t.REM       remove existing results file"
   echo "t.rec       run test and record results as official"
   echo "t.sql       run SQL queries used to prepare database for test"
+  echo "t.multi     run multi-threaded concurrency test"
 }
 
 t.list() {         # list test cases
@@ -69,3 +70,10 @@ t.sql() {
   awk -f runner.awk -v test=$1 -v mode=sql test.list | $SHELL 
   popd > /dev/null
 } 
+
+t.multi() {
+  pushd $TESTDIR > /dev/null
+  sh concurrent.sh
+  popd > /dev/null
+}
+

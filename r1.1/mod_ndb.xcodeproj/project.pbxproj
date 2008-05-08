@@ -73,6 +73,7 @@
 		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
 		65EFD0180CD421CE0079CEEB /* cmp_swap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmp_swap.c; sourceTree = "<group>"; };
 		65EFD0F20CE3E46E0079CEEB /* perf.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = perf.sql; path = Tests/SQL/perf.sql; sourceTree = "<group>"; };
+		65F451D90DD28588004B7FCD /* concurrent.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = concurrent.sh; path = Tests/concurrent.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -156,6 +157,7 @@
 				65AB5C180CD81AF700DAEACB /* config.awk */,
 				65AB5C190CD98C0D00DAEACB /* record.awk */,
 				65AB5C470CDA5C3000DAEACB /* erase.sh */,
+				65F451D90DD28588004B7FCD /* concurrent.sh */,
 				656D03EA0C89301300A430C6 /* SQL */,
 			);
 			name = Tests;
@@ -219,6 +221,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 658358210A8CE1C40023B465 /* Build configuration list for PBXProject "mod_ndb" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 08FB7794FE84155DC02AAC07 /* mod_ndb */;
 			projectDirPath = "";
