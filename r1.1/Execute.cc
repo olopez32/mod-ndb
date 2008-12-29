@@ -182,9 +182,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       r->content_type = "application/jsonrequest";  // Set content-type
       if(! my_results.buff) {         // Build dummy non-empty response
         my_results.init(r, 8);
-        my_results.out(2, "1\n");
+        my_results.out(4, "{ }\n");
         response_code = OK;
-        ap_set_content_length(r, 2);
+        ap_set_content_length(r, 4);
       }
     }
                 

@@ -53,7 +53,7 @@ t.conf() {
   popd > /dev/null
 }
   
-t.REM() {       # remove results file
+t.REM() {       # delete a result
   pushd $TESTDIR > /dev/null
   ./erase.sh $1
   popd > /dev/null
