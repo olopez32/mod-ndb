@@ -43,6 +43,7 @@ extern "C" {
     query_source *qsource;
     
     // Apache 2 Handler name check
+    log_debug(r->server, "r->handler is \"%s\"", r->handler);
     CheckHandler(r,"ndb-cluster");
 
     // Fetch configuration  

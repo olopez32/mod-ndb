@@ -22,7 +22,12 @@ TypesConfig mime-types
 TransferLog "logs/ndb_access_log" 
 ErrorLog "logs/ndb_error_log"
 
+<IfModule mpm_prefork_module>
+  LockFile "/tmp/http_ndb_accept.lock"
+</IfModule"
+
 <IfModule mpm_worker_module>
+  LockFile "/tmp/http_ndb_accept.lock"
   StartServers 2
   MaxClients 45
   ThreadsPerChild 15
