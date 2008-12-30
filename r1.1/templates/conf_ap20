@@ -24,7 +24,7 @@ ErrorLog "logs/ndb_error_log"
 
 <IfModule mpm_prefork_module>
   LockFile "/tmp/http_ndb_accept.lock"
-</IfModule"
+</IfModule>
 
 <IfModule mpm_worker_module>
   LockFile "/tmp/http_ndb_accept.lock"
