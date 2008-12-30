@@ -196,7 +196,8 @@ if test -n "$APXS1"
   dso_cc_fl="$dso_cc_fl "`$APXS1 -q CFLAGS`' '`$APXS1 -q CFLAGS_SHLIB` 
   dso_ld_fl="$dso_ld_fl "`$APXS1 -q LDFLAGS_SHLIB`
  else 
-  # Platform-specific linker flags
+  # For Apache 2 the strategy is different.
+  # 1) use some well-known platform-specific linker flags
   case `uname -s` in 
     Darwin) 
       # Apple Linker
@@ -216,6 +217,11 @@ if test -n "$APXS1"
       dso_ld_fl="-shared"    
       ;;
   esac
+  # 2) If we are using apr-util, it can supply some flags, too.
+  if [ -x "$APRCONFIG" ]
+    then
+      dso_cc_fl=`$APRCONFIG --cppflags`" $dso_cc_fl"
+  fi
 fi
 
 if $MYSQLCFG --version | grep -q '^5.1.' 
