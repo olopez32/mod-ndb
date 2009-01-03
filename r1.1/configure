@@ -4,7 +4,12 @@
 # echo $dirs | sed 'y/ /\n/' | sort | uniq 
 
 APXS=`which apxs`
-MYSQLCFG=`which mysql_config`
+if [ -x /usr/local/mysql/bin/mysql_config ]
+ then 
+   MYSQLCFG=/usr/local/mysql/bin/mysql_config
+ else 
+   MYSQLCFG=`which mysql_config`
+fi
 GET_LIBS='--libs'
 CONFIG_CMD="$0 $@"
 CXX=g++
