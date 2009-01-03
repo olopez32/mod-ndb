@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# To do: make a list of include dirs, then filter out duplicates:
+# echo $dirs | sed 'y/ /\n/' | sort | uniq 
+
 APXS=`which apxs`
 MYSQLCFG=`which mysql_config`
 GET_LIBS='--libs'
@@ -260,6 +263,12 @@ echo '#' Makefile for mod_ndb.  Automatically generated from:
 echo '#' $CONFIG_CMD
 echo
 echo CC=$CXX
+if test -x /usr/bin/cococpp   # .deb package
+ then
+   echo COCO=cococpp
+ else
+   echo COCO=Coco
+fi
 echo DEFINE=$DEFINE
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE

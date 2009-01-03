@@ -1,5 +1,7 @@
 # Concurrent operations test for mod_ndb
 
+which httperf || echo "Cannot find httperf." && exit 1
+
 # Default to 100 httperf connections
 NTHR=${1-100}
 

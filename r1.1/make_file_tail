@@ -28,7 +28,7 @@ mod_ndb.so: parsers $(OBJECTS)
 # Rules for building the Coco parsers
 
 N-SQL/Parser.cpp: N-SQL/NSQL.atg N-SQL/Parser.frame N-SQL/Scanner.frame
-	( cd N-SQL ; Coco -namespace NSQL NSQL.atg ) 
+	( cd N-SQL ; $(COCO) -namespace NSQL NSQL.atg ) 
 
 NSQL_Parser.o: N-SQL/Parser.cpp
 	( cd N-SQL ; $(CC) $(COMPILER_FLAGS) -o ../NSQL_Parser.o Parser.cpp )
@@ -37,7 +37,7 @@ NSQL_Scanner.o: N-SQL/Parser.cpp
 	( cd N-SQL ; $(CC) $(COMPILER_FLAGS) -o ../NSQL_Scanner.o Scanner.cpp )
         
 JSON/Parser.cpp: JSON/JSON.atg JSON/Parser.frame JSON/Scanner.frame
-	( cd JSON ; Coco -namespace JSON JSON.atg )
+	( cd JSON ; $(COCO) -namespace JSON JSON.atg )
       
 JSON_Parser.o: JSON/Parser.cpp 
 	( cd JSON ; $(CC) $(COMPILER_FLAGS) -o ../JSON_Parser.o Parser.cpp )

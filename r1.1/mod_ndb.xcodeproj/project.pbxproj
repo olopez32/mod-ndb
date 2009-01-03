@@ -15,6 +15,7 @@
 		6503B4020C9DB91600490CCC /* typ8.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = typ8.sql; path = Tests/SQL/typ8.sql; sourceTree = "<group>"; };
 		6503B7940C9F58CC00490CCC /* lib.test.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = lib.test.sh; path = Tests/lib.test.sh; sourceTree = "<group>"; };
 		6503B8BE0CA08C9A00490CCC /* col.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = col.sql; path = Tests/SQL/col.sql; sourceTree = "<group>"; };
+		6510405E0F0A9E3300F8B7CF /* config.presets */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.presets; sourceTree = "<group>"; };
 		6513067E0B8299CC00A70BDA /* Execute.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Execute.cc; sourceTree = "<group>"; };
 		6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap13.cc; sourceTree = "<group>"; };
 		651A68C20C824B6500EE077F /* test.list */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = default; lastKnownFileType = text; name = test.list; path = Tests/test.list; sourceTree = "<group>"; };
@@ -82,6 +83,7 @@
 			children = (
 				655A3FF20AC35A0300FC573F /* README */,
 				655CEC240A8C4C9500DB8284 /* configure */,
+				6510405E0F0A9E3300F8B7CF /* config.presets */,
 				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
