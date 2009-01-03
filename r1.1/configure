@@ -157,6 +157,12 @@ if $HTTPD -v | grep -q "Apache/1.3"
   fi
   STOP_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k stop"
   RESTART_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k restart"  
+  # Default apr-config and apu-config:
+  [ -z "$APRCONFIG" ] && APRCONFIG=`$APXS -q APR_CONFIG` 
+  if $APXS -q APU_CONFIG 
+   then  
+     [ -z "$APUCONFIG" ] && APUCONFIG=`$APXS -q APU_CONFIG`
+  fi
 fi
 echo
 
@@ -184,7 +190,8 @@ if [ -x "$APRCONFIG" ]
 fi
 if [ -x "$APUCONFIG" ]
  then
-  APRINC="$APRINC "`$APUCONFIG --includes`
+  APUINC=`$APUCONFIG --includes`
+  [ "$APUINC" != "$APRINC" ] && APRINC="$APRINC $APUINC"
 fi
 
 
@@ -220,7 +227,7 @@ if test -n "$APXS1"
       dso_ld_fl="-shared"    
       ;;
   esac
-  # 2) If we are using apr-util, it can supply some flags, too.
+  # 2) If we are using apr-config, it can supply some flags, too.
   if [ -x "$APRCONFIG" ]
     then
       dso_cc_fl=`$APRCONFIG --cppflags`" $dso_cc_fl"
