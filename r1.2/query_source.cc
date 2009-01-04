@@ -13,10 +13,11 @@ Apache_subrequest_query_source::Apache_subrequest_query_source(request_rec *req)
     else if(!strcmp(note,"DELETE")) req_method = M_DELETE;
     ap_table_unset(r->main->notes,"ndb_request_method");
   }
+  form_data = ap_make_table(r->pool, 6);
 }
 
 
-int Apache_subrequest_query_source::get_form_data(apr_table_t **tab) {
+int Apache_subrequest_query_source::get_form_data() {
   const char *subrequest_data = ap_table_get(r->main->notes,"ndb_request_data");
   register const char *c = subrequest_data;
   char *key, *val;
@@ -24,7 +25,7 @@ int Apache_subrequest_query_source::get_form_data(apr_table_t **tab) {
     key = ap_getword(r->pool, (const char **) &val, '=');
     ap_unescape_url(key);
     ap_unescape_url(val);
-    ap_table_merge(*tab, key, val);
+    ap_table_merge(form_data, key, val);
   }
   ap_table_unset(r->main->notes,"ndb_request_data");
   

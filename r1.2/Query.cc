@@ -63,9 +63,9 @@ struct QueryItems {
   AccessPlan plan;
   PlanMethod *op_setup;
   PlanMethod *op_action;
-  apr_table_t *form_data;
   mvalue *set_vals;
   data_operation *data;
+  query_source *source;
 };  
 
 #include "index_object.h"
@@ -185,8 +185,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       NoPlan,             // execution plan
       Plan::SetupRead,    // setup module
       Plan::Read,         // action module
-      0, 0,               // form_data, set_vals
-      &local_data_op      // data
+      0,                  // set_vals
+      &local_data_op,     // data
+      &qsource            // source
     };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
@@ -258,9 +259,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
       Q.op_action = Plan::Write;
-      Q.form_data = ap_make_table(r->pool, 6);
       Q.set_vals = (mvalue *) ap_pcalloc(r->pool, dir->updatable->size() * sizeof (mvalue));
-      response_code = qsource.get_form_data(& Q.form_data);
+      response_code = qsource.get_form_data();
       if(response_code != OK) return response_code;
       /* A POST with no keys is an insert, and  
          an insert has a primary key plan: */
@@ -581,7 +581,7 @@ int set_up_write(request_rec *r, config::dir *dir,
   // iterate over the updatable columns and set up mvalues for them
   for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
-    val = ap_table_get(q->form_data, key);
+    val = ap_table_get(q->source->form_data, key);
     if(val) {   
       col = q->tab->getColumn(key);
       if(col) {
