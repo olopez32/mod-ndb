@@ -1,0 +1,85 @@
+OBJECTS=mod_ndb.o Query.o Execute.o MySQL_Field.o config.o \
+request_body.o handlers.o result_buffer.o output_format.o \
+format_compiler.o format_dumper.o query_source.o \
+NSQL_Parser.o NSQL_Scanner.o JSON_Parser.o JSON_Scanner.o JSON_encoding.o
+
+INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
+COMPILER_FLAGS=-c $(DEFINE) $(INCLUDES) $(DSO_CC_FLAGS) -Wall $(OPT)
+
+all: mod_ndb.so httpd.conf 
+
+prep: parsers
+
+parsers: N-SQL/Parser.cpp JSON/Parser.cpp 
+
+
+# Compile
+.cc.o:
+	$(CC) $(COMPILER_FLAGS) -o $@ $< 
+
+mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h output_format.h
+	$(CC) $(COMPILER_FLAGS) -o $@ $(MOD_SOURCE)
+
+# Link
+mod_ndb.so: parsers $(OBJECTS)
+	LD_RUN_PATH=$(LDSO_PATH) $(CC) $(DSO_LD_FLAGS) -o $@ $(OBJECTS) $(LIBS)
+
+
+# Rules for building the Coco parsers
+
+N-SQL/Parser.cpp: N-SQL/NSQL.atg N-SQL/Parser.frame N-SQL/Scanner.frame
+	( cd N-SQL ; $(COCO) -namespace NSQL NSQL.atg ) 
+
+NSQL_Parser.o: N-SQL/Parser.cpp
+	( cd N-SQL ; $(CC) $(COMPILER_FLAGS) -o ../NSQL_Parser.o Parser.cpp )
+
+NSQL_Scanner.o: N-SQL/Parser.cpp 
+	( cd N-SQL ; $(CC) $(COMPILER_FLAGS) -o ../NSQL_Scanner.o Scanner.cpp )
+        
+JSON/Parser.cpp: JSON/JSON.atg JSON/Parser.frame JSON/Scanner.frame
+	( cd JSON ; $(COCO) -namespace JSON JSON.atg )
+      
+JSON_Parser.o: JSON/Parser.cpp 
+	( cd JSON ; $(CC) $(COMPILER_FLAGS) -o ../JSON_Parser.o Parser.cpp )
+        
+JSON_Scanner.o: JSON/Parser.cpp
+	( cd JSON ; $(CC) $(COMPILER_FLAGS) -o ../JSON_Scanner.o Scanner.cpp )
+
+
+# Dependencies        
+
+handlers.o: handlers.cc mod_ndb.h query_source.h
+request_body.o: request_body.cc
+Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_Field.h index_object.h query_source.h
+Execute.o: Execute.cc mod_ndb.h result_buffer.h output_format.h
+MySQL_Field.o: MySQL_Field.cc MySQL_Field.h result_buffer.h
+config.o: config.cc mod_ndb.h mod_ndb_config.h N-SQL/Parser.cpp defaults.h
+result_buffer.o: result_buffer.cc mod_ndb.h result_buffer.h
+output_format.o: output_format.cc output_format.h 
+format_compiler.o: output_format.h format_compiler.h
+format_dumper.o: output_format.h format_compiler.h
+query_source.o: mod_ndb.h query_source.h 
+
+
+# Other rules
+
+install: mod_ndb.so
+	$(APXS) -i -n 'ndb' mod_ndb.so
+
+clean:
+	rm -f mod_ndb.so $(OBJECTS) httpd.conf 
+
+httpd.conf:
+	sed -f template.sed $(TEMPLATE) > httpd.conf
+
+start: httpd.conf
+	$(START_HTTPD)
+        
+stop:
+	$(STOP_HTTPD)
+      
+restart:
+	$(RESTART_HTTPD)
+
+configtest:
+	$(START_HTTPD) -t

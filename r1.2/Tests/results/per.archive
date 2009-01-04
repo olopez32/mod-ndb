@@ -1,0 +1,86 @@
+# _BEGIN_ perf11
+r.perf11() {
+  cat <<'__perf11__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__perf11__
+}
+# __END__ perf11
+
+# _BEGIN_ perf12
+r.perf12() {
+  cat <<'__perf12__'
+HTTP/1.1 200 OK
+Content-Length: 91
+ETag: bf1a52b2d6213eaeeeacf5847d5ab710
+Content-Type: text/plain
+
+ { "i":9991 , "c1":"SomeText" , "c2":"SomeText" , "o1":10 , "o2":10 , "m1":3.10 , "m2":9 }
+__perf12__
+}
+# __END__ perf12
+
+# _BEGIN_ perf13
+r.perf13() {
+  cat <<'__perf13__'
+HTTP/1.1 200 OK
+Content-Length: 97
+ETag: 7e4229bd63dfae1f8637b3a3558a3e48
+Content-Type: text/plain
+
+[
+  { "i":9991 , "c1":"SomeText" , "c2":"SomeText" , "o1":10 , "o2":10 , "m1":3.10 , "m2":9 } 
+]
+__perf13__
+}
+# __END__ perf13
+
+# _BEGIN_ perf14
+r.perf14() {
+  cat <<'__perf14__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__perf14__
+}
+# __END__ perf14
+
+# _BEGIN_ perf15
+r.perf15() {
+  cat <<'__perf15__'
+HTTP/1.1 200 OK
+Content-Length: 92
+ETag: 7d556157cecee09dd78d1b92d8f78f32
+Content-Type: text/plain
+
+ { "i":9991 , "c1":"SomeText" , "c2":"SomeText" , "o1":10 , "o2":10 , "m1":3.10 , "m2":10 }
+__perf15__
+}
+# __END__ perf15
+
+# _BEGIN_ perf16
+r.perf16() {
+  cat <<'__perf16__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__perf16__
+}
+# __END__ perf16
+
+# _BEGIN_ perf17
+r.perf17() {
+  cat <<'__perf17__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__perf17__
+}
+# __END__ perf17
+

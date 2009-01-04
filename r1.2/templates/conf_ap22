@@ -1,0 +1,41 @@
+##
+## httpd.conf for testing mod_ndb with Apache 2
+## (based on the httpd.conf distributed with the httpd source code)
+##
+
+ServerRoot "@AP_DIR@"
+DocumentRoot "@AP_DIR@/example-scripts"
+User @AP_USER@
+Group @AP_GROUP@
+
+PidFile "logs/httpd.pid"
+ScoreBoardFile "logs/httpd.scoreboard"
+
+#-Load-Files
+LoadModule ndb_module         mod_ndb.so
+
+#-Other-Modules
+
+DefaultType text/plain
+TypesConfig mime-types
+
+TransferLog "logs/ndb_access_log" 
+ErrorLog "logs/ndb_error_log"
+
+<IfModule mpm_prefork_module>
+  LockFile "/tmp/http_ndb_accept.lock"
+</IfModule>
+
+<IfModule mpm_worker_module>
+  LockFile "/tmp/http_ndb_accept.lock"
+  StartServers 2
+  MaxClients 45
+  ThreadsPerChild 15
+  MinSpareThreads 5
+  MaxSpareThreads 18
+  MaxRequestsPerChild 1000000
+</IfModule>
+
+DirectoryIndex index.html
+
+Include test.conf
