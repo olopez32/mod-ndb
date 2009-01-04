@@ -25,18 +25,18 @@ usage() {
   echo "plus an installed copy of Apache including apxs. "
   echo 
   echo "Required: "
-  echo "       --mysql=/path/to/mysql_config "
-  echo "       --apxs=/path/to/apxs "
+  echo "    --mysql=/path/to/mysql_config [ $MYSQLCFG ] "
+  echo "    --apxs=/path/to/apxs [ $APXS ]"
   echo 
   echo "Options:  "
-  echo "       --aprconfig=/path/to/apr-config"
-  echo "       --apuconfig=/path/to/apu-config"
-  echo "       --apxs1=/path/to/apache13/apxs"
-  echo "       --linkopt='DSO linker options'"
-  echo "       --thread-safe"
-  echo "       --debug"
-  echo "       --mysys=[yes|no] { default is yes}"
-  echo "       --sun-cc"
+  echo "    --aprconfig=/path/to/apr-config"
+  echo "    --apuconfig=/path/to/apu-config"
+  echo "    --apxs1=/path/to/apache13/apxs"
+  echo "    --linkopt='DSO linker options'"
+  echo "    --thread-safe"
+  echo "    --debug"
+  echo "    --mysys=[yes|no] { default is yes}"
+  echo "    --sun-cc"
 }
 
 long_help() {
@@ -175,8 +175,8 @@ echo "Configuring with"
 echo "    mysql_config = " $MYSQLCFG 
 echo "    apxs         = " $APXS 
 [ -n "$APXS1" ]       && echo "    apxs 1.3 =     " $APXS1
-[ -n "$APRCONFIG" ]   && echo "    apr-config =   " $APRCONFIG
-[ -n "$APUCONFIG" ]   && echo "    apu-config =   " $APUCONFIG
+[ -n "$APRCONFIG" ]   && echo "    apr-config   = " $APRCONFIG
+[ -n "$APUCONFIG" ]   && echo "    apu-config   = " $APUCONFIG
 echo
 
 [ $LINK_MYSYS -eq 1 ] && echo "Linking with -lmysys and -lmystrings" && echo
@@ -317,19 +317,17 @@ echo $CONFIG_CMD > config.log
 
 echo "Created Makefile."
 echo
-echo "Removing out-of-date files:"
-make clean
+echo "Removing out-of-date files."
+make -s clean
 echo
 echo "Hello!"
 echo 
 echo "   make            : build mod_ndb" 
 echo "   make install    : install mod_ndb.so"
 echo "   make configtest : test configuration"
-echo "   make start      : start a test server on port 3080"
+echo "   make start      : start a test server on port 3080 (see test.conf)"
 echo "   make stop       : stop the test server"
 echo "   make restart    : restart the test server" 
-echo 
-echo "To configure the test server, edit test.conf"
 echo
 echo "Thanks for trying mod_ndb!"
 echo
