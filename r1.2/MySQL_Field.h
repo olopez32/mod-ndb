@@ -40,7 +40,8 @@ enum mvalue_use {
   use_64, use_unsigned_64,
   use_float, use_double,
   use_interpreted, use_null,
-  use_autoinc
+  use_autoinc,
+  must_use_binary
 }; 
 
 enum mvalue_interpreted {

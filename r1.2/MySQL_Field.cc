@@ -569,13 +569,15 @@ void MySQL::value(mvalue &m, ap_pool *p,
     }; 
      return;
     
-    /* not implemented */
-
+      /* Binary, etc. must come from multipart/form-data */
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:
-      /* Binary, etc. would require multipart/form-data POSTs */
+      m.use_value = must_use_binary ;
+      return;
+      
+      /* not implemented */
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
       /* Olddecimal types are just strings.  But you cannot create old decimal

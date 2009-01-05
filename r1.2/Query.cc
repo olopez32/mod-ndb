@@ -596,9 +596,11 @@ int set_up_write(request_rec *r, config::dir *dir,
       else log_err(r->server,"AllowUpdate list includes invalid column name %s", key);
     }
   }
-  if(is_insert) return q->data->op->insertTuple();
-  return is_interpreted ? q->data->op->interpretedUpdateTuple() : 
-                          q->data->op->writeTuple();
+  if(is_insert) 
+    return q->data->op->insertTuple();
+  if(is_interpreted) 
+    return q->data->op->interpretedUpdateTuple();
+  return q->data->op->writeTuple();
 }
 
 
