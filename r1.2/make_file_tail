@@ -4,7 +4,7 @@ format_compiler.o format_dumper.o query_source.o \
 NSQL_Parser.o NSQL_Scanner.o JSON_Parser.o JSON_Scanner.o JSON_encoding.o
 
 INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
-COMPILER_FLAGS=-c $(DEFINE) $(INCLUDES) $(DSO_CC_FLAGS) -Wall $(OPT)
+COMPILER_FLAGS=-c $(DEFINE) $(INCLUDES) $(DSO_CC_FLAGS) -Wall $(OPT) $(CFLAGS)
 
 all: mod_ndb.so httpd.conf 
 

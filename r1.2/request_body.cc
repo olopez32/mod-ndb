@@ -16,9 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 
-
 #include "JSON/Parser.h"
-#include "query_source.h"
 
 #ifdef MOD_NDB_DEBUG
 int walk_tab(void *rec, const char *k, const char *v) {
@@ -47,11 +45,9 @@ int read_urlencoded(query_source *qsource, apr_pool_t *pool, int) {
     
     ap_unescape_url((char*)key);
     ap_unescape_url((char*)val);
-
-    /* ap_getword() already made a copy, so use ap_table_mergen() */
-    ap_table_mergen(qsource->form_data, key, val);
-  }
-  
+    
+    qsource->set_item(key, val);
+  }  
   return OK;
 }
 
@@ -64,7 +60,7 @@ int read_jsonrequest(query_source *qsource, apr_pool_t *pool, int length) {
   JSON::Parser parser(&scanner);
   
   parser.pool = pool;
-  parser.tabl = qsource->form_data;
+  parser.qsource = qsource;
   
   parser.Parse();
   
@@ -152,13 +148,9 @@ int HTTP_query_source::get_form_data() {
   
   if((rc = util_read(r, &databuffer, &buf_size)) != OK)
     return rc;
-
-  if(form_data) ap_clear_table(form_data);
   
   rc = reader(this, r->pool, buf_size);
-  
-  DEBUG_LOG_TABLE(r, *form_data);
-  
+    
   return rc;
 }
 

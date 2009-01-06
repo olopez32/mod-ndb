@@ -587,13 +587,14 @@ int set_up_write(request_rec *r, config::dir *dir,
   const NdbDictionary::Column *col;
   bool is_interpreted = 0;
   char **column_list = dir->updatable->items();
-  const char *key, *val;
+  const char *key = 0, *val = 0;
   len_string *binary_val;
 
   // iterate over the updatable columns and set up mvalues for them
   for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
-    val = ap_table_get(q->source->form_data, key);
+    binary_val = q->source->get_item(key);
+    if(binary_val) val = binary_val->string;
     if(val) {   
       col = q->tab->getColumn(key);
       if(col) {

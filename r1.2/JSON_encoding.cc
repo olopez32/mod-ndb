@@ -139,3 +139,17 @@ char *JSON_string(ap_pool *my_pool, JSON::Token *tok) {;
   len = JSON_unescape(res);
   return res;
 }
+
+
+len_string *JSON_blob(ap_pool *my_pool, JSON::Token *tok) {;
+  int len = tok->len;
+  wchar_t *start = tok->val;
+  if(*start == L'"') start++, len -= 2;
+  char *res = (char *) ap_palloc(my_pool, len + 1);
+  for (int i = 0; i < len; ++i)
+    res[i] = (char) start[i]; 
+  res[len] = 0;
+  
+  len = JSON_unescape(res);
+  return new(my_pool) len_string(len, res);
+}

@@ -28,31 +28,30 @@ public:
 };
 
 
-void query_source::set_blob(const char *name, const char *pos, size_t sz) {
-  
+void query_source::set_item(const char *name, const char *pos, size_t sz) {
   BLOB * blob = new(r->pool) BLOB;
   
   unsigned int h = 0;
   for(const char *s = name; *s != 0; s++) h = 37 * h + *s;
-  h = h % BLOB_TABLE_SIZE;
+  h = h % FORM_TABLE_SIZE;
   
   blob->name = name;
   blob->info.len = sz;
   blob->info.string = pos;
-  blob->next = blob_table[h];
+  blob->next = form_table[h];
   
-  blob_table[h] = blob;
+  form_table[h] = blob;
 }
 
 
-len_string * query_source::get_blob(char *name) {
+len_string * query_source::get_item(const char *name) {
   BLOB *b;
   
   unsigned int h = 0;
   for(const char *s = name; *s != 0; s++) h = 37 * h + *s;
-  h = h % BLOB_TABLE_SIZE;
+  h = h % FORM_TABLE_SIZE;
   
-  for (b = blob_table[h] ; b != 0 ; b = b->next) 
+  for (b = form_table[h] ; b != 0 ; b = b->next) 
     if(!strcmp(name, b->name)) 
       return & b->info;
 
@@ -70,7 +69,6 @@ Apache_subrequest_query_source::Apache_subrequest_query_source(request_rec *req)
     else if(!strcmp(note,"DELETE")) req_method = M_DELETE;
     ap_table_unset(r->main->notes,"ndb_request_method");
   }
-  form_data = ap_make_table(r->pool, 6);
 }
 
 
@@ -82,7 +80,7 @@ int Apache_subrequest_query_source::get_form_data() {
     key = ap_getword(r->pool, (const char **) &val, '=');
     ap_unescape_url(key);
     ap_unescape_url(val);
-    ap_table_merge(form_data, key, val);
+    set_item(key, val);
   }
   ap_table_unset(r->main->notes,"ndb_request_data");
   

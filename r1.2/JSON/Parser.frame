@@ -38,6 +38,7 @@ Coco/R itself) does not fall under the GNU General Public License.
 
 #include "Scanner.h"
 char *JSON_string(ap_pool *, JSON::Token *);
+len_string *JSON_blob(ap_pool *, JSON::Token *);
 
 
 -->namespace_open
