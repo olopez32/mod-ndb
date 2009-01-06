@@ -34,6 +34,7 @@ enum ndb_string_packing {
 
 enum mvalue_use {
   err_bad_user_value, err_bad_data_type, err_bad_column, 
+  must_use_binary,
   mvalue_is_good,  /* everything greater than this is OK */
   use_char,
   use_signed, use_unsigned, 
@@ -41,7 +42,7 @@ enum mvalue_use {
   use_float, use_double,
   use_interpreted, use_null,
   use_autoinc,
-  must_use_binary
+  use_blob
 }; 
 
 enum mvalue_interpreted {
@@ -66,8 +67,8 @@ struct mvalue {
     int16_t             val_16;
     Uint16              val_unsigned_16;
   } u;
-  size_t len;
-  Uint32 col_len;
+  size_t len;           /* actual length */
+  Uint32 col_len;       /* defined length */
   mvalue_use use_value;
   mvalue_interpreted interpreted;
   bool over;        /* overflow indicator */
@@ -77,6 +78,7 @@ typedef struct mvalue mvalue;
 namespace MySQL { 
   void result(result_buffer &, const NdbRecAttr &, NdbBlob *, const char **);
   void value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
+  void binary_value(mvalue &, ap_pool *, const NdbDictionary::Column *, len_string *);
 };
 
 /* --------------------------------------------------------------------

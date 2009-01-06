@@ -539,6 +539,23 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
 }
 
 
+inline bool IS_BLOB(const NdbDictionary::Column *c) {
+  return 
+    ((c->getType() == NdbDictionary::Column::Blob) || 
+     (c->getType() == NdbDictionary::Column::Text));
+}
+
+
+inline void set_us_up_the_blobs(request_rec *r, struct QueryItems *q) {
+  q->data->blobs = (NdbBlob **) 
+    ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
+  
+  q->data->flag.has_blob = 1;
+  q->i->flag.has_blob = 1;
+  return;
+}
+
+
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
   char **column_list = dir->visible->items();;
   const NdbDictionary::Column *col;
@@ -552,18 +569,12 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
     q->data->result_cols[n] = q->data->op->getValue(col, 0);
 
     /* BLOB handling */
-    if((col->getType() == NdbDictionary::Column::Blob) ||
-       (col->getType() == NdbDictionary::Column::Text)) {
-          if(! q->data->flag.has_blob) 
-            q->data->blobs = (NdbBlob **) 
-               ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
-          
-          q->data->flag.has_blob = 1;
-          q->i->flag.has_blob = 1;
-          if(col->getInlineSize()) 
-            q->data->blobs[n] = select_star ? 
-              q->data->op->getBlobHandle(n) : 
-              q->data->op->getBlobHandle(column_list[n]);
+    if(IS_BLOB(col)) {
+      if(! q->data->flag.has_blob) set_us_up_the_blobs(r, q);            
+      if(col->getInlineSize()) 
+        q->data->blobs[n] = select_star ? 
+          q->data->op->getBlobHandle(n) : 
+          q->data->op->getBlobHandle(column_list[n]);
     }
   }
   return 0;
@@ -577,6 +588,7 @@ int set_up_write(request_rec *r, config::dir *dir,
   bool is_interpreted = 0;
   char **column_list = dir->updatable->items();
   const char *key, *val;
+  len_string *binary_val;
 
   // iterate over the updatable columns and set up mvalues for them
   for(int n = 0; n < dir->updatable->size() ; n++) {
@@ -585,6 +597,9 @@ int set_up_write(request_rec *r, config::dir *dir,
     if(val) {   
       col = q->tab->getColumn(key);
       if(col) {
+        if(IS_BLOB(col)) {          
+        }
+
         mvalue &mval = q->set_vals[n];
         MySQL::value(mval, r->pool, col, val);
         if(mval.use_value == use_interpreted) {

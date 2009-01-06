@@ -150,7 +150,6 @@ class ndb_instance {
     flag.jsonrequest = 0;
   }
 };
-// typedef struct mod_ndb_instance ndb_instance;
 
 
 /* A cluster connection contains an Ndb_cluster_connection object

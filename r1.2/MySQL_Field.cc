@@ -554,24 +554,27 @@ void MySQL::value(mvalue &m, ap_pool *p,
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
     {  
-     decimal_digit_t digits[DECIMAL_BUFF]; 
-     char *end = (char *) val + strlen(val);
-     const int prec  = col->getPrecision();
-     const int scale = col->getScale();
-     decimal_t dec = {prec - scale, scale, DECIMAL_BUFF ,0, digits};
+      decimal_digit_t digits[DECIMAL_BUFF]; 
+      char *end = (char *) val + strlen(val);
+      const int prec  = col->getPrecision();
+      const int scale = col->getScale();
+      decimal_t dec = {prec - scale, scale, DECIMAL_BUFF ,0, digits};
 
-     string2decimal(val, &dec, &end);
-     m.use_value = use_char;
-     m.col_len = 0;   /* For NdbScanFilter::cmp() */
-     /* decimal_bin_size() is never greater than 32: */
-     m.u.val_char = (char *) ap_pcalloc(p, 32);
-     decimal2bin(&dec, m.u.val_char, prec, scale);
+      string2decimal(val, &dec, &end);
+      m.use_value = use_char;
+      m.col_len = 0;   /* For NdbScanFilter::cmp() */
+      /* decimal_bin_size() is never greater than 32: */
+      m.u.val_char = (char *) ap_pcalloc(p, 32);
+      decimal2bin(&dec, m.u.val_char, prec, scale);
     }; 
-     return;
+      return;
     
-      /* Binary, etc. must come from multipart/form-data */
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
+      m.use_value = use_blob ;
+      return;
+
+    case NdbDictionary::Column::Longvarbinary:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:
       m.use_value = must_use_binary ;
@@ -587,3 +590,50 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
   }
 }
+
+
+/* binary_value(): Set a binary value.  
+*/
+
+void MySQL::binary_value(mvalue &m, ap_pool *p, const NdbDictionary::Column *col, 
+                         len_string *value) 
+{
+  const unsigned short s_lo = 255;
+  const unsigned short s_hi = 65535 ^ 255; 
+  unsigned char   c_len = 0;
+  unsigned short  s_len = 0;
+
+  m.use_value = use_char;
+  m.col_len = col->getLength();
+  m.len = (value->len < m.col_len) ? value->len : m.col_len;
+  
+  switch(col->getType()) {    
+
+    case NdbDictionary::Column::Binary:
+      m.u.val_char = (char *) ap_pcalloc(p, m.col_len);
+      memcpy(m.u.val_char, value->string, m.len);      
+      return;
+      
+    case NdbDictionary::Column::Varbinary:
+      m.col_len += 1;                     /* 1 length-byte */
+      c_len = m.len;                      /* 8-bit unsigned char */
+      m.u.val_char = (char *) ap_palloc(p, m.len + 1);
+      * m.u.val_char = c_len;             /* set the length byte */
+      memcpy(m.u.val_char+1, value->string, m.len);      
+      return;
+      
+    case NdbDictionary::Column::Longvarbinary:
+      m.col_len += 2;                      /* 2 length-bytes */ 
+      s_len = m.len;                       /* 16-bit unsigned short  */
+      m.u.val_char = (char *) ap_palloc(p, s_len + 2);
+      * m.u.val_char     = (char) (s_len & s_lo);
+      * (m.u.val_char+1) = (char) ((s_len & s_hi) >> 8);
+      ap_cpystrn(m.u.val_char+2, value->string, s_len+1);
+      return;
+
+    default:
+      m.use_value = err_bad_data_type;
+      return;
+  }
+}
+  
