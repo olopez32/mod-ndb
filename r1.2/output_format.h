@@ -16,7 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 enum re_type { const_string, item_name, item_value };
-enum re_esc  { no_esc, esc_xml, esc_json };
+enum re_esc  { no_esc, esc_xml, esc_json, esc_xmljson };
 enum re_quot { no_quot, quote_char, quote_all };
 enum node_type { top_node, loop_node, simple_node };
 
