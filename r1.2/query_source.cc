@@ -28,13 +28,17 @@ public:
 };
 
 
-void query_source::set_item(const char *name, const char *pos, size_t sz) {
-  BLOB * blob = new(r->pool) BLOB;
-  
+inline unsigned int do_hash(const char *name) {
   unsigned int h = 0;
   for(const char *s = name; *s != 0; s++) h = 37 * h + *s;
-  h = h % FORM_TABLE_SIZE;
-  
+  return h % FORM_TABLE_SIZE;
+}
+
+
+void query_source::set_item(const char *name, const char *pos, size_t sz) {
+  BLOB * blob = new(r->pool) BLOB;
+  unsigned int h = do_hash(name); 
+   
   blob->name = name;
   blob->info.len = sz;
   blob->info.string = pos;
@@ -46,11 +50,8 @@ void query_source::set_item(const char *name, const char *pos, size_t sz) {
 
 len_string * query_source::get_item(const char *name) {
   BLOB *b;
-  
-  unsigned int h = 0;
-  for(const char *s = name; *s != 0; s++) h = 37 * h + *s;
-  h = h % FORM_TABLE_SIZE;
-  
+  unsigned int h = do_hash(name);  
+
   for (b = form_table[h] ; b != 0 ; b = b->next) 
     if(!strcmp(name, b->name)) 
       return & b->info;
