@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #undef putc
 #endif
 
-void initialize_escapes();
+void initialize_escapes(ap_pool *);
 
 
 class apache_object {

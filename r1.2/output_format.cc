@@ -36,12 +36,18 @@ void initialize_output_formats(ap_pool *p) {
 }
 
 
-void initialize_escapes() {
+void initialize_escapes(ap_pool *p) {
   for(int i = 0 ; i < 256 ; i++) {
-    escape_leaning_toothpicks[i] = 0;
-    escape_xml_entities[i] = 0;
+    escape_leaning_toothpicks[i] = 0;     /* JSON escapes */
+    escape_xml_entities[i] = 0;           /* XML escapes */
   }
+
+  /* Escape sequences are stored with a leading length byte  */
+  /* RFC 4627: control characters 00 - 1f must be escaped */
+  for(int i = 0 ; i < 32 ; i++)
+    escape_leaning_toothpicks[i] = ap_psprintf(p, "\x06" "\\u%04x", i);
   
+  /* www.json.org : these characters are also escaped */
   escape_leaning_toothpicks[static_cast<int>('\\')] = "\x02" "\\" "\\";
   escape_leaning_toothpicks[static_cast<int>('\"')] = "\x02" "\\" "\"";
   escape_leaning_toothpicks[static_cast<int>('\b')] = "\x02" "\\" "b";
