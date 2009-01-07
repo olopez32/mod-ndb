@@ -600,9 +600,13 @@ int set_up_write(request_rec *r, config::dir *dir,
       if(col) {
         if(IS_BLOB(col)) {          
         }
-
         mvalue &mval = q->set_vals[n];
         MySQL::value(mval, r->pool, col, val);
+        if(mval.use_value == must_use_binary) {
+          /* Try again with a binary value */
+          MySQL::binary_value(mval, r->pool, col, binary_val);
+          log_debug(r->server,"Binary update to column %s", key);
+        }
         if(mval.use_value == use_interpreted) {
           is_interpreted = 1;
           log_debug(r->server,"Interpreted update; column %s = [%s]", key,val);

@@ -36,8 +36,7 @@ typedef int BODY_READER(query_source *, apr_pool_t *, int);
    key1=val1&key2=val2...
  */
 int read_urlencoded(query_source *qsource, apr_pool_t *pool, int) {
-  const char *key, *val;
-  
+  const char *key, *val;  
   const char * &data = qsource->databuffer;
   
   while(*data && (val = ap_getword(pool, & data, '&'))) {

@@ -146,6 +146,7 @@ void MySQL::result(result_buffer &rbuf, const NdbRecAttr &rec, NdbBlob *blob,
       return MySQL::String(rbuf, rec, char_fixed, escapes);
       
     case NdbDictionary::Column::Longvarchar:
+    case NdbDictionary::Column::Longvarbinary:
       return MySQL::String(rbuf, rec, char_longvar, escapes);
       
     case NdbDictionary::Column::Float:
