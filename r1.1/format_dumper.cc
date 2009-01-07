@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 extern const char *escape_leaning_toothpicks[256];
 extern const char *escape_xml_entities[256];
+extern const char *escape_xml_plus_json[256];
 
 inline char *make_inset(ap_pool *pool, int size) {
   char *inset = (char *) ap_pcalloc(pool, size + 2);
@@ -167,6 +168,7 @@ void Cell::dump(ap_pool *p, result_buffer &res) {
           else if(c->elem_quote == quote_all)         flags[f++] = 'Q';
           if(c->escapes == escape_leaning_toothpicks) flags[f++] = 'j';
           else if(c->escapes == escape_xml_entities)  flags[f++] = 'x';
+          else if(c->escapes == escape_xml_plus_json) flags[f++] = 'k';
         }
         if(c->i > 0) item = ap_psprintf(p, "$%d", c->i);
         else item = "$value";

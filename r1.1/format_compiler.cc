@@ -175,6 +175,7 @@ Cell * Parser::build_cell() {
         else if(*p == 'Q') quote = quote_all;
         else if(*p == 'x') escape = esc_xml;
         else if(*p == 'j') escape = esc_json;
+        else if(*p == 'k') escape = esc_xmljson;
       }
     }
     if(t == tok_fieldnum) {
