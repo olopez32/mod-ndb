@@ -27,8 +27,8 @@ BEGIN { if(!host) host = "localhost:3080"
      split($2, flags, "|")
      for(i in flags) {
        if(flags[i] == "SQL") flag_SQL = 1
-       else if(flags[i] ~ /^f/) filter = "sed -f " flags[i] ".sed"
        else if(flags[i] == "JR") flag_JR = 1
+       else if(flags[i] ~ /^f/) filter = "sed -f " flags[i] ".sed"
        else if(flags[i] == "sort") sorter = "| sort -t: -k1n"
      }
   
@@ -41,14 +41,16 @@ BEGIN { if(!host) host = "localhost:3080"
         next 
      }
      else if(mode == "config") {
-        qm = index($3, "?")                      # e.g. "/item?q=1"   
-        if (qm) base = substr($3, 1, qm - 1)
-        else base = $3 
-        idx = match(base,/\/[0-9]+$/)            # e.g. "/item/1"
-        if (idx) base = substr(base, 1, idx - 1)                
-        base = base ">"             # closing bracket of <Location ...> section 
-        
-        printf("awk -f config.awk -v 'cfpat=/ndb/test/%s' httpd.conf\n", base)
+        qmark = index($3, "?")                 # e.g. "/item?q=1"   
+        pathinf = match($3,/\/[0-9]+$/)        # e.g. "/item/1"
+
+        if(qmark) base = substr($3, 1, qmark - 1)
+        else if(pathinf) base = substr($3, 1, pathinf - 1)    
+        else base = $3                       
+
+        base = base ">"      # closing bracket of <Location ...> section         
+        printf("awk -f config.awk -v obj=%s -v 'cfpat=/ndb/test/%s' httpd.conf\n", 
+               $1, base)
         next
      }
 

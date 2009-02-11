@@ -10,7 +10,7 @@
 BEGIN { printing = 0  }
         
 /<Location/     {  if( $2 ~ cfpat) {
-                        printf("\n##      at line %d\n", NR)
+                        printf("\n##   %s  at line %d \n", obj, NR)
                         printing = 1 
                     }
                 }
