@@ -47,6 +47,13 @@ t.test() {        # run test and print OK or fail
   popd > /dev/null
 }
 
+t.all() {
+  pushd $TESTDIR > /dev/null
+  awk -f runner.awk -v test=$1 -v mode=compare test.list \
+   | $SHELL | awk -f summary.awk
+  popd > /dev/null
+}
+
 t.conf() {
   pushd $TESTDIR > /dev/null
   awk -f runner.awk -v test=$1 -v mode=config test.list | $SHELL
