@@ -352,7 +352,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       response_code = 500;
       goto abort2;
     }
-    if(!(i->tx = i->db->startTransaction())) {  // To do: supply a hint
+    /* If this is a Primary Key query, and the primary key is the distribution
+       key, then you could supply a hint here in an Ndb::Key_part_ptr.
+    */
+    if(!(i->tx = i->db->startTransaction())) { 
       log_err(r->server,"db->startTransaction failed: %s",
                 i->db->getNdbError().message);
       response_code = 500;
