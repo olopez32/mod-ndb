@@ -287,15 +287,16 @@ int ScanLoop::Run(data_operation *data, result_buffer &res) {
   register int nrows = 0;
   
   if(data->scanop) {
+    /* nextResult(true) fetches rows from NDB into cache ;
+       nextResult(false) uses rows already cached */ 
     while((data->scanop->nextResult(true)) == 0) {
       do {
-        if(nrows++) res.out(*sep);
-        else begin->chain_out(res);
+        if(nrows++) res.out(*sep);    /* comma */
+          else begin->chain_out(res); /* open bracket */
         core->Run(data, res);
-      } while((data->scanop->nextResult(false)) == 0);
-      
-      if(nrows) end->chain_out(res);
+      } while((data->scanop->nextResult(false)) == 0);      
     }
+    if(nrows) end->chain_out(res);   /* close bracket */
     return (nrows ? OK : 404);
   }
   else {  /* not a scan, just a single result row */
