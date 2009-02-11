@@ -102,3 +102,16 @@ __json06__
 }
 # __END__ json06
 
+# _BEGIN_ json09
+r.json09() {
+  cat <<'__json09__'
+HTTP/1.1 400 Bad Request
+Content-Length: 13
+Connection: close
+Content-Type: text/plain
+
+Bad request.
+__json09__
+}
+# __END__ json09
+
