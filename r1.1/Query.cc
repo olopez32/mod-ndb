@@ -261,7 +261,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       Q.form_data = ap_make_table(r->pool, 6);
       Q.set_vals = (mvalue *) ap_pcalloc(r->pool, dir->updatable->size() * sizeof (mvalue));
       response_code = qsource.get_form_data(& Q.form_data);
-      if(response_code != OK) return response_code;
+      if(response_code != OK) 
+        return ndb_handle_error(r, response_code, NULL, NULL);
       /* A POST with no keys is an insert, and  
          an insert has a primary key plan: */
       if(! (r->args || dir->pathinfo_size)) {
