@@ -1,4 +1,4 @@
-#  (C) 2007 MySQL 
+#  (C) 2007 MySQL , 2009 Sun Microsystems
 #  
 #  This is the main engine of the test suite.  It takes a test.list file 
 #  on input, and writes shell commands to output. 
@@ -21,14 +21,15 @@ BEGIN { if(!host) host = "localhost:3080"
      sub(/#.*/, "")  # strip comments
 
      flag_SQL = flag_JR = 0  
-     filter = args = ""
+     filter = args = sorter = ""
      
      # Get the flags
-     split($2, flags, "/")
+     split($2, flags, "|")
      for(i in flags) {
        if(flags[i] == "SQL") flag_SQL = 1
        else if(flags[i] ~ /^f/) filter = "sed -f " flags[i] ".sed"
        else if(flags[i] == "JR") flag_JR = 1
+       else if(flags[i] == "sort") sorter = "| sort -t: -k1n"
      }
   
      if(mode == "sql" && flag_SQL) {
@@ -40,9 +41,13 @@ BEGIN { if(!host) host = "localhost:3080"
         next 
      }
      else if(mode == "config") {
-        qm = index($3, "?") ; 
-        if (qm) base = substr($3, 1, qm - 1) ">"
-        else base = $3 ">"
+        qm = index($3, "?")                      # e.g. "/item?q=1"   
+        if (qm) base = substr($3, 1, qm - 1)
+        else base = $3 
+        idx = match(base,/\/[0-9]+$/)            # e.g. "/item/1"
+        if (idx) base = substr(base, 1, idx - 1)                
+        base = base ">"             # closing bracket of <Location ...> section 
+        
         printf("awk -f config.awk -v 'cfpat=/ndb/test/%s' httpd.conf\n", base)
         next
      }
@@ -62,7 +67,7 @@ BEGIN { if(!host) host = "localhost:3080"
      cmd = sprintf("curl -isS %s '%s/ndb/test/%s'", args, server, $3)
 
      printf("%s '==== %s '\n", echo, $1)
-     printf("%s | %s %s \n", cmd, filter, outfile)
+     printf("%s | %s %s %s \n", cmd, filter, sorter, outfile)
 
      if((diff || mode == "compare") && ! have_source[prefix]) {
        print "source " archive_file
