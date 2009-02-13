@@ -42,6 +42,7 @@
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
+		65A8025B0F42C21C00C5D150 /* summary.awk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = summary.awk; path = Tests/summary.awk; sourceTree = "<group>"; };
 		65AA7E800BC5841100A5D0A4 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_dumper.cc; sourceTree = "<group>"; };
 		65AB5C180CD81AF700DAEACB /* config.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = config.awk; path = Tests/config.awk; sourceTree = "<group>"; };
 		65AB5C190CD98C0D00DAEACB /* record.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = record.awk; path = Tests/record.awk; sourceTree = "<group>"; };
@@ -158,6 +159,7 @@
 				651A68DF0C824E3500EE077F /* runner.awk */,
 				65AB5C180CD81AF700DAEACB /* config.awk */,
 				65AB5C190CD98C0D00DAEACB /* record.awk */,
+				65A8025B0F42C21C00C5D150 /* summary.awk */,
 				65AB5C470CDA5C3000DAEACB /* erase.sh */,
 				65F451D90DD28588004B7FCD /* concurrent.sh */,
 				656D03EA0C89301300A430C6 /* SQL */,
