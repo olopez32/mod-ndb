@@ -72,7 +72,12 @@ test -r defaults.h || fail "something is wrong with defaults.h"
 test -s defaults.h || fail "something is wrong with defaults.h"
 grep -q $RELNAME defaults.h || fail "something is wrong with defaults.h"
 
-# Run the Architecture.graffle file through bzip2
+# Look at the Architecture docs:
+if test Architecture.graffle -nt Architecture.pdf
+ then
+   echo " == Warning: Architecture PDF is older than Architecture.graffle source == "
+fi
+# Compress the Architecture document source
 bzip2 Architecture.graffle
 
 # All done up in the release directory.
