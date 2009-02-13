@@ -116,7 +116,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   /* Succesfully connected */
   c->connected=1;
   ap_log_error(APLOG_MARK, log::err, s, 
-               "PID %d: mod_ndb (r%s) connected to NDB Cluster as node %d", 
+               "PID %d: mod_ndb (%s) connected to NDB Cluster as node %d", 
                (int) getpid(), REVISION, c->connection->node_id());
   log_debug(s,"*--  %s --*","DEBUGGING ENABLED");
 
