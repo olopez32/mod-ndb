@@ -38,25 +38,57 @@ if test -z "$REVISION"
      fail "REVISION required; cannot obtain it using svnversion $SVNURL"
    echo "$REVISION" | grep -q '[:MSPe]'
    test $? = "0" && \
-     fail "Cannot use unclean working copy -- $REVISION"
+     fail "Cannot use unclean working copy $REVISION in $BRANCH"
    echo "Using svn revision $REVISION"
 fi
 
+# The release name is, e.g., "1.1-beta-r551"
+# So the release directory is "mod_ndb-1.1-beta-r551" 
+# And the release file is "mod_ndb-1.1-beta-r551.tar.gz"
+RELNAME="$RELEASE-$TAG-r$REVISION"
+RELDIR="mod_ndb-$RELNAME"
 
 # Now move into the Releases directory
 test -d Releases || mkdir Releases
 cd Releases
-RELDIR="mod_ndb-$RELEASE-$TAG-r$REVISION"
 echo "Creating Releases/$RELDIR"
 svn export -q -r $REVISION $SVNURL $RELDIR  || fail "svn export -r $REVISION $SVNURL"
 
-# Build the parsers
+# Move on in to the release directory
 cd "$RELDIR"
+
+# Build the parsers
 COCO=`which Coco`
 test $? != "0" && fail "Cannot find Coco."
 COCO="$COCO" make -f make_file_tail prep
 echo
 test $? != "0" && fail "Building parsers with Coco."
 
+# In defaults.h, replace __SVN_DEV__ with the actual release name
+sed -e "/^#define/s/__SVN_DEV__/$RELNAME/" < defaults.h > defaults.h.tmp
+mv defaults.h.tmp defaults.h
+test -f defaults.h || fail "something is wrong with defaults.h"
+test -r defaults.h || fail "something is wrong with defaults.h"
+test -s defaults.h || fail "something is wrong with defaults.h"
+grep -q $RELNAME defaults.h || fail "something is wrong with defaults.h"
 
+# Run the Architecture.graffle file through bzip2
+bzip2 Architecture.graffle
+
+# All done up in the release directory.
+cd ..
+
+# Create the tar file
+tar cf $RELDIR.tar $RELDIR
+
+# GZIP it
+gzip $RELDIR.tar
+
+# All done!
+echo 
+echo "All done!"
+ls -l $RELDIR.tar.gz
+
+# Back to where we started
+cd $CURDIR
 

@@ -33,5 +33,5 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* Release Name. */
 /* In the subversion sources, this is __SVN_DEV__ */
-/* The Build-source-release.sh script fills in an actual release name
+/* The Build-source-release.sh script fills in an actual release name */
 #define REVISION "__SVN_DEV__"
