@@ -233,7 +233,8 @@ int print_all_params(void *v, const char *key, const char *val) {
 
 
 const char * allowed_methods(request_rec *r, config::dir *dir) {
-  apache_array<char *> *methods = new(r->pool, 4) apache_array<char *>;
+  apache_array<const char *> *methods = 
+    new(r->pool, 4) apache_array<const char *>;
 
   if(dir->visible->size())    *methods->new_item() = "GET";
   if(dir->flag.use_etags)     *methods->new_item() = "HEAD";

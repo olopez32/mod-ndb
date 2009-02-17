@@ -127,10 +127,10 @@ namespace config {
   void * init_srv(ap_pool *, server_rec *);
   void * merge_dir(ap_pool *, void *, void *);
   void * merge_srv(ap_pool *, void *, void *);
-  void   sort_scan(config::dir *, int, char *, int);
+  void   sort_scan(config::dir *, int, const char *, int);
   const char * non_key_column(cmd_parms *, void *, char *);
-  const char * named_index(cmd_parms *, void *, char *, char *);
-  const char * named_idx(cmd_parms *, config::dir *, char *, NSQL::Expr *);
+  const char * named_index(cmd_parms *, void *, const char *, char *);
+  const char * named_idx(cmd_parms *, config::dir *, const char *, NSQL::Expr *);
   const char * result_format(cmd_parms *, void *, char *);
   const char * pathinfo(cmd_parms *, void *, char *, char *);
   const char * table(cmd_parms *, void *, char *, char *, char *);
@@ -141,6 +141,6 @@ namespace config {
   const char * result_fmt_container(cmd_parms *, void *, char *);
   const char * sql_container(cmd_parms *, void *, char *);
   const char * index_constant(cmd_parms*,config::dir*, char *, NSQL::Expr *);
-  short get_index_by_name(config::dir *, char *);
-  short build_index_record(cmd_parms*,config::dir*, char *, char*);
+  short get_index_by_name(config::dir *, const char *);
+  short build_index_record(cmd_parms*,config::dir*, char *, const char*);
 }
