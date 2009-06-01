@@ -51,7 +51,7 @@ void mod_ndb_child_init(server_rec *s, pool *p) {
 
   /* Create an ndb instance */
   instance1 = (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-  init_instance(& process.conn, instance1, srv, p);
+  init_instance(& process.conn, instance1, s, srv, p);
 }
 
 
@@ -127,7 +127,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 }
 
 
-Ndb *init_instance(ndb_connection *c, ndb_instance *i, 
+Ndb *init_instance(ndb_connection *c, ndb_instance *i, server_rec *s,
                    config::srv *srv_config, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */

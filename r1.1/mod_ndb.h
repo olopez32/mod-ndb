@@ -179,7 +179,8 @@ struct mod_ndb_process {
 };    
 
 ndb_instance *my_instance(request_rec *r);
-void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, ap_pool *);
+void connect_to_cluster(ndb_connection *, server_rec *, config::srv *, 
+                        ap_pool *, bool);
 Ndb * init_instance(ndb_connection *, ndb_instance *, server_rec *, 
                     config::srv *, ap_pool *);
 int print_all_params(void *v, const char *key, const char *val);
