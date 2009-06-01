@@ -27,9 +27,40 @@ apr_status_t mod_ndb_child_exit(void *);
 int will_restart = 0;
 apr_thread_mutex_t *restart_lock;
 
+
 //
-// INITIALIZATION & CLEAN-UP FUNCTIONS:
+// INITIALIZATION & CLEAN-UP FUNCTIONS
 //
+
+
+/* The post_config hook runs only in the Apache parent (monitor) process.  
+   Attempt to connect to the cluster; 
+   if the attempt fails, Apache should die.  
+*/
+int mod_ndb_post_config(apr_pool_t* conf_pool, apr_pool_t* log_pool, 
+                        apr_pool_t* temp_pool, server_rec* s) {
+
+  ap_add_version_component(conf_pool, "NDB/" MYSQL_SERVER_VERSION) ;
+    
+  config::srv *srv = (config::srv *) 
+                     ap_get_module_config(s->module_config, &ndb_module);
+
+  ndb_init();    
+  connect_to_cluster(& process.conn, s, srv, temp_pool, true);
+
+  if( process.conn.connected) {    
+    log_err(s, "Connnection test OK: succesfully connected to NDB Cluster."); 
+    delete process.conn.connection;
+    return OK ;
+  }
+
+  /* else: */
+  log_err(s, "Connection test failed.  Cannot connect to NDB Cluster.  "
+          "Apache will exit.");
+  return 500;
+}  
+
+
 void mod_ndb_child_init(ap_pool *p, server_rec *s) {
   int n_ok = 0;
   int n_fail = 0;
@@ -58,7 +89,7 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
   
   /* Connections (distinct cluster connect strings) */
   process.n_connections = 1;
-  connect_to_cluster(& process.conn, s, srv, p);
+  connect_to_cluster(& process.conn, s, srv, p, false);
     
   /* Allocate the global instance table */
   process.conn.instances = (ndb_instance **) ap_pcalloc(p, 
@@ -68,17 +99,22 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
     /* Create an instance */
     process.conn.instances[i] = 
       (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-    Ndb *ndbp = init_instance(& process.conn, process.conn.instances[i], srv,p);
+    Ndb *ndbp = init_instance(& process.conn,process.conn.instances[i],s,srv,p);
     if(ndbp) n_ok++;
     else n_fail++;
   }
 
-  ap_log_error(APLOG_MARK, log::err, 0, s, "Node %d initialized %d "
+  if(process.conn.connected) { 
+    log_err(s, "Node %d initialized %d "
                "NDB thread instance%s (%d success%s, %d failure%s).", 
                process.conn.connection->node_id(),
                process.n_threads, (process.n_threads == 1 ? "" :  "s"),
                n_ok, (n_ok == 1 ? "": "es") ,
                n_fail, (n_fail == 1 ? "" :  "s")); 
+  }
+  else
+    log_err(s, "mod_ndb cannot connect to cluster.");
+  
   
   /* Register the exit handler */
   apr_pool_cleanup_register(p, (const void *) s, 
@@ -131,7 +167,8 @@ apr_status_t mod_ndb_child_exit(void *v) {
    connect to different clusters, or if initialization failed the first time.
 */
 void connect_to_cluster(ndb_connection *c, server_rec *s, 
-                        config::srv *srv, ap_pool *p) {
+                        config::srv *srv, ap_pool *p, bool in_parent) {
+  int conn_retries = 0;
   
   /* The C++ runtime allocates an Ndb_cluster_connection here */
   c->connection = new Ndb_cluster_connection(srv->connect_string);
@@ -139,29 +176,46 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
   /* Set name that appears in the cluster log file */
   c->connection->set_name(ap_psprintf(p, "Apache mod_ndb %s/%d",
                           s->server_hostname, getpid()));
-  
-  if (c->connection->connect(2,1,0)) {
-    /* If the cluster is down, there could be a flood of these,
-    so write it as a warning to maybe prevent filling up a log file. */
-    log_err(s,"Cannot connect to NDB Cluster (connectstring: %s)",
-             srv->connect_string);
+
+  while(1) {
+    conn_retries++;
+    int r = c->connection->connect(2,1,0);
+    if(r == 0)          // success 
+      break;
+    else if(r == -1)   // unrecoverable error
+      return;
+    else if (r == 1) { // recoverable error
+      log_err(s,"Cannot connect to NDB Cluster (connectstring: \"%s\") %d/5",
+              srv->connect_string, conn_retries) ;
+      if(conn_retries == 5)
+        return;
+      else 
+        sleep(1);
+    }
+  }
+
+  /* In the Apache parent process, don't wait for the cluster to become ready. 
+     Just report a succesful connection test */     
+  if(in_parent) {
+    c->connected = 1;
     return;
   }
 
-  if((c->connection->wait_until_ready(20, 0)) < 0) {
-    log_err(s,"Timeout waiting for cluster to become ready.");
+  int ready_nodes = c->connection->wait_until_ready(5, 5);
+  if(ready_nodes < 0) {
+    log_err(s, "Timeout waiting for cluster to become ready (%d).", 
+            ready_nodes);
     return;
   }
   
   /* Succesfully connected */
   c->connected=1;
-  ap_log_error(APLOG_MARK, log::err, 0, s,
-               "PID %d : mod_ndb (%s) connected to NDB Cluster as node %d "
-               "(%d thread%s; hard limit: %d)", 
-               getpid(), REVISION, c->connection->node_id(),
-               process.n_threads, 
-               process.n_threads == 1 ? "" : "s",
-               process.thread_limit);
+  log_err(s, "PID %d : mod_ndb (%s) connected to NDB Cluster as node %d "
+          "(%d thread%s; hard limit: %d)", 
+           getpid(), REVISION, c->connection->node_id(),
+           process.n_threads, 
+           process.n_threads == 1 ? "" : "s",
+           process.thread_limit);
   log_debug(s,"*--  %s --*","DEBUGGING ENABLED");
 
   /* Some day this might be configurable */
@@ -171,7 +225,7 @@ void connect_to_cluster(ndb_connection *c, server_rec *s,
 }
 
 
-Ndb *init_instance(ndb_connection *c, ndb_instance *i, 
+Ndb *init_instance(ndb_connection *c, ndb_instance *i, server_rec *s,
                    config::srv *srv, ap_pool *p) {
   
   /* The C++ runtime allocates an Ndb object here */
@@ -179,7 +233,12 @@ Ndb *init_instance(ndb_connection *c, ndb_instance *i,
 
   if(i->db) {
     /* init(n) where n is max no. of active transactions; default is 4 */
-    i->db->init(2);
+    if(i->db->init(2) == -1) {  // Error 
+      ap_log_error(APLOG_MARK, log::err, 0, s, "Ndb::init() failed: %d %s", 
+      i->db->getNdbError().code, i->db->getNdbError().message);
+
+      i->db = 0; 
+    }
   }
 
   /* i->conn is a pointer back to the parent connection */
@@ -212,7 +271,7 @@ ndb_instance *my_instance(request_rec *r) {
   /* This is the common case: */
   if(process.n_connections == 1) {
     if(c->connected == 0) {
-      connect_to_cluster(c, r->server, srv, r->pool);
+      connect_to_cluster(c, r->server, srv, r->pool, false);
       if(! c->connected) return (ndb_instance *) 0;
     }
     return c->instances[thread_id];
@@ -246,12 +305,6 @@ extern "C" {
   *       Hooks          *
   ************************/
   
-  int mod_ndb_post_config(apr_pool_t* p, apr_pool_t* p1, apr_pool_t* p2,
-                          server_rec* s) {
-    ap_add_version_component(p, "NDB/" MYSQL_SERVER_VERSION) ;
-    return OK ;
-  }  
-
   void mod_ndb_register_hooks(ap_pool *p) {
     ap_hook_post_config(mod_ndb_post_config, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_child_init(mod_ndb_child_init, NULL, NULL, APR_HOOK_MIDDLE);
