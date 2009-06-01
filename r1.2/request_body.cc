@@ -72,7 +72,6 @@ int read_jsonrequest(query_source *qsource, apr_pool_t *pool, int length) {
 */
 int read_multipart(query_source *qsource, apr_pool_t *pool, int length) {
 
-  return OK;
 }
 
 
@@ -134,11 +133,11 @@ int HTTP_query_source::get_form_data() {
     */
     reader = read_urlencoded;
   }
-  else if(strcasecmp(content_type, "application/x-www-form-urlencoded") == 0) 
+  else if(strcmp(content_type, "application/x-www-form-urlencoded") == 0) 
     reader = read_urlencoded;
   else if(strcasecmp(content_type, "application/jsonrequest") == 0) 
     reader = read_jsonrequest;
-  else if(strcasecmp(content_type, "multipart/form-data") == 0) 
+  else if(strncmp(content_type, "multipart/form-data", 19) == 0) 
     reader = read_multipart;
   else {
     log_debug(r->server, "Unsupported request body: %s", content_type);
