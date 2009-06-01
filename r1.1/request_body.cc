@@ -64,7 +64,10 @@ int read_jsonrequest(request_rec *r, apr_table_t **tab, const char *data, int le
   
   parser.Parse();
   
-  if(parser.errors->count) return 400;
+  if(parser.errors->count) {
+    log_debug(r->server,"JSON parser: %d errors.  Returning 400.", parser.errors->count);  
+    return 400;
+  }
   return OK;
 }
 
