@@ -181,6 +181,9 @@ int ndb_handle_error(request_rec *r, int status,
   if(status == 503 && msg) ap_table_setn(r->headers_out, "Retry-After", msg);
 
   switch(status) {
+    case 400:
+      page.out("Bad request.\n");
+      break;
     case 404:
       page.out(msg ? msg : "No data could be found.\n");
       break;

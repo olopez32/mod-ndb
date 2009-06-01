@@ -21,6 +21,8 @@
 		651A68DF0C824E3500EE077F /* runner.awk */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.perl; lastKnownFileType = text; name = runner.awk; path = Tests/runner.awk; sourceTree = "<group>"; };
 		651A69790C826F8D00EE077F /* run-test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = "run-test"; path = "Tests/run-test"; sourceTree = "<group>"; };
 		6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod_ndb_config.h; sourceTree = "<group>"; };
+		652DC1C00F1576BA005663C7 /* format_compiler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = format_compiler.cc; sourceTree = "<group>"; };
+		652DC1C30F170CC8005663C7 /* multipart.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = multipart.cc; sourceTree = "<group>"; };
 		65364C080AB25F5200C355E4 /* handlers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = handlers.cc; sourceTree = "<group>"; };
 		65364EE40AB7899C00C355E4 /* result_buffer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = result_buffer.cc; sourceTree = "<group>"; };
 		654691B00CAE345500CEF3C7 /* query_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query_source.h; sourceTree = "<group>"; };
@@ -49,17 +51,17 @@
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
 		65D8B45B0CBD82A000BD24E7 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NSQL.atg; path = "N-SQL/NSQL.atg"; sourceTree = "<group>"; };
 		65D8B45C0CBD82A000BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = "N-SQL/Parser.cpp"; sourceTree = "<group>"; };
-		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
+		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
 		65D8B45E0CBD82A000BD24E7 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = "N-SQL/Parser.h"; sourceTree = "<group>"; };
 		65D8B45F0CBD82A000BD24E7 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scanner.cpp; path = "N-SQL/Scanner.cpp"; sourceTree = "<group>"; };
-		65D8B4600CBD82A000BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Scanner.frame; path = "N-SQL/Scanner.frame"; sourceTree = "<group>"; };
+		65D8B4600CBD82A000BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = "N-SQL/Scanner.frame"; sourceTree = "<group>"; };
 		65D8B4610CBD82A000BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = "N-SQL/Scanner.h"; sourceTree = "<group>"; };
 		65D8B4820CBD849500BD24E7 /* JSON.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JSON.atg; path = JSON/JSON.atg; sourceTree = "<group>"; };
 		65D8B4830CBD849500BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = JSON/Parser.cpp; sourceTree = "<group>"; };
-		65D8B4840CBD849500BD24E7 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Parser.frame; path = JSON/Parser.frame; sourceTree = "<group>"; };
+		65D8B4840CBD849500BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = JSON/Parser.frame; sourceTree = "<group>"; };
 		65D8B4850CBD849500BD24E7 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = JSON/Parser.h; sourceTree = "<group>"; };
 		65D8B4860CBD849500BD24E7 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scanner.cpp; path = JSON/Scanner.cpp; sourceTree = "<group>"; };
-		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
+		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
 		65D8B4880CBD849500BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = JSON/Scanner.h; sourceTree = "<group>"; };
 		65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = request_body.cc; sourceTree = "<group>"; };
 		65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON_encoding.cc; sourceTree = "<group>"; };
@@ -85,8 +87,9 @@
 				65EFD0180CD421CE0079CEEB /* cmp_swap.c */,
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				6513067E0B8299CC00A70BDA /* Execute.cc */,
-				65AA7E800BC5841100A5D0A4 /* format_dumper.cc */,
 				655116C20BC1CAF30009C9E1 /* format_compiler.h */,
+				652DC1C00F1576BA005663C7 /* format_compiler.cc */,
+				65AA7E800BC5841100A5D0A4 /* format_dumper.cc */,
 				65364C080AB25F5200C355E4 /* handlers.cc */,
 				654FD39D0AC5B0A6000283CB /* index_object.h */,
 				6528657E0A9B98FE000B9E9A /* mod_ndb_config.h */,
@@ -95,6 +98,7 @@
 				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
 				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
+				652DC1C30F170CC8005663C7 /* multipart.cc */,
 				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
 				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
 				6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */,
@@ -240,7 +244,6 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = mod_ndb;
