@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS demo;
+use demo;
+
 -- MySQL dump 10.12
 --
 -- Host: localhost    Database: demo
@@ -63,8 +66,7 @@ UNLOCK TABLES;
 -- Table structure for table `emperors`
 --
 
-DROP TABLE IF EXISTS `emperors`;
-CREATE TABLE `emperors` (
+CREATE TABLE IF NOT EXISTS `emperors` (
   `id` smallint(6) NOT NULL,
   `name` varchar(30) DEFAULT NULL,
   `fullname` varchar(100) DEFAULT NULL,
