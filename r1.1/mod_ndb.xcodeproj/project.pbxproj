@@ -52,17 +52,17 @@
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
 		65D8B45B0CBD82A000BD24E7 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NSQL.atg; path = "N-SQL/NSQL.atg"; sourceTree = "<group>"; };
 		65D8B45C0CBD82A000BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = "N-SQL/Parser.cpp"; sourceTree = "<group>"; };
-		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
+		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
 		65D8B45E0CBD82A000BD24E7 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = "N-SQL/Parser.h"; sourceTree = "<group>"; };
 		65D8B45F0CBD82A000BD24E7 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scanner.cpp; path = "N-SQL/Scanner.cpp"; sourceTree = "<group>"; };
-		65D8B4600CBD82A000BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Scanner.frame; path = "N-SQL/Scanner.frame"; sourceTree = "<group>"; };
+		65D8B4600CBD82A000BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = "N-SQL/Scanner.frame"; sourceTree = "<group>"; };
 		65D8B4610CBD82A000BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = "N-SQL/Scanner.h"; sourceTree = "<group>"; };
 		65D8B4820CBD849500BD24E7 /* JSON.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JSON.atg; path = JSON/JSON.atg; sourceTree = "<group>"; };
 		65D8B4830CBD849500BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = JSON/Parser.cpp; sourceTree = "<group>"; };
-		65D8B4840CBD849500BD24E7 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Parser.frame; path = JSON/Parser.frame; sourceTree = "<group>"; };
+		65D8B4840CBD849500BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = JSON/Parser.frame; sourceTree = "<group>"; };
 		65D8B4850CBD849500BD24E7 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = JSON/Parser.h; sourceTree = "<group>"; };
 		65D8B4860CBD849500BD24E7 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scanner.cpp; path = JSON/Scanner.cpp; sourceTree = "<group>"; };
-		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
+		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
 		65D8B4880CBD849500BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = JSON/Scanner.h; sourceTree = "<group>"; };
 		65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = request_body.cc; sourceTree = "<group>"; };
 		65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON_encoding.cc; sourceTree = "<group>"; };
@@ -73,6 +73,7 @@
 		65E2E8430BA218B600B1B8D0 /* modules_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap22; path = templates/modules_ap22; sourceTree = "<group>"; };
 		65E2E85F0BA2252E00B1B8D0 /* modules_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap13; path = templates/modules_ap13; sourceTree = "<group>"; };
 		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
+		65EF13A10FD252200061AFBF /* utf.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = utf.sql; path = Tests/SQL/utf.sql; sourceTree = "<group>"; };
 		65EFD0180CD421CE0079CEEB /* cmp_swap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmp_swap.c; sourceTree = "<group>"; };
 		65EFD0F20CE3E46E0079CEEB /* perf.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = perf.sql; path = Tests/SQL/perf.sql; sourceTree = "<group>"; };
 		65F451D90DD28588004B7FCD /* concurrent.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = concurrent.sh; path = Tests/concurrent.sh; sourceTree = "<group>"; };
@@ -145,6 +146,7 @@
 				656D04160C89302E00A430C6 /* ses.sql */,
 				6503B8BE0CA08C9A00490CCC /* col.sql */,
 				65EFD0F20CE3E46E0079CEEB /* perf.sql */,
+				65EF13A10FD252200061AFBF /* utf.sql */,
 			);
 			name = SQL;
 			sourceTree = "<group>";
@@ -246,7 +248,6 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = mod_ndb;
