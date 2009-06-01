@@ -29,7 +29,7 @@ PRODUCTIONS
   JSON = object | array . 
   object = '{' [ pair { ',' pair } ] '}' .
   pair = string                       (. key = JSON_string(pool, t);        .)
-  ':' value                           (. ap_table_setn(tabl, key, val);   .) .
+  ':' value                           (. ap_table_setn(tabl, key, val);     .) .
   array = '[' [ value { ',' value }  ] ']' .
   value = string                      (. val = JSON_string(pool, t);        .)
         | number                      (. val = JSON_string(pool, t);        .)
