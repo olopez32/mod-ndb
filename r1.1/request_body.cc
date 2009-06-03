@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 int walk_tab(void *rec, const char *k, const char *v) {
   request_rec *r = (request_rec *) rec;
   log_debug(r->server,"%s => %s",k, v);  
-  return TRUE;
+  return 1;
 }
 #define DEBUG_LOG_TABLE(A, B) ap_table_do(walk_tab, A, B, NULL);
 #else
