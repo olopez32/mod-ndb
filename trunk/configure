@@ -1,12 +1,21 @@
 #!/bin/sh
 
+# To do: make a list of include dirs, then filter out duplicates:
+# echo $dirs | sed 'y/ /\n/' | sort | uniq 
+
 APXS=`which apxs`
-MYSQLCFG=`which mysql_config`
+if [ -x /usr/local/mysql/bin/mysql_config ]
+ then 
+   MYSQLCFG=/usr/local/mysql/bin/mysql_config
+ else 
+   MYSQLCFG=`which mysql_config`
+fi
 GET_LIBS='--libs'
 CONFIG_CMD="$0 $@"
 CXX=g++
 OPT='-O3'
 HELPER=0
+LINK_MYSYS=1
 dso_cc_fl=-fPIC
 
 usage() {
@@ -16,17 +25,18 @@ usage() {
   echo "plus an installed copy of Apache including apxs. "
   echo 
   echo "Required: "
-  echo "       --mysql=/path/to/mysql_config "
-  echo "       --apxs=/path/to/apxs "
+  echo "    --mysql=/path/to/mysql_config [ $MYSQLCFG ] "
+  echo "    --apxs=/path/to/apxs [ $APXS ]"
   echo 
   echo "Options:  "
-  echo "       --apxs1=/path/to/apache13/apxs"
-  echo "       --aprconfig=/path/to/apr-config"
-  echo "       --linkopt='DSO linker options'"
-  echo "       --thread-safe"
-  echo "       --debug"
-  echo "       --helper"
-  echo "       --sun-cc"
+  echo "    --aprconfig=/path/to/apr-config"
+  echo "    --apuconfig=/path/to/apu-config"
+  echo "    --apxs1=/path/to/apache13/apxs"
+  echo "    --linkopt='DSO linker options'"
+  echo "    --thread-safe"
+  echo "    --debug"
+  echo "    --mysys=[yes|no] { default is yes}"
+  echo "    --sun-cc"
 }
 
 long_help() {
@@ -37,6 +47,8 @@ long_help() {
   echo  
   echo "    --aprconfig if your APR is installed outside of apache2."
   echo
+  echo "    --apuconfig for apr-util installed outside of APR."
+  echo
   echo "    --thread-safe if you have a thread-safe mysql client library."
   echo 
   echo "    --debug to compile with '-g -O0', and enable debug log "
@@ -45,7 +57,8 @@ long_help() {
   echo "    --sun-cc to compile using Sun C++ compiler rather than g++"
   echo "      (requires mysql and apache to also be built with Sun CC)"
   echo 
-  echo "    --helper to link with libndbhelper."
+  echo "    --mysys=yes|no for whether mod_ndb.so should be linked with"
+  echo "      the mysys and mystrings libraries"
   echo 
 }
 
@@ -92,8 +105,15 @@ do
       APRCONFIG=$conf_arg
       test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
       ;;
-    --helper)
-      HELPER=1
+    --apuconfig)
+      APUCONFIG=$conf_arg
+      test -x $APUCONFIG || fail "Cannot execute $APUCONFIG"
+      ;;
+    --mysys)
+      case "$conf_arg" in 
+        [Yy][Ee][Ss] ) LINK_MYSYS=1 ;;
+        [Nn][Oo]     ) LINK_MYSYS=0 ;;
+      esac             
       ;;
     --sun-cc) 
       CXX="CC"
@@ -126,7 +146,7 @@ if $HTTPD -v | grep -q "Apache/1.3"
   echo "Using Apache 1.3"
   MOD_SOURCE=mod_ndb_ap13.cc
   APACHE_VER=ap13
-  [ "$opt_debug" -eq 1 ] && START_APACHE="$START_APACHE -X"
+  [ "$opt_debug" = "1" ] && START_APACHE="$START_APACHE -X"
   STOP_APACHE='kill `cat logs/httpd.pid`'
   RESTART_APACHE='kill -HUP `cat logs/httpd.pid`'
   APXS1=$APXS
@@ -142,16 +162,24 @@ if $HTTPD -v | grep -q "Apache/1.3"
   fi
   STOP_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k stop"
   RESTART_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k restart"  
+  # Default apr-config and apu-config:
+  [ -z "$APRCONFIG" ] && APRCONFIG=`$APXS -q APR_CONFIG` 
+  if $APXS -q APU_CONFIG 
+   then  
+     [ -z "$APUCONFIG" ] && APUCONFIG=`$APXS -q APU_CONFIG`
+  fi
 fi
 echo
 
 echo "Configuring with"
 echo "    mysql_config = " $MYSQLCFG 
 echo "    apxs         = " $APXS 
-[ -n "$APXS1" ]     && echo "    apxs 1.3 =     " $APXS1
-[ -n "$APRCONFIG" ] && echo "    apr-config =   " $APRCONFIG
-[ $HELPER -eq 1 ]   && echo "    Using ndbhelper library"
+[ -n "$APXS1" ]       && echo "    apxs 1.3 =     " $APXS1
+[ -n "$APRCONFIG" ]   && echo "    apr-config   = " $APRCONFIG
+[ -n "$APUCONFIG" ]   && echo "    apu-config   = " $APUCONFIG
 echo
+
+[ $LINK_MYSYS -eq 1 ] && echo "Linking with -lmysys and -lmystrings" && echo
 
 if [ ! -x "$APXS" ]
  then 
@@ -163,9 +191,15 @@ if [ ! -x "$MYSQLCFG" ]
 fi
 if [ -x "$APRCONFIG" ]
  then
-  APRLD=`$APRCONFIG --ldflags`
   APRINC=`$APRCONFIG --includes`
 fi
+if [ -x "$APUCONFIG" ]
+ then
+  APUINC=`$APUCONFIG --includes`
+  [ "$APUINC" != "$APRINC" ] && APRINC="$APRINC $APUINC"
+fi
+
+
 
 MY_INC=`$MYSQLCFG --include`
 MY_LIBS=`$MYSQLCFG $GET_LIBS`
@@ -177,7 +211,8 @@ if test -n "$APXS1"
   dso_cc_fl="$dso_cc_fl "`$APXS1 -q CFLAGS`' '`$APXS1 -q CFLAGS_SHLIB` 
   dso_ld_fl="$dso_ld_fl "`$APXS1 -q LDFLAGS_SHLIB`
  else 
-  # Platform-specific linker flags
+  # For Apache 2 the strategy is different.
+  # 1) use some well-known platform-specific linker flags
   case `uname -s` in 
     Darwin) 
       # Apple Linker
@@ -197,6 +232,11 @@ if test -n "$APXS1"
       dso_ld_fl="-shared"    
       ;;
   esac
+  # 2) If we are using apr-config, it can supply some flags, too.
+  if [ -x "$APRCONFIG" ]
+    then
+      dso_cc_fl=`$APRCONFIG --cppflags`" $dso_cc_fl"
+  fi
 fi
 
 if $MYSQLCFG --version | grep -q '^5.1.' 
@@ -235,6 +275,12 @@ echo '#' Makefile for mod_ndb.  Automatically generated from:
 echo '#' $CONFIG_CMD
 echo
 echo CC=$CXX
+if test -x /usr/bin/cococpp   # .deb package
+ then
+   echo COCO=cococpp
+ else
+   echo COCO=Coco
+fi
 echo DEFINE=$DEFINE
 echo APXS=$APXS
 echo MOD_SOURCE=$MOD_SOURCE
@@ -243,11 +289,11 @@ echo
 echo MY_INC1=$MY_INC
 echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
-if test $HELPER -eq 1 
+if test $LINK_MYSYS -eq 1 
  then 
-   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient -lndbhelper"
- else
    echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+ else
+   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient"
 fi
 echo 
 echo OPT=$OPT
@@ -267,21 +313,21 @@ echo
 
 cat make_file_tail >> Makefile
 
+echo $CONFIG_CMD > config.log
+
 echo "Created Makefile."
 echo
-echo "Removing out-of-date files:"
-make clean
+echo "Removing out-of-date files."
+make -s clean
 echo
 echo "Hello!"
 echo 
 echo "   make            : build mod_ndb" 
 echo "   make install    : install mod_ndb.so"
 echo "   make configtest : test configuration"
-echo "   make start      : start a test server on port 3080"
+echo "   make start      : start a test server on port 3080 (see test.conf)"
 echo "   make stop       : stop the test server"
 echo "   make restart    : restart the test server" 
-echo 
-echo "To configure the test server, edit test.conf"
 echo
 echo "Thanks for trying mod_ndb!"
 echo
