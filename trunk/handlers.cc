@@ -43,6 +43,7 @@ extern "C" {
     query_source *qsource;
     
     // Apache 2 Handler name check
+    log_debug(r->server, "r->handler is \"%s\"", r->handler);
     CheckHandler(r,"ndb-cluster");
 
     // Fetch configuration  
@@ -180,6 +181,9 @@ int ndb_handle_error(request_rec *r, int status,
   if(status == 503 && msg) ap_table_setn(r->headers_out, "Retry-After", msg);
 
   switch(status) {
+    case 400:
+      page.out("Bad request.\n");
+      break;
     case 404:
       page.out(msg ? msg : "No data could be found.\n");
       break;
@@ -229,7 +233,8 @@ int print_all_params(void *v, const char *key, const char *val) {
 
 
 const char * allowed_methods(request_rec *r, config::dir *dir) {
-  apache_array<char *> *methods = new(r->pool, 4) apache_array<char *>;
+  apache_array<const char *> *methods = 
+    new(r->pool, 4) apache_array<const char *>;
 
   if(dir->visible->size())    *methods->new_item() = "GET";
   if(dir->flag.use_etags)     *methods->new_item() = "HEAD";

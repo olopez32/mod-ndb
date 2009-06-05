@@ -11,6 +11,7 @@
 # test-flags:  fx  -- use filter x, i.e. "sed -f fx.sed" 
 #              JR  -- application/jsonrequest
 #              SQL -- line is a SQL line
+#              sort -- sort output through "sort -t: -k1n"
 #
 # Format of SQL lines, e.g. CREATE TABLE statements, run in mysql client:
 #     test-name "SQL" query-file-name 
@@ -20,6 +21,7 @@
 # ------ Prepare the database
 sql000 SQL connection.sql
 typ000 SQL typ.sql
+perf00 SQL perf.sql
 
 # ------ Data type tests ------
 # typ1: the most common data types (int, unsigned, smallint, char, varchar)
@@ -176,7 +178,7 @@ fil211 f1 fil2?c1=brown&v1=12    # color = "brown" and nvisits = 12
 
 # SELECT *
 star01 f1 star01 
-star02 f1 star02
+star02 f1 star02?id=1
 
 # Constants
 con101 f1 sesu?skey=3         # 2nd part of ordered index = string constant
@@ -191,12 +193,26 @@ con102 f1 sesv?var=user_name  # 1st part of ordered index = numeric constant
 
 
 # JSONRequest
-json01 JR/f1 ses_list     # GET; 200 
-json02 JR/f1 sesx/3       # GET; 406, because XML is not JSON
-json03 JR/f1 typ5 --data-binary ' { "i":1,"c":5 }'
-json04 JR/f1 typ5?i=1 
+json01 JR|f1 ses_list     # GET; 200 
+json02 JR|f1 sesx/3       # GET; 406, because XML is not JSON
+json03 JR|f1 typ5 --data-binary ' { "i":1,"c":5 }'
+json04 JR|f1 typ5?i=1 
 json05 f1 typ5?i=1 -X DELETE  
-json06 JR/f1 typ6 --data-binary ' { "i":2, "j":3, "name":"rasmus"}'
+json06 JR|f1 typ6 --data-binary ' { "i":2, "j":3, "name":"rasmus"}'
 json07 f1 typ6?i=2&j=3
 json08 f1 typ6?i=2&j=3 -X DELETE
+# json09 fails because the POST data is non-JSON
+json09 JR|f1 typ3 -d 'i=3&d1=1.25&d2=2.375&d3=3.5&d4=4.9865' 
+# Create and delete a UTF-8 Record
+json10 JR|f1 typ6 --data-binary ' { "i":3, "j":4, "name":"Ÿlker"}'
+json11 f1 typ6?i=3&j=4 -X DELETE
+
+# Functional test of the queries used in the concurrent test
+perf11 f1 perf1 -d 'i=9991&c1=SomeText&c2=SomeText&o1=10&o2=10&m1=3.1&m2=9'
+perf12 f1 perf1/item/9991 
+perf13 f1 perf1/idx/10
+perf14 f1 perf1/item/9991 -d 'm2=@++'
+perf15 f1 perf1/item/9991 
+perf16 f1 perf1/item/9991 -X DELETE
+perf17 f1 perf1/item/9991 
 

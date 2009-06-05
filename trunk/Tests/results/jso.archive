@@ -28,16 +28,6 @@ __json02__
 }
 # __END__ json02
 
-# _BEGIN_ json03
-r.json03() {
-  cat <<'__json03__'
-HTTP/1.1 204 No Content
-Content-Length: 0
-Content-Type: application/jsonrequest
-
-__json03__
-}
-# __END__ json03
 
 # _BEGIN_ json04
 r.json04() {
@@ -63,16 +53,6 @@ __json05__
 }
 # __END__ json05
 
-# _BEGIN_ json06
-r.json06() {
-  cat <<'__json06__'
-HTTP/1.1 204 No Content
-Content-Length: 0
-Content-Type: application/jsonrequest
-
-__json06__
-}
-# __END__ json06
 
 # _BEGIN_ json07
 r.json07() {
@@ -98,4 +78,40 @@ __json08__
 }
 # __END__ json08
 
+# _BEGIN_ json03
+r.json03() {
+  cat <<'__json03__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json03__
+}
+# __END__ json03
+
+# _BEGIN_ json06
+r.json06() {
+  cat <<'__json06__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json06__
+}
+# __END__ json06
+
+# _BEGIN_ json09
+r.json09() {
+  cat <<'__json09__'
+HTTP/1.1 400 Bad Request
+Content-Length: 13
+Connection: close
+Content-Type: text/plain
+
+Bad request.
+__json09__
+}
+# __END__ json09
 
