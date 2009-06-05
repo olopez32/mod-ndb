@@ -17,21 +17,17 @@ __star01__
 }
 # __END__ star01
 
+
+
 # _BEGIN_ star02
 r.star02() {
   cat <<'__star02__'
 HTTP/1.1 200 OK
-Content-Length: 414
-ETag: a364530ade6373541e778b371130c469
+Content-Length: 76
+ETag: 1a25cc7dbb6cef6cc0c010bc24ef2735
 Content-Type: text/plain
 
-[
-  { "id":1 , "name":"fred    " , "color":null , "nvisits":5 , "channel":12 },
-  { "id":4 , "name":"jen     " , "color":"brown" , "nvisits":12 , "channel":12 },
-  { "id":5 , "name":"tom     " , "color":"brown" , "nvisits":2 , "channel":13 },
-  { "id":3 , "name":"joe     " , "color":"yellow" , "nvisits":12 , "channel":19 },
-  { "id":2 , "name":"mary    " , "color":"greenish" , "nvisits":11 , "channel":680 } 
-]
+ { "id":1 , "name":"fred    " , "color":null , "nvisits":5 , "channel":12 }
 __star02__
 }
 # __END__ star02

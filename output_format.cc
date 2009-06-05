@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* Globals */
 const char *escape_leaning_toothpicks[256];
 const char *escape_xml_entities[256];
+const char *escape_xml_plus_json[256];
+
 apr_table_t *global_format_names = 0;
 apache_array<struct output_format *> *global_output_formats = 0;
 
@@ -36,12 +38,20 @@ void initialize_output_formats(ap_pool *p) {
 }
 
 
-void initialize_escapes() {
-  for(int i = 0 ; i < 256 ; i++) {
-    escape_leaning_toothpicks[i] = 0;
-    escape_xml_entities[i] = 0;
-  }
+void initialize_escapes(ap_pool *p) {
+  int i;
   
+  for(i = 0 ; i < 256 ; i++) {
+    escape_leaning_toothpicks[i] = 0;     /* JSON escapes */
+    escape_xml_entities[i] = 0;           /* XML escapes */
+   }
+
+  /* Escape sequences are stored with a leading length byte  */
+  /* RFC 4627: control characters 00 - 1f must be escaped */
+  for(i = 0 ; i < 32 ; i++)
+    escape_leaning_toothpicks[i] = ap_psprintf(p, "\x06" "\\u%04x", i);
+  
+  /* www.json.org : these characters are also escaped */
   escape_leaning_toothpicks[static_cast<int>('\\')] = "\x02" "\\" "\\";
   escape_leaning_toothpicks[static_cast<int>('\"')] = "\x02" "\\" "\"";
   escape_leaning_toothpicks[static_cast<int>('\b')] = "\x02" "\\" "b";
@@ -54,12 +64,25 @@ void initialize_escapes() {
   escape_xml_entities[static_cast<int>('>')] = "\x04" "&gt;";
   escape_xml_entities[static_cast<int>('&')] = "\x05" "&amp;";
   escape_xml_entities[static_cast<int>('\"')]= "\x06" "&quot;";
+
+
+  /* The combined JSON-on-XML encoding uses the four XML escapes, 
+     plus all of the JSON escapes except the quote.  It's sufficient
+     to say it's a combined set, with the XMLs taking precedence. 
+  */
+  
+  for(i = 0 ; i < 256 ; i++) {
+    escape_xml_plus_json[i] = escape_xml_entities[i] ? 
+      escape_xml_entities[i] : escape_leaning_toothpicks[i] ;
+  }
+
 }
 
 
 const char **get_escapes(re_esc esc) {
   if(esc == esc_xml) return escape_xml_entities;
   else if(esc == esc_json) return escape_leaning_toothpicks;
+  else if(esc == esc_xmljson) return escape_xml_plus_json;
   return 0;  
 }
 
@@ -264,15 +287,16 @@ int ScanLoop::Run(data_operation *data, result_buffer &res) {
   register int nrows = 0;
   
   if(data->scanop) {
+    /* nextResult(true) fetches rows from NDB into cache ;
+       nextResult(false) uses rows already cached */ 
     while((data->scanop->nextResult(true)) == 0) {
       do {
-        if(nrows++) res.out(*sep);
-        else begin->chain_out(res);
+        if(nrows++) res.out(*sep);    /* comma */
+          else begin->chain_out(res); /* open bracket */
         core->Run(data, res);
-      } while((data->scanop->nextResult(false)) == 0);
-      
-      if(nrows) end->chain_out(res);
+      } while((data->scanop->nextResult(false)) == 0);      
     }
+    if(nrows) end->chain_out(res);   /* close bracket */
     return (nrows ? OK : 404);
   }
   else {  /* not a scan, just a single result row */

@@ -261,7 +261,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       Q.form_data = ap_make_table(r->pool, 6);
       Q.set_vals = (mvalue *) ap_pcalloc(r->pool, dir->updatable->size() * sizeof (mvalue));
       response_code = qsource.get_form_data(& Q.form_data);
-      if(response_code != OK) return response_code;
+      if(response_code != OK) 
+        return ndb_handle_error(r, response_code, NULL, NULL);
       /* A POST with no keys is an insert, and  
          an insert has a primary key plan: */
       if(! (r->args || dir->pathinfo_size)) {
@@ -507,14 +508,14 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
   }
 
   // Perform the action; i.e. get the value of each column
-  if(Q.op_action(r, dir, &Q)) {
-    response_code = 404;
-    goto abort1;
+  response_code = Q.op_action(r, dir, &Q);
+  
+  if(response_code == 0) {  
+    if(qsource.keep_tx_open) 
+      return OK;
+    else
+      return ExecuteAll(r, i);
   }
-  if(qsource.keep_tx_open) 
-    return OK;
-  else
-    return ExecuteAll(r, i);
 
   abort1:
   i->tx->close();
@@ -640,8 +641,20 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
             eqr = q->data->op->setValue(col->getColumnNo(), (const char *) (&mval.u.val_char));
         }
       } /* if(mval_is_usable) */
-      else eqr = -1;
-      if(eqr) log_debug(r->server,"setValue failed: %s", q->data->op->getNdbError().message);
+      else eqr = -4;
+
+      if(eqr) {
+        const NdbError err = q->data->op->getNdbError();
+         switch (err.code) {
+          case 4217:
+          case 4218:
+            log_err(r->server,"Schema error. [%d], %s", err.code, err.message);
+            return ndb_handle_error(r, 500, & err, 0);
+          default:
+            log_debug(r->server,"setValue() failed: [%d] %s", err.code, err.message);
+            return ndb_handle_error(r, 500, & err, 0);
+        }
+      }
     }
   } // for()
   return eqr;
