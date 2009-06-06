@@ -115,3 +115,27 @@ __json09__
 }
 # __END__ json09
 
+# _BEGIN_ json11
+r.json11() {
+  cat <<'__json11__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json11__
+}
+# __END__ json11
+
+
+# _BEGIN_ json10
+r.json10() {
+  cat <<'__json10__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json10__
+}
+# __END__ json10
+
