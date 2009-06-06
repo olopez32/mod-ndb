@@ -40,17 +40,26 @@ Coco/R itself) does not fall under the GNU General Public License.
 #include <wchar.h>
 #include <assert.h>
 
+// io.h and fcntl are used to ensure binary read from streams on windows
+#if _MSC_VER >= 1300
+#include <io.h>
+#include <fcntl.h>
+#endif
+
 #if _MSC_VER >= 1400
 #define coco_swprintf swprintf_s
 #elif _MSC_VER >= 1300
 #define coco_swprintf _snwprintf
-#else 
+#else
+// assume every other compiler knows swprintf
 #define coco_swprintf swprintf
 #endif
 
 #define COCO_WCHAR_MAX 65535
-#define MAX_BUFFER_LENGTH (64*1024)
+#define MIN_BUFFER_LENGTH 1024
+#define MAX_BUFFER_LENGTH (64*MIN_BUFFER_LENGTH)
 #define HEAP_BLOCK_SIZE (64*1024)
+#define COCO_CPP_NAMESPACE_SEPARATOR L':'
 
 // string handling, wide character
 wchar_t* coco_string_create(const wchar_t *value);
@@ -92,38 +101,51 @@ public:
 
 	Token();
 	~Token();
-
 };
 
 class Buffer {
+// This Buffer supports the following cases:
+// 1) seekable stream (file)
+//    a) whole stream in buffer
+//    b) part of stream in buffer
+// 2) non seekable stream (network, console)
 private:
-	char *buf;          // input buffer
+	unsigned char *buf; // input buffer
+	int bufCapacity;    // capacity of buf
 	int bufStart;       // position of first byte in buffer relative to input stream
 	int bufLen;         // length of buffer
-	int fileLen;        // length of input stream
-	int pos;            // current position in buffer
-	FILE* stream;      // input stream (seekable)
+	int fileLen;        // length of input stream (may change if the stream is no file)
+	int bufPos;         // current position in buffer
+	FILE* stream;       // input stream (seekable)
 	bool isUserStream;  // was the stream opened by the user?
+	
+	int ReadNextStreamChunk();
+	bool CanSeek();     // true if stream can be seeked otherwise false
 	
 public:
 	static const int EoF = COCO_WCHAR_MAX + 1;
 
 	Buffer(FILE* s, bool isUserStream);
-	Buffer(const char* buf, int len);
+	Buffer(const unsigned char* buf, int len);
 	Buffer(Buffer *b);
 	virtual ~Buffer();
 	
 	virtual void Close();
 	virtual int Read();
 	virtual int Peek();
-	virtual char* GetString(int beg, int end);
+	virtual wchar_t* GetString(int beg, int end);
 	virtual int GetPos();
 	virtual void SetPos(int value);
 };
 
+class UTF8Buffer : public Buffer {
+public:
+	UTF8Buffer(Buffer *b) : Buffer(b) {};
+	virtual int Read();
+};
 
 //-----------------------------------------------------------------------------------
-// StartStates  -- maps charactes to start states of tokens
+// StartStates  -- maps characters to start states of tokens
 //-----------------------------------------------------------------------------------
 class StartStates {
 private:
@@ -152,12 +174,12 @@ public:
 
 	void set(int key, int val) {
 		Elem *e = new Elem(key, val);
-		int k = key % 128;
+		int k = ((unsigned int) key) % 128;
 		e->next = tab[k]; tab[k] = e;
 	}
 
 	int state(int key) {
-		Elem *e = tab[key % 128];
+		Elem *e = tab[((unsigned int) key) % 128];
 		while (e != NULL && e->key != key) e = e->next;
 		return e == NULL ? 0 : e->val;
 	}
@@ -213,7 +235,7 @@ private:
 	void *heapTop;
 	void **heapEnd;
 
-	char EOL;
+	unsigned char EOL;
 	int eofSym;
 	int noSym;
 	int maxT;
@@ -249,7 +271,7 @@ private:
 public:
 	Buffer *buffer;   // scanner buffer
 	
-	Scanner(const char* buf, int len);
+	Scanner(const unsigned char* buf, int len);
 	Scanner(const wchar_t* fileName);
 	Scanner(FILE* s);
 	~Scanner();
@@ -493,28 +515,42 @@ Buffer::Buffer(FILE* s, bool isUserStream) {
 
 Buffer::Buffer(Buffer *b) {
 	buf = b->buf;
+	bufCapacity = b->bufCapacity;
 	b->buf = NULL;
 	bufStart = b->bufStart;
 	bufLen = b->bufLen;
 	fileLen = b->fileLen;
-	pos = b->pos;
+	bufPos = b->bufPos;
 	stream = b->stream;
 	b->stream = NULL;
 	isUserStream = b->isUserStream;
 }
 
-Buffer::Buffer(const char* buf, int len) {
-        /* JSON/mod_ndb: no need to copy */        
-        this->buf = (char *) buf;
+Buffer::Buffer(const unsigned char* buf, int len) {
+
+  /* JSON/mod_ndb: no need to copy */        
+       /* this->buf = (char *) buf;
 	bufStart = 0;
 	bufLen = len;
 	fileLen = len;
 	pos = 0;
 	stream = NULL;
+*/
+	this->buf = new unsigned char[len];
+	memcpy(this->buf, buf, len*sizeof(unsigned char));
+	bufStart = 0;
+	bufCapacity = bufLen = len;
+	fileLen = len;
+	bufPos = 0;
+	stream = NULL;
 }
 
 Buffer::~Buffer() {
 	Close(); 
+	if (buf != NULL) {
+		delete [] buf;
+		buf = NULL;
+	}
 }
 
 void Buffer::Close() {
@@ -525,11 +561,13 @@ void Buffer::Close() {
 }
 
 int Buffer::Read() {
-	if (pos < bufLen) {
-		return buf[pos++];
+	if (bufPos < bufLen) {
+		return buf[bufPos++];
 	} else if (GetPos() < fileLen) {
 		SetPos(GetPos()); // shift buffer start to Pos
-		return buf[pos++];
+		return buf[bufPos++];
+	} else if ((stream != NULL) && !CanSeek() && (ReadNextStreamChunk() > 0)) {
+		return buf[bufPos++];
 	} else {
 		return EoF;
 	}
@@ -542,44 +580,123 @@ int Buffer::Peek() {
 	return ch;
 }
 
-char* Buffer::GetString(int beg, int end) {
+wchar_t* Buffer::GetString(int beg, int end) {
 	int len = end - beg;
-	char *buf = new char[len];
+	wchar_t *buf = new wchar_t[len];
 	int oldPos = GetPos();
 	SetPos(beg);
-	for (int i = 0; i < len; ++i) buf[i] = (char) Read();
+	for (int i = 0; i < len; ++i) buf[i] = (wchar_t) Read();
 	SetPos(oldPos);
 	return buf;
 }
 
 int Buffer::GetPos() {
-	return pos + bufStart;
+	return bufPos + bufStart;
 }
 
 void Buffer::SetPos(int value) {
-	if (value < 0) value = 0;
-	else if (value > fileLen) value = fileLen;
-	if (value >= bufStart && value < bufStart + bufLen) { // already in buffer
-		pos = value - bufStart;
+	if ((value >= fileLen) && (stream != NULL) && !CanSeek()) {
+		// Wanted position is after buffer and the stream
+		// is not seek-able e.g. network or console,
+		// thus we have to read the stream manually till
+		// the wanted position is in sight.
+		while ((value >= fileLen) && (ReadNextStreamChunk() > 0));
+	}
+
+	if ((value < 0) || (value > fileLen)) {
+		wprintf(L"--- buffer out of bounds access, position: %d\n", value);
+		exit(1);
+	}
+
+	if ((value >= bufStart) && (value < (bufStart + bufLen))) { // already in buffer
+		bufPos = value - bufStart;
 	} else if (stream != NULL) { // must be swapped in
 		fseek(stream, value, SEEK_SET);
-		bufLen = fread(buf, sizeof(char), MAX_BUFFER_LENGTH, stream);
-		bufStart = value; pos = 0;
+		bufLen = fread(buf, sizeof(unsigned char), bufCapacity, stream);
+		bufStart = value; bufPos = 0;
 	} else {
-		pos = fileLen - bufStart; // make Pos return fileLen
+		bufPos = fileLen - bufStart; // make Pos return fileLen
 	}
 }
 
-Scanner::Scanner(const char* buf, int len) {
+// Read the next chunk of bytes from the stream, increases the buffer
+// if needed and updates the fields fileLen and bufLen.
+// Returns the number of bytes read.
+int Buffer::ReadNextStreamChunk() {
+	int free = bufCapacity - bufLen;
+	if (free == 0) {
+		// in the case of a growing input stream
+		// we can neither seek in the stream, nor can we
+		// foresee the maximum length, thus we must adapt
+		// the buffer size on demand.
+		bufCapacity = bufLen * 2;
+		unsigned char *newBuf = new unsigned char[bufCapacity];
+		memcpy(newBuf, buf, bufLen*sizeof(unsigned char));
+		delete [] buf;
+		buf = newBuf;
+		free = bufLen;
+	}
+	int read = fread(buf + bufLen, sizeof(unsigned char), free, stream);
+	if (read > 0) {
+		fileLen = bufLen = (bufLen + read);
+		return read;
+	}
+	// end of stream reached
+	return 0;
+}
+
+bool Buffer::CanSeek() {
+	return (stream != NULL) && (ftell(stream) != -1);
+}
+
+int UTF8Buffer::Read() {
+	int ch;
+	do {
+		ch = Buffer::Read();
+		// until we find a utf8 start (0xxxxxxx or 11xxxxxx)
+	} while ((ch >= 128) && ((ch & 0xC0) != 0xC0) && (ch != EoF));
+	if (ch < 128 || ch == EoF) {
+		// nothing to do, first 127 chars are the same in ascii and utf8
+		// 0xxxxxxx or end of file character
+	} else if ((ch & 0xF0) == 0xF0) {
+		// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+		int c1 = ch & 0x07; ch = Buffer::Read();
+		int c2 = ch & 0x3F; ch = Buffer::Read();
+		int c3 = ch & 0x3F; ch = Buffer::Read();
+		int c4 = ch & 0x3F;
+		ch = (((((c1 << 6) | c2) << 6) | c3) << 6) | c4;
+	} else if ((ch & 0xE0) == 0xE0) {
+		// 1110xxxx 10xxxxxx 10xxxxxx
+		int c1 = ch & 0x0F; ch = Buffer::Read();
+		int c2 = ch & 0x3F; ch = Buffer::Read();
+		int c3 = ch & 0x3F;
+		ch = (((c1 << 6) | c2) << 6) | c3;
+	} else if ((ch & 0xC0) == 0xC0) {
+		// 110xxxxx 10xxxxxx
+		int c1 = ch & 0x1F; ch = Buffer::Read();
+		int c2 = ch & 0x3F;
+		ch = (c1 << 6) | c2;
+	}
+	return ch;
+}
+
+Scanner::Scanner(const unsigned char* buf, int len) {
 	buffer = new Buffer(buf, len);
 	Init();
 }
 
 Scanner::Scanner(const wchar_t* fileName) {
-        /* JSON/mod_ndb: we don't use this */
-        assert(0);
+	FILE* stream;
+	char *chFileName = coco_string_create_char(fileName);
+	if ((stream = fopen(chFileName, "rb")) == NULL) {
+		wprintf(L"--- Cannot open file %ls\n", fileName);
+		exit(1);
+	}
+	coco_string_delete(chFileName);
+	buffer = new Buffer(stream, false);
+	Init();
 }
-	
+
 Scanner::Scanner(FILE* s) {
         /* JSON/mod_ndb: we don't use this */
         assert(0);
@@ -619,13 +736,25 @@ void Scanner::Init() {
 	pos = -1; line = 1; col = 0;
 	oldEols = 0;
 	NextCh();
+	if (ch == 0xEF) { // check optional byte order mark for UTF-8
+		NextCh(); int ch1 = ch;
+		NextCh(); int ch2 = ch;
+		if (ch1 != 0xBB || ch2 != 0xBF) {
+			wprintf(L"Illegal byte order mark at start of file");
+			exit(1);
+		}
+		Buffer *oldBuf = buffer;
+		buffer = new UTF8Buffer(buffer); col = 0;
+		delete oldBuf; oldBuf = NULL;
+		NextCh();
+	}
 
 -->initialization
 	pt = tokens = CreateToken(); // first token is a dummy
 }
 
 void Scanner::NextCh() {
-	if (oldEols > 0) { ch = EOL; oldEols--; } 
+	if (oldEols > 0) { ch = EOL; oldEols--; }
 	else {
 		pos = buffer->GetPos();
 		ch = buffer->Read(); col++;
@@ -642,11 +771,13 @@ void Scanner::AddCh() {
 		tvalLength *= 2;
 		wchar_t *newBuf = new wchar_t[tvalLength];
 		memcpy(newBuf, tval, tlen*sizeof(wchar_t));
-		delete tval;
+		delete [] tval;
 		tval = newBuf;
 	}
+	if (ch != Buffer::EoF) {
 -->casing2
-	NextCh();
+		NextCh();
+	}
 }
 
 -->comments
@@ -695,7 +826,6 @@ void Scanner::AppendVal(Token *t) {
 	heapTop = (void*) ((char*) heapTop + reqMem);
 
 	wcsncpy(t->val, tval, tlen);
-        t->len = tlen;
 	t->val[tlen] = L'\0';
 }
 
@@ -705,7 +835,7 @@ Token* Scanner::NextToken() {
 	) NextCh();
 -->scan2
 	t = CreateToken();
-	t->pos = pos; t->col = col; t->line = line; 
+	t->pos = pos; t->col = col; t->line = line;
 	int state = start.state(ch);
 	tlen = 0; AddCh();
 
@@ -730,15 +860,13 @@ Token* Scanner::Scan() {
 
 // peek for the next token, ignore pragmas
 Token* Scanner::Peek() {
-	if (pt->next == NULL) {
-		do {
-			pt = pt->next = NextToken();
-		} while (pt->kind > maxT); // skip pragmas
-	} else {
-		do {
-			pt = pt->next; 
-		} while (pt->kind > maxT);
-	}
+	do {
+		if (pt->next == NULL) {
+			pt->next = NextToken();
+		}
+		pt = pt->next;
+	} while (pt->kind > maxT); // skip pragmas
+
 	return pt;
 }
 

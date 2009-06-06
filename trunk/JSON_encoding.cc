@@ -128,7 +128,7 @@ int JSON_unescape(char *str) {
    Strip the quotes, if there are any. 
 */
 char *JSON_string(ap_pool *my_pool, JSON::Token *tok) {;
-  int len = tok->len;
+  int len = coco_string_length(tok->val);
   wchar_t *start = tok->val;
   if(*start == L'"') start++, len -= 2;
   char *res = (char *) ap_palloc(my_pool, len + 1);
