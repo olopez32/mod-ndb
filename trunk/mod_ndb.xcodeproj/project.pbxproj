@@ -48,6 +48,7 @@
 		65ADCC4A0BB0FF0A00AEE680 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = output_format.h; sourceTree = "<group>"; };
 		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
+		65D86D390FDEC3430097814E /* test_encoding.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = test_encoding.c; path = JSON/test_encoding.c; sourceTree = "<group>"; };
 		65D8B45B0CBD82A000BD24E7 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NSQL.atg; path = "N-SQL/NSQL.atg"; sourceTree = "<group>"; };
 		65D8B45C0CBD82A000BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = "N-SQL/Parser.cpp"; sourceTree = "<group>"; };
 		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; lastKnownFileType = text; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
@@ -176,6 +177,7 @@
 				65D8B4820CBD849500BD24E7 /* JSON.atg */,
 				65D8B4870CBD849500BD24E7 /* Scanner.frame */,
 				65D8B4840CBD849500BD24E7 /* Parser.frame */,
+				65D86D390FDEC3430097814E /* test_encoding.c */,
 				65D8B4850CBD849500BD24E7 /* Parser.h */,
 				65D8B4830CBD849500BD24E7 /* Parser.cpp */,
 				65D8B4880CBD849500BD24E7 /* Scanner.h */,
