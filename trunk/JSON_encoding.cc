@@ -80,8 +80,9 @@ int JSON_unescape(char *str) {
       
       if(c == 'u') {  /* \uXXXX */
          /* Convert the character code from hex to UTF-8 */
-         char c4 = *r;     char c3 = *++r;
-         char c2 = *++r;   char c1 = *++r;        
+         char c4 = *++r;     char c3 = *++r;
+         char c2 = *++r;   char c1 = *++r;  
+		  r++;
          unsigned int char_code = 
           ((16 * 16 * 16) * xval(c4)) + ((16 * 16) * xval(c3)) +
           (16 * xval(c2)) + xval(c1); 
