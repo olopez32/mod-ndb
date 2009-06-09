@@ -129,15 +129,19 @@ __json10__
 }
 # __END__ json10
 
+
+
+
+
+
 # _BEGIN_ json11
 r.json11() {
   cat <<'__json11__'
-HTTP/1.1 200 OK
-Content-Length: 36
-ETag: f81fc6d32ffe6cd6415acc8c05ec079e
+HTTP/1.1 409 Conflict
+Content-Length: 59
 Content-Type: text/plain
 
- { "i":3 , "j":4 , "name":"�lker" }
+Constraint violation e.g. duplicate value in unique index.
 __json11__
 }
 # __END__ json11
@@ -145,10 +149,12 @@ __json11__
 # _BEGIN_ json12
 r.json12() {
   cat <<'__json12__'
-HTTP/1.1 204 No Content
-Content-Length: 0
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: 7d39e45f075fed9e496197d9b61e859e
 Content-Type: text/plain
 
+ { "i":3 , "j":4 , "name":"ülker" }
 __json12__
 }
 # __END__ json12
@@ -156,11 +162,10 @@ __json12__
 # _BEGIN_ json13
 r.json13() {
   cat <<'__json13__'
-HTTP/1.1 200 OK
-Content-Length: 4
-Content-Type: application/jsonrequest
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
 
-{ }
 __json13__
 }
 # __END__ json13
@@ -169,11 +174,10 @@ __json13__
 r.json14() {
   cat <<'__json14__'
 HTTP/1.1 200 OK
-Content-Length: 37
-ETag: ba686fff3cb556f6ce494116c28e32f3
-Content-Type: text/plain
+Content-Length: 4
+Content-Type: application/jsonrequest
 
- { "i":5 , "j":6 , "name":"ülker" }
+{ }
 __json14__
 }
 # __END__ json14
@@ -181,11 +185,24 @@ __json14__
 # _BEGIN_ json15
 r.json15() {
   cat <<'__json15__'
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: 8d85fb780be5f64ad0d5bc077d0b009d
+Content-Type: text/plain
+
+ { "i":4 , "j":5 , "name":"ülker" }
+__json15__
+}
+# __END__ json15
+
+# _BEGIN_ json16
+r.json16() {
+  cat <<'__json16__'
 HTTP/1.1 204 No Content
 Content-Length: 0
 Content-Type: text/plain
 
-__json15__
+__json16__
 }
-# __END__ json15
+# __END__ json16
 
