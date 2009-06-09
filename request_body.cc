@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 int walk_tab(void *rec, const char *k, const char *v) {
   request_rec *r = (request_rec *) rec;
   log_debug(r->server,"%s => %s",k, v);  
-  return TRUE;
+  return 1;
 }
 #define DEBUG_LOG_TABLE(A, B) ap_table_do(walk_tab, A, B, NULL);
 #else
@@ -64,7 +64,10 @@ int read_jsonrequest(request_rec *r, apr_table_t **tab, const char *data, int le
   
   parser.Parse();
   
-  if(parser.errors->count) return 400;
+  if(parser.errors->count) {
+    log_debug(r->server,"JSON parser: %d errors.  Returning 400.", parser.errors->count);  
+    return 400;
+  }
   return OK;
 }
 
@@ -118,7 +121,15 @@ int read_request_body(request_rec *r, apr_table_t **tab, const char *type) {
     return OK;
 
   // To do: support multipart/form-data
-  if(strcasecmp(type, "application/x-www-form-urlencoded") == 0) 
+  if(!type) {
+    /* This is a POST or PUT with an entity body but no content-type.
+       As far as I can tell, HTTP allows this -- neither sec. 4-3 (Message Body)
+       nor sec. 9-5 (POST) requires the client to send a content-type.
+       No real client sends such a request, but the httperf benchmark tool does.
+    */
+    reader = read_urlencoded;
+  }
+  else if(strcasecmp(type, "application/x-www-form-urlencoded") == 0) 
     reader = read_urlencoded;
   else if(strcasecmp(type, "application/jsonrequest") == 0) 
     reader = read_jsonrequest;
