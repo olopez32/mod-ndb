@@ -207,6 +207,9 @@ json09 JR|f1 typ3 -d 'i=3&d1=1.25&d2=2.375&d3=3.5&d4=4.9865'
 json10 JR|f1 typ6 --data-binary ' { "i":3, "j":4, "name":"Ÿlker"}'
 json11 f1 typ6?i=3&j=4 
 json12 f1 typ6?i=3&j=4 -X DELETE
+json13 JR|f1 typ6 --data-binary ' { "i":5, "j":6, "name":"\u00FClker"}'
+json14 f1 typ6?i=5&j=6 
+json15 f1 typ6?i=5&j=6 -X DELETE
 
 # Functional test of the queries used in the concurrent test
 perf11 f1 perf1 -d 'i=9991&c1=SomeText&c2=SomeText&o1=10&o2=10&m1=3.1&m2=9'

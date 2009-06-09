@@ -153,3 +153,39 @@ __json12__
 }
 # __END__ json12
 
+# _BEGIN_ json13
+r.json13() {
+  cat <<'__json13__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json13__
+}
+# __END__ json13
+
+# _BEGIN_ json14
+r.json14() {
+  cat <<'__json14__'
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: ba686fff3cb556f6ce494116c28e32f3
+Content-Type: text/plain
+
+ { "i":5 , "j":6 , "name":"ülker" }
+__json14__
+}
+# __END__ json14
+
+# _BEGIN_ json15
+r.json15() {
+  cat <<'__json15__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json15__
+}
+# __END__ json15
+
