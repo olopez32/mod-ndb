@@ -487,7 +487,7 @@ namespace config {
   }
 
 
-  short get_index_by_name(config::dir *dir, char *idx) {
+  short get_index_by_name(config::dir *dir, const char *idx) {
     config::index *indexes = dir->indexes->items();
     for(short n = 0 ; n < dir->indexes->size() ; n++) 
       if(!strcmp(idx, indexes[n].name))
@@ -497,7 +497,7 @@ namespace config {
 
 
   short build_index_record(cmd_parms *cmd, config::dir *dir, 
-                           char *idxtype, char *name) 
+                           char *idxtype, const char *name) 
   {
     short index_id;
     
@@ -551,7 +551,7 @@ namespace config {
   }
  
     
-  void sort_scan(config::dir *dir, int bounded, char *idxname, int sort_order) {
+  void sort_scan(config::dir *dir, int bounded, const char *idxname, int sort_order) {
     config::index * index_rec;
     
     if(bounded) {
@@ -574,7 +574,7 @@ namespace config {
      Create an index record for the index, and a key_column record 
      for each column    
   */
-  const char *named_index(cmd_parms *cmd, void *m, char *idx, char *col) {
+  const char *named_index(cmd_parms *cmd, void *m, const char *idx, char *col) {
     char *which = (char *) cmd->cmd->cmd_data;
     config::dir *dir = (config::dir *) m;
     NSQL::Expr *e = new(cmd->pool) NSQL::Expr;
@@ -599,7 +599,7 @@ namespace config {
   }
 
 
-  const char *named_idx(cmd_parms *cmd, config::dir *dir, char *idx, 
+  const char *named_idx(cmd_parms *cmd, config::dir *dir, const char *idx, 
                         NSQL::Expr *expr) 
   {
     short index_id, col_id;

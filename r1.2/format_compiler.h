@@ -27,7 +27,7 @@ enum { pars_optional = 0, pars_required = 1 };
 class ParserError { 
   public:
   const char *message; 
-  ParserError(char *m) : message(m) {} ;
+  ParserError(const char *m) : message(m) {} ;
 };
 
 class Parser {
