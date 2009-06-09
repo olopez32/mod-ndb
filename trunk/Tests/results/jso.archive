@@ -115,16 +115,6 @@ __json09__
 }
 # __END__ json09
 
-# _BEGIN_ json11
-r.json11() {
-  cat <<'__json11__'
-HTTP/1.1 204 No Content
-Content-Length: 0
-Content-Type: text/plain
-
-__json11__
-}
-# __END__ json11
 
 
 # _BEGIN_ json10
@@ -138,4 +128,28 @@ Content-Type: application/jsonrequest
 __json10__
 }
 # __END__ json10
+
+# _BEGIN_ json11
+r.json11() {
+  cat <<'__json11__'
+HTTP/1.1 200 OK
+Content-Length: 36
+ETag: f81fc6d32ffe6cd6415acc8c05ec079e
+Content-Type: text/plain
+
+ { "i":3 , "j":4 , "name":"Ÿlker" }
+__json11__
+}
+# __END__ json11
+
+# _BEGIN_ json12
+r.json12() {
+  cat <<'__json12__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json12__
+}
+# __END__ json12
 
