@@ -25,8 +25,8 @@ char JSON_unescape_table[128] =
   0,   0,   0,   0,   0,   0,   0,   0,
   0,   0,   0,   0,   0,   0,   0,   0,
   
-  0,   0, '"',   0,   0,   0,   0, '/',
-  0,   0,   0,   0,   0,   0,   0,   0,
+  0,   0, '"',   0,   0,   0,   0,   0,
+  0,   0,   0,   0,   0,   0,   0, '/',
   0,   0,   0,   0,   0,   0,   0,   0,
   0,   0,   0,   0,   0,   0,   0,   0,
   
@@ -80,8 +80,9 @@ int JSON_unescape(char *str) {
       
       if(c == 'u') {  /* \uXXXX */
          /* Convert the character code from hex to UTF-8 */
-         char c4 = *r;     char c3 = *++r;
-         char c2 = *++r;   char c1 = *++r;        
+         char c4 = *++r;     char c3 = *++r;
+         char c2 = *++r;   char c1 = *++r;  
+         r++;
          unsigned int char_code = 
           ((16 * 16 * 16) * xval(c4)) + ((16 * 16) * xval(c3)) +
           (16 * xval(c2)) + xval(c1); 
@@ -119,7 +120,7 @@ int JSON_unescape(char *str) {
     r++;
     if(w) *w++ = c;
   }
-  return w ? w - str : r - str;
+  return w ? w - str - 1 : r - str - 1;
 }
 
 

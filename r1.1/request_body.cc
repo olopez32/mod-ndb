@@ -56,7 +56,7 @@ int read_urlencoded(request_rec *r, apr_table_t **tab, const char *data, int) {
 
 
 int read_jsonrequest(request_rec *r, apr_table_t **tab, const char *data, int length){
-  JSON::Scanner scanner(data, length);
+  JSON::Scanner scanner((const unsigned char *)data, length);
   JSON::Parser parser(&scanner);
   
   parser.pool = r->pool;

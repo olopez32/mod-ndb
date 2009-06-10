@@ -15,10 +15,9 @@
 		6503B4020C9DB91600490CCC /* typ8.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = typ8.sql; path = Tests/SQL/typ8.sql; sourceTree = "<group>"; };
 		6503B7940C9F58CC00490CCC /* lib.test.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = lib.test.sh; path = Tests/lib.test.sh; sourceTree = "<group>"; };
 		6503B8BE0CA08C9A00490CCC /* col.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = col.sql; path = Tests/SQL/col.sql; sourceTree = "<group>"; };
-		6510405E0F0A9E3300F8B7CF /* config.presets */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.presets; sourceTree = "<group>"; };
 		6513067E0B8299CC00A70BDA /* Execute.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Execute.cc; sourceTree = "<group>"; };
 		6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap13.cc; sourceTree = "<group>"; };
-		651A68C20C824B6500EE077F /* test.list */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = default; lastKnownFileType = text; name = test.list; path = Tests/test.list; sourceTree = "<group>"; };
+		651A68C20C824B6500EE077F /* test.list */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = default; lastKnownFileType = text; name = test.list; path = Tests/test.list; sourceTree = "<group>"; };
 		651A68DF0C824E3500EE077F /* runner.awk */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.perl; lastKnownFileType = text; name = runner.awk; path = Tests/runner.awk; sourceTree = "<group>"; };
 		651A69790C826F8D00EE077F /* run-test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = "run-test"; path = "Tests/run-test"; sourceTree = "<group>"; };
 		651D4C760BC02D69007E9007 /* format_compiler.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_compiler.cc; sourceTree = "<group>"; };
@@ -39,10 +38,9 @@
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
 		656D04160C89302E00A430C6 /* ses.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ses.sql; path = Tests/SQL/ses.sql; sourceTree = "<group>"; };
-		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
+		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
-		65A8025B0F42C21C00C5D150 /* summary.awk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = summary.awk; path = Tests/summary.awk; sourceTree = "<group>"; };
 		65AA7E800BC5841100A5D0A4 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = format_dumper.cc; sourceTree = "<group>"; };
 		65AB5C180CD81AF700DAEACB /* config.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = config.awk; path = Tests/config.awk; sourceTree = "<group>"; };
 		65AB5C190CD98C0D00DAEACB /* record.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = record.awk; path = Tests/record.awk; sourceTree = "<group>"; };
@@ -50,19 +48,20 @@
 		65ADCC4A0BB0FF0A00AEE680 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = output_format.h; sourceTree = "<group>"; };
 		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
+		65D86D390FDEC3430097814E /* test_encoding.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = test_encoding.c; path = JSON/test_encoding.c; sourceTree = "<group>"; };
 		65D8B45B0CBD82A000BD24E7 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NSQL.atg; path = "N-SQL/NSQL.atg"; sourceTree = "<group>"; };
 		65D8B45C0CBD82A000BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = "N-SQL/Parser.cpp"; sourceTree = "<group>"; };
-		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
+		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
 		65D8B45E0CBD82A000BD24E7 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = "N-SQL/Parser.h"; sourceTree = "<group>"; };
 		65D8B45F0CBD82A000BD24E7 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scanner.cpp; path = "N-SQL/Scanner.cpp"; sourceTree = "<group>"; };
-		65D8B4600CBD82A000BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = "N-SQL/Scanner.frame"; sourceTree = "<group>"; };
+		65D8B4600CBD82A000BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = "N-SQL/Scanner.frame"; sourceTree = "<group>"; };
 		65D8B4610CBD82A000BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = "N-SQL/Scanner.h"; sourceTree = "<group>"; };
 		65D8B4820CBD849500BD24E7 /* JSON.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JSON.atg; path = JSON/JSON.atg; sourceTree = "<group>"; };
 		65D8B4830CBD849500BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = JSON/Parser.cpp; sourceTree = "<group>"; };
-		65D8B4840CBD849500BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = JSON/Parser.frame; sourceTree = "<group>"; };
+		65D8B4840CBD849500BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = JSON/Parser.frame; sourceTree = "<group>"; };
 		65D8B4850CBD849500BD24E7 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Parser.h; path = JSON/Parser.h; sourceTree = "<group>"; };
 		65D8B4860CBD849500BD24E7 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scanner.cpp; path = JSON/Scanner.cpp; sourceTree = "<group>"; };
-		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
+		65D8B4870CBD849500BD24E7 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Scanner.frame; path = JSON/Scanner.frame; sourceTree = "<group>"; };
 		65D8B4880CBD849500BD24E7 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = JSON/Scanner.h; sourceTree = "<group>"; };
 		65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = request_body.cc; sourceTree = "<group>"; };
 		65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON_encoding.cc; sourceTree = "<group>"; };
@@ -73,10 +72,8 @@
 		65E2E8430BA218B600B1B8D0 /* modules_ap22 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap22; path = templates/modules_ap22; sourceTree = "<group>"; };
 		65E2E85F0BA2252E00B1B8D0 /* modules_ap13 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = modules_ap13; path = templates/modules_ap13; sourceTree = "<group>"; };
 		65EECC4F0B07D7B0000AB3AD /* defaults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defaults.h; sourceTree = "<group>"; };
-		65EF13A10FD252200061AFBF /* utf.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = utf.sql; path = Tests/SQL/utf.sql; sourceTree = "<group>"; };
 		65EFD0180CD421CE0079CEEB /* cmp_swap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmp_swap.c; sourceTree = "<group>"; };
-		65EFD0F20CE3E46E0079CEEB /* perf.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = perf.sql; path = Tests/SQL/perf.sql; sourceTree = "<group>"; };
-		65F451D90DD28588004B7FCD /* concurrent.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = concurrent.sh; path = Tests/concurrent.sh; sourceTree = "<group>"; };
+		65EFD0F20CE3E46E0079CEEB /* bench.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bench.sql; path = Tests/SQL/bench.sql; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -85,7 +82,6 @@
 			children = (
 				655A3FF20AC35A0300FC573F /* README */,
 				655CEC240A8C4C9500DB8284 /* configure */,
-				6510405E0F0A9E3300F8B7CF /* config.presets */,
 				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
@@ -145,8 +141,7 @@
 				6503B4020C9DB91600490CCC /* typ8.sql */,
 				656D04160C89302E00A430C6 /* ses.sql */,
 				6503B8BE0CA08C9A00490CCC /* col.sql */,
-				65EFD0F20CE3E46E0079CEEB /* perf.sql */,
-				65EF13A10FD252200061AFBF /* utf.sql */,
+				65EFD0F20CE3E46E0079CEEB /* bench.sql */,
 			);
 			name = SQL;
 			sourceTree = "<group>";
@@ -161,9 +156,7 @@
 				651A68DF0C824E3500EE077F /* runner.awk */,
 				65AB5C180CD81AF700DAEACB /* config.awk */,
 				65AB5C190CD98C0D00DAEACB /* record.awk */,
-				65A8025B0F42C21C00C5D150 /* summary.awk */,
 				65AB5C470CDA5C3000DAEACB /* erase.sh */,
-				65F451D90DD28588004B7FCD /* concurrent.sh */,
 				656D03EA0C89301300A430C6 /* SQL */,
 			);
 			name = Tests;
@@ -184,6 +177,7 @@
 				65D8B4820CBD849500BD24E7 /* JSON.atg */,
 				65D8B4870CBD849500BD24E7 /* Scanner.frame */,
 				65D8B4840CBD849500BD24E7 /* Parser.frame */,
+				65D86D390FDEC3430097814E /* test_encoding.c */,
 				65D8B4850CBD849500BD24E7 /* Parser.h */,
 				65D8B4830CBD849500BD24E7 /* Parser.cpp */,
 				65D8B4880CBD849500BD24E7 /* Scanner.h */,

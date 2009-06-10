@@ -71,7 +71,7 @@ CREATE TABLE typ5 (
 CREATE TABLE typ6 (
   i int not null default 0,
   j int not null default 0,
-  name varchar(20) not null,
+  name varchar(20) character set utf8 not null,
   PRIMARY KEY USING HASH (i,j),
   UNIQUE KEY USING HASH (name)
 ) engine=ndbcluster;
