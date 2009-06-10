@@ -199,6 +199,8 @@ Parser::Parser(Scanner *scanner) {
 	errDist = minErrDist;
 	this->scanner = scanner;
 	errors = new Errors();
+   	dummyToken = NULL;
+   	t = la = NULL;
 }
 
 bool Parser::StartOf(int s) {
