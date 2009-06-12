@@ -320,10 +320,13 @@ void MySQL::value(mvalue &m, ap_pool *p,
     m.use_value = err_bad_column;
     return;
   }
+
+  NdbDictionary::Column::Type col_type = col->getType();
+
   bool is_char_col = 
-    ( (col->getType() == NdbDictionary::Column::Varchar) ||
-      (col->getType() == NdbDictionary::Column::Longvarchar) ||
-      (col->getType() == NdbDictionary::Column::Char));        
+    ( (col_type == NdbDictionary::Column::Varchar) ||
+      (col_type == NdbDictionary::Column::Longvarchar) ||
+      (col_type == NdbDictionary::Column::Char));        
 
   m.ndb_column = col;
   
@@ -336,7 +339,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
     }
   
-    switch(col->getType()) {
+    switch(col_type) {
       /* "If the attribute is of variable size, its value must start with
       1 or 2 little-endian length bytes"   [ i.e. LSB first ]*/
       
@@ -381,9 +384,9 @@ void MySQL::value(mvalue &m, ap_pool *p,
   }
 
   /* Date columns */
-  if ( (col->getType() == NdbDictionary::Column::Time) ||
-       (col->getType() == NdbDictionary::Column::Date) ||
-       (col->getType() == NdbDictionary::Column::Datetime)) {
+  if ( (col_type == NdbDictionary::Column::Time) ||
+       (col_type == NdbDictionary::Column::Date) ||
+       (col_type == NdbDictionary::Column::Datetime)) {
     MYSQL_TIME tm;
     char strbuf[64];
     char *buf = strbuf;
@@ -402,7 +405,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
     *buf++ = *c; *buf = 0;
     buf = strbuf;
 
-    switch(col->getType()) {
+    switch(col_type) {
       case NdbDictionary::Column::Datetime :
         m.u.val_unsigned_64 = strtoull(buf, 0, 10);
         m.use_value = use_unsigned_64;
@@ -454,15 +457,15 @@ void MySQL::value(mvalue &m, ap_pool *p,
     }
     if(!strcmp(val,"@autoinc")) {
       m.use_value = use_autoinc;
-      if(col->getType() == NdbDictionary::Column::Bigint 
-       || col->getType() == NdbDictionary::Column::Bigunsigned)
+      if(col_type == NdbDictionary::Column::Bigint 
+       || col_type == NdbDictionary::Column::Bigunsigned)
         m.len = 8;
       else m.len = 4;
       return;
     }
   }
   
-  switch(col->getType()) {    
+  switch(col_type) {    
     case NdbDictionary::Column::Int:
       m.use_value = use_signed;
       m.u.val_signed = atoi(val);
