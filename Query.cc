@@ -194,12 +194,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
   mvalue mval;
   short col;
   register const char * idxname;
-  
-  // Initialize all four of these, but only one will be needed: 
-  PK_index_object       PK_idxobj(q,r);
-  Unique_index_object   UI_idxobj(q,r);
-  Ordered_index_object  OI_idxobj(q,r);
-  Table_Scan_object     TS_idxobj(q,r);
 
   // Initialize the data dictionary 
   i->db->setDatabaseName(dir->database);
@@ -375,14 +369,14 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
                 "ordered index.", dir->table, idxname);
         goto abort1;
       }
-      q->idxobj = & OI_idxobj;
+      q->idxobj = new Ordered_index_object(q, r);
     }
-    else q->idxobj = & TS_idxobj;  /* true (non-indexed) table scan. */
+    else q->idxobj = new Table_Scan_object(q,r);  /* true table scan. */
   }
   else { /* Not a scan: */
     /* Case 2: Primary Key lookup (or insert) */
     if(Q.plan == PrimaryKey)
-      q->idxobj = & PK_idxobj;
+      q->idxobj = new PK_index_object(q,r);
     /* If not a PK lookup, there must be a driving index. */
     else if(Q.active_index < 0) {
       response_code = 500;
@@ -400,7 +394,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
                   "unique hash index.", dir->table, idxname);
           goto abort1;          
         }
-        q->idxobj = & UI_idxobj;
+        q->idxobj = new Unique_index_object(q,r);
       }
       else if (Q.plan == OrderedIndexScan) {  // Case 4: Ordered Index
         if(q->idx->getType() != NdbDictionary::Index::OrderedIndex) {
@@ -408,7 +402,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
                   "ordered index.", dir->table, idxname);
           goto abort1;
         }        
-        q->idxobj = & OI_idxobj;
+        q->idxobj = new Ordered_index_object(q,r);
       }
     }
   }
@@ -509,6 +503,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
 
   // Perform the action; i.e. get the value of each column
   response_code = Q.op_action(r, dir, &Q);
+
+  // Clean up parts of Q that need to be freed
+  delete q->idxobj;
   
   if(response_code == 0) {  
     if(qsource.keep_tx_open) 
@@ -530,6 +527,11 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
     i->flag.aborted = 1;  // this will only trigger the msg on line 356.  what is the point?
   else
     i->cleanup();
+
+  if(q->idxobj) {
+    delete q->idxobj;
+  }
+  
   return response_code;
   
   bad_index:
