@@ -1,0 +1,177 @@
+# _BEGIN_ out001
+r.out001() {
+  cat <<'__out001__'
+HTTP/1.1 200 OK
+ETag: b67cc1c688a25601d0e285d9e1ab8274
+Content-Length: 562
+Content-Type: text/plain
+
+{ "JSON":
+  { "is_internal": true, "can_override": true, "is_raw": false , 
+    "begin": "", "end": "\n", "core": 
+    [ { "scan":
+        {
+          "begin": ["[\n "] ,
+          "core":  { "row":
+            {
+              "begin": [" { "] ,
+              "core":  
+              {
+                "fmt" :     ["$name/Q$" , ":" , "$value/qj$"] ,
+                "null_fmt": ["$name/Q$" , ":null"]
+              } ,
+              "sep": " , " , "end": [" }"]
+            }
+          } ,
+          "sep": ",\n " , "end": [" \n]"]
+        }
+      }
+    ]
+  }
+}
+__out001__
+}
+# __END__ out001
+
+# _BEGIN_ out002
+r.out002() {
+  cat <<'__out002__'
+HTTP/1.1 200 OK
+ETag: a4c6d5120818b2ffebaa261f595feb80
+Content-Length: 653
+Content-Type: text/plain
+
+{ "XML":
+  { "is_internal": true, "can_override": true, "is_raw": false , 
+    "begin": "", "end": "\n", "core": 
+    [ { "scan":
+        {
+          "begin": ["<NDBScan>\n"] ,
+          "core":  { "row":
+            {
+              "begin": [" <NDBTuple> "] ,
+              "core":  
+              {
+                "fmt" :     ["<Attr name=" , "$name/Q$" , " value=" , "$value/Qx$" , " />"] ,
+                "null_fmt": ["<Attr name=" , "$name/Q$" , " isNull=\"1\" />"]
+              } ,
+              "sep": " \n  " , "end": ["  </NDBTuple>"]
+            }
+          } ,
+          "sep": "\n" , "end": ["\n</NDBScan>"]
+        }
+      }
+    ]
+  }
+}
+__out002__
+}
+# __END__ out002
+
+# _BEGIN_ out003
+r.out003() {
+  cat <<'__out003__'
+HTTP/1.1 200 OK
+ETag: 2ad4d908c0d111910316583e30c9fe6d
+Content-Length: 79
+Content-Type: text/plain
+
+{ "raw":
+  { "is_internal": true, "can_override": false, "is_raw": true 
+  }
+}
+__out003__
+}
+# __END__ out003
+
+# _BEGIN_ out004
+r.out004() {
+  cat <<'__out004__'
+HTTP/1.1 200 OK
+ETag: ed08cc94c54c16f99085353ea391837b
+Content-Length: 187
+Content-Type: text/plain
+
+{ "HAL":
+  { "is_internal": false, "can_override": false, "is_raw": false , 
+    "begin": "HAL says, \"I'm afraid I can't do that, Dave.\"\n", "end": "", "core": 
+    [  null
+    ]
+  }
+}
+__out004__
+}
+# __END__ out004
+
+# _BEGIN_ out005
+r.out005() {
+  cat <<'__out005__'
+HTTP/1.1 200 OK
+ETag: d41d8cd98f00b204e9800998ecf8427e
+Content-Length: 0
+Content-Type: text/plain
+
+__out005__
+}
+# __END__ out005
+
+# _BEGIN_ out006
+r.out006() {
+  cat <<'__out006__'
+HTTP/1.1 200 OK
+ETag: 38be67f5297de0841a93ec9733ee7151
+Content-Length: 206
+Content-Type: text/plain
+
+<ResultFormat "JSON">
+    Format  JSON = '$scan$\n'
+    Row  row = ' { $item$ , ... }'
+    Scan  scan = '[\n $row$,\n ... \n]'
+    Record  item = '$name/Q$:$value/qj$'  or  '$name/Q$:null'
+</ResultFormat>
+
+__out006__
+}
+# __END__ out006
+
+# _BEGIN_ out007
+r.out007() {
+  cat <<'__out007__'
+HTTP/1.1 200 OK
+ETag: 5673489f196228bc3fab5368f649fef3
+Content-Length: 108
+Content-Type: text/plain
+
+<ResultFormat "HAL">
+    Format  HAL = 'HAL says, "I\'m afraid I can\'t do that, Dave."\n'
+</ResultFormat>
+
+__out007__
+}
+# __END__ out007
+
+# _BEGIN_ out100
+r.out100() {
+  cat <<'__out100__'
+HTTP/1.1 200 OK
+Content-Length: 46
+ETag: 35488b65a8f41464fc9b6752a29d1edd
+Content-Type: text/plain
+
+HAL says, "I'm afraid I can't do that, Dave."
+__out100__
+}
+# __END__ out100
+
+# _BEGIN_ out101
+r.out101() {
+  cat <<'__out101__'
+HTTP/1.1 200 OK
+Content-Length: 0
+ETag: d41d8cd98f00b204e9800998ecf8427e
+Content-Type: text/plain
+
+__out101__
+}
+# __END__ out101
+

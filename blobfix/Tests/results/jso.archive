@@ -1,0 +1,244 @@
+# _BEGIN_ json01
+r.json01() {
+  cat <<'__json01__'
+HTTP/1.1 200 OK
+Content-Length: 324
+ETag: 0071aea61d0bd0baa9fab37be6d10492
+Content-Type: application/jsonrequest
+
+[
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"index.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" } 
+]
+__json01__
+}
+# __END__ json01
+
+# _BEGIN_ json02
+r.json02() {
+  cat <<'__json02__'
+HTTP/1.1 406 Not Acceptable
+Content-Length: 0
+Content-Type: text/plain
+
+__json02__
+}
+# __END__ json02
+
+
+# _BEGIN_ json04
+r.json04() {
+  cat <<'__json04__'
+HTTP/1.1 200 OK
+Content-Length: 19
+ETag: 0fb050e86331bc8d16e23fa03b8d382d
+Content-Type: application/jsonrequest
+
+ { "i":1 , "c":5 }
+__json04__
+}
+# __END__ json04
+
+# _BEGIN_ json05
+r.json05() {
+  cat <<'__json05__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json05__
+}
+# __END__ json05
+
+
+# _BEGIN_ json07
+r.json07() {
+  cat <<'__json07__'
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: b34339b889877d21bac6e16a1445d810
+Content-Type: text/plain
+
+ { "i":2 , "j":3 , "name":"rasmus" }
+__json07__
+}
+# __END__ json07
+
+# _BEGIN_ json08
+r.json08() {
+  cat <<'__json08__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json08__
+}
+# __END__ json08
+
+# _BEGIN_ json03
+r.json03() {
+  cat <<'__json03__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json03__
+}
+# __END__ json03
+
+# _BEGIN_ json06
+r.json06() {
+  cat <<'__json06__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json06__
+}
+# __END__ json06
+
+# _BEGIN_ json09
+r.json09() {
+  cat <<'__json09__'
+HTTP/1.1 400 Bad Request
+Content-Length: 13
+Connection: close
+Content-Type: text/plain
+
+Bad request.
+__json09__
+}
+# __END__ json09
+
+
+
+# _BEGIN_ json10
+r.json10() {
+  cat <<'__json10__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json10__
+}
+# __END__ json10
+
+
+
+
+
+
+# _BEGIN_ json11
+r.json11() {
+  cat <<'__json11__'
+HTTP/1.1 409 Conflict
+Content-Length: 59
+Content-Type: text/plain
+
+Constraint violation e.g. duplicate value in unique index.
+__json11__
+}
+# __END__ json11
+
+# _BEGIN_ json12
+r.json12() {
+  cat <<'__json12__'
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: 7d39e45f075fed9e496197d9b61e859e
+Content-Type: text/plain
+
+ { "i":3 , "j":4 , "name":"ülker" }
+__json12__
+}
+# __END__ json12
+
+# _BEGIN_ json13
+r.json13() {
+  cat <<'__json13__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json13__
+}
+# __END__ json13
+
+# _BEGIN_ json14
+r.json14() {
+  cat <<'__json14__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json14__
+}
+# __END__ json14
+
+# _BEGIN_ json15
+r.json15() {
+  cat <<'__json15__'
+HTTP/1.1 200 OK
+Content-Length: 37
+ETag: 8d85fb780be5f64ad0d5bc077d0b009d
+Content-Type: text/plain
+
+ { "i":4 , "j":5 , "name":"ülker" }
+__json15__
+}
+# __END__ json15
+
+# _BEGIN_ json16
+r.json16() {
+  cat <<'__json16__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json16__
+}
+# __END__ json16
+
+# _BEGIN_ json21
+r.json21() {
+  cat <<'__json21__'
+HTTP/1.1 200 OK
+Content-Length: 4
+Content-Type: application/jsonrequest
+
+{ }
+__json21__
+}
+# __END__ json21
+
+# _BEGIN_ json22
+r.json22() {
+  cat <<'__json22__'
+HTTP/1.1 200 OK
+Content-Length: 36
+ETag: 9a05c58cab0ecff1c0a6a557d2e0ad0e
+Content-Type: text/plain
+
+ { "i":5 , "j":6 , "name":"a///b" }
+__json22__
+}
+# __END__ json22
+
+# _BEGIN_ json23
+r.json23() {
+  cat <<'__json23__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__json23__
+}
+# __END__ json23
+
