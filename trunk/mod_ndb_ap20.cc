@@ -51,6 +51,7 @@ int mod_ndb_post_config(apr_pool_t* conf_pool, apr_pool_t* log_pool,
   if( process.conn.connected) {    
     log_err(s, "Connnection test OK: succesfully connected to NDB Cluster."); 
     delete process.conn.connection;
+    process.conn.connected = 0;
     return OK ;
   }
 

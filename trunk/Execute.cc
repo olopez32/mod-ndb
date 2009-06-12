@@ -197,6 +197,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     }
   }
 
+ // todo: must_restart && ! (force_restart) --> log a message?
   cleanup1:
   if(must_restart && i->server_config->force_restart) {
     response_code = ndb_handle_error(r, 503, & i->tx->getNdbError(), "10");
