@@ -23,7 +23,7 @@ char * result_buffer::init(request_rec *r, size_t size) {
   sz = 0;
   if(buff) free(buff);
   buff = (char *) malloc(alloc_sz);
-  if(!buff) log_err(r->server, "mod_ndb result_buffer::init() out of memory");
+  if(r && !buff) log_err(r->server, "mod_ndb result_buffer::init() out of memory");
   return buff;
 }
 
@@ -98,6 +98,21 @@ void result_buffer::read_blob(NdbBlob *blob) {
 }
 
 
+/* Take an existing result buffer and use it instead.
+   This is used in raw output, to treat the existing BLOB buffer 
+   as the output buffer, instead of copying.
+*/
+void result_buffer::overlay(result_buffer *other) {
+  if(alloc_sz) free(buff);
+
+  alloc_sz = other->alloc_sz;  // other->buff will be freed here,
+  other->alloc_sz = 0;         // not there.
+  
+  sz = other->sz;
+  buff = other->buff;
+}
+
+
 result_buffer::~result_buffer() {
-  if(buff) free(buff);
+  if(alloc_sz) free(buff);
 }

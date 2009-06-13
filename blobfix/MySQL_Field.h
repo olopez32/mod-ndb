@@ -73,10 +73,32 @@ struct mvalue {
 };
 typedef struct mvalue mvalue;
 
+
 namespace MySQL { 
-  void result(result_buffer &, const NdbRecAttr &, NdbBlob *, const char **);
+  class result;
   void value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
 };
+
+
+class MySQL::result {
+ public:
+  result(NdbOperation *, const NdbDictionary::Column *);
+  ~result();
+  const NdbDictionary::Column *getColumn()  { return _col;    };
+  bool isNull();  
+  int activateBlob();
+  void out(result_buffer &, const char **);
+  result_buffer *contents;
+
+ private:
+  NdbDictionary::Column::Type type;
+  NdbBlob * blob;  
+  NdbRecAttr * _RecAttr;
+  const NdbDictionary::Column *_col;
+};
+
+
+
 
 /* --------------------------------------------------------------------
    == DECIMAL support that is not in MySQL's public include files ==

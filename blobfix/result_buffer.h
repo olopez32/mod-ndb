@@ -57,6 +57,7 @@ public:
   void out(struct st_decimal_t *);   /* in MySQL_Field.cc */
   inline void out(len_string &ls) { out(ls.len, ls.string); }
   void read_blob(NdbBlob *blob);
+  void overlay(result_buffer *);
   ~result_buffer();
 };
 
