@@ -94,7 +94,8 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 /* Other mod_ndb headers */
 #include "result_buffer.h"
 #include "output_format.h"
-#include "MySQL_Field.h"
+#include "MySQL_value.h"
+#include "MySQL_result.h"
 #include "mod_ndb_config.h"
 
 

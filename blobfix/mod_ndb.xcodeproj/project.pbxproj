@@ -29,9 +29,9 @@
 		654FD39D0AC5B0A6000283CB /* index_object.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = index_object.h; sourceTree = "<group>"; };
 		655116C20BC1CAF30009C9E1 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = format_compiler.h; sourceTree = "<group>"; };
 		655A3FF20AC35A0300FC573F /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_Field.cc; sourceTree = "<group>"; };
+		655CEC1F0A8C4C1C00DB8284 /* MySQL_value.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_value.cc; sourceTree = "<group>"; };
 		655CEC210A8C4C4C00DB8284 /* Query.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Query.cc; sourceTree = "<group>"; };
-		655CEC220A8C4C6100DB8284 /* MySQL_Field.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MySQL_Field.h; sourceTree = "<group>"; };
+		655CEC220A8C4C6100DB8284 /* MySQL_value.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MySQL_value.h; sourceTree = "<group>"; };
 		655CEC230A8C4C6B00DB8284 /* mod_ndb.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mod_ndb.h; sourceTree = "<group>"; };
 		655CEC240A8C4C9500DB8284 /* configure */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.sh; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
 		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 30; languageSpecificationIdentifier = make; path = make_file_tail; sourceTree = "<group>"; };
@@ -50,6 +50,8 @@
 		65C8FF5E0BB2047A0040028D /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = output_format.cc; sourceTree = "<group>"; };
 		65D86D390FDEC3430097814E /* test_encoding.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = test_encoding.c; path = JSON/test_encoding.c; sourceTree = "<group>"; };
 		65D86E7C0FE2D6590097814E /* trace.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = trace.d; sourceTree = "<group>"; };
+		65D870830FE5BD3B0097814E /* MySQL_result.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MySQL_result.h; sourceTree = "<group>"; };
+		65D870840FE5BD3B0097814E /* MySQL_result.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MySQL_result.cc; sourceTree = "<group>"; };
 		65D8B45B0CBD82A000BD24E7 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NSQL.atg; path = "N-SQL/NSQL.atg"; sourceTree = "<group>"; };
 		65D8B45C0CBD82A000BD24E7 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Parser.cpp; path = "N-SQL/Parser.cpp"; sourceTree = "<group>"; };
 		65D8B45D0CBD82A000BD24E7 /* Parser.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; fileEncoding = 4; languageSpecificationIdentifier = c.cpp; name = Parser.frame; path = "N-SQL/Parser.frame"; sourceTree = "<group>"; };
@@ -105,8 +107,10 @@
 				65364C080AB25F5200C355E4 /* handlers.cc */,
 				6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */,
 				650143780AED89750074CA65 /* mod_ndb_ap20.cc */,
-				655CEC220A8C4C6100DB8284 /* MySQL_Field.h */,
-				655CEC1F0A8C4C1C00DB8284 /* MySQL_Field.cc */,
+				655CEC220A8C4C6100DB8284 /* MySQL_value.h */,
+				655CEC1F0A8C4C1C00DB8284 /* MySQL_value.cc */,
+				65D870830FE5BD3B0097814E /* MySQL_result.h */,
+				65D870840FE5BD3B0097814E /* MySQL_result.cc */,
 				65D8B4E30CBD8AFC00BD24E7 /* request_body.cc */,
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
 				6513067E0B8299CC00A70BDA /* Execute.cc */,

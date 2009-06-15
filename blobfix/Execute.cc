@@ -73,13 +73,6 @@ bool handle_exec_error(request_rec *r, int &response_code,
 }
 
 
-int BlobHook(NdbBlob *blob, void *v) {
-  MySQL::result *result = (MySQL::result *) v;
-  return result->activateBlob();
-}
-
-
-
 /******** Execute batched transactions *************/
 
 int ExecuteAll(request_rec *r, ndb_instance *i) {
