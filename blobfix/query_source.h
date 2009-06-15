@@ -16,7 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 
-class query_source {
+class query_source : public apache_object {
  protected:
   request_rec *r;
  public:
@@ -25,10 +25,6 @@ class query_source {
   bool keep_tx_open;
   virtual int get_form_data(apr_table_t **tab) = 0;
   virtual ~query_source() {};
-  
-  void *operator new(size_t sz, ap_pool *p) {
-    return ap_pcalloc(p, sz);
-  }
 };
 
 

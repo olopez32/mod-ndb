@@ -45,24 +45,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 
 
-namespace {  // i.e. "static"
-  inline void factor_HHMMSS(MYSQL_TIME *tm, int int_time) {
-    if(int_time < 0) {
-      tm->neg = true; int_time = - int_time;
-    }
-    tm->hour = int_time/10000;
-    tm->minute  = int_time/100 % 100;
-    tm->second  = int_time % 100;  
-  }
-  
-  inline void factor_YYYYMMDD(MYSQL_TIME *tm, int int_date) {
-    tm->year = int_date/10000 % 10000;
-    tm->month  = int_date/100 % 100;
-    tm->day = int_date % 100;  
-  }
-}
-
-
 void MySQL::value(mvalue &m, ap_pool *p, 
                   const NdbDictionary::Column *col, const char *val) 
 {
@@ -149,6 +131,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
     char strbuf[64];
     char *buf = strbuf;
     const char *c = val;
+    int yymmdd;
     
     if(! val) { /* null pointer */
       m.use_value = use_null;
@@ -175,7 +158,10 @@ void MySQL::value(mvalue &m, ap_pool *p,
         return;
       case NdbDictionary::Column::Date :
         bzero(&tm, sizeof(MYSQL_TIME));
-        factor_YYYYMMDD(&tm, strtol(buf, 0, 10));
+        yymmdd = strtol(buf, 0, 10);
+        tm.year = yymmdd/10000 % 10000;
+        tm.month  = yymmdd/100 % 100;
+        tm.day = yymmdd % 100;  
         aux_int = (tm.year << 9) | (tm.month << 5) | tm.day;
         m.use_value = use_signed;
         store24(m.u.val_signed, aux_int);
