@@ -117,9 +117,7 @@ void Node::dump(ap_pool *p, result_buffer &res, int indent) {
 
 void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  res.out(ap_pstrcat(p, "{ \"", name , "\":", 
-                    inset, "  {",
-                    inset, "    \"begin\": ", 0));
+  res.out("{ \"%s\":%s  {%s    \"begin\": ", name, inset, inset);
   begin->dump(p, res);
   res.out(" ,%s    \"core\":  ", inset); 
   core->dump(p, res, indent + 4);
