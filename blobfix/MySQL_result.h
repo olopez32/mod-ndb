@@ -19,8 +19,7 @@
 /* Class MySQL::result 
    Fetch values from NDB, which are encoded there as MySQL datatypes.
 */
-
-
+ 
 
 enum ndb_string_packing {
   char_fixed,
@@ -35,7 +34,7 @@ namespace MySQL {
     result(NdbOperation *, const NdbDictionary::Column *);
     ~result();
     const NdbDictionary::Column *getColumn()  { return _col;    };
-    bool isNull();  
+    bool isNull() { return _RecAttr ? _RecAttr->isNULL() : BLOBisNull(); };  
     int activateBlob();
     void out(result_buffer &, const char **);
 
@@ -46,6 +45,7 @@ namespace MySQL {
     NdbBlob * blob;  
     NdbRecAttr * _RecAttr;
     const NdbDictionary::Column *_col;
-    
+
+    bool BLOBisNull();
   };
 }

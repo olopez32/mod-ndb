@@ -119,10 +119,7 @@ namespace MySQL {
   }
   
   
-  bool result::isNull() {
-    if(_RecAttr) return _RecAttr->isNULL();
-    
-    /* BLOB */
+  bool result::BLOBisNull() {
     int is_null = 0;
     blob->getNull(is_null);
     assert(is_null != -1);
