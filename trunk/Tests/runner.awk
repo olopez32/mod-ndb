@@ -60,7 +60,7 @@ BEGIN { if(!host) host = "localhost:3080"
      archive_file = "results/" prefix ".archive"
      
      if(mode == "compare")      outfile = "> current/" $1
-     else if(mode == "record")  outfile = "| " recorder $1 " >> " archive_file
+     else if(mode == "record")  outfile = "| " recorder $1 " | tee -a " archive_file
      else outfile = " | tee current/" $1
           
      if(NF > 3) for(i=4; i <= NF; i++) args = args $i " ";
