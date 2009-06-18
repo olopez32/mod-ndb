@@ -5,7 +5,9 @@
 #include <readline/history.h>
 
 
-/*  cc test_encoding.c -lreadline -o test_encoding  */
+/*  
+ cc test_encoding.c -lreadline -o test_encoding  
+*/
   
   
 char JSON_unescape_table[128] = {
