@@ -33,7 +33,7 @@ struct symbol {
 
 
 #define SYM_TAB_SZ 16
-class output_format {
+class output_format : public apache_object {
 public:  
   const char *name;
   struct {
@@ -46,9 +46,6 @@ public:
   struct symbol *symbol_table[SYM_TAB_SZ];
   
   output_format(const char *n) : name(n) {}
-  void * operator new(size_t sz, ap_pool *p) {
-    return ap_pcalloc(p, sz);
-  };
   Node * symbol(const char *, ap_pool *, Node *);
   const char *compile(ap_pool *);
   void dump(ap_pool *, result_buffer &);
@@ -84,7 +81,7 @@ class Cell : public len_string {
 };
 
 
-class Node {
+class Node : public apache_object {
   public:
   const char *name;
   const char *unresolved;
@@ -101,9 +98,6 @@ class Node {
   virtual void out(struct data_operation *d, unsigned int n, result_buffer &b) {
     cell->out(d, n, b); }
   virtual void dump(ap_pool *, result_buffer &, int);
-  void * operator new(size_t sz, ap_pool *p) {
-    return ap_pcalloc(p, sz);
-  };
   virtual void dump_source(ap_pool *, result_buffer &, const char *) {};
 };
 

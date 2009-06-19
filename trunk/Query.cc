@@ -177,7 +177,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsource) 
 {
   const NdbDictionary::Dictionary *dict;
-  data_operation local_data_op = { 0, 0, 0, 0, 0, 0};
+  data_operation local_data_op = { 0, 0, 0, 0, 0};
   struct QueryItems Q = 
     { i, 0, 0,            // ndb_instance, tab, idx
       0, -1, 0, 0,        // keys, active_index, idxobj, key_columns_used 
@@ -245,9 +245,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       // Allocate an array of NdbRecAttrs for all desired columns.
       // Like anything that will be stored in the ndb_instance, allocate
       // from r->connection->pool, not r->pool
-      q->data->result_cols =  (const NdbRecAttr**)
+      q->data->result_cols =  (MySQL::result**)
         ap_pcalloc(r->connection->pool, 
-                   q->data->n_result_cols * sizeof(NdbRecAttr *));
+                   q->data->n_result_cols * sizeof(MySQL::result *));
       break;
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
@@ -528,9 +528,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
   else
     i->cleanup();
 
-  if(q->idxobj) {
-    delete q->idxobj;
-  }
+  // Clean up parts of Q that need to be freed
+  if(q->idxobj) delete q->idxobj;
+  if(q->data->result_cols) delete[] q->data->result_cols;
   
   return response_code;
   
@@ -548,26 +548,11 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
   unsigned int n = 0;
   const int select_star = dir->flag.select_star;
 
-  // Call op->getValue() for each desired result column
+  // Set up the result columns
   for( ; n < q->data->n_result_cols ; n++) {
     col = select_star ? 
       q->tab->getColumn(n) : q->tab->getColumn(column_list[n]);
-    q->data->result_cols[n] = q->data->op->getValue(col, 0);
-
-    /* BLOB handling */
-    if((col->getType() == NdbDictionary::Column::Blob) ||
-       (col->getType() == NdbDictionary::Column::Text)) {
-          if(! q->data->flag.has_blob) 
-            q->data->blobs = (NdbBlob **) 
-               ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
-          
-          q->data->flag.has_blob = 1;
-          q->i->flag.has_blob = 1;
-          if(col->getInlineSize()) 
-            q->data->blobs[n] = select_star ? 
-              q->data->op->getBlobHandle(n) : 
-              q->data->op->getBlobHandle(column_list[n]);
-    }
+    q->data->result_cols[n] = new MySQL::result(q->data->op, col);
   }
   return 0;
 }
