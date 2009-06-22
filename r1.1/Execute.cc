@@ -1,4 +1,5 @@
-/* Copyright (C) 2006, 2007 MySQL AB
+/* Copyright (C) 2006 - 2009 Sun Microsystems
+ All rights reserved. Use is subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -106,27 +107,9 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
       apache_notes = 1;
   }
  
-  /* If an operation involves reading a BLOB, then some special cases apply:
-     - There can only be one operation in the transaction. (??)
-     - The transaction must be executed "NoCommit" before reading the BLOB
-     - BLOBs that are truly binary cannot be returned as Apache notes 
-  */
-  if(i->flag.has_blob) {
-    /* Execute NoCommit */
-    if(i->tx->execute(NdbTransaction::NoCommit)) {
-      must_restart = handle_exec_error(r, response_code,  i->tx->getNdbError());
-      goto cleanup1;
-    }
-    /* Loop over operations & find BLOBs) */
-    for(opn = 0 ; opn < i->n_read_ops ; opn++) {
-      struct data_operation *data = i->data + opn ;
-      if(data->flag.has_blob && data->result_cols) {
-        response_code = build_results(r, data, my_results);
-        if(apache_notes) set_note(r, opn, my_results);
-      }
-    }
-  }
-  
+  /* Activate BLOB handles; call the callback functions */
+  i->tx->executePendingBlobOps();
+      
   /* Execute and Commit the transaction */
   exec_commit:
   i->tx->execute(NdbTransaction::Commit, TX_ABORT_OPT, i->conn->ndb_force_send); 
@@ -151,7 +134,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   /* Loop over the operations and build the result page */
   for(opn = 0 ; opn < i->n_read_ops ; opn++) {
     struct data_operation *data = i->data + opn ;
-    if(data->result_cols && (! data->flag.has_blob) && data->fmt) {
+    if(data->result_cols && data->fmt) {
       if(i->flag.jsonrequest && (! data->fmt->flag.is_JSON))
         response_code = 406;  // "406 NOT ACCEPTABLE"
       else response_code = build_results(r, data, my_results);
@@ -197,6 +180,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     }
   }
 
+ // todo: must_restart && ! (force_restart) --> log a message?
   cleanup1:
   if(must_restart && i->server_config->force_restart) {
     response_code = ndb_handle_error(r, 503, & i->tx->getNdbError(), "10");

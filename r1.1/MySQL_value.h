@@ -1,4 +1,5 @@
-/* Copyright (C) 2006 MySQL AB
+/* Copyright (C) 2006 - 2009 Sun Microsystems
+ All rights reserved. Use is subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -15,22 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 */
 
-/* In ha_ndbcluster.cc, low_byte_first() is FALSE on WORDS_BIGENDIAN machines
-   and TRUE on other (e.g. intel) machines.  This is a key to understanding
-   how NDB actually stores values from sql/field.cc Field_xxx::store()
-*/ 
+/* MySQL_value.cc : encode values according to MySQL data types 
+   for storing them in the database.
+*/
 
+#define DECIMAL_BUFF 9 
+
+
+/** store24() is the macro for storing a 3-byte value (e.g. a time or date). 
+ *  In ha_ndbcluster.cc, low_byte_first() is FALSE on WORDS_BIGENDIAN machines
+ *  and TRUE on other (e.g. intel) machines.  This is a key to understanding
+ *  how NDB actually stores values from sql/field.cc Field_xxx::store()
+ */
 #ifdef __i386__
 #define store24(A,V) A = V
 #else
 #define store24(A,V) int3store(& A, V)
 #endif
 
-enum ndb_string_packing {
-  char_fixed,
-  char_var,
-  char_longvar
-};  
+
 
 enum mvalue_use {
   err_bad_user_value, err_bad_data_type, err_bad_column, 
@@ -73,17 +77,19 @@ struct mvalue {
 };
 typedef struct mvalue mvalue;
 
-namespace MySQL { 
-  void result(result_buffer &, const NdbRecAttr &, NdbBlob *, const char **);
+namespace MySQL
+{ 
   void value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
 };
+
+
 
 /* --------------------------------------------------------------------
    == DECIMAL support that is not in MySQL's public include files ==
  This is only needed in MySQL_Field.cc and only if the "real" decimal.h
  has not been included.  "#ifdef _mysql_h" is here because mysql.h is required 
  by these prorotypes (for e.g. my_bool).  MySQL_Field.cc is the 
- only source file that includes mysql.h, but this file (MySQL_Field.h) is 
+ only source file that includes mysql.h, but this file (MySQL_value.h) is 
  included by mod_ndb.h and thus by every source file.
 */
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# To do: make a list of include dirs, then filter out duplicates:
-# echo $dirs | sed 'y/ /\n/' | sort | uniq 
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
 
 APXS=`which apxs`
 if [ -x /usr/local/mysql/bin/mysql_config ]
@@ -37,6 +37,8 @@ usage() {
   echo "    --debug"
   echo "    --mysys=[yes|no] { default is yes}"
   echo "    --sun-cc"
+  echo "    --64"
+  echo "    --32" 
 }
 
 long_help() {
@@ -59,6 +61,8 @@ long_help() {
   echo 
   echo "    --mysys=yes|no for whether mod_ndb.so should be linked with"
   echo "      the mysys and mystrings libraries"
+  echo
+  echo "    --32 / --64 build 32-bit code / build 64-bit code"
   echo 
 }
 
@@ -119,6 +123,13 @@ do
       CXX="CC"
       dso_cc_fl="-KPIC"
       dso_ld_fl="-G -lCrun -R $LDSO_PATH"
+      ;;
+    --64)
+      dso_cc_fl="$dso_cc_fl -m64"
+      mac_extra_ld_fl="-arch x86_64"
+      ;;
+    --32)
+      dso_cc_fl="$dso_cc_fl -m32"
       ;;
     --help)
       usage
@@ -216,12 +227,10 @@ if test -n "$APXS1"
   case `uname -s` in 
     Darwin) 
       # Apple Linker
-      if test -n "$opt_debug" 
-       then
-        dso_ld_fl="-flat_namespace -bundle -undefined warning -bind_at_load"
-       else
-        dso_ld_fl="-flat_namespace -bundle -undefined suppress -bind_at_load"
-      fi
+      undefsym="suppress"
+      test -n "$opt_debug" && undefsym="warning"
+      dso_ld_fl="-flat_namespace -bundle -undefined $undefsym -bind_at_load"
+      dso_ld_fl="$dso_ld_fl $mac_extra_ld_fl"
       ;;
     SunOS)
       # Solaris Linker

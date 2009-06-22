@@ -1,5 +1,6 @@
-#  (C) 2007 MySQL , 2009 Sun Microsystems
-#  
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
+
 #  This is the main engine of the test suite.  It takes a test.list file 
 #  on input, and writes shell commands to output. 
 #
@@ -60,7 +61,7 @@ BEGIN { if(!host) host = "localhost:3080"
      archive_file = "results/" prefix ".archive"
      
      if(mode == "compare")      outfile = "> current/" $1
-     else if(mode == "record")  outfile = "| " recorder $1 " >> " archive_file
+     else if(mode == "record")  outfile = "| " recorder $1 " | tee -a " archive_file
      else outfile = " | tee current/" $1
           
      if(NF > 3) for(i=4; i <= NF; i++) args = args $i " ";

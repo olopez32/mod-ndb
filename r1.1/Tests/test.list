@@ -1,3 +1,6 @@
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
+
 # test.list 
 # 
 # This set of tests as a whole should be idempotent: able to run repeatedly

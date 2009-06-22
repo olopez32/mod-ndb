@@ -1,4 +1,5 @@
-/* Copyright (C) 2006 MySQL AB
+/* Copyright (C) 2006 - 2009 Sun Microsystems
+ All rights reserved. Use is subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -51,6 +52,7 @@ int mod_ndb_post_config(apr_pool_t* conf_pool, apr_pool_t* log_pool,
   if( process.conn.connected) {    
     log_err(s, "Connnection test OK: succesfully connected to NDB Cluster."); 
     delete process.conn.connection;
+    process.conn.connected = 0;
     return OK ;
   }
 

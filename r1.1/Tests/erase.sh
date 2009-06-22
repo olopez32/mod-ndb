@@ -1,3 +1,5 @@
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
 
 obj=$1
 archive=`perl -e 'print substr("'$obj'",0,3) . ".archive"'` 

@@ -1,4 +1,5 @@
-/* Copyright (C) 2007 MySQL AB
+/* Copyright (C) 2006 - 2009 Sun Microsystems
+ All rights reserved. Use is subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -117,9 +118,7 @@ void Node::dump(ap_pool *p, result_buffer &res, int indent) {
 
 void Loop::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
-  res.out(ap_pstrcat(p, "{ \"", name , "\":", 
-                    inset, "  {",
-                    inset, "    \"begin\": ", 0));
+  res.out("{ \"%s\":%s  {%s    \"begin\": ", name, inset, inset);
   begin->dump(p, res);
   res.out(" ,%s    \"core\":  ", inset); 
   core->dump(p, res, indent + 4);

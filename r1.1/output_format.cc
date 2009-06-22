@@ -1,4 +1,5 @@
-/* Copyright (C) 2007 MySQL AB
+/* Copyright (C) 2006 - 2009 Sun Microsystems
+ All rights reserved. Use is subject to license terms.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -174,30 +175,19 @@ void register_built_in_formatters(ap_pool *p) {
 }
 
 
-/* Results_raw() uses a special optimization for getting a single blob.
-   Initialize a buffer (which happens to also be a result_buffer) big enough
-   for the blob, and call NdbBlob::readData() to read the blob directly into
-   it.
+/* Results_raw() simply uses the blob's internal buffer as the output buffer.
 */
 int Results_raw(request_rec *r, data_operation *data, 
                 result_buffer &res) {
-  unsigned long long size64 = 0;
-  unsigned int size;
-  
-  if(data->blobs[0]) {
-    data->blobs[0]->getLength(size64);  //passed by reference
-    size = (unsigned int) size64;
-    res.init(r, size);
-    if(data->blobs[0]->readData(res.buff, size)) 
-      log_debug(r->server,"Error reading blob data: %s",
-                data->blobs[0]->getNdbError().message);
-    res.sz = size;
-    return OK;
-  }
+  const MySQL::result *result = data->result_cols[0];  
+
+  if(result && result->contents) 
+    res.overlay(result->contents);  
   else {
     log_err(r->server, "Cannot use raw output format at %s", r->uri);
     return 500;
   }
+  return OK;
 }
 
 
@@ -230,12 +220,11 @@ void Cell::out(data_operation *data, unsigned int n, result_buffer &res) {
     return;
   }
 
-  const NdbRecAttr &rec = *data->result_cols[n];
+  MySQL::result *result = data->result_cols[n];  
   const char *col_name = data->flag.select_star ? 
-    rec.getColumn()->getName() : data->aliases[n] ;
-  NdbBlob *blob = data->flag.has_blob ? data->blobs[n] : 0;
+    result->getColumn()->getName() : data->aliases[n] ;
     
-  NdbDictionary::Column::Type col_type = rec.getColumn()->getType();
+  NdbDictionary::Column::Type col_type = result->getColumn()->getType();
   switch(elem_type) {
     case item_name:
       if(elem_quote == no_quot) 
@@ -256,10 +245,10 @@ void Cell::out(data_operation *data, unsigned int n, result_buffer &res) {
               ))) {
         /* Quoted Value */
         res.out(1,"\"");
-        MySQL::result(res, rec, blob, escapes);
+        result->out(res, escapes);
         res.out(1,"\"");            
       }
-      else MySQL::result(res, rec, blob, escapes);  /* No Quotes */
+      else result->out(res, escapes);  /* No Quotes */
       break;
     default:
       assert(0);      
@@ -268,8 +257,8 @@ void Cell::out(data_operation *data, unsigned int n, result_buffer &res) {
 
 
 void RecAttr::out(data_operation *data, unsigned int n, result_buffer &res) {
-  const NdbRecAttr &rec = *data->result_cols[n];
-  for( Cell *c = rec.isNULL() ? null_fmt : fmt; c != 0 ; c=c->next) 
+  Cell *c = data->result_cols[n]->isNull() ?  null_fmt : fmt;
+  for( ; c != 0 ; c=c->next) 
     c->out(data, n, res);
 }
 
