@@ -1,5 +1,6 @@
-#  (C) 2007 MySQL 
-#  
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
+  
 #  This is an auxilliary script in the mod_ndb test suite.
 #
 #  It takes a test result on input, and reformats the result 

@@ -85,8 +85,8 @@
 			children = (
 				655A3FF20AC35A0300FC573F /* README */,
 				655CEC240A8C4C9500DB8284 /* configure */,
-				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				65D86E7C0FE2D6590097814E /* trace.d */,
+				655CEC250A8C4CA400DB8284 /* make_file_tail */,
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
 				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
