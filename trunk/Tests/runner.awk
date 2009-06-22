@@ -1,5 +1,6 @@
-#  (C) 2007 MySQL , 2009 Sun Microsystems
-#  
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
+
 #  This is the main engine of the test suite.  It takes a test.list file 
 #  on input, and writes shell commands to output. 
 #

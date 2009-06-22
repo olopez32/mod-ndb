@@ -1,3 +1,6 @@
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
+
 #  Test suite control script for mod_ndb
 # unlike "run-test", this can be run from any directory 
 

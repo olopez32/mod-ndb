@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# To do: make a list of include dirs, then filter out duplicates:
-# echo $dirs | sed 'y/ /\n/' | sort | uniq 
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
 
 APXS=`which apxs`
 if [ -x /usr/local/mysql/bin/mysql_config ]

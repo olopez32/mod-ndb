@@ -1,7 +1,9 @@
 /* mod_ndb, an Apache module to access NDB Cluster */
 
-/* Copyright (C) 2006 MySQL AB
-
+/* Copyright (C) 2006 - 2009 Sun Microsystems
+ All rights reserved. Use is subject to license terms.
+ 
+ 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
