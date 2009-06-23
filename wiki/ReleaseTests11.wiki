@@ -3,6 +3,7 @@
 == Release Tests ==
 
 || *Date* || *Machine* || *Architecture* || *OS* || *Apache* || *MySQL* || *Result* || *Notes* ||
+|| 6/23 || tdm || x86_64 || Mac OS X 10.5 Server || 2.2.11 (worker) || 7.0.6 || OK ||With [http://dev.mysql.com/downloads/cluster/7.0.html#Mac_OS_X mysql-cluster-gpl-7.0.6-osx10.5-x86_64.dmg] Configure Apache with: export CFLAGS="-m64"; export CPPFLAGS="-m64"; ./configure --enable-layout="Darwin" --with-mpm=worker --enable-so Configure mod_ndb with:./configure --mysql=/usr/local/mysql/bin/mysql_config --apxs=/usr/sbin/apxs  --64||
 || 6/22 || sam || i386 || Mac OS X 10.5 || 2.2.8 (worker) || 7.0.5 || OK || ||
 || 6/22 || sam || amd64 || Mac OS X 10.5 || 2.2.11 (prefork) || 7.0.6 || OK || With [http://dev.mysql.com/downloads/cluster/7.0.html mysql-cluster-gpl-7.0.6-osx10.5-x86_64.tar.gz ].  Configure mod_ndb with:  `./configure --64` || 
 || 5/22 || sam || i386 || Mac OS X 10.5 || 1.3.37 || 7.0.5 || OK || ||
