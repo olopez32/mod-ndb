@@ -85,7 +85,7 @@
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2008-05-04 12:31:44 -0700</string>
+	<string>2009-06-22 19:20:52 -0700</string>
 	<key>Modifier</key>
 	<string>John David Duncan</string>
 	<key>NotesVisible</key>
@@ -181,7 +181,7 @@
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -239,7 +239,7 @@
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -353,7 +353,7 @@ A REST Web  Services API for MySQL Cluster}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -396,7 +396,7 @@ A REST Web  Services API for MySQL Cluster}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -462,7 +462,7 @@ tx\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -505,7 +505,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -770,7 +770,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -818,7 +818,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -866,7 +866,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -918,7 +918,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -966,7 +966,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1014,7 +1014,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1076,7 +1076,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1124,7 +1124,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -1208,7 +1208,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1258,7 +1258,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -1320,7 +1320,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1380,7 +1380,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1430,7 +1430,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red35\green110\blue37;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -1488,7 +1488,7 @@ tx\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -1531,7 +1531,7 @@ tx\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -1598,7 +1598,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1645,7 +1645,7 @@ per NDB connect string}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -1688,7 +1688,7 @@ per NDB connect string}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -1754,7 +1754,7 @@ tx\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -1802,7 +1802,7 @@ tx\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1857,7 +1857,7 @@ per Apache process}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -1902,7 +1902,7 @@ next}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -1960,7 +1960,7 @@ next}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -2009,7 +2009,7 @@ next}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -2059,7 +2059,7 @@ next}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -2113,7 +2113,7 @@ next}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -2181,7 +2181,7 @@ next}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -2224,7 +2224,7 @@ next}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -2465,7 +2465,7 @@ thread_limit}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;\f1\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2485,7 +2485,7 @@ thread_limit}</string>
 \
 \'95\'a0Once a key_column is found, 
 \i set_key() 
-\i0 in Query.cc determines how to use it.  Either it is used in a filter, or it belongs to an index and therefore implies an access plan.  If the implied plan is better than the current plan, then use it:\
+\i0 in Query.cc determines how to use it.  Either it to a filter, or it belongs to an index and therefore implies an access plan.  If the implied plan is better than the current plan, then use it:\
 
 \f1\fs24 \cf0 \CocoaLigature0 \
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -2505,11 +2505,11 @@ thread_limit}</string>
 \i0 the data sent with a POST request 
 \i \'96 
 \i0 is handled differently.  When the body is read (in 
-\i read_http_post.cc)
+\i request_body.cc)
 \i0 , the names and values are stored in an apache table, 
 \i q-&gt;form_data
 \i0 .  Later, in 
-\i set_up_write(), 
+\i set_up_write() (Query.cc), 
 \i0 we iterate over the list of updatable columns 
 \i dir-&gt;updatable 
 \i0 and retrieve each column's new value (if any) from 
@@ -2559,7 +2559,7 @@ When multipart/form-data is supported, this might change.  }</string>
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -2680,7 +2680,7 @@ When multipart/form-data is supported, this might change.  }</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2738,7 +2738,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2791,7 +2791,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2844,7 +2844,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2897,7 +2897,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2950,7 +2950,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3003,7 +3003,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3056,7 +3056,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3109,7 +3109,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3162,7 +3162,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3215,7 +3215,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3268,7 +3268,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3321,7 +3321,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3374,7 +3374,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3427,7 +3427,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3480,7 +3480,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3533,7 +3533,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3586,7 +3586,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3639,7 +3639,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3692,7 +3692,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3745,7 +3745,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3798,7 +3798,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3851,7 +3851,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3904,7 +3904,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -3957,7 +3957,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4010,7 +4010,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4063,7 +4063,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4116,7 +4116,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4169,7 +4169,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4222,7 +4222,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4275,7 +4275,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4328,7 +4328,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4381,7 +4381,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4434,7 +4434,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4487,7 +4487,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4540,7 +4540,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4593,7 +4593,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4646,7 +4646,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4699,7 +4699,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4752,7 +4752,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4943,7 +4943,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -4996,7 +4996,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5095,7 +5095,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5148,7 +5148,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5201,7 +5201,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5254,7 +5254,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5307,7 +5307,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5360,7 +5360,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5413,7 +5413,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5466,7 +5466,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5519,7 +5519,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5572,7 +5572,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5625,7 +5625,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5678,7 +5678,7 @@ When multipart/form-data is supported, this might change.  }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5732,7 +5732,7 @@ max_read_operations}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5785,7 +5785,7 @@ max_read_operations}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -5838,7 +5838,7 @@ max_read_operations}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -6020,7 +6020,7 @@ max_read_operations}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{390, 744.698}, {170, 14}}</string>
+					<string>{{390, 744.698}, {169, 14}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -6054,7 +6054,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -6102,7 +6102,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -6148,7 +6148,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;\f1\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red35\green110\blue37;\red118\green15\blue80;\red0\green0\blue255;
 }
@@ -6223,7 +6223,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -6269,7 +6269,7 @@ max_read_operations}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -6312,7 +6312,7 @@ max_read_operations}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -6385,7 +6385,7 @@ key_columns}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -6434,7 +6434,7 @@ key_columns}</string>
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -6489,7 +6489,7 @@ key_columns}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -6537,7 +6537,7 @@ key_columns}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -6580,7 +6580,7 @@ key_columns}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -6641,7 +6641,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -6755,7 +6755,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;\f1\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -6827,7 +6827,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -6884,7 +6884,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -6932,7 +6932,7 @@ max_read_operations}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red35\green110\blue37;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -7001,7 +7001,7 @@ max_read_operations}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -7044,7 +7044,7 @@ max_read_operations}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -7115,7 +7115,7 @@ implied_plan}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -7158,7 +7158,7 @@ implied_plan}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -7293,7 +7293,7 @@ first_col_idx}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7342,7 +7342,7 @@ first_col_idx}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7456,7 +7456,7 @@ first_col_idx}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -7508,7 +7508,7 @@ dir-&gt;indexes     = \cf2 new\cf0 (p, \cf3 2\cf0 ) apache_array&lt;config::inde
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -7558,7 +7558,7 @@ dir-&gt;indexes     = \cf2 new\cf0 (p, \cf3 2\cf0 ) apache_array&lt;config::inde
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7606,7 +7606,7 @@ dir-&gt;indexes     = \cf2 new\cf0 (p, \cf3 2\cf0 ) apache_array&lt;config::inde
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7657,7 +7657,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7726,7 +7726,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -7784,7 +7784,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7834,7 +7834,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -7903,7 +7903,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -7953,7 +7953,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -8017,7 +8017,7 @@ cast to an array pointer, and ap_push_array() returns a void pointer to a new el
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -8130,7 +8130,7 @@ above the  Apache API}</string>
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -8176,7 +8176,7 @@ above the  Apache API}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -8231,7 +8231,7 @@ op-&gt;equal() and scanop-&gt;setBound().\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -8275,7 +8275,7 @@ op-&gt;equal() and scanop-&gt;setBound().\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -8319,7 +8319,7 @@ op-&gt;equal() and scanop-&gt;setBound().\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -8462,7 +8462,7 @@ op-&gt;equal() and scanop-&gt;setBound().\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -8537,7 +8537,7 @@ op-&gt;equal() and scanop-&gt;setBound().\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -8589,7 +8589,7 @@ op-&gt;equal() and scanop-&gt;setBound().\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -8644,7 +8644,7 @@ n_parts}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -8710,7 +8710,7 @@ get_column()\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -8756,7 +8756,7 @@ get_column()\
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -8911,7 +8911,7 @@ Standardizing index access in mod_ndb }</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -8961,7 +8961,7 @@ Standardizing index access in mod_ndb }</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9024,7 +9024,7 @@ Standardizing index access in mod_ndb }</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9070,7 +9070,7 @@ Standardizing index access in mod_ndb }</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red35\green110\blue37;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -9215,7 +9215,7 @@ Standardizing index access in mod_ndb }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9267,7 +9267,7 @@ Standardizing index access in mod_ndb }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9315,7 +9315,7 @@ Standardizing index access in mod_ndb }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9363,7 +9363,7 @@ Standardizing index access in mod_ndb }</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9411,7 +9411,7 @@ Standardizing index access in mod_ndb }</string>
 									<key>Text</key>
 									<dict>
 										<key>Text</key>
-										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -9454,7 +9454,7 @@ Standardizing index access in mod_ndb }</string>
 										<key>Align</key>
 										<integer>0</integer>
 										<key>Text</key>
-										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -9523,7 +9523,7 @@ result_format}</string>
 									<key>Text</key>
 									<dict>
 										<key>Text</key>
-										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -9566,7 +9566,7 @@ result_format}</string>
 										<key>Align</key>
 										<integer>0</integer>
 										<key>Text</key>
-										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+										<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -9675,7 +9675,7 @@ result_format}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -9718,7 +9718,7 @@ result_format}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -9813,7 +9813,7 @@ errors}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9872,7 +9872,7 @@ errors}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9884,7 +9884,7 @@ errors}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{89.9567, 536.345}, {98.1144, 17}}</string>
+					<string>{{96, 473.445}, {98.1144, 17}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -9901,7 +9901,7 @@ errors}</string>
 					<key>HFlip</key>
 					<string>YES</string>
 					<key>ID</key>
-					<integer>173</integer>
+					<integer>145</integer>
 					<key>Shape</key>
 					<string>Rectangle</string>
 					<key>Style</key>
@@ -9927,7 +9927,7 @@ errors}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -9938,155 +9938,8 @@ errors}</string>
 					<integer>0</integer>
 				</dict>
 				<dict>
-					<key>Class</key>
-					<string>Group</string>
-					<key>Graphics</key>
-					<array>
-						<dict>
-							<key>Bounds</key>
-							<string>{{7.51385, 67.8017}, {268.351, 462}}</string>
-							<key>Class</key>
-							<string>ShapedGraphic</string>
-							<key>FitText</key>
-							<string>Vertical</string>
-							<key>Flow</key>
-							<string>Resize</string>
-							<key>HFlip</key>
-							<string>YES</string>
-							<key>ID</key>
-							<integer>176</integer>
-							<key>Shape</key>
-							<string>Rectangle</string>
-							<key>Style</key>
-							<dict>
-								<key>fill</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>shadow</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>stroke</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-							</dict>
-							<key>Text</key>
-							<dict>
-								<key>Align</key>
-								<integer>0</integer>
-								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
-{\fonttbl\f0\fnil\fcharset0 AndaleMono;}
-{\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;}
-\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
-\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
-\ql\qnatural\pardirnatural
-
-\f0\fs24 \cf2 \CocoaLigature0 struct\cf0  mod_ndb_instance \{\
-  \cf2 struct\cf0  mod_ndb_connection *conn;  \
-  Ndb *db;\
-  NdbTransaction *tx;\
-  \cf2 int\cf0  n_read_ops;\
-  \cf2 int\cf0  max_read_ops;\
-  \cf2 struct\cf0  data_operation *data;\
-  \cf2 struct\cf0  \{\
-    \cf2 unsigned\cf0  \cf2 int\cf0  has_blob : \cf3 1\cf0  ;\
-    \cf2 unsigned\cf0  \cf2 int\cf0  aborted  : \cf3 1\cf0  ;\
-    \cf2 unsigned\cf0  \cf2 int\cf0  use_etag : \cf3 1\cf0  ;\
-  \} flag;\
-  \cf2 unsigned\cf0  \cf2 int\cf0  requests;\
-  \cf2 unsigned\cf0  \cf2 int\cf0  errors;\
-\};\
-\
-\cf2 typedef\cf0  \cf2 struct\cf0  mod_ndb_instance \
-   ndb_instance;\
-\
-\pard\tx1120\pardeftab1120\ql\qnatural\pardirnatural
-\cf2 struct\cf0  data_operation \{\
-  NdbOperation *op;\
-  NdbIndexScanOperation *scanop;\
-  \cf2 unsigned\cf0  \cf2 int\cf0  n_result_cols;\
-  \cf2 const\cf0  NdbRecAttr **result_cols;\
-  NdbBlob **blobs;\
-  \cf2 char\cf0  **aliases;\
-  output_format *fmt;\
-  \cf2 struct\cf0  \{\
-    \cf2 unsigned\cf0  \cf2 int\cf0  has_blob    : \cf3 1\cf0 ;\
-    \cf2 unsigned\cf0  \cf2 int\cf0  select_star : \cf3 1\cf0 ;\
-  \} flag;\
-\};\
-}</string>
-							</dict>
-							<key>TextPlacement</key>
-							<integer>0</integer>
-						</dict>
-						<dict>
-							<key>Bounds</key>
-							<string>{{186.004, 44.2587}, {89.8604, 17}}</string>
-							<key>Class</key>
-							<string>ShapedGraphic</string>
-							<key>FitText</key>
-							<string>Vertical</string>
-							<key>Flow</key>
-							<string>Resize</string>
-							<key>FontInfo</key>
-							<dict>
-								<key>Font</key>
-								<string>Courier-Oblique</string>
-								<key>Size</key>
-								<real>14</real>
-							</dict>
-							<key>HFlip</key>
-							<string>YES</string>
-							<key>ID</key>
-							<integer>177</integer>
-							<key>Shape</key>
-							<string>Rectangle</string>
-							<key>Style</key>
-							<dict>
-								<key>fill</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>shadow</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-								<key>stroke</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-							</dict>
-							<key>Text</key>
-							<dict>
-								<key>Align</key>
-								<integer>0</integer>
-								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
-{\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
-{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f0\i\b\fs28 \cf2 mod_ndb.h}</string>
-							</dict>
-							<key>TextPlacement</key>
-							<integer>0</integer>
-						</dict>
-					</array>
-					<key>ID</key>
-					<integer>175</integer>
-				</dict>
-				<dict>
 					<key>Bounds</key>
-					<string>{{7.51386, 563.146}, {263, 171}}</string>
+					<string>{{13.5572, 499.582}, {263, 171}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10122,7 +9975,7 @@ errors}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -10174,7 +10027,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -10185,6 +10038,146 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 					</dict>
 					<key>TextPlacement</key>
 					<integer>2</integer>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{177.783, 41}, {98.1144, 17}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>Vertical</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Courier-Oblique</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>139</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
+{\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
+{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\i\b\fs28 \cf2 mod_ndb.h}</string>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{1.90401, 58.445}, {293, 406}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>Vertical</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>140</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
+{\fonttbl\f0\fnil\fcharset0 AndaleMono;}
+{\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;\red35\green110\blue37;
+}
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf2 \CocoaLigature0 struct\cf0  mod_ndb_instance \{\
+  \cf2 struct\cf0  mod_ndb_connection *conn;  \
+  Ndb *db;\
+  NdbTransaction *tx;\
+  \cf2 int\cf0  n_read_ops;\
+  \cf2 int\cf0  max_read_ops;\
+  \cf2 struct\cf0  data_operation *data;\
+  \cf2 struct\cf0  \{\
+    \cf2 unsigned\cf0  \cf2 int\cf0  has_blob : \cf3 1\cf0  ;\
+    \cf2 unsigned\cf0  \cf2 int\cf0  aborted  : \cf3 1\cf0  ;\
+    \cf2 unsigned\cf0  \cf2 int\cf0  use_etag : \cf3 1\cf0  ;\
+  \} flag;\
+  \cf2 unsigned\cf0  \cf2 int\cf0  requests;\
+  \cf2 unsigned\cf0  \cf2 int\cf0  errors;\
+\};\
+\
+\cf2 typedef\cf0  \cf2 struct\cf0  mod_ndb_instance \
+   ndb_instance;\
+\
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\ql\qnatural\pardirnatural
+\cf4 /* An operation */\cf0 \
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\ql\qnatural\pardirnatural
+\cf2 struct\cf0  data_operation \{\
+  NdbOperation *op;\
+  NdbIndexScanOperation *scanop;\
+  NdbBlob *blob;\
+  \cf2 unsigned\cf0  \cf2 int\cf0  n_result_cols;\
+  \cf2 const\cf0  NdbRecAttr **result_cols;\
+  result_format_type result_format;\
+\};\
+}</string>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
@@ -10222,7 +10215,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -10299,6 +10292,116 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 			<key>GraphicsList</key>
 			<array>
 				<dict>
+					<key>Bounds</key>
+					<string>{{413.52, 411.689}, {167, 17}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>Vertical</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Courier-Oblique</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>127</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
+{\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
+{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\i\b\fs28 \cf2 MySQL_value.h}</string>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{414, 166.576}, {167, 17}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>Vertical</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Courier-Oblique</string>
+						<key>Size</key>
+						<real>14</real>
+					</dict>
+					<key>HFlip</key>
+					<string>YES</string>
+					<key>ID</key>
+					<integer>126</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Align</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
+{\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
+{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\i\b\fs28 \cf2 MySQL_result.h}</string>
+					</dict>
+					<key>TextPlacement</key>
+					<integer>0</integer>
+				</dict>
+				<dict>
 					<key>Class</key>
 					<string>LineGraphic</string>
 					<key>ID</key>
@@ -10321,7 +10424,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{17.859, 237.737}, {516.72, 38}}</string>
+					<string>{{37.4319, 264.316}, {516.72, 38}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10357,20 +10460,19 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs32 \cf2 \'95 Actual decoding of MySQL types is handled by some private functions inside MySQL_Field.cc, including String(), Time(), Date(),  Decimal(), 
-\i etc.}</string>
+\f0\fs32 \cf2 \'95 Actual decoding is handled by some private functions inside of MySQL_result.cc ...}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{11.5601, 395.23}, {353.44, 22}}</string>
+					<string>{{16.6793, 415.23}, {87.72, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10406,19 +10508,19 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs36 \cf2 Encoding text to MySQL native types}</string>
+\f0\b\fs32 \cf2 Encoding}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{5.16302, 160.576}, {371.837, 22}}</string>
+					<string>{{5.16302, 166.576}, {87.72, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10454,12 +10556,12 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs36 \cf2 Decoding MySQL native types to text}</string>
+\f0\b\fs32 \cf2 Decoding}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
@@ -10471,8 +10573,8 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 					<integer>121</integer>
 					<key>Points</key>
 					<array>
-						<string>{8.09747, 380.263}</string>
-						<string>{550.209, 380.983}</string>
+						<string>{8.09747, 396.263}</string>
+						<string>{550.209, 396.983}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -10487,7 +10589,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{400.56, 395.23}, {87.72, 22}}</string>
+					<string>{{378.28, 443.114}, {87.72, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10523,19 +10625,19 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs36 \cf2 mvalues}</string>
+\f0\b\fs32 \cf2 mvalues}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{7.5601, 547.723}, {212, 182}}</string>
+					<string>{{11.5601, 567.723}, {212, 182}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10569,7 +10671,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -10597,11 +10699,11 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{254, 425.259}, {326, 322}}</string>
+					<string>{{268.163, 474}, {313, 280}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
-					<string>Vertical</string>
+					<string>YES</string>
 					<key>Flow</key>
 					<string>Resize</string>
 					<key>HFlip</key>
@@ -10633,13 +10735,14 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
-{\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red35\green110\blue37;}
-\deftab1120
-\pard\tx1120\pardeftab1120\ql\qnatural\pardirnatural
+{\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\ql\qnatural\pardirnatural
 
-\f0\fs24 \cf2 \CocoaLigature0 typedef struct\cf0  mvalue \{\
+\f0\fs24 \cf2 \CocoaLigature0 struct\cf0  mvalue \{\
   \cf2 const\cf0  NdbDictionary::Column *ndb_column;\
   \cf2 union\cf0  \{\
     \cf2 const\cf0  \cf2 char\cf0  *        val_const_char;\
@@ -10651,24 +10754,23 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
     \cf2 unsigned\cf0  \cf2 long\cf0  \cf2 long\cf0   val_unsigned_64;\
     \cf2 float\cf0                val_float;\
     \cf2 double\cf0               val_double;\
-    \cf2 char\cf0                 val_8;\
-    \cf2 unsigned\cf0  \cf2 char\cf0        val_unsigned_8;\
-    int16_t             val_16;\
-    Uint16              val_unsigned_16;\
+    \cf2 const\cf0  NdbDictionary::Column * err_col;\
   \} u;\
   size_t len;\
-  Uint32 col_len;\
   mvalue_use use_value;\
   mvalue_interpreted interpreted;\
-  \cf2 bool\cf0  over;        \cf3 /*overflow indicator*/\cf0 \
-\} mvalue;}</string>
+\};\
+\cf2 typedef\cf0  \cf2 struct\cf0  mvalue mvalue;\
+}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
+					<key>Wrap</key>
+					<string>NO</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{6.83701, 420.75}, {262.163, 114}}</string>
+					<string>{{10.837, 440.75}, {263.724, 114}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10704,13 +10806,13 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs32 \cf2 \'95 value() is a generic "encode" function; given an ASCII value (from HTTP) and an NdbDictionary::Column (which specifies how to encode the value), it will return an
-\i  mvalue  
+\i  mvalue 
 \i0 properly enocded for the database.}</string>
 					</dict>
 					<key>TextPlacement</key>
@@ -10718,7 +10820,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{17.859, 189.656}, {516.72, 38}}</string>
+					<string>{{33.4891, 198.844}, {516.72, 57}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10754,19 +10856,19 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs32 \cf2 \'95 MySQL::result() takes an NdbRecAttr and sends a text representation to an output buffer, using a set of escape encodings}</string>
+\f0\fs32 \cf2 \'95 The MySQL::result class represents a value provided by the NDB API ; it provides a common interface to both NdbRecAttr and NdbBlob.  MySQL::result::out() provides a text representation of the result.}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{375.163, 280.267}, {161, 70}}</string>
+					<string>{{375.163, 295.631}, {161, 70}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10802,7 +10904,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 Monaco;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx240\tx480\tx720\tx960\tx1200\tx1440\tx1680\tx1920\tx2160\tx2400\tx2640\tx2880\tx3120\tx3360\tx3600\tx3840\tx4080\tx4320\tx4560\tx4800\tx5040\tx5280\tx5520\tx5760\tx6000\tx6240\tx6480\tx6720\tx6960\tx7200\tx7440\tx7680\tx7920\tx8160\tx8400\tx8640\tx8880\tx9120\tx9360\tx9600\tx9840\tx10080\tx10320\tx10560\tx10800\tx11040\tx11280\tx11520\tx11760\tx12000\tx12240\tx12480\tx12720\tx12960\tx13200\tx13440\tx13680\tx13920\tx14160\tx14400\tx14640\tx14880\tx15120\tx15360\tx15600\tx15840\tx16080\tx16320\tx16560\tx16800\tx17040\tx17280\tx17520\tx17760\tx18000\tx18240\tx18480\tx18720\tx18960\tx19200\tx19440\tx19680\tx19920\tx20160\tx20400\tx20640\tx20880\tx21120\tx21360\tx21600\tx21840\tx22080\tx22320\tx22560\tx22800\tx23040\tx23280\tx23520\tx23760\tx24000\ql\qnatural\pardirnatural
@@ -10820,7 +10922,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{17.859, 292.443}, {314.44, 38}}</string>
+					<string>{{56.7933, 310.788}, {314.44, 38}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10856,7 +10958,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -10868,7 +10970,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{17.859, 347.15}, {487.039, 19}}</string>
+					<string>{{56.7933, 367.837}, {487.039, 19}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -10904,7 +11006,7 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -10916,11 +11018,11 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{11.5601, 45.1545}, {428.321, 98}}</string>
+					<string>{{10.837, 47.421}, {335, 84}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
-					<string>Vertical</string>
+					<string>YES</string>
 					<key>Flow</key>
 					<string>Resize</string>
 					<key>HFlip</key>
@@ -10952,181 +11054,24 @@ In a subrequest, processing ends after Query(), but in a complete request it pas
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
-\deftab1120
-\pard\tx1120\pardeftab1120\ql\qnatural\pardirnatural
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
+\ql\qnatural\pardirnatural
 
-\f0\fs24 \cf2 \CocoaLigature0 void\cf0  MySQL::result(result_buffer &amp;rbuf, \
-                   \cf2 const\cf0  NdbRecAttr &amp;rec,         \
-                   NdbBlob *blob, \cf2 const\cf0  \cf2 char\cf0  **escapes);\
-\cf2 \
-void\cf0  MySQL::value(mvalue &amp;m, ap_pool *p, \
-                  \cf2 const\cf0  NdbDictionary::Column *col, \
-                  \cf2 const\cf0  \cf2 char\cf0  *val);}</string>
-					</dict>
-					<key>TextPlacement</key>
-					<integer>0</integer>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{444.02, 16.5}, {120, 17}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>FitText</key>
-					<string>YES</string>
-					<key>Flow</key>
-					<string>Resize</string>
-					<key>FontInfo</key>
-					<dict>
-						<key>Font</key>
-						<string>Courier-Oblique</string>
-						<key>Size</key>
-						<real>14</real>
-					</dict>
-					<key>HFlip</key>
-					<string>YES</string>
-					<key>ID</key>
-					<integer>103</integer>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-					</dict>
-					<key>Text</key>
-					<dict>
-						<key>Align</key>
-						<integer>0</integer>
-						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
-{\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
-{\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f0\i\b\fs28 \cf2 MySQL_Field.h}</string>
+\f0\fs24 \cf2 \CocoaLigature0 namespace\cf0  MySQL \{ \
+  \cf2 class\cf0  result;\
+  \cf2 void\cf0   value(mvalue &amp;, ap_pool *, \
+\cf2               const\cf0  NdbDictionary::Column *, \
+              \cf2 const\cf0  \cf2 char\cf0  *);\
+\};}</string>
 					</dict>
 					<key>TextPlacement</key>
 					<integer>0</integer>
 					<key>Wrap</key>
 					<string>NO</string>
-				</dict>
-				<dict>
-					<key>Class</key>
-					<string>TableGroup</string>
-					<key>Graphics</key>
-					<array>
-						<dict>
-							<key>Bounds</key>
-							<string>{{459.02, 68.2442}, {90, 14}}</string>
-							<key>Class</key>
-							<string>ShapedGraphic</string>
-							<key>FitText</key>
-							<string>Vertical</string>
-							<key>Flow</key>
-							<string>Resize</string>
-							<key>ID</key>
-							<integer>34</integer>
-							<key>Shape</key>
-							<string>Rectangle</string>
-							<key>Style</key>
-							<dict>
-								<key>fill</key>
-								<dict>
-									<key>GradientAngle</key>
-									<real>304</real>
-									<key>GradientCenter</key>
-									<string>{-0.294118, -0.264706}</string>
-								</dict>
-								<key>shadow</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-							</dict>
-							<key>Text</key>
-							<dict>
-								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
-
-\f0\b\fs24 \cf0 MySQL}</string>
-							</dict>
-							<key>TextPlacement</key>
-							<integer>0</integer>
-						</dict>
-						<dict>
-							<key>Bounds</key>
-							<string>{{459.02, 82.2442}, {90, 28}}</string>
-							<key>Class</key>
-							<string>ShapedGraphic</string>
-							<key>FitText</key>
-							<string>Vertical</string>
-							<key>Flow</key>
-							<string>Resize</string>
-							<key>ID</key>
-							<integer>99</integer>
-							<key>Shape</key>
-							<string>Rectangle</string>
-							<key>Style</key>
-							<dict>
-								<key>fill</key>
-								<dict>
-									<key>GradientAngle</key>
-									<real>304</real>
-									<key>GradientCenter</key>
-									<string>{-0.294118, -0.264706}</string>
-								</dict>
-								<key>shadow</key>
-								<dict>
-									<key>Draws</key>
-									<string>NO</string>
-								</dict>
-							</dict>
-							<key>Text</key>
-							<dict>
-								<key>Align</key>
-								<integer>0</integer>
-								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
-
-\f0\fs24 \cf0 result()\
-value()}</string>
-							</dict>
-							<key>TextPlacement</key>
-							<integer>0</integer>
-						</dict>
-					</array>
-					<key>GridH</key>
-					<array>
-						<integer>34</integer>
-						<integer>99</integer>
-						<array/>
-					</array>
-					<key>GroupConnect</key>
-					<string>YES</string>
-					<key>ID</key>
-					<integer>33</integer>
 				</dict>
 				<dict>
 					<key>Bounds</key>
@@ -11166,7 +11111,7 @@ value()}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -11280,7 +11225,7 @@ value()}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -11337,7 +11282,7 @@ value()}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -11385,7 +11330,7 @@ value()}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;\red0\green0\blue255;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -11583,7 +11528,7 @@ value()}</string>
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -11626,7 +11571,7 @@ value()}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -11732,7 +11677,7 @@ Node *
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -11775,7 +11720,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -11849,7 +11794,7 @@ Node *
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -11928,7 +11873,7 @@ Node *
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -11971,7 +11916,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12072,7 +12017,7 @@ Node *
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -12115,7 +12060,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12185,7 +12130,7 @@ Node *
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -12228,7 +12173,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12281,7 +12226,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12360,7 +12305,7 @@ Node *
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 AndaleMono;}
 {\colortbl;\red255\green255\blue255;\red118\green15\blue80;}
 \pard\tx1120\tx2240\tx3360\tx4480\tx5600\tx6720\tx7840\tx8960\tx10080\tx11200\tx12320\tx13440\tx14560\tx15680\tx16800\tx17920\tx19040\tx20160\tx21280\tx22400\tx23520\tx24640\tx25760\tx26880\tx28000\tx29120\tx30240\tx31360\tx32480\tx33600\tx34720\tx35840\tx36960\tx38080\tx39200\tx40320\tx41440\tx42560\tx43680\tx44800\tx45920\tx47040\tx48160\tx49280\tx50400\tx51520\tx52640\tx53760\tx54880\tx56000\tx57120\tx58240\tx59360\tx60480\tx61600\tx62720\tx63840\tx64960\tx66080\tx67200\tx68320\tx69440\tx70560\tx71680\tx72800\tx73920\tx75040\tx76160\tx77280\tx78400\tx79520\tx80640\tx81760\tx82880\tx84000\tx85120\tx86240\tx87360\tx88480\tx89600\tx90720\tx91840\tx92960\tx94080\tx95200\tx96320\tx97440\tx98560\tx99680\tx100800\tx101920\tx103040\tx104160\tx105280\tx106400\tx107520\tx108640\tx109760\tx110880\tx112000
@@ -12443,7 +12388,7 @@ Node *
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -12486,7 +12431,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12542,7 +12487,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12608,7 +12553,7 @@ Node *
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -12651,7 +12596,7 @@ Node *
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12700,7 +12645,7 @@ symbol_table[]\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12779,7 +12724,7 @@ symbol_table[]\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -12836,7 +12781,7 @@ symbol_table[]\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fmodern\fcharset0 Courier-BoldOblique;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -12884,7 +12829,7 @@ symbol_table[]\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -12927,7 +12872,7 @@ symbol_table[]\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -12977,7 +12922,7 @@ symbol_table[]\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -13046,7 +12991,7 @@ symbol_table[]\
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
@@ -13089,7 +13034,7 @@ symbol_table[]\
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
@@ -13153,7 +13098,7 @@ symbol_table[]\
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf270
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
 {\fonttbl\f0\fnil\fcharset0 GillSans;}
 {\colortbl;\red255\green255\blue255;\red51\green51\blue51;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -13227,13 +13172,13 @@ symbol_table[]\
 		<key>FitInWindow</key>
 		<false/>
 		<key>Frame</key>
-		<string>{{1612, -77}, {727, 874}}</string>
+		<string>{{558, 79}, {681, 891}}</string>
 		<key>ShowRuler</key>
 		<false/>
 		<key>ShowStatusBar</key>
 		<true/>
 		<key>VisibleRegion</key>
-		<string>{{-62, 0}, {712, 769}}</string>
+		<string>{{-36, -3}, {666, 786}}</string>
 		<key>Zoom</key>
 		<string>1</string>
 	</dict>
