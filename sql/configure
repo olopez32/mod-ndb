@@ -1,0 +1,343 @@
+#!/bin/sh
+
+# Copyright (C) 2006 - 2009 Sun Microsystems
+# All rights reserved. Use is subject to license terms.
+
+APXS=`which apxs`
+if [ -x /usr/local/mysql/bin/mysql_config ]
+ then 
+   MYSQLCFG=/usr/local/mysql/bin/mysql_config
+ else 
+   MYSQLCFG=`which mysql_config`
+fi
+GET_LIBS='--libs'
+CONFIG_CMD="$0 $@"
+CXX=g++
+OPT='-O3'
+HELPER=0
+LINK_MYSYS=1
+dso_cc_fl=-fPIC
+
+usage() {
+  echo
+  echo "Building mod_ndb requires an installed copy of MySQL, including "
+  echo "NDB Cluster, libraries, header files, and the mysql_config utility, "
+  echo "plus an installed copy of Apache including apxs. "
+  echo 
+  echo "Required: "
+  echo "    --mysql=/path/to/mysql_config [ $MYSQLCFG ] "
+  echo "    --apxs=/path/to/apxs [ $APXS ]"
+  echo 
+  echo "Options:  "
+  echo "    --aprconfig=/path/to/apr-config"
+  echo "    --apuconfig=/path/to/apu-config"
+  echo "    --apxs1=/path/to/apache13/apxs"
+  echo "    --linkopt='DSO linker options'"
+  echo "    --thread-safe"
+  echo "    --debug"
+  echo "    --mysys=[yes|no] { default is yes}"
+  echo "    --sun-cc"
+  echo "    --64"
+  echo "    --32" 
+}
+
+long_help() {
+  echo 
+  echo "Defaults: --mysql=$MYSQLCFG --apxs=$APXS"
+  echo 
+  echo "Use: "
+  echo  
+  echo "    --aprconfig if your APR is installed outside of apache2."
+  echo
+  echo "    --apuconfig for apr-util installed outside of APR."
+  echo
+  echo "    --thread-safe if you have a thread-safe mysql client library."
+  echo 
+  echo "    --debug to compile with '-g -O0', and enable debug log "
+  echo "      messages; otherwise compile with '-O3'."
+  echo 
+  echo "    --sun-cc to compile using Sun C++ compiler rather than g++"
+  echo "      (requires mysql and apache to also be built with Sun CC)"
+  echo 
+  echo "    --mysys=yes|no for whether mod_ndb.so should be linked with"
+  echo "      the mysys and mystrings libraries"
+  echo
+  echo "    --32 / --64 build 32-bit code / build 64-bit code"
+  echo 
+}
+
+fail() { 
+ echo ; echo "Error: $@" ; echo ; exit 1
+}
+
+while test $# != 0
+do
+  case $1 in
+   --*=*)
+    conf_option=`expr "x$1" : 'x\([^=]*\)='`
+    conf_arg=`expr "x$1" : 'x[^=]*=\(.*\)'`
+    shift
+    ;;
+   *)
+    conf_option=$1
+    shift
+    ;;
+  esac
+     
+  case $conf_option in 
+    --debug)
+      OPT='-g -O0'
+      DEFINE='-DMOD_NDB_DEBUG=1'
+      opt_debug="1"
+      ;;
+    --mysql)
+      MYSQLCFG=$conf_arg
+      ;;
+    --apxs)
+      APXS=$conf_arg 
+      ;;
+    --apxs1)
+      APXS1=$conf_arg
+      ;;
+    --linkopt)
+      dso_ld_fl=$conf_arg
+      ;;
+    --thread-safe)
+      GET_LIBS='--libs_r'
+      ;;
+    --aprconfig)
+      APRCONFIG=$conf_arg
+      test -x $APRCONFIG || fail "Cannot execute $APRCONFIG"
+      ;;
+    --apuconfig)
+      APUCONFIG=$conf_arg
+      test -x $APUCONFIG || fail "Cannot execute $APUCONFIG"
+      ;;
+    --mysys)
+      case "$conf_arg" in 
+        [Yy][Ee][Ss] ) LINK_MYSYS=1 ;;
+        [Nn][Oo]     ) LINK_MYSYS=0 ;;
+      esac             
+      ;;
+    --sun-cc) 
+      CXX="CC"
+      dso_cc_fl="-KPIC"
+      dso_ld_fl="-G -lCrun -R $LDSO_PATH"
+      ;;
+    --64)
+      dso_cc_fl="$dso_cc_fl -m64"
+      mac_extra_ld_fl="-arch x86_64"
+      ;;
+    --32)
+      dso_cc_fl="$dso_cc_fl -m32"
+      ;;
+    --help)
+      usage
+      long_help
+      exit
+      ;;
+    *)
+      fail "Unrecognized option " $conf_option
+      ;;
+  esac
+done
+
+## On Solaris, the standards-compliant shell utilities are in /usr/xpg4/bin,
+## including the "grep" that understands the "-q" option.
+test -d /usr/xpg4/bin && PATH=/usr/xpg4/bin:$PATH
+
+test -z "$APXS" && fail "Cannot configure without apxs."
+
+## Check the Apache version
+HTTPD="`$APXS -q SBINDIR`/`$APXS -q TARGET`"
+START_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf"
+$HTTPD -v
+if $HTTPD -v | grep -q "Apache/1.3" 
+ then 
+  echo "Using Apache 1.3"
+  MOD_SOURCE=mod_ndb_ap13.cc
+  APACHE_VER=ap13
+  [ "$opt_debug" = "1" ] && START_APACHE="$START_APACHE -X"
+  STOP_APACHE='kill `cat logs/httpd.pid`'
+  RESTART_APACHE='kill -HUP `cat logs/httpd.pid`'
+  APXS1=$APXS
+ else 
+  MOD_SOURCE=mod_ndb_ap20.cc
+  if $HTTPD -v | grep -q "Apache/2.2"
+   then
+    echo "Using Apache 2.2"
+    APACHE_VER=ap22
+   else 
+    echo "Using Apache 2.0"
+    APACHE_VER=ap20
+  fi
+  STOP_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k stop"
+  RESTART_APACHE="$HTTPD -f \$(SRCDIR)/httpd.conf -k restart"  
+  # Default apr-config and apu-config:
+  [ -z "$APRCONFIG" ] && APRCONFIG=`$APXS -q APR_CONFIG` 
+  if $APXS -q APU_CONFIG 
+   then  
+     [ -z "$APUCONFIG" ] && APUCONFIG=`$APXS -q APU_CONFIG`
+  fi
+fi
+echo
+
+echo "Configuring with"
+echo "    mysql_config = " $MYSQLCFG 
+echo "    apxs         = " $APXS 
+[ -n "$APXS1" ]       && echo "    apxs 1.3 =     " $APXS1
+[ -n "$APRCONFIG" ]   && echo "    apr-config   = " $APRCONFIG
+[ -n "$APUCONFIG" ]   && echo "    apu-config   = " $APUCONFIG
+echo
+
+[ $LINK_MYSYS -eq 1 ] && echo "Linking with -lmysys and -lmystrings" && echo
+
+if [ ! -x "$APXS" ]
+ then 
+  fail "Error: apxs path is not valid."
+fi
+if [ ! -x "$MYSQLCFG" ] 
+ then
+  fail "Error: mysql_config path is not valid." 
+fi
+if [ -x "$APRCONFIG" ]
+ then
+  APRINC=`$APRCONFIG --includes`
+fi
+if [ -x "$APUCONFIG" ]
+ then
+  APUINC=`$APUCONFIG --includes`
+  [ "$APUINC" != "$APRINC" ] && APRINC="$APRINC $APUINC"
+fi
+
+
+
+MY_INC=`$MYSQLCFG --include`
+MY_LIBS=`$MYSQLCFG $GET_LIBS`
+LDSO_PATH=`$MYSQLCFG --libs | perl -n -e 'if(/-L(\S*)/) { print $1 }'`
+
+if test -n "$APXS1" 
+ then 
+  # For Apache 1.3, get the flags from APXS
+  dso_cc_fl="$dso_cc_fl "`$APXS1 -q CFLAGS`' '`$APXS1 -q CFLAGS_SHLIB` 
+  dso_ld_fl="$dso_ld_fl "`$APXS1 -q LDFLAGS_SHLIB`
+ else 
+  # For Apache 2 the strategy is different.
+  # 1) use some well-known platform-specific linker flags
+  case `uname -s` in 
+    Darwin) 
+      # Apple Linker
+      undefsym="suppress"
+      test -n "$opt_debug" && undefsym="warning"
+      dso_ld_fl="-flat_namespace -bundle -undefined $undefsym -bind_at_load"
+      dso_ld_fl="$dso_ld_fl $mac_extra_ld_fl"
+      ;;
+    SunOS)
+      # Solaris Linker
+      test -z "$dso_ld_fl" && dso_ld_fl="-G -R $LDSO_PATH"
+      ;;
+    *)
+      # Default to the GNU linker
+      dso_ld_fl="-shared"    
+      ;;
+  esac
+  # 2) If we are using apr-config, it can supply some flags, too.
+  if [ -x "$APRCONFIG" ]
+    then
+      dso_cc_fl=`$APRCONFIG --cppflags`" $dso_cc_fl"
+  fi
+fi
+
+if $MYSQLCFG --version | grep -q '^5.1.' 
+ then NDB_PATH=storage/ndb 
+ else NDB_PATH=ndb 
+fi
+
+#### Prepare a test/demo environment 
+rm -f modules 
+ln -s `$APXS -q LIBEXECDIR` modules
+test -d logs || mkdir logs
+test -f test.conf || cp test.conf.dist test.conf
+
+# If a module exists both in the "desired modules" template file and in the
+# modules directory, then include it in the configuration template
+awk ' !/^#/ {print $2}' templates/modules_$APACHE_VER | sort > modules_desired
+(cd modules ; ls ) | sort | comm -12 - modules_desired >  modules_avail
+join -2 2 modules_avail templates/modules_$APACHE_VER | \
+ awk '{printf("LoadModule\t%s \t\t modules/%s \n",$2,$1) }' > modules_conf
+
+
+# Create the sed script which will generate httpd.conf from the template:
+(
+echo s!@AP_USER@!`whoami`!
+echo s!@AP_GROUP@!`groups | awk '{print $NF}'`!
+echo s!@AP_DIR@!`pwd`!
+echo '/#-Other-Modules/r modules_conf'
+echo '/#-Load-Files/r loadfiles_conf'
+) > template.sed 
+
+# The actual httpd.conf is created by the Makefile.
+
+# Start of the Makefile:
+(
+echo '#' Makefile for mod_ndb.  Automatically generated from:
+echo '#' $CONFIG_CMD
+echo
+echo CC=$CXX
+if test -x /usr/bin/cococpp   # .deb package
+ then
+   echo COCO=cococpp
+ else
+   echo COCO=Coco
+fi
+echo DEFINE=$DEFINE
+echo APXS=$APXS
+echo MOD_SOURCE=$MOD_SOURCE
+echo SRCDIR=`pwd`
+echo
+echo MY_INC1=$MY_INC
+echo MY_INC2=$MY_INC/$NDB_PATH
+echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
+if test $LINK_MYSYS -eq 1 
+ then 
+   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+ else
+   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient"
+fi
+echo 
+echo OPT=$OPT
+echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
+echo DSO_CC_FLAGS=$dso_cc_fl
+echo DSO_LD_FLAGS=$dso_ld_fl   
+echo
+echo LDSO_PATH=$LDSO_PATH
+echo TEMPLATE=templates/conf_$APACHE_VER
+echo START_HTTPD=$START_APACHE
+echo STOP_HTTPD=$STOP_APACHE
+echo RESTART_HTTPD=$RESTART_APACHE
+echo
+
+) > Makefile
+
+
+cat make_file_tail >> Makefile
+
+echo $CONFIG_CMD > config.log
+
+echo "Created Makefile."
+echo
+echo "Removing out-of-date files."
+make -s clean
+echo
+echo "Hello!"
+echo 
+echo "   make            : build mod_ndb" 
+echo "   make install    : install mod_ndb.so"
+echo "   make configtest : test configuration"
+echo "   make start      : start a test server on port 3080 (see test.conf)"
+echo "   make stop       : stop the test server"
+echo "   make restart    : restart the test server" 
+echo
+echo "Thanks for trying mod_ndb!"
+echo
+

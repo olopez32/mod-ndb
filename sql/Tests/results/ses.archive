@@ -1,0 +1,155 @@
+# _BEGIN_ ses001
+r.ses001() {
+  cat <<'__ses001__'
+HTTP/1.1 200 OK
+Content-Length: 324
+ETag: 0071aea61d0bd0baa9fab37be6d10492
+Content-Type: text/plain
+
+[
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"index.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" } 
+]
+__ses001__
+}
+# __END__ ses001
+
+# _BEGIN_ ses002
+r.ses002() {
+  cat <<'__ses002__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__ses002__
+}
+# __END__ ses002
+
+# _BEGIN_ ses003
+r.ses003() {
+  cat <<'__ses003__'
+HTTP/1.1 200 OK
+Content-Length: 509
+ETag: 370a0043cd2eb37f0b6e6e9687a1eed0
+Content-Type: text/plain
+
+<NDBScan>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="last_page_visited" /> 
+  <Attr name="sess_var_value" value="maps.php" />  </NDBTuple>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="time_zone" /> 
+  <Attr name="sess_var_value" value="GMT-0400" />  </NDBTuple>
+ <NDBTuple> <Attr name="sess_id" value="3" /> 
+  <Attr name="sess_var_name" value="user_name" /> 
+  <Attr name="sess_var_value" value="brian" />  </NDBTuple>
+</NDBScan>
+__ses003__
+}
+# __END__ ses003
+
+# _BEGIN_ ses004
+r.ses004() {
+  cat <<'__ses004__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__ses004__
+}
+# __END__ ses004
+
+# _BEGIN_ ses005
+r.ses005() {
+  cat <<'__ses005__'
+HTTP/1.1 200 OK
+Content-Length: 385
+ETag: 13ec8659b46d71cf1ab7d67da06d8833
+Content-Type: text/plain
+
+[
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"maps.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" },
+  { "session":4 , "variable":"user_name" , "value":"roger" } 
+]
+__ses005__
+}
+# __END__ ses005
+
+# _BEGIN_ ses006
+r.ses006() {
+  cat <<'__ses006__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__ses006__
+}
+# __END__ ses006
+
+# _BEGIN_ ses007
+r.ses007() {
+  cat <<'__ses007__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__ses007__
+}
+# __END__ ses007
+
+# _BEGIN_ ses008
+r.ses008() {
+  cat <<'__ses008__'
+HTTP/1.1 200 OK
+Content-Length: 324
+ETag: 0071aea61d0bd0baa9fab37be6d10492
+Content-Type: text/plain
+
+[
+  { "session":1 , "variable":"user_name" , "value":"jdd" },
+  { "session":2 , "variable":"user_name" , "value":"tk" },
+  { "session":3 , "variable":"last_page_visited" , "value":"index.php" },
+  { "session":3 , "variable":"time_zone" , "value":"GMT-0400" },
+  { "session":3 , "variable":"user_name" , "value":"brian" } 
+]
+__ses008__
+}
+# __END__ ses008
+
+# _BEGIN_ ses010
+r.ses010() {
+  cat <<'__ses010__'
+HTTP/1.1 200 OK
+Content-Length: 27
+ETag: f8c0779c0fabee1de5d00a9594a27784
+Content-Type: text/plain
+
+[
+  { "value":"brian" } 
+]
+__ses010__
+}
+# __END__ ses010
+
+# _BEGIN_ ses011
+r.ses011() {
+  cat <<'__ses011__'
+HTTP/1.1 200 OK
+Content-Length: 27
+ETag: f8c0779c0fabee1de5d00a9594a27784
+Content-Type: text/plain
+
+[
+  { "value":"brian" } 
+]
+__ses011__
+}
+# __END__ ses011
+
