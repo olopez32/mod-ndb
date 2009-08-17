@@ -312,7 +312,6 @@ SemanticCheck::VisitBindNode(BindNode* n)
 void
 SemanticCheck::VisitDeleteNode(DeleteNode* n)
 {
-	n->childrenAccept(*this);
 }
 
 void
