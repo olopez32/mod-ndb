@@ -76,7 +76,7 @@ void Parser::Query() {
 			SelectQuery();
 		} else if (la->kind == 2) {
 			DeleteQuery();
-		} else SynErr(28);
+		} else SynErr(33);
 		}
 		catch(ParseException & excp){
 			if(shouldCloseRoot) { 
@@ -175,7 +175,11 @@ void Parser::WhereClause() {
 		nsqlTree->openNodeScope(where); 
 		bool shouldCloseWhere = true;
 		try {
-		SelectCondition();
+		if (StartOf(1)) {
+			SelectCondition();
+		} else if (la->kind == 18 || la->kind == 21) {
+			IndexCondition();
+		} else SynErr(34);
 		}
 		catch(ParseException & excp){
 			if(shouldCloseWhere) { 
@@ -206,7 +210,7 @@ void Parser::SelectClause() {
 			StarNode *star = new StarNode(STAR);
 			nsqlTree->openNodeScope(star); 
 			nsqlTree->closeNodeScope(star,true);
-		} else SynErr(29);
+		} else SynErr(35);
 		}
 		catch(ParseException & excp){
 			if(shouldCloseSelectNode) { 
@@ -234,7 +238,7 @@ void Parser::OrderClause() {
 		} else if (la->kind == 17) {
 			Get();
 			order->setDesc();			
-		} else SynErr(30);
+		} else SynErr(36);
 		nsqlTree->closeNodeScope(order,true); 
 }
 
@@ -351,6 +355,112 @@ void Parser::SelectCondition() {
 		Expression();
 }
 
+void Parser::IndexCondition() {
+		if (la->kind == 18) {
+			PrimaryKey();
+		} else if (la->kind == 21) {
+			UniqueIndex();
+		} else SynErr(37);
+}
+
+void Parser::PrimaryKey() {
+		Expect(18);
+		Expect(19);
+		Expect(20);
+		ANDNode *andNode = new ANDNode(AND);
+			bool shouldCloseANDNode = true;
+		nsqlTree->openNodeScope(andNode); 
+		try{
+		 int order = 0;
+		
+		KeyValue(order);
+		if (la->kind == 11) {
+			Get();
+			order++; 
+			KeyValue(order);
+		}
+		}
+		catch(ParseException & excp){
+			if(shouldCloseANDNode) { 
+				nsqlTree->clearNodeScope(andNode);
+				shouldCloseANDNode = false;
+			}
+			else {
+				nsqlTree->popNode();
+			}
+			delete andNode;
+			throw;
+		}
+		if(shouldCloseANDNode) { 
+				nsqlTree->closeNodeScope(andNode,true);
+		}
+		
+}
+
+void Parser::UniqueIndex() {
+		Expect(21);
+		Expect(22);
+}
+
+void Parser::KeyValue(int &order) {
+		EQNode *eq = new EQNode(EQ);
+		bool shouldCloseEQ = true;
+		nsqlTree->openNodeScope(eq);  
+		try { 
+		 	FieldNode *field = new FieldNode(FIELD);
+		 	field->setName("PRIMARY");
+		 	field->setPrimary(true);
+		 	field->setPrimaryKeyOrder(order);
+			nsqlTree->openNodeScope(field); 
+			nsqlTree->closeNodeScope(field,true);
+		
+		char * value = NULL;
+		if (la->kind == 9 || la->kind == 10) {
+			Literal(value);
+			LiteralNode *literal = new LiteralNode(LITERAL);
+			literal->setValue(value);
+			nsqlTree->openNodeScope(literal); 
+			nsqlTree->closeNodeScope(literal,true);  
+		} else if (la->kind == 25) {
+			BindVariable(value);
+			BindNode *bind = new BindNode(BIND);
+			bind->setName(value);
+			nsqlTree->openNodeScope(bind); 
+			nsqlTree->closeNodeScope(bind,true);
+		} else SynErr(38);
+		}
+		catch(ParseException & excp){
+			if(shouldCloseEQ) { 
+				nsqlTree->clearNodeScope(eq);
+				shouldCloseEQ = false;
+			}
+			else {
+				nsqlTree->popNode();
+			}
+			delete eq;
+			throw;
+		}
+		if(shouldCloseEQ) { 
+				nsqlTree->closeNodeScope(eq,2);
+		}
+		
+}
+
+void Parser::Literal(char* &v) {
+		if (la->kind == 10) {
+			Get();
+			v = coco_string_create_char(t->val); 
+		} else if (la->kind == 9) {
+			Get();
+			v = coco_string_create_char(t->val); 
+		} else SynErr(39);
+}
+
+void Parser::BindVariable(char * &value) {
+		Expect(25);
+		Identifier(value);
+}
+
 void Parser::Expression() {
 		OrExpression();
 }
@@ -369,47 +479,32 @@ void Parser::PrimaryExpression() {
 			literal->setValue(value);
 			nsqlTree->openNodeScope(literal); 
 			nsqlTree->closeNodeScope(literal,true);  
-		} else if (la->kind == 20) {
+		} else if (la->kind == 25) {
 			BindVariable(value);
 			BindNode *bind = new BindNode(BIND);
 			bind->setName(value);
 			nsqlTree->openNodeScope(bind); 
 			nsqlTree->closeNodeScope(bind,true);
-		} else if (la->kind == 18) {
+		} else if (la->kind == 23) {
 			Lparen();
 			Expression();
 			RParen();
-		} else SynErr(31);
-}
-
-void Parser::Literal(char* &v) {
-		if (la->kind == 10) {
-			Get();
-			v = coco_string_create_char(t->val); 
-		} else if (la->kind == 9) {
-			Get();
-			v = coco_string_create_char(t->val); 
-		} else SynErr(32);
-}
-
-void Parser::BindVariable(char * &value) {
-		Expect(20);
-		Identifier(value);
+		} else SynErr(40);
 }
 
 void Parser::Lparen() {
-		Expect(18);
+		Expect(23);
 }
 
 void Parser::RParen() {
-		Expect(19);
+		Expect(24);
 }
 
 void Parser::RelationalExpression() {
 		PrimaryExpression();
-		while (StartOf(1)) {
+		while (StartOf(2)) {
 			switch (la->kind) {
-			case 21: {
+			case 26: {
 				Get();
 				GTNode *gt = new GTNode(GT);
 				bool shouldCloseGT = true;
@@ -434,7 +529,7 @@ void Parser::RelationalExpression() {
 				
 				break;
 			}
-			case 22: {
+			case 27: {
 				Get();
 				GTENode *gte = new GTENode(GTE);
 				bool shouldCloseGTE = true;
@@ -460,7 +555,7 @@ void Parser::RelationalExpression() {
 				
 				break;
 			}
-			case 23: {
+			case 28: {
 				Get();
 				LTNode *lt = new LTNode(LT);
 				bool shouldCloseLT = true;
@@ -486,7 +581,7 @@ void Parser::RelationalExpression() {
 				
 				break;
 			}
-			case 24: {
+			case 29: {
 				Get();
 				LTENode *lte = new LTENode(LTE);
 				bool shouldCloseLTE = true;
@@ -512,7 +607,7 @@ void Parser::RelationalExpression() {
 				
 				break;
 			}
-			case 25: {
+			case 30: {
 				Get();
 				EQNode *eq = new EQNode(EQ);
 				bool shouldCloseEQ = true;
@@ -538,7 +633,7 @@ void Parser::RelationalExpression() {
 				
 				break;
 			}
-			case 26: {
+			case 31: {
 				Get();
 				NEQNode *neq = new NEQNode(NEQ);
 				bool shouldCloseNEQ = true;
@@ -639,7 +734,7 @@ void Parser::Parse() {
 }
 
 Parser::Parser(Scanner *scanner) {
-	maxT = 27;
+	maxT = 32;
 
 	dummyToken = NULL;
 	t = la = NULL;
@@ -653,9 +748,10 @@ bool Parser::StartOf(int s) {
 	const bool T = true;
 	const bool x = false;
 
-	static bool set[2][29] = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,T,T, T,T,T,x, x}
+	static bool set[3][34] = {
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
+		{x,T,x,x, x,x,x,x, x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,T, x,T,x,x, x,x,x,x, x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, x,x}
 	};
 
 
@@ -693,21 +789,29 @@ void Errors::SynErr(int line, int col, int n) {
 			case 15: s = coco_string_create(L"\"as\" expected"); break;
 			case 16: s = coco_string_create(L"\"asc\" expected"); break;
 			case 17: s = coco_string_create(L"\"desc\" expected"); break;
-			case 18: s = coco_string_create(L"\"(\" expected"); break;
-			case 19: s = coco_string_create(L"\")\" expected"); break;
-			case 20: s = coco_string_create(L"\"$\" expected"); break;
-			case 21: s = coco_string_create(L"\">\" expected"); break;
-			case 22: s = coco_string_create(L"\">=\" expected"); break;
-			case 23: s = coco_string_create(L"\"<\" expected"); break;
-			case 24: s = coco_string_create(L"\"<=\" expected"); break;
-			case 25: s = coco_string_create(L"\"==\" expected"); break;
-			case 26: s = coco_string_create(L"\"!=\" expected"); break;
-			case 27: s = coco_string_create(L"??? expected"); break;
-			case 28: s = coco_string_create(L"invalid Query"); break;
-			case 29: s = coco_string_create(L"invalid SelectClause"); break;
-			case 30: s = coco_string_create(L"invalid OrderClause"); break;
-			case 31: s = coco_string_create(L"invalid PrimaryExpression"); break;
-			case 32: s = coco_string_create(L"invalid Literal"); break;
+			case 18: s = coco_string_create(L"\"primary\" expected"); break;
+			case 19: s = coco_string_create(L"\"key\" expected"); break;
+			case 20: s = coco_string_create(L"\"=\" expected"); break;
+			case 21: s = coco_string_create(L"\"unique\" expected"); break;
+			case 22: s = coco_string_create(L"\"index\" expected"); break;
+			case 23: s = coco_string_create(L"\"(\" expected"); break;
+			case 24: s = coco_string_create(L"\")\" expected"); break;
+			case 25: s = coco_string_create(L"\"$\" expected"); break;
+			case 26: s = coco_string_create(L"\">\" expected"); break;
+			case 27: s = coco_string_create(L"\">=\" expected"); break;
+			case 28: s = coco_string_create(L"\"<\" expected"); break;
+			case 29: s = coco_string_create(L"\"<=\" expected"); break;
+			case 30: s = coco_string_create(L"\"==\" expected"); break;
+			case 31: s = coco_string_create(L"\"!=\" expected"); break;
+			case 32: s = coco_string_create(L"??? expected"); break;
+			case 33: s = coco_string_create(L"invalid Query"); break;
+			case 34: s = coco_string_create(L"invalid WhereClause"); break;
+			case 35: s = coco_string_create(L"invalid SelectClause"); break;
+			case 36: s = coco_string_create(L"invalid OrderClause"); break;
+			case 37: s = coco_string_create(L"invalid IndexCondition"); break;
+			case 38: s = coco_string_create(L"invalid KeyValue"); break;
+			case 39: s = coco_string_create(L"invalid Literal"); break;
+			case 40: s = coco_string_create(L"invalid PrimaryExpression"); break;
 
 		default:
 		{

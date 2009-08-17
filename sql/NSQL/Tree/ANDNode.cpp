@@ -4,6 +4,8 @@
  *  Created on: Jul 19, 2009
  *      Author: tulay
  */
+//TODO: PrimaryKey production will generate n children for AND node, Evaluation should behave accordingly
+
 
 #include "ANDNode.h"
 #include "NSQLVisitor.h"

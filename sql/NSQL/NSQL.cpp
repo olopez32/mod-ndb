@@ -48,7 +48,6 @@ int main()
 	read_history(HISTFILE);
 
 	DBConnection conn("192.168.1.3:1186", "mod_ndb_tests");
-
 	cmdline = readline("> ");
 	while(cmdline) {
 		int cmd_len = strlen(cmdline);
@@ -80,22 +79,30 @@ int test(const unsigned char* query, DBConnection &conn)
 		//		return -1;
 	}
 
+
 	if(tree->getRoot() != 0){
-		cout<< "Printing Syntax Tree" << endl;
+
+		cout<< "Abstract Syntax Tree" << endl;
 		PrettyPrintVisitor v;
 		(tree->getRoot())->accept(v);
-	}
 
-
-	if(tree->getRoot() != 0){
 		cout<< "Semantic Analysis" << endl;
 		SemanticCheck s;
 		s.setNdb(conn.getNdb());
 		(tree->getRoot())->accept(s);
-		if (s->getStatus())
-			std::cout << "Semantic is OK\n";
+		if (s.getStatus()){
+			std::cout << "Semantic Check: OK\n";
+			cout<< "Resolved Syntax Tree" << endl;
+			(tree->getRoot())->accept(v);
+
+		}
+		else
+			std::cout << "Semantic Check: Failed\n";
 
 	}
+
+
+
 	delete parser;
 	delete scanner;
 	delete tree;

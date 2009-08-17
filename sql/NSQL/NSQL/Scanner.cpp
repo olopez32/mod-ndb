@@ -412,8 +412,8 @@ Scanner::~Scanner() {
 void Scanner::Init() {
 	EOL    = '\n';
 	eofSym = 0;
-	maxT = 27;
-	noSym = 27;
+	maxT = 32;
+	noSym = 32;
 	int i;
 	for (i = 97; i <= 122; ++i) start.set(i, 1);
 	for (i = 34; i <= 34; ++i) start.set(i, 2);
@@ -422,13 +422,13 @@ void Scanner::Init() {
 	start.set(59, 9);
 	start.set(42, 10);
 	start.set(46, 11);
+	start.set(61, 20);
 	start.set(40, 12);
 	start.set(41, 13);
 	start.set(36, 14);
 	start.set(62, 21);
 	start.set(60, 22);
-	start.set(61, 17);
-	start.set(33, 19);
+	start.set(33, 18);
 		start.set(Buffer::EoF, -1);
 	keywords.set(L"delete", 2);
 	keywords.set(L"select", 3);
@@ -440,6 +440,10 @@ void Scanner::Init() {
 	keywords.set(L"as", 15);
 	keywords.set(L"asc", 16);
 	keywords.set(L"desc", 17);
+	keywords.set(L"primary", 18);
+	keywords.set(L"key", 19);
+	keywords.set(L"unique", 21);
+	keywords.set(L"index", 22);
 
 
 	tvalLength = 128;
@@ -624,35 +628,35 @@ Token* Scanner::NextToken() {
 		case 11:
 			{t->kind = 14; break;}
 		case 12:
-			{t->kind = 18; break;}
+			{t->kind = 23; break;}
 		case 13:
-			{t->kind = 19; break;}
+			{t->kind = 24; break;}
 		case 14:
-			{t->kind = 20; break;}
+			{t->kind = 25; break;}
 		case 15:
 			case_15:
-			{t->kind = 22; break;}
+			{t->kind = 27; break;}
 		case 16:
 			case_16:
-			{t->kind = 24; break;}
+			{t->kind = 29; break;}
 		case 17:
-			if (ch == L'=') {AddCh(); goto case_18;}
-			else {t->kind = noSym; break;}
+			case_17:
+			{t->kind = 30; break;}
 		case 18:
-			case_18:
-			{t->kind = 25; break;}
-		case 19:
-			if (ch == L'=') {AddCh(); goto case_20;}
+			if (ch == L'=') {AddCh(); goto case_19;}
 			else {t->kind = noSym; break;}
+		case 19:
+			case_19:
+			{t->kind = 31; break;}
 		case 20:
-			case_20:
-			{t->kind = 26; break;}
+			if (ch == L'=') {AddCh(); goto case_17;}
+			else {t->kind = 20; break;}
 		case 21:
 			if (ch == L'=') {AddCh(); goto case_15;}
-			else {t->kind = 21; break;}
+			else {t->kind = 26; break;}
 		case 22:
 			if (ch == L'=') {AddCh(); goto case_16;}
-			else {t->kind = 23; break;}
+			else {t->kind = 28; break;}
 
 	}
 	AppendVal(t);

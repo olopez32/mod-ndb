@@ -69,6 +69,7 @@ SemanticCheck::VisitFieldNode(FieldNode* n)
 {
 
 	const NdbDictionary::Dictionary* myDict= myNdb->getDictionary();
+
 	if(n->getTable() != NULL ){
 		// Table name is provided in the query
 		// Search From clause for this table name
@@ -123,7 +124,7 @@ SemanticCheck::VisitFieldNode(FieldNode* n)
 		}
 		//Root is the QueryNode
 		FromNode * fromNode  = (FromNode *) root->getChild(1);
-		// TODO: assertion is needed!
+		// TODO: assertion is needed whether this child(1) is FROMNode!
 		int numOfChildren = fromNode->getNumOfChildren();
 		bool isTableResolved = false;
 		for(int i = 0; i < numOfChildren; i++){
@@ -131,6 +132,36 @@ SemanticCheck::VisitFieldNode(FieldNode* n)
 			const NdbDictionary::Table *myTable= myDict->getTable(tableCandidate);
 			if(myTable != NULL )
 			{
+				if(strcmp(n->getName(),"PRIMARY") == 0)
+				{
+					// If the name of the field is PRIMARY after parsing
+					// We need to find the table name to get the real field names
+					// I will assume that the first table in from clause is related to these fields
+					// Get the number of primary key columns
+					// Check if the order is smaller than this
+					// Get the name of the primary key, assign it as name and assign this as the table
+					/*
+					// it is usually not necessary to call aggregate() or validate() directly ndbapi-en.pdf p196
+					if ( myTable->aggregate(myNdb->getNdbError()) != 0 ){
+						std::cout << " Table " << tableCandidate << " is in inconsistant state\n";
+					}
+					*/
+					int nofpk = myTable->getNoOfPrimaryKeys();
+					if (nofpk < n->getPrimaryKeyOrder()){
+						std::cout << "Primary Key mismatch: " << n->getName() << std::endl;
+					}
+					else
+					{
+						n->setName(myTable->getPrimaryKey(n->getPrimaryKeyOrder()));
+						isTableResolved = true;
+						n->setTable(tableCandidate);
+
+					}
+					/**
+					 * The first table is assumed to be related to PRIMARY KEY part
+					 */
+					break;
+				}
 				const NdbDictionary::Column * myColumn = myTable->getColumn(n->getName());
 				if (myColumn != NULL ){
 					isTableResolved = true;

@@ -66,7 +66,11 @@ PrettyPrintVisitor::VisitFieldNode(FieldNode* n)
 	indent++;
 
 	PrettyIndent();
+
 	std::cout <<n->getType() << " = " << n->getName();
+	if(n->isPrimary()){
+		std::cout<< " ; PK Order = " << n->getPrimaryKeyOrder();
+	}
 	if (n->hasAlias())
 		std::cout<< " ; Alias = " << n->getAlias();
 	if(n->getTable() != NULL){

@@ -16,7 +16,7 @@ class SemanticCheck: public NSQLVisitor {
 	typedef enum STATUS {RESOLVED_ERROR=-1, UNRESOLVED=0, RESOLVED_OK=1};
 public:
 
-//	SemanticCheck(Ndb *ndb);
+
 	SemanticCheck(){_status = UNRESOLVED;}
 	virtual ~SemanticCheck();
 

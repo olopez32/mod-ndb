@@ -3,7 +3,7 @@ $CX /* Compiler, NSQL++ */
 //TODO?: Database, tables, columns can be up to 64 chars, might contain _ and $
 //TODO?: Alias can be up to 256 chars
 //TODO: MySQL names can start with a digit!? But cannot be all digits.
-//TODO: Table name provided by Select Table.field should be included in From clause. 
+//DONE: Table name provided by Select Table.field should be included in From clause. 
 //      e.g. select typ6.i from typ6; OK
 //           select typ6.i from typ1; NOT
 
@@ -303,7 +303,14 @@ PRODUCTIONS
 												nsqlTree->openNodeScope(where); 
 												bool shouldCloseWhere = true;
 												try {.)
-		  SelectCondition
+		  (
+		  	SelectCondition
+		  	|
+		  	IndexCondition					// Backward Compatibility
+		  									// Relates to OneRowWhereClause in old grammar
+		  									// Might depreciate
+		  									// To support conditions using PRIMARY KEY and UNIQUE KEY 
+		  )
 		  										(.	}
 												catch(ParseException & excp){
 													if(shouldCloseWhere) { 
@@ -321,6 +328,90 @@ PRODUCTIONS
 												} .)
 	.
 	
+// Backward compatibility	
+	IndexCondition = 
+		PrimaryKey |	UniqueIndex
+	.
+	
+	PrimaryKey =
+		"PRIMARY" "KEY"	"=" 					(.	// Create special ANDNode
+													// Can have 1 to n EQNode children
+													ANDNode *andNode = new ANDNode(AND);
+		  											bool shouldCloseANDNode = true;
+												nsqlTree->openNodeScope(andNode); 
+												try{
+												 int order = 0;
+												.)
+		  KeyValue<order> [ comma 				(. order++; .)
+		  					KeyValue<order> 
+		  				  ]
+		  										(.	}
+												catch(ParseException & excp){
+													if(shouldCloseANDNode) { 
+														nsqlTree->clearNodeScope(andNode);
+														shouldCloseANDNode = false;
+													}
+													else {
+														nsqlTree->popNode();
+													}
+													delete andNode;
+													throw;
+												}
+												if(shouldCloseANDNode) { 
+														nsqlTree->closeNodeScope(andNode,true);
+												}
+												.)
+												
+	.
+	
+	KeyValue<int &order> =
+												(.	EQNode *eq = new EQNode(EQ);
+												bool shouldCloseEQ = true;
+												nsqlTree->openNodeScope(eq);  
+												try { 
+												 	FieldNode *field = new FieldNode(FIELD);
+												 	field->setName("PRIMARY");
+												 	field->setPrimary(true);
+												 	field->setPrimaryKeyOrder(order);
+													nsqlTree->openNodeScope(field); 
+													nsqlTree->closeNodeScope(field,true);
+												.)
+	
+												(. char * value = NULL;.)
+	(											
+		Literal<value>							(. LiteralNode *literal = new LiteralNode(LITERAL);
+		 										literal->setValue(value);
+												nsqlTree->openNodeScope(literal); 
+												nsqlTree->closeNodeScope(literal,true);  .)
+												
+		 | BindVariable<value>					(. BindNode *bind = new BindNode(BIND);
+		 										bind->setName(value);
+												nsqlTree->openNodeScope(bind); 
+												nsqlTree->closeNodeScope(bind,true);.)
+	)											(.	}
+												catch(ParseException & excp){
+													if(shouldCloseEQ) { 
+														nsqlTree->clearNodeScope(eq);
+														shouldCloseEQ = false;
+													}
+													else {
+														nsqlTree->popNode();
+													}
+													delete eq;
+													throw;
+												}
+												if(shouldCloseEQ) { 
+														nsqlTree->closeNodeScope(eq,2);
+												}
+												.)
+	.
+	
+	
+	UniqueIndex = 
+		"UNIQUE" "INDEX"
+	.
+// End of Backward compatibility
+
 	SelectCondition
 		= Expression
 	.

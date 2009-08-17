@@ -33,6 +33,25 @@ FieldNode::setName(char *s )
 	name = s;
 }
 
+/*
+ * Duplicates input string
+ */
+void
+FieldNode::setName(const char *s )
+{
+	if(name != NULL)
+	{
+		delete [] name;
+	}
+
+	name =  0;
+	int len = 0;
+	if (s) { len = strlen(s); }
+	name  = new char [len + 1];
+	for (int i = 0; i < len; ++i) { name [i] = (char) s[i]; }
+	name [len] = 0;
+}
+
 
 const char *
 FieldNode::getName() const

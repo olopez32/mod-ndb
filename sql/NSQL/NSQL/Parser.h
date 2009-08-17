@@ -117,10 +117,14 @@ public:
 	void FromList();
 	void Table();
 	void SelectCondition();
-	void Expression();
-	void PrimaryExpression();
+	void IndexCondition();
+	void PrimaryKey();
+	void UniqueIndex();
+	void KeyValue(int &order);
 	void Literal(char* &v);
 	void BindVariable(char * &value);
+	void Expression();
+	void PrimaryExpression();
 	void Lparen();
 	void RParen();
 	void RelationalExpression();
