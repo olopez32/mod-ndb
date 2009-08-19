@@ -1,3 +1,5 @@
+VPATH=N-SQL JSON
+
 OBJECTS=mod_ndb.o Query.o Execute.o MySQL_value.o MySQL_result.o \
 config.o request_body.o handlers.o result_buffer.o output_format.o \
 format_compiler.o format_dumper.o query_source.o  JSON_encoding.o \
