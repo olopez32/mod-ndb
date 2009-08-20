@@ -17,7 +17,7 @@ OPT='-O3'
 HELPER=0
 LINK_MYSYS=1
 NSQL="NSQL"
-NSQL_VPATH="NSQL NSQL/Tree NSQL/Visitors"
+NSQL_VPATH="NSQL NSQL/Tree NSQL/Visitors NSQL/Utilities"
 dso_cc_fl=-fPIC
 
 usage() {
@@ -73,7 +73,8 @@ fail() {
 }
 
 regenerate_makefile() {
- cat make_head.mk Core/module.mk JSON/module.mk $NSQL/module.mk make_tail.mk > Makefile
+ cat make_head.mk Core/module.mk Format/module.mk JSON/module.mk \
+   $NSQL/module.mk make_tail.mk > Makefile
 }
 
 
@@ -333,11 +334,9 @@ echo START_HTTPD=$START_APACHE
 echo STOP_HTTPD=$STOP_APACHE
 echo RESTART_HTTPD=$RESTART_APACHE
 echo
-echo 'COMPILER_FLAGS=-c $(DEFINE) $(INCLUDES) $(DSO_CC_FLAGS) -Wall $(OPT)'
-echo 'INCLUDES=-I. -ICore -I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)'
 echo NSQL = $NSQL
 echo 
-echo VPATH = Core JSON $NSQL_VPATH
+echo VPATH = Core Format JSON $NSQL_VPATH
 echo 
 echo all: mod_ndb.so httpd.conf tools
 echo 

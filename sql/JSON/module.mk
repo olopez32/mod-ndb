@@ -2,7 +2,7 @@
 
 JSON_PARS = JSON_Parser.o 
 
-JSON_OBJ = JSON_Parser.o JSON_Scanner.o
+JSON_OBJ = JSON_Parser.o JSON_Scanner.o JSON_encoding.o
 
 JSON_TOOL = test_encoding
 
