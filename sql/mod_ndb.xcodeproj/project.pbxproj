@@ -81,6 +81,10 @@
 		651A1F31103B4729008EA2A9 /* PrettyPrintVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrettyPrintVisitor.h; sourceTree = "<group>"; };
 		651A1F32103B4729008EA2A9 /* SemanticCheck.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SemanticCheck.cpp; sourceTree = "<group>"; };
 		651A1F33103B4729008EA2A9 /* SemanticCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SemanticCheck.h; sourceTree = "<group>"; };
+		651A20C0103DBD8E008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = module.mk; sourceTree = "<group>"; };
+		651A20C1103DBDBE008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = module.mk; path = "N-SQL/module.mk"; sourceTree = "<group>"; };
+		651A20C2103DBDE2008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = module.mk; path = JSON/module.mk; sourceTree = "<group>"; };
+		651A20CB103DBE3F008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = module.mk; sourceTree = "<group>"; };
 		651A68C20C824B6500EE077F /* test.list */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = default; lastKnownFileType = text; name = test.list; path = Tests/test.list; sourceTree = "<group>"; };
 		651A68DF0C824E3500EE077F /* runner.awk */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.perl; lastKnownFileType = text; name = runner.awk; path = Tests/runner.awk; sourceTree = "<group>"; };
 		651A69790C826F8D00EE077F /* run-test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = "run-test"; path = "Tests/run-test"; sourceTree = "<group>"; };
@@ -98,7 +102,7 @@
 		655CEC220A8C4C6100DB8284 /* MySQL_value.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MySQL_value.h; sourceTree = "<group>"; };
 		655CEC230A8C4C6B00DB8284 /* mod_ndb.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mod_ndb.h; sourceTree = "<group>"; };
 		655CEC240A8C4C9500DB8284 /* configure */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.sh; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
-		655CEC250A8C4CA400DB8284 /* make_file_tail */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 30; languageSpecificationIdentifier = make; path = make_file_tail; sourceTree = "<group>"; };
+		655CEC250A8C4CA400DB8284 /* make_tail.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 30; languageSpecificationIdentifier = make; path = make_tail.mk; sourceTree = "<group>"; };
 		656167AB0A8F78CB00A664A0 /* config.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = config.cc; sourceTree = "<group>"; };
 		6566D0530BA1266C00B7AD9B /* ndb_api_compat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ndb_api_compat.h; sourceTree = "<group>"; };
 		656D04160C89302E00A430C6 /* ses.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = ses.sql; path = Tests/SQL/ses.sql; sourceTree = "<group>"; };
@@ -150,7 +154,127 @@
 				655A3FF20AC35A0300FC573F /* README */,
 				655CEC240A8C4C9500DB8284 /* configure */,
 				65D86E7C0FE2D6590097814E /* trace.d */,
-				655CEC250A8C4CA400DB8284 /* make_file_tail */,
+				655CEC250A8C4CA400DB8284 /* make_tail.mk */,
+				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
+				651A1F48103DAE93008EA2A9 /* Core */,
+				65D8B47D0CBD847300BD24E7 /* JSON */,
+				65383BF30C72B69B001F8451 /* old-N-SQL */,
+				651A1EEC103B4729008EA2A9 /* NSQL */,
+				65E2E83C0BA2186700B1B8D0 /* templates */,
+				657BD1C30B84EE8600A9ED69 /* Tests */,
+				657BD2920B853B7000A9ED69 /* PHP */,
+			);
+			name = mod_ndb;
+			sourceTree = "<group>";
+		};
+		651A1EEC103B4729008EA2A9 /* NSQL */ = {
+			isa = PBXGroup;
+			children = (
+				651A20C0103DBD8E008EA2A9 /* module.mk */,
+				651A1EF9103B4729008EA2A9 /* NSQL.cpp */,
+				651A1EED103B4729008EA2A9 /* NSQL */,
+				651A1EFA103B4729008EA2A9 /* Tree */,
+				651A1F2A103B4729008EA2A9 /* Utilities */,
+				651A1F2D103B4729008EA2A9 /* Visitors */,
+			);
+			path = NSQL;
+			sourceTree = "<group>";
+		};
+		651A1EED103B4729008EA2A9 /* NSQL */ = {
+			isa = PBXGroup;
+			children = (
+				651A1EF1103B4729008EA2A9 /* Makefile */,
+				651A1EF2103B4729008EA2A9 /* NSQL.atg */,
+				651A1EF4103B4729008EA2A9 /* Parser.frame */,
+				651A1EF7103B4729008EA2A9 /* Scanner.frame */,
+				651A1EF5103B4729008EA2A9 /* Parser.h */,
+				651A1EF3103B4729008EA2A9 /* Parser.cpp */,
+				651A1EF8103B4729008EA2A9 /* Scanner.h */,
+				651A1EF6103B4729008EA2A9 /* Scanner.cpp */,
+			);
+			path = NSQL;
+			sourceTree = "<group>";
+		};
+		651A1EFA103B4729008EA2A9 /* Tree */ = {
+			isa = PBXGroup;
+			children = (
+				651A1EFC103B4729008EA2A9 /* ANDNode.h */,
+				651A1EFB103B4729008EA2A9 /* ANDNode.cpp */,
+				651A1EFE103B4729008EA2A9 /* BindNode.h */,
+				651A1EFD103B4729008EA2A9 /* BindNode.cpp */,
+				651A1F00103B4729008EA2A9 /* DeleteNode.h */,
+				651A1EFF103B4729008EA2A9 /* DeleteNode.cpp */,
+				651A1F02103B4729008EA2A9 /* Environment.h */,
+				651A1F01103B4729008EA2A9 /* Environment.cpp */,
+				651A1F04103B4729008EA2A9 /* EQNode.h */,
+				651A1F03103B4729008EA2A9 /* EQNode.cpp */,
+				651A1F06103B4729008EA2A9 /* FieldNode.h */,
+				651A1F05103B4729008EA2A9 /* FieldNode.cpp */,
+				651A1F08103B4729008EA2A9 /* FromNode.h */,
+				651A1F07103B4729008EA2A9 /* FromNode.cpp */,
+				651A1F0A103B4729008EA2A9 /* GTENode.h */,
+				651A1F09103B4729008EA2A9 /* GTENode.cpp */,
+				651A1F0C103B4729008EA2A9 /* GTNode.h */,
+				651A1F0B103B4729008EA2A9 /* GTNode.cpp */,
+				651A1F0E103B4729008EA2A9 /* LiteralNode.h */,
+				651A1F0D103B4729008EA2A9 /* LiteralNode.cpp */,
+				651A1F10103B4729008EA2A9 /* LTENode.h */,
+				651A1F0F103B4729008EA2A9 /* LTENode.cpp */,
+				651A1F12103B4729008EA2A9 /* LTNode.h */,
+				651A1F11103B4729008EA2A9 /* LTNode.cpp */,
+				651A1F14103B4729008EA2A9 /* NEQNode.h */,
+				651A1F13103B4729008EA2A9 /* NEQNode.cpp */,
+				651A1F16103B4729008EA2A9 /* Node.h */,
+				651A1F15103B4729008EA2A9 /* Node.cpp */,
+				651A1F18103B4729008EA2A9 /* NSQLState.h */,
+				651A1F17103B4729008EA2A9 /* NSQLState.cpp */,
+				651A1F1A103B4729008EA2A9 /* OrderNode.h */,
+				651A1F19103B4729008EA2A9 /* OrderNode.cpp */,
+				651A1F1C103B4729008EA2A9 /* ORNode.h */,
+				651A1F1B103B4729008EA2A9 /* ORNode.cpp */,
+				651A1F1E103B4729008EA2A9 /* QueryNode.h */,
+				651A1F1D103B4729008EA2A9 /* QueryNode.cpp */,
+				651A1F20103B4729008EA2A9 /* SelectNode.h */,
+				651A1F1F103B4729008EA2A9 /* SelectNode.cpp */,
+				651A1F22103B4729008EA2A9 /* StarNode.h */,
+				651A1F21103B4729008EA2A9 /* StarNode.cpp */,
+				651A1F24103B4729008EA2A9 /* Symbol.h */,
+				651A1F23103B4729008EA2A9 /* Symbol.cpp */,
+				651A1F26103B4729008EA2A9 /* TableNode.h */,
+				651A1F25103B4729008EA2A9 /* TableNode.cpp */,
+				651A1F27103B4729008EA2A9 /* TreeConstants.h */,
+				651A1F28103B4729008EA2A9 /* WhereNode.cpp */,
+				651A1F29103B4729008EA2A9 /* WhereNode.h */,
+			);
+			path = Tree;
+			sourceTree = "<group>";
+		};
+		651A1F2A103B4729008EA2A9 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				651A1F2C103B4729008EA2A9 /* DBConnection.h */,
+				651A1F2B103B4729008EA2A9 /* DBConnection.cpp */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		651A1F2D103B4729008EA2A9 /* Visitors */ = {
+			isa = PBXGroup;
+			children = (
+				651A1F2F103B4729008EA2A9 /* NSQLVisitor.h */,
+				651A1F2E103B4729008EA2A9 /* NSQLVisitor.cpp */,
+				651A1F31103B4729008EA2A9 /* PrettyPrintVisitor.h */,
+				651A1F30103B4729008EA2A9 /* PrettyPrintVisitor.cpp */,
+				651A1F33103B4729008EA2A9 /* SemanticCheck.h */,
+				651A1F32103B4729008EA2A9 /* SemanticCheck.cpp */,
+			);
+			path = Visitors;
+			sourceTree = "<group>";
+		};
+		651A1F48103DAE93008EA2A9 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				651A20CB103DBE3F008EA2A9 /* module.mk */,
 				65EECC4F0B07D7B0000AB3AD /* defaults.h */,
 				655CEC230A8C4C6B00DB8284 /* mod_ndb.h */,
 				650143DC0AED95E80074CA65 /* mod_ndb_compat.h */,
@@ -179,123 +303,14 @@
 				655CEC210A8C4C4C00DB8284 /* Query.cc */,
 				6513067E0B8299CC00A70BDA /* Execute.cc */,
 				65D8B63C0CBF328400BD24E7 /* JSON_encoding.cc */,
-				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
-				65D8B47D0CBD847300BD24E7 /* JSON */,
-				65383BF30C72B69B001F8451 /* old-N-SQL */,
-				651A1EEC103B4729008EA2A9 /* NSQL */,
-				65E2E83C0BA2186700B1B8D0 /* templates */,
-				657BD1C30B84EE8600A9ED69 /* Tests */,
-				657BD2920B853B7000A9ED69 /* PHP */,
 			);
-			name = mod_ndb;
-			sourceTree = "<group>";
-		};
-		651A1EEC103B4729008EA2A9 /* NSQL */ = {
-			isa = PBXGroup;
-			children = (
-				651A1EF9103B4729008EA2A9 /* NSQL.cpp */,
-				651A1EED103B4729008EA2A9 /* NSQL */,
-				651A1EFA103B4729008EA2A9 /* Tree */,
-				651A1F2A103B4729008EA2A9 /* Utilities */,
-				651A1F2D103B4729008EA2A9 /* Visitors */,
-			);
-			path = NSQL;
-			sourceTree = "<group>";
-		};
-		651A1EED103B4729008EA2A9 /* NSQL */ = {
-			isa = PBXGroup;
-			children = (
-				651A1EF1103B4729008EA2A9 /* Makefile */,
-				651A1EF2103B4729008EA2A9 /* NSQL.atg */,
-				651A1EF3103B4729008EA2A9 /* Parser.cpp */,
-				651A1EF4103B4729008EA2A9 /* Parser.frame */,
-				651A1EF5103B4729008EA2A9 /* Parser.h */,
-				651A1EF6103B4729008EA2A9 /* Scanner.cpp */,
-				651A1EF7103B4729008EA2A9 /* Scanner.frame */,
-				651A1EF8103B4729008EA2A9 /* Scanner.h */,
-			);
-			path = NSQL;
-			sourceTree = "<group>";
-		};
-		651A1EFA103B4729008EA2A9 /* Tree */ = {
-			isa = PBXGroup;
-			children = (
-				651A1EFB103B4729008EA2A9 /* ANDNode.cpp */,
-				651A1EFC103B4729008EA2A9 /* ANDNode.h */,
-				651A1EFD103B4729008EA2A9 /* BindNode.cpp */,
-				651A1EFE103B4729008EA2A9 /* BindNode.h */,
-				651A1EFF103B4729008EA2A9 /* DeleteNode.cpp */,
-				651A1F00103B4729008EA2A9 /* DeleteNode.h */,
-				651A1F01103B4729008EA2A9 /* Environment.cpp */,
-				651A1F02103B4729008EA2A9 /* Environment.h */,
-				651A1F03103B4729008EA2A9 /* EQNode.cpp */,
-				651A1F04103B4729008EA2A9 /* EQNode.h */,
-				651A1F05103B4729008EA2A9 /* FieldNode.cpp */,
-				651A1F06103B4729008EA2A9 /* FieldNode.h */,
-				651A1F07103B4729008EA2A9 /* FromNode.cpp */,
-				651A1F08103B4729008EA2A9 /* FromNode.h */,
-				651A1F09103B4729008EA2A9 /* GTENode.cpp */,
-				651A1F0A103B4729008EA2A9 /* GTENode.h */,
-				651A1F0B103B4729008EA2A9 /* GTNode.cpp */,
-				651A1F0C103B4729008EA2A9 /* GTNode.h */,
-				651A1F0D103B4729008EA2A9 /* LiteralNode.cpp */,
-				651A1F0E103B4729008EA2A9 /* LiteralNode.h */,
-				651A1F0F103B4729008EA2A9 /* LTENode.cpp */,
-				651A1F10103B4729008EA2A9 /* LTENode.h */,
-				651A1F11103B4729008EA2A9 /* LTNode.cpp */,
-				651A1F12103B4729008EA2A9 /* LTNode.h */,
-				651A1F13103B4729008EA2A9 /* NEQNode.cpp */,
-				651A1F14103B4729008EA2A9 /* NEQNode.h */,
-				651A1F15103B4729008EA2A9 /* Node.cpp */,
-				651A1F16103B4729008EA2A9 /* Node.h */,
-				651A1F17103B4729008EA2A9 /* NSQLState.cpp */,
-				651A1F18103B4729008EA2A9 /* NSQLState.h */,
-				651A1F19103B4729008EA2A9 /* OrderNode.cpp */,
-				651A1F1A103B4729008EA2A9 /* OrderNode.h */,
-				651A1F1B103B4729008EA2A9 /* ORNode.cpp */,
-				651A1F1C103B4729008EA2A9 /* ORNode.h */,
-				651A1F1D103B4729008EA2A9 /* QueryNode.cpp */,
-				651A1F1E103B4729008EA2A9 /* QueryNode.h */,
-				651A1F1F103B4729008EA2A9 /* SelectNode.cpp */,
-				651A1F20103B4729008EA2A9 /* SelectNode.h */,
-				651A1F21103B4729008EA2A9 /* StarNode.cpp */,
-				651A1F22103B4729008EA2A9 /* StarNode.h */,
-				651A1F23103B4729008EA2A9 /* Symbol.cpp */,
-				651A1F24103B4729008EA2A9 /* Symbol.h */,
-				651A1F25103B4729008EA2A9 /* TableNode.cpp */,
-				651A1F26103B4729008EA2A9 /* TableNode.h */,
-				651A1F27103B4729008EA2A9 /* TreeConstants.h */,
-				651A1F28103B4729008EA2A9 /* WhereNode.cpp */,
-				651A1F29103B4729008EA2A9 /* WhereNode.h */,
-			);
-			path = Tree;
-			sourceTree = "<group>";
-		};
-		651A1F2A103B4729008EA2A9 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				651A1F2B103B4729008EA2A9 /* DBConnection.cpp */,
-				651A1F2C103B4729008EA2A9 /* DBConnection.h */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		651A1F2D103B4729008EA2A9 /* Visitors */ = {
-			isa = PBXGroup;
-			children = (
-				651A1F2E103B4729008EA2A9 /* NSQLVisitor.cpp */,
-				651A1F2F103B4729008EA2A9 /* NSQLVisitor.h */,
-				651A1F30103B4729008EA2A9 /* PrettyPrintVisitor.cpp */,
-				651A1F31103B4729008EA2A9 /* PrettyPrintVisitor.h */,
-				651A1F32103B4729008EA2A9 /* SemanticCheck.cpp */,
-				651A1F33103B4729008EA2A9 /* SemanticCheck.h */,
-			);
-			path = Visitors;
+			path = Core;
 			sourceTree = "<group>";
 		};
 		65383BF30C72B69B001F8451 /* old-N-SQL */ = {
 			isa = PBXGroup;
 			children = (
+				651A20C1103DBDBE008EA2A9 /* module.mk */,
 				65D8B45B0CBD82A000BD24E7 /* NSQL.atg */,
 				65D8B45D0CBD82A000BD24E7 /* Parser.frame */,
 				65D8B4600CBD82A000BD24E7 /* Scanner.frame */,
@@ -348,6 +363,7 @@
 		65D8B47D0CBD847300BD24E7 /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				651A20C2103DBDE2008EA2A9 /* module.mk */,
 				65D8B4820CBD849500BD24E7 /* JSON.atg */,
 				65D8B4870CBD849500BD24E7 /* Scanner.frame */,
 				65D8B4840CBD849500BD24E7 /* Parser.frame */,

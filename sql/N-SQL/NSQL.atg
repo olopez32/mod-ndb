@@ -1,4 +1,4 @@
-#include "../mod_ndb.h"
+#include "mod_ndb.h"
 
 COMPILER NSQL
 

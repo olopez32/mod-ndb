@@ -16,6 +16,8 @@ CXX=g++
 OPT='-O3'
 HELPER=0
 LINK_MYSYS=1
+NSQL="NSQL"
+NSQL_VPATH="NSQL NSQL/Tree NSQL/Visitors"
 dso_cc_fl=-fPIC
 
 usage() {
@@ -69,6 +71,11 @@ long_help() {
 fail() { 
  echo ; echo "Error: $@" ; echo ; exit 1
 }
+
+regenerate_makefile() {
+ cat make_head.mk Core/module.mk JSON/module.mk $NSQL/module.mk make_tail.mk > Makefile
+}
+
 
 while test $# != 0
 do
@@ -136,6 +143,16 @@ do
       long_help
       exit
       ;;
+## Developers only -- not for public use
+    --old-nsql)
+      NSQL="N-SQL"
+      NSQL_VPATH="N-SQL"
+      ;;
+    -r)
+      regenerate_makefile 
+      exit
+      ;;
+## Fallthrough
     *)
       fail "Unrecognized option " $conf_option
       ;;
@@ -316,11 +333,19 @@ echo START_HTTPD=$START_APACHE
 echo STOP_HTTPD=$STOP_APACHE
 echo RESTART_HTTPD=$RESTART_APACHE
 echo
+echo 'COMPILER_FLAGS=-c $(DEFINE) $(INCLUDES) $(DSO_CC_FLAGS) -Wall $(OPT)'
+echo 'INCLUDES=-I. -ICore -I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)'
+echo NSQL = $NSQL
+echo 
+echo VPATH = Core JSON $NSQL_VPATH
+echo 
+echo all: mod_ndb.so httpd.conf tools
+echo 
+echo prep: parsers
+echo
+) > make_head.mk
 
-) > Makefile
-
-
-cat make_file_tail >> Makefile
+regenerate_makefile
 
 echo $CONFIG_CMD > config.log
 
