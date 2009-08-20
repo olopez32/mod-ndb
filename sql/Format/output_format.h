@@ -24,11 +24,14 @@ enum node_type { top_node, loop_node, simple_node };
 const char **get_escapes(re_esc);
 const char *json_str(ap_pool *, len_string &);
 
-class Node;
+namespace Format {
+  class Node;
+};
+
 class RecAttr;
 
 struct symbol {
-  Node *node;
+  Format::Node *node;
   struct symbol *next_sym;
 }; 
 
@@ -43,11 +46,11 @@ public:
     unsigned int is_raw       : 1;
     unsigned int is_JSON      : 1;
   } flag;
-  Node *top_node;
+  Format::Node *top_node;
   struct symbol *symbol_table[SYM_TAB_SZ];
   
   output_format(const char *n) : name(n) {}
-  Node * symbol(const char *, ap_pool *, Node *);
+  Format::Node * symbol(const char *, ap_pool *, Format::Node *);
   const char *compile(ap_pool *);
   void dump(ap_pool *, result_buffer &);
   void dump_source(ap_pool *, result_buffer &);
@@ -81,50 +84,51 @@ class Cell : public len_string {
   void dump(ap_pool *, result_buffer &);
 };
 
-
-class Node : public apache_object {
-  public:
-  const char *name;
-  const char *unresolved;
-  Cell *cell;
-  Node *next_node;
-  node_type type;
-  
-  Node(const char *c, node_type t) : unresolved(c) , type(t) {}
-  Node(const char *n, Cell *cell) : name(n), cell(cell), next_node(0) {}
-  virtual ~Node() {}
-  virtual void compile(output_format *);
-  virtual int  Run(struct data_operation *d, result_buffer &b) { 
-    cell->out(d,b); return OK; }
-  virtual void out(struct data_operation *d, unsigned int n, result_buffer &b) {
-    cell->out(d, n, b); }
-  virtual void dump(ap_pool *, result_buffer &, int);
-  virtual void dump_source(ap_pool *, result_buffer &, const char *) {};
+namespace Format { 
+  class Node : public apache_object {
+    public:
+    const char *name;
+    const char *unresolved;
+    Cell *cell;
+    Node *next_node;
+    node_type type;
+    
+    Node(const char *c, node_type t) : unresolved(c) , type(t) {}
+    Node(const char *n, Cell *cell) : name(n), cell(cell), next_node(0) {}
+    virtual ~Node() {}
+    virtual void compile(output_format *);
+    virtual int  Run(struct data_operation *d, result_buffer &b) { 
+      cell->out(d,b); return OK; }
+    virtual void out(struct data_operation *d, unsigned int n, result_buffer &b) {
+      cell->out(d, n, b); }
+    virtual void dump(ap_pool *, result_buffer &, int);
+    virtual void dump_source(ap_pool *, result_buffer &, const char *) {};
+  };
 };
 
-class RecAttr : public Node {
+class RecAttr : public Format::Node {
   const char *unresolved2;
   Cell *fmt;
   Cell *null_fmt;
 
   public:
-  RecAttr(const char *str1, const char *str2) : Node(str1, simple_node), unresolved2(str2) {}
+  RecAttr(const char *str1, const char *str2) : Format::Node(str1, simple_node), unresolved2(str2) {}
   void out(struct data_operation *, unsigned int, result_buffer &);
   void compile(output_format *);
   void dump(ap_pool *, result_buffer &, int);
   void dump_source(ap_pool *, result_buffer &, const char *);
 };
 
-class Loop : public Node {
+class Loop : public Format::Node {
   friend class output_format;
   protected:
   Cell *begin;
-  Node *core;
+  Format::Node *core;
   len_string *sep;
   Cell *end;
  
   public:
-  Loop(const char *c, node_type t = loop_node) : Node(c, t) {}
+  Loop(const char *c, node_type t = loop_node) : Format::Node(c, t) {}
   void compile(output_format *);
   void dump(ap_pool *, result_buffer &, int);
   void dump_source(ap_pool *, result_buffer &, int) { assert(0); };

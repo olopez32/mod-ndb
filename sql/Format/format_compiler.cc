@@ -30,12 +30,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ctype.h>
 #include "format_compiler.h"
 
-
 // Globals
 Parser parser;
 len_string the_null_string(0, "");
 Cell the_null_cell(0, "");
-Node the_null_node("the_null_node", &the_null_cell);
+Format::Node the_null_node("the_null_node", &the_null_cell);
 
 
 /*  Find each node in the symbol table and compile it 
@@ -61,7 +60,7 @@ const char * output_format::compile(ap_pool *pool)  {
 /*  Look up "name" in a format's symbol table. 
     If ap_pool *p is non-null and the name cannot be found, add it to the table.
 */
-Node * output_format::symbol(const char *name, ap_pool *p=0, Node *node=0) {
+Format::Node * output_format::symbol(const char *name, ap_pool *p=0, Format::Node *node=0) {
   struct symbol *sym;
   
   unsigned int h=0;  // hash function:
@@ -251,8 +250,8 @@ Cell *Parser::get_cell_chain(bool required, const char *code) {
 }
 
 
-Node *Parser::get_node(bool required, output_format *f, const char *code) {
-  Node *N;
+Format::Node *Parser::get_node(bool required, output_format *f, const char *code) {
+  Format::Node *N;
   
   current_token = this->scan(code);
   if(current_token == tok_node) {
@@ -273,7 +272,7 @@ bool Parser::the_end(bool required, const char *code) {
 }
 
 
-void Node::compile(output_format *o) {
+void Format::Node::compile(output_format *o) {
   cell = parser.get_cell(pars_required, unresolved);
 }
 

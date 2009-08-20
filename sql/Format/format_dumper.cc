@@ -105,7 +105,7 @@ void MainLoop::dump(ap_pool *pool, result_buffer &res, int) {
 }
 
 
-void Node::dump(ap_pool *p, result_buffer &res, int indent) {
+void Format::Node::dump(ap_pool *p, result_buffer &res, int indent) {
   char *inset = make_inset(p, indent);
   if(cell->len) { 
     res.out("%s{ \"cell\":",inset);

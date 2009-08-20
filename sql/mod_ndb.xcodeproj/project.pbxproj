@@ -85,12 +85,12 @@
 		651A20C1103DBDBE008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = module.mk; path = "N-SQL/module.mk"; sourceTree = "<group>"; };
 		651A20C2103DBDE2008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = module.mk; path = JSON/module.mk; sourceTree = "<group>"; };
 		651A20CB103DBE3F008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = module.mk; sourceTree = "<group>"; };
-		651A2177103DFBEC008EA2A9 /* format_compiler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = format_compiler.cc; path = Format/format_compiler.cc; sourceTree = "<group>"; };
-		651A2178103DFBEC008EA2A9 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = format_compiler.h; path = Format/format_compiler.h; sourceTree = "<group>"; };
-		651A2179103DFBEC008EA2A9 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = format_dumper.cc; path = Format/format_dumper.cc; sourceTree = "<group>"; };
+		651A2177103DFBEC008EA2A9 /* format_compiler.cc */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = format_compiler.cc; path = Format/format_compiler.cc; sourceTree = "<group>"; tabWidth = 2; };
+		651A2178103DFBEC008EA2A9 /* format_compiler.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = format_compiler.h; path = Format/format_compiler.h; sourceTree = "<group>"; tabWidth = 2; };
+		651A2179103DFBEC008EA2A9 /* format_dumper.cc */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = format_dumper.cc; path = Format/format_dumper.cc; sourceTree = "<group>"; tabWidth = 2; };
 		651A217A103DFBEC008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = module.mk; path = Format/module.mk; sourceTree = "<group>"; };
-		651A217B103DFBEC008EA2A9 /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = output_format.cc; path = Format/output_format.cc; sourceTree = "<group>"; };
-		651A217C103DFBEC008EA2A9 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = output_format.h; path = Format/output_format.h; sourceTree = "<group>"; };
+		651A217B103DFBEC008EA2A9 /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = output_format.cc; path = Format/output_format.cc; sourceTree = "<group>"; tabWidth = 2; };
+		651A217C103DFBEC008EA2A9 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = output_format.h; path = Format/output_format.h; sourceTree = "<group>"; tabWidth = 2; };
 		651A68C20C824B6500EE077F /* test.list */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = default; lastKnownFileType = text; name = test.list; path = Tests/test.list; sourceTree = "<group>"; };
 		651A68DF0C824E3500EE077F /* runner.awk */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.perl; lastKnownFileType = text; name = runner.awk; path = Tests/runner.awk; sourceTree = "<group>"; };
 		651A69790C826F8D00EE077F /* run-test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = "run-test"; path = "Tests/run-test"; sourceTree = "<group>"; };
@@ -158,8 +158,8 @@
 				655CEC250A8C4CA400DB8284 /* make_tail.mk */,
 				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
 				651A1F48103DAE93008EA2A9 /* Core */,
-				65D8B47D0CBD847300BD24E7 /* JSON */,
 				651A2176103DFBD7008EA2A9 /* Format */,
+				65D8B47D0CBD847300BD24E7 /* JSON */,
 				651A1EEC103B4729008EA2A9 /* NSQL */,
 				65383BF30C72B69B001F8451 /* old-N-SQL */,
 				65E2E83C0BA2186700B1B8D0 /* templates */,

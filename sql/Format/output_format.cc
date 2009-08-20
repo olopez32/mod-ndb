@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "mod_ndb.h"
 
-
 /* Globals */
 const char *escape_leaning_toothpicks[256];
 const char *escape_xml_entities[256];
@@ -27,7 +26,7 @@ const char *escape_xml_plus_json[256];
 apr_table_t *global_format_names = 0;
 apache_array<struct output_format *> *global_output_formats = 0;
 
-extern Node the_null_node;  /* from format_compiler.cc */
+extern Format::Node the_null_node;  /* from format_compiler.cc */
 
 
 void initialize_output_formats(ap_pool *p) {
@@ -197,7 +196,7 @@ int build_results(request_rec *r, data_operation *data, result_buffer &res) {
   
   if(fmt->flag.is_raw) return Results_raw(r, data, res);
   res.init(r, 8192);
-  for(Node *N = fmt->top_node; N != 0 ; N=N->next_node) {
+  for(Format::Node *N = fmt->top_node; N != 0 ; N=N->next_node) {
     result_code = N->Run(data, res);
     if(result_code != OK) return result_code;
   }

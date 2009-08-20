@@ -50,7 +50,7 @@ public:
   bool get_ellipses(bool, const char *c=0);
   Cell *get_cell(bool, const char *c=0);
   Cell *get_cell_chain(bool, const char *c=0);
-  Node *get_node(bool, output_format *, const char *c=0);
+  Format::Node *get_node(bool, output_format *, const char *c=0);
   bool the_end(bool, const char *c=0);
   void rollback();
   void expected(const char *);
