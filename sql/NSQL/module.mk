@@ -19,10 +19,10 @@ VIS_OBJ := NSQLVisitor.o PrettyPrintVisitor.o SemanticCheck.o
 NSQL/Parser.cpp: NSQL/NSQL.atg NSQL/Parser.frame NSQL/Scanner.frame
 	( cd NSQL/NSQL ; $(COCO) -namespace NSQL NSQL.atg ) 
 
-NSQL_Parser.o: NSQL/Parser.cpp 
+NSQL_Parser.o: NSQL/NSQL/Parser.cpp 
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
-NSQL_Scanner.o: NSQL/Scanner.cpp 
+NSQL_Scanner.o: NSQL/NSQL/Scanner.cpp 
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
 test-sql: DBConnection.o 
