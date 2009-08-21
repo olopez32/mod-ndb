@@ -1,13 +1,3 @@
-/* N-SQL Scanner.frame customized by jdd for mod_ndb 
-
-  NOTE -- all of the coco_string_create() family of functions have been removed
-  from this file; the JSON scanner will export those functions, and in the end
-  we will link to the ones there instead
-  
-  However, a new function coco_create_apache_string(), is here
-*/
-
-
 /*----------------------------------------------------------------------
 Compiler Generator Coco/R,
 Copyright (c) 1990, 2004 Hanspeter Moessenboeck, University of Linz
@@ -39,10 +29,6 @@ Coco/R itself) does not fall under the GNU General Public License.
 
 #if !defined(COCO_SCANNER_H__)
 #define COCO_SCANNER_H__
-
-#include "httpd.h"
-#include "http_config.h"
-#include "mod_ndb_compat.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -94,9 +80,6 @@ wchar_t* coco_string_create(const char *value);
 char* coco_string_create_char(const wchar_t *value);
 void  coco_string_delete(char* &data);
 
-
-// Added for mod_ndb
-char* coco_create_apache_string(ap_pool *, const wchar_t *);
 
 -->namespace_open
 
@@ -330,11 +313,16 @@ Coco/R itself) does not fall under the GNU General Public License.
 #include <string.h>
 #include "Scanner.h"
 
-char* coco_create_apache_string(ap_pool *my_pool, const wchar_t *value) {
-  int len = coco_string_length(value);
-  char *res = (char *) ap_pcalloc(my_pool, len + 1);
-  for (int i = 0; i < len; ++i) { res[i] = (char) value[i]; }
-  return res;
+// string handling, wide character
+
+wchar_t* coco_string_create(const wchar_t* value) {
+	wchar_t* data;
+	int len = 0;
+	if (value) { len = wcslen(value); }
+	data = new wchar_t[len + 1];
+	wcsncpy(data, value, len);
+	data[len] = 0;
+	return data;
 }
 
 -->namespace_open
