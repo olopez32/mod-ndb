@@ -3,9 +3,7 @@
 == Release Tests ==
 
 || *Date* || *Machine* || *Architecture* || *OS* || *Apache* || *MySQL* || *Result* || *Notes* ||
-
 || 7/21 || SGI Altix XE - 4 node (each node w/ 23GiB, 4 2.26Ghz/Quad-Core Xeon E5520) || x86_64 || SUSE Linux Enterprise Server 10 || TBD || TBD || TBD || TBD  ||
-
 || 6/24 || Centos 5 (vm) || i386 || Centos 5 || 2.2.3 || 7.0.6 || Undefined symbol clock_gettime || With RPMs: httpd-2.2.3-22 , httpd-devel-2.2.3-22, mysql-cluster-gpl-devel-7.0.6-0.  Configure mod_ndb with: `./configure --apxs=/usr/sbin/apxs`  ||
 || 6/23 || tdm || x86_64 || Mac OS X 10.5 Server || 2.2.11 (worker) || 7.0.6 || OK ||With [http://dev.mysql.com/downloads/cluster/7.0.html#Mac_OS_X mysql-cluster-gpl-7.0.6-osx10.5-x86_64.dmg] Configure Apache with: export CFLAGS="-m64"; export CPPFLAGS="-m64"; ./configure --enable-layout="Darwin" --with-mpm=worker --enable-so Configure mod_ndb with:./configure --mysql=/usr/local/mysql/bin/mysql_config --apxs=/usr/sbin/apxs  --64||
 || 6/22 || sam || i386 || Mac OS X 10.5 || 2.2.8 (worker) || 7.0.5 || OK || ||
