@@ -185,10 +185,10 @@ namespace MySQL {
         return rbuf.out("%d", (int) rec.char_value());
         
       case NdbDictionary::Column::Mediumint:
-        return rbuf.out("%d", sint3korr(rec.aRef()));
+        return rbuf.out("%d", rec.medium_value());
         
       case NdbDictionary::Column::Mediumunsigned:
-        return rbuf.out("%d", uint3korr(rec.aRef()));
+        return rbuf.out("%d", rec.u_medium_value());
         
       case NdbDictionary::Column::Year:
         return rbuf.out("%04d", 1900 + rec.u_char_value());
@@ -300,10 +300,10 @@ namespace MySQL {
         int_time = datetime - (unsigned long long) int_date * 1000000;
         break;
       case NdbDictionary::Column::Time :
-        int_time = sint3korr(rec.aRef());
+        int_time = rec.medium_value();
         break;
       case NdbDictionary::Column::Date :
-        int_date = uint3korr(rec.aRef());
+        int_date = rec.u_medium_value();
         tm->day = (int_date & 31);      // five bits
         tm->month  = (int_date >> 5 & 15); // four bits
         tm->year = (int_date >> 9);
