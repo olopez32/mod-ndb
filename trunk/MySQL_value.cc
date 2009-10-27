@@ -143,8 +143,9 @@ void MySQL::value(mvalue &m, ap_pool *p,
        Ignore common separators, and treat it as a number. */
     if(*c == '-' || *c == '+') *buf++ = *c++;
     for(register int i = 0 ; i < 62 && *c != 0 ; c++, i++ ) 
-    if(! (*c == ':' || *c == '-' || *c == '/' || *c == ' '))
-    *buf++ = *c; *buf = 0;
+        if(! (*c == ':' || *c == '-' || *c == '/' || *c == ' '))
+            *buf++ = *c; 
+    *buf = 0;
     buf = strbuf;
 
     switch(col_type) {
