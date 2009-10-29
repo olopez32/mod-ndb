@@ -647,3 +647,153 @@ __typ603__
 }
 # __END__ typ603
 
+# _BEGIN_ typ901
+r.typ901() {
+  cat <<'__typ901__'
+HTTP/1.1 200 OK
+Content-Length: 42
+ETag: bf7158c09d2fb653e9c3c0e55b164f42
+Content-Type: text/plain
+
+ { "i":1 , "b1":null , "b2":17 , "b3":0 }
+__typ901__
+}
+# __END__ typ901
+
+# _BEGIN_ typ902
+r.typ902() {
+  cat <<'__typ902__'
+HTTP/1.1 200 OK
+Content-Length: 41
+ETag: 612c01bc9357f279e703bf77991afcaf
+Content-Type: text/plain
+
+ { "i":2 , "b1":1 , "b2":1025 , "b3":1 }
+__typ902__
+}
+# __END__ typ902
+
+# _BEGIN_ typ903
+r.typ903() {
+  cat <<'__typ903__'
+HTTP/1.1 200 OK
+Content-Length: 39
+ETag: 52e260b8eb2139542197f657b07189e6
+Content-Type: text/plain
+
+ { "i":3 , "b1":2 , "b2":11 , "b3":1 }
+__typ903__
+}
+# __END__ typ903
+
+# _BEGIN_ typ910
+r.typ910() {
+  cat <<'__typ910__'
+HTTP/1.1 409 Conflict
+Content-Length: 49
+Content-Type: text/plain
+
+Tuple already existed when attempting to insert.
+__typ910__
+}
+# __END__ typ910
+
+# _BEGIN_ typ911
+r.typ911() {
+  cat <<'__typ911__'
+HTTP/1.1 200 OK
+Content-Length: 38
+ETag: 7b54b523d47d605aef5cafbfcf2b3dce
+Content-Type: text/plain
+
+ { "i":4 , "b1":3 , "b2":8 , "b3":0 }
+__typ911__
+}
+# __END__ typ911
+
+# _BEGIN_ typ912
+r.typ912() {
+  cat <<'__typ912__'
+HTTP/1.1 405 Method Not Allowed
+Allow: HEAD,POST
+Content-Length: 0
+Content-Type: text/plain
+
+__typ912__
+}
+# __END__ typ912
+
+# _BEGIN_ typ901
+r.typ901() {
+  cat <<'__typ901__'
+HTTP/1.1 200 OK
+Content-Length: 42
+ETag: bf7158c09d2fb653e9c3c0e55b164f42
+Content-Type: text/plain
+
+ { "i":1 , "b1":null , "b2":17 , "b3":0 }
+__typ901__
+}
+# __END__ typ901
+
+# _BEGIN_ typ902
+r.typ902() {
+  cat <<'__typ902__'
+HTTP/1.1 200 OK
+Content-Length: 41
+ETag: 612c01bc9357f279e703bf77991afcaf
+Content-Type: text/plain
+
+ { "i":2 , "b1":1 , "b2":1025 , "b3":1 }
+__typ902__
+}
+# __END__ typ902
+
+# _BEGIN_ typ903
+r.typ903() {
+  cat <<'__typ903__'
+HTTP/1.1 200 OK
+Content-Length: 39
+ETag: 52e260b8eb2139542197f657b07189e6
+Content-Type: text/plain
+
+ { "i":3 , "b1":2 , "b2":11 , "b3":1 }
+__typ903__
+}
+# __END__ typ903
+
+# _BEGIN_ typ910
+r.typ910() {
+  cat <<'__typ910__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ910__
+}
+# __END__ typ910
+
+# _BEGIN_ typ911
+r.typ911() {
+  cat <<'__typ911__'
+HTTP/1.1 200 OK
+Content-Length: 38
+ETag: 7b54b523d47d605aef5cafbfcf2b3dce
+Content-Type: text/plain
+
+ { "i":4 , "b1":3 , "b2":8 , "b3":0 }
+__typ911__
+}
+# __END__ typ911
+
+# _BEGIN_ typ912
+r.typ912() {
+  cat <<'__typ912__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ912__
+}
+# __END__ typ912
+

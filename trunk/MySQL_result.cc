@@ -136,6 +136,7 @@ namespace MySQL {
       case NdbDictionary::Column::Int:
         return rbuf.out("%d", (int)  rec.int32_value()); 
         
+      case NdbDictionary::Column::Bit:
       case NdbDictionary::Column::Unsigned:
       case NdbDictionary::Column::Timestamp:
         return rbuf.out("%u", (unsigned int) rec.u_32_value());
@@ -214,7 +215,6 @@ namespace MySQL {
         else rbuf.out(contents->sz, contents->buff);
         return;
         
-      case NdbDictionary::Column::Bit:
       case NdbDictionary::Column::Olddecimal:
       case NdbDictionary::Column::Olddecimalunsigned:
       default:
