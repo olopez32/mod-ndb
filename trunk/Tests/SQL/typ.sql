@@ -81,3 +81,15 @@ CREATE TABLE typ7 (
   vc01 varchar(2000),
   ts timestamp not null
 ) engine = ndbcluster ;
+
+CREATE TABLE typ9 (
+  i int not null primary key,
+  b1 bit(9) null,
+  b2 bit(17) not null,
+  b3 bit(1) not null 
+) engine = ndbcluster;
+
+INSERT INTO typ9 
+VALUES ( 1, NULL , 17   , 0 ),
+       ( 2, 1    , 1025 , 1 ),
+       ( 3, 2    , 11   , 1 ) ;
