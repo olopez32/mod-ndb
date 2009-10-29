@@ -74,6 +74,14 @@ typ601 f1 typ6 -d 'i=3&j=4&name=larry'
 typ602 f1 typ6?i=3&j=4
 typ603 f1 typ6?i=3&j=4 -X DELETE
 
+# typ9: (i int primary key, b1 bit(9) not null, b2 bit(17), b3 bit(1) not null) 
+typ901 f1 typ9?id=1
+typ902 f1 typ9?id=2
+typ903 f1 typ9?id=3
+typ910 f1 typ9 -d 'i=4&b1=3&b2=8&b3=0'
+typ911 f1 typ9?id=4
+typ912 f1 typ9?id=4 -X DELETE
+
 
 # LONGVARCHAR
 typ701 f1 typ7tab   # 404 -- empty table
