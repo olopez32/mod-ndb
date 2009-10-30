@@ -659,15 +659,21 @@ __typ603__
 
 
 
+
+
+
+
+
+
 # _BEGIN_ typ901
 r.typ901() {
   cat <<'__typ901__'
 HTTP/1.1 200 OK
-Content-Length: 42
-ETag: bf7158c09d2fb653e9c3c0e55b164f42
+Content-Length: 54
+ETag: 1dac2265ac21398716aad12116a7846c
 Content-Type: text/plain
 
- { "i":1 , "b1":null , "b2":17 , "b3":0 }
+ { "i":1 , "b1":null , "b2":17 , "b3":0 , "b4":null }
 __typ901__
 }
 # __END__ typ901
@@ -676,11 +682,11 @@ __typ901__
 r.typ902() {
   cat <<'__typ902__'
 HTTP/1.1 200 OK
-Content-Length: 41
-ETag: 612c01bc9357f279e703bf77991afcaf
+Content-Length: 51
+ETag: 7b56b413e016f6751def5e5a041f7d71
 Content-Type: text/plain
 
- { "i":2 , "b1":1 , "b2":1025 , "b3":1 }
+ { "i":2 , "b1":1 , "b2":1025 , "b3":1 , "b4":11 }
 __typ902__
 }
 # __END__ typ902
@@ -689,14 +695,40 @@ __typ902__
 r.typ903() {
   cat <<'__typ903__'
 HTTP/1.1 200 OK
-Content-Length: 39
-ETag: 52e260b8eb2139542197f657b07189e6
+Content-Length: 50
+ETag: df3af3aa4b85fc29f2c1cb6f8c48ae3a
 Content-Type: text/plain
 
- { "i":3 , "b1":2 , "b2":11 , "b3":1 }
+ { "i":3 , "b1":2 , "b2":11 , "b3":1 , "b4":300 }
 __typ903__
 }
 # __END__ typ903
+
+# _BEGIN_ typ904
+r.typ904() {
+  cat <<'__typ904__'
+HTTP/1.1 200 OK
+Content-Length: 63
+ETag: 68d1435f9f2ab9a04c3fefdaa4146c38
+Content-Type: text/plain
+
+ { "i":4 , "b1":511 , "b2":131071 , "b3":1 , "b4":4294967306 }
+__typ904__
+}
+# __END__ typ904
+
+# _BEGIN_ typ905
+r.typ905() {
+  cat <<'__typ905__'
+HTTP/1.1 200 OK
+Content-Length: 51
+ETag: 3fb2e972f511123dbaa1c038fe5923af
+Content-Type: text/plain
+
+ { "i":5 , "b1":10 , "b2":10 , "b3":1 , "b4":600 }
+__typ905__
+}
+# __END__ typ905
 
 # _BEGIN_ typ910
 r.typ910() {
@@ -713,11 +745,11 @@ __typ910__
 r.typ911() {
   cat <<'__typ911__'
 HTTP/1.1 200 OK
-Content-Length: 38
-ETag: 7b54b523d47d605aef5cafbfcf2b3dce
+Content-Length: 50
+ETag: e0db19324ac161e2bf908f6dabbaa369
 Content-Type: text/plain
 
- { "i":4 , "b1":3 , "b2":8 , "b3":0 }
+ { "i":6 , "b1":3 , "b2":8 , "b3":0 , "b4":null }
 __typ911__
 }
 # __END__ typ911
@@ -732,4 +764,74 @@ Content-Type: text/plain
 __typ912__
 }
 # __END__ typ912
+
+# _BEGIN_ typ913
+r.typ913() {
+  cat <<'__typ913__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ913__
+}
+# __END__ typ913
+
+# _BEGIN_ typ914
+r.typ914() {
+  cat <<'__typ914__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ914__
+}
+# __END__ typ914
+
+# _BEGIN_ typ915
+r.typ915() {
+  cat <<'__typ915__'
+HTTP/1.1 200 OK
+Content-Length: 47
+ETag: 02834e572639de519e8470f833dd0dc9
+Content-Type: text/plain
+
+ { "i":7 , "b1":1 , "b2":2 , "b3":1 , "b4":4 }
+__typ915__
+}
+# __END__ typ915
+
+# _BEGIN_ typ916
+r.typ916() {
+  cat <<'__typ916__'
+HTTP/1.1 200 OK
+Content-Length: 64
+ETag: 27bf7add29bbb095d9dac1f1b76d335a
+Content-Type: text/plain
+
+ { "i":8 , "b1":511 , "b2":131071 , "b3":1 , "b4":34359738369 }
+__typ916__
+}
+# __END__ typ916
+
+# _BEGIN_ typ917
+r.typ917() {
+  cat <<'__typ917__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ917__
+}
+# __END__ typ917
+
+# _BEGIN_ typ918
+r.typ918() {
+  cat <<'__typ918__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ918__
+}
+# __END__ typ918
 

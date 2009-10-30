@@ -77,8 +77,13 @@ BEGIN { if(!host) host = "localhost:3080"
        have_source[prefix] = 1
      }
      
-     if(mode == "compare") 
-       printf("r.%s | cmp -s - current/%s && echo OK || echo Fail\n", $1, $1)
+     if(mode == "compare") { 
+       printf("if type -t r.%s > /dev/null \n", $1) # Recorded result exists?
+       printf(" then\n")
+       printf("  r.%s | cmp -s - current/%s && echo OK || echo Fail\n", $1, $1)
+       printf(" else echo Fail [No recorded results on file]\n")
+       printf("fi \n")
+     }
      if(diff)
        printf("r.%s |diff -C 10 - current/%s \n",$1, $1)
    }

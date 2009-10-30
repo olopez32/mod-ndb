@@ -78,9 +78,18 @@ typ603 f1 typ6?i=3&j=4 -X DELETE
 typ901 f1 typ9?id=1
 typ902 f1 typ9?id=2
 typ903 f1 typ9?id=3
-typ910 f1 typ9 -d 'i=4&b1=3&b2=8&b3=0'
-typ911 f1 typ9?id=4
-typ912 f1 typ9?id=4 -X DELETE
+typ904 f1 typ9?id=4
+typ905 f1 typ9?id=5
+typ910 f1 typ9 -d 'i=6&b1=3&b2=8&b3=0'
+typ911 f1 typ9?id=6
+typ912 f1 typ9?id=6 -X DELETE
+typ913 f1 typ9 -d 'i=7&b1=1&b2=2&b3=3&b4=4' 
+typ914 f1 typ9 -d 'i=8&b1=511&b2=131071&b3=1&b4=34359738369'
+typ915 f1 typ9?id=7
+typ916 f1 typ9?id=8
+typ917 f1 typ9?id=7 -X DELETE
+typ918 f1 typ9?id=8 -X DELETE
+
 
 
 # LONGVARCHAR
