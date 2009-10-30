@@ -64,6 +64,14 @@ void MySQL::value(mvalue &m, ap_pool *p,
 
   NdbDictionary::Column::Type col_type = col->getType();
 
+  /* Special treatment for BIT: masquerade as an unsigned int  */
+  if(col_type == NdbDictionary::Column::Bit) {
+    if(col->getLength() > 32) 
+      col_type = NdbDictionary::Column::Bigunsigned;
+    else
+      col_type = NdbDictionary::Column::Unsigned;
+  }
+    
   bool is_char_col = 
     ( (col_type == NdbDictionary::Column::Varchar) ||
       (col_type == NdbDictionary::Column::Longvarchar) ||
@@ -218,7 +226,6 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
       
     case NdbDictionary::Column::Unsigned:
-    case NdbDictionary::Column::Bit:
     case NdbDictionary::Column::Timestamp:
       m.use_value = use_unsigned;
       m.u.val_unsigned = strtoul(val,0,0);

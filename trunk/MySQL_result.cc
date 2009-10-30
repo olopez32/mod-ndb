@@ -105,6 +105,15 @@ namespace MySQL {
     }
     else
       _RecAttr = op->getValue(col, 0);
+    /* Special treatment for BIT: let it masquerade as an unsigned int
+       of the appropriate size.
+    */
+    if(type == NdbDictionary::Column::Bit) {
+        if(col->getLength() > 32) 
+            type = NdbDictionary::Column::Bigunsigned;
+        else
+            type = NdbDictionary::Column::Unsigned;
+    }
   }
   
   result::~result() {
@@ -136,7 +145,6 @@ namespace MySQL {
       case NdbDictionary::Column::Int:
         return rbuf.out("%d", (int)  rec.int32_value()); 
         
-      case NdbDictionary::Column::Bit:
       case NdbDictionary::Column::Unsigned:
       case NdbDictionary::Column::Timestamp:
         return rbuf.out("%u", (unsigned int) rec.u_32_value());
