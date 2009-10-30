@@ -86,10 +86,14 @@ CREATE TABLE typ9 (
   i int not null primary key,
   b1 bit(9) null,
   b2 bit(17) not null,
-  b3 bit(1) not null 
+  b3 bit(1) not null,
+  b4 bit(36) null
 ) engine = ndbcluster;
 
 INSERT INTO typ9 
-VALUES ( 1, NULL , 17   , 0 ),
-       ( 2, 1    , 1025 , 1 ),
-       ( 3, 2    , 11   , 1 ) ;
+VALUES ( 1, NULL , 17   , 0 , NULL),
+       ( 2, 1    , 1025 , 1 , 11 ),
+       ( 3, 2    , 11   , 1 , 300),
+       ( 4, -1   , -1   ,-1 , POW(2,32) + 10 ),
+       ( 5, 10   , 10   , 1 , 600) ;
+
