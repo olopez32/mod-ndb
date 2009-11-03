@@ -78,12 +78,6 @@ typedef apr_array_header_t array_header;
 #define log_err(s, ... ) ap_log_error(APLOG_MARK,log::err,0,s, __VA_ARGS__ );
 #define log_note(s, ... ) ap_log_error(APLOG_MARK,log::warn,0,s,__VA_ARGS__ );
 
-#ifdef MOD_NDB_DEBUG 
-#define log_debug(s, ...) ap_log_error(APLOG_MARK,log::debug,0,s, __VA_ARGS__);
-#else
-#define log_debug(s, ...) 
-#endif
-
 #else 
           /* Apache 1.3: */
 
@@ -98,11 +92,5 @@ typedef table apr_table_t;
 #define my_ap_log_error(l,s,fmt,arg) ap_log_error(APLOG_MARK,l,s,fmt,arg);
 #define log_err(s, ... ) ap_log_error(APLOG_MARK, log::err, s, __VA_ARGS__ );
 #define log_note(s, ... ) ap_log_error(APLOG_MARK, log::warn, s, __VA_ARGS__ );
-
-#ifdef MOD_NDB_DEBUG 
-#define log_debug(s, ... ) ap_log_error(APLOG_MARK, log::debug, s, __VA_ARGS__ );
-#else
-#define log_debug(s, ... ) 
-#endif
 
 #endif

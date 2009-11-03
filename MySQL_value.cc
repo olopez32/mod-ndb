@@ -32,12 +32,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include <strings.h>
+#include <ctype.h>
 #include "my_global.h"
 #include "mysql.h"
 #include "NdbApi.hpp"
 #include "httpd.h"
 #include "http_config.h"
 #include "mod_ndb_compat.h"
+#include "mod_ndb_debug.h"
 #include "MySQL_value.h"
 
 // Apache might have disabled strtoul()
@@ -63,14 +65,6 @@ void MySQL::value(mvalue &m, ap_pool *p,
   }
 
   NdbDictionary::Column::Type col_type = col->getType();
-
-  /* Special treatment for BIT: masquerade as an unsigned int  */
-  if(col_type == NdbDictionary::Column::Bit) {
-    if(col->getLength() > 32) 
-      col_type = NdbDictionary::Column::Bigunsigned;
-    else
-      col_type = NdbDictionary::Column::Unsigned;
-  }
     
   bool is_char_col = 
     ( (col_type == NdbDictionary::Column::Varchar) ||
@@ -93,6 +87,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       1 or 2 little-endian length bytes"   [ i.e. LSB first ]*/
       
       case NdbDictionary::Column::Varchar:      
+        COV_point("varchar");
         m.len = len = (unsigned char) strlen(val);
         if(len > col->getLength()) len = (unsigned char) col->getLength();
           m.u.val_char = (char *) ap_palloc(p, len + 2);
@@ -103,6 +98,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
         return;
         
       case NdbDictionary::Column::Longvarchar:
+        COV_point("longvarchar");
         m.len = s_len = strlen(val);
         if(s_len > col->getLength()) s_len = col->getLength();
           m.u.val_char = (char *) ap_palloc(p, s_len + 3);
@@ -114,7 +110,8 @@ void MySQL::value(mvalue &m, ap_pool *p,
         return;
         
       case NdbDictionary::Column::Char:
-        // Copy the value into the buffer, then right-pad with spaces
+        COV_point("char");
+       // Copy the value into the buffer, then right-pad with spaces
         m.len = l_len = strlen(val);
         if(l_len > (unsigned) col->getLength()) l_len = col->getLength();
           m.u.val_char = (char *) ap_palloc(p, col->getLength() + 1);
@@ -148,26 +145,30 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
     }
     /* Parse a MySQL date, time, or datetime.  Allow it to be signed.
-       Ignore common separators, and treat it as a number. */
+       Treat and non-digits as separators, and then treat the rest 
+       as a number. */
     if(*c == '-' || *c == '+') *buf++ = *c++;
     for(register int i = 0 ; i < 62 && *c != 0 ; c++, i++ ) 
-        if(! (*c == ':' || *c == '-' || *c == '/' || *c == ' '))
+        if(isdigit(*c))
             *buf++ = *c; 
     *buf = 0;
     buf = strbuf;
 
     switch(col_type) {
       case NdbDictionary::Column::Datetime :
+        COV_point("datetime");
         m.u.val_unsigned_64 = strtoull(buf, 0, 10);
         m.use_value = use_unsigned_64;
         return;
       case NdbDictionary::Column::Time :
+        COV_point("time");
         m.use_value = use_signed;
         aux_int = strtol(buf, 0, 10);
         store24(m.u.val_signed, aux_int);
         return;
       case NdbDictionary::Column::Date :
-        bzero(&tm, sizeof(MYSQL_TIME));
+       COV_point("date");
+       bzero(&tm, sizeof(MYSQL_TIME));
         yymmdd = strtol(buf, 0, 10);
         tm.year = yymmdd/10000 % 10000;
         tm.month  = yymmdd/100 % 100;
@@ -190,26 +191,31 @@ void MySQL::value(mvalue &m, ap_pool *p,
   /* Dynamic values @++. @--. @null, @time, @autoinc */
   if(*val == '@') {
     if(!strcmp(val,"@null")) {
+      COV_point("@null");
       m.use_value = use_null;
       m.u.val_64 = 0;
       return;
     }
     if(!strcmp(val,"@++")) {
+      COV_point("@++");
       m.use_value = use_interpreted;
       m.interpreted = is_increment;
       return;
     }
     if(!strcmp(val,"@--")) {
+      COV_point("@--");
       m.use_value = use_interpreted;
       m.interpreted = is_decrement;
       return;
     }
     if(!strcmp(val,"@time")) {
-      m.use_value = use_unsigned;
+      COV_point("@time");
+     m.use_value = use_unsigned;
       time(& m.u.val_time);
       return;
     }
     if(!strcmp(val,"@autoinc")) {
+      COV_point("@autoinc");
       m.use_value = use_autoinc;
       if(col_type == NdbDictionary::Column::Bigint 
        || col_type == NdbDictionary::Column::Bigunsigned)
@@ -221,39 +227,52 @@ void MySQL::value(mvalue &m, ap_pool *p,
   
   switch(col_type) {    
     case NdbDictionary::Column::Int:
+      COV_point("int");
       m.use_value = use_signed;
       m.u.val_signed = atoi(val);
       return;
       
     case NdbDictionary::Column::Unsigned:
     case NdbDictionary::Column::Timestamp:
+      COV_point("unsigned");
       m.use_value = use_unsigned;
       m.u.val_unsigned = strtoul(val,0,0);
       return;
       
     case NdbDictionary::Column::Float:
+      COV_point("float");
       m.use_value = use_float;
       m.u.val_float = atof(val);
       return;
       
     case NdbDictionary::Column::Double:
+      COV_point("double");
       m.use_value = use_double;
       m.u.val_double = strtod(val,0);
       return;
       
     case NdbDictionary::Column::Bigint:
+      COV_point("bigint");
       m.use_value = use_64;
       m.u.val_64 = strtoll(val,0,0);
       return;
       
     case NdbDictionary::Column::Bigunsigned:
+      COV_point("bigunsigned");
       m.use_value = use_unsigned_64;
       m.u.val_unsigned_64 = strtoull(val,0,0);
       return;
 
+    case NdbDictionary::Column::Bit:
+      COV_point("bit");
+      m.use_value = use_unsigned_64;
+      store64( m.u.val_unsigned_64, strtoull(val,0,0));
+      return; 
+        
     /* Tiny, small, and medium types -- be like mysql: 
         on overflow, put in the highest allowed value */
     case NdbDictionary::Column::Tinyint:
+      COV_point("tinyint");
       m.use_value = use_signed;
       aux_int = strtol(val,0,0);
       if(aux_int < -128) aux_int = -128 , m.over = 1;
@@ -262,6 +281,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Tinyunsigned:
+      COV_point("tinyunsigned");
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
       if(aux_int > 255) aux_int = 255 , m.over = 1;
@@ -270,6 +290,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Smallint:
+      COV_point("smallint");
       m.use_value = use_signed;
       aux_int = strtol(val,0,0);
       if(aux_int < -32768) aux_int = -32768 , m.over = 1;
@@ -278,6 +299,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Smallunsigned:
+      COV_point("smallunsigned");
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
       if(aux_int > 65535) aux_int = 65535 , m.over = 1;
@@ -286,6 +308,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Mediumint:
+      COV_point("mediumint");
       m.use_value = use_signed;
       aux_int = strtol(val,0,0);
       if(aux_int > 8388607) aux_int = 8388607 , m.over = 1;
@@ -294,6 +317,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Mediumunsigned:
+      COV_point("mediumunsigned");
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0);
       if(aux_int > 16777215) aux_int = 16777215 , m.over = 1;
@@ -302,6 +326,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
 
     case NdbDictionary::Column::Year:
+      COV_point("year");
       m.use_value = use_unsigned;
       aux_int = strtol(val,0,0) - 1900;      
       m.u.val_unsigned_8 = (unsigned char) aux_int;
@@ -309,24 +334,25 @@ void MySQL::value(mvalue &m, ap_pool *p,
 
     case NdbDictionary::Column::Decimal:
     case NdbDictionary::Column::Decimalunsigned:
-    {  
-     decimal_digit_t digits[DECIMAL_BUFF]; 
-     char *end = (char *) val + strlen(val);
-     const int prec  = col->getPrecision();
-     const int scale = col->getScale();
-     decimal_t dec = {prec - scale, scale, DECIMAL_BUFF ,0, digits};
+    {                                  // these braces prevent a compiler error
+      COV_point("decimal");
+      decimal_digit_t digits[DECIMAL_BUFF]; 
+      char *end = (char *) val + strlen(val);
+      const int prec  = col->getPrecision();
+      const int scale = col->getScale();
+      decimal_t dec = {prec - scale, scale, DECIMAL_BUFF ,0, digits};
 
-     string2decimal(val, &dec, &end);
-     m.use_value = use_char;
-     m.col_len = 0;   /* For NdbScanFilter::cmp() */
-     /* decimal_bin_size() is never greater than 32: */
-     m.u.val_char = (char *) ap_pcalloc(p, 32);
-     decimal2bin(&dec, m.u.val_char, prec, scale);
-    }; 
-     return;
+      string2decimal(val, &dec, &end);
+      m.use_value = use_char;
+      m.col_len = 0;   /* For NdbScanFilter::cmp() */
+      /* decimal_bin_size() is never greater than 32: */
+      m.u.val_char = (char *) ap_pcalloc(p, 32);
+      decimal2bin(&dec, m.u.val_char, prec, scale);
+     }
+      return;
     
     /* not implemented */
-
+    
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
     case NdbDictionary::Column::Varbinary:
@@ -337,6 +363,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       /* Olddecimal types are just strings.  But you cannot create old decimal
          columns with MySQL 5, so this is difficult to test. */
     default:
+      COV_point("bad data type");
       m.use_value = err_bad_data_type;
       return;
   }

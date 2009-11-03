@@ -35,6 +35,7 @@ usage() {
   echo "    --linkopt='DSO linker options'"
   echo "    --thread-safe"
   echo "    --debug"
+  echo "    --dtrace"
   echo "    --mysys=[yes|no] { default is yes}"
   echo "    --sun-cc"
   echo "    --64"
@@ -55,6 +56,9 @@ long_help() {
   echo 
   echo "    --debug to compile with '-g -O0', and enable debug log "
   echo "      messages; otherwise compile with '-O3'."
+  echo
+  echo "    --dtrace to enable static dtrace probes used for code coverage"
+  echo "      testing.  (Mac OS X only)."
   echo 
   echo "    --sun-cc to compile using Sun C++ compiler rather than g++"
   echo "      (requires mysql and apache to also be built with Sun CC)"
@@ -89,6 +93,10 @@ do
       OPT='-g -O0'
       DEFINE='-DMOD_NDB_DEBUG=1'
       opt_debug="1"
+      opt_dtrace="1"
+      ;;
+    --dtrace)
+      opt_dtrace="1"
       ;;
     --mysql)
       MYSQLCFG=$conf_arg
@@ -248,9 +256,27 @@ if test -n "$APXS1"
   fi
 fi
 
-if $MYSQLCFG --version | grep -q '^5.1.' 
- then NDB_PATH=storage/ndb 
- else NDB_PATH=ndb 
+# Platform-specific extra libraries
+OS_LIBS=""
+# Red Hat starting with rhel5 seems to require linking with -lrt
+if test `uname -s` = "Linux" -a -f /etc/redhat-release
+ then
+  OS_LIBS="-lrt"
+fi
+
+# NDB include path is mysql/storage/ndb -- but just mysql/ndb for old mysql 
+if $MYSQLCFG --version | grep -q '^5.0.' 
+ then NDB_PATH=ndb 
+ else NDB_PATH=storage/ndb 
+fi
+
+### Enable dtrace on Mac OS X
+# (You could enable them on Solaris too, but compiling and linking the probes
+# on Solaris is different than on Mac.)
+if test -n "$opt_dtrace" -a `uname -s` = "Darwin"
+ then 
+   DEFINE="$DEFINE -DMAC_DTRACE=1"
+   DTRACE_HEADERS="probes.h"
 fi
 
 #### Prepare a test/demo environment 
@@ -300,9 +326,9 @@ echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
 if test $LINK_MYSYS -eq 1 
  then 
-   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++ $OS_LIBS"
  else
-   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient"
+   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient $OS_LIBS"
 fi
 echo 
 echo OPT=$OPT
@@ -314,9 +340,10 @@ echo LDSO_PATH=$LDSO_PATH
 echo TEMPLATE=templates/conf_$APACHE_VER
 echo START_HTTPD=$START_APACHE
 echo STOP_HTTPD=$STOP_APACHE
+echo DTRACE_HEADERS=$DTRACE_HEADERS
+
 echo RESTART_HTTPD=$RESTART_APACHE
 echo
-
 ) > Makefile
 
 

@@ -30,6 +30,7 @@
 #include "httpd.h"
 #include "http_config.h"
 #include "mod_ndb_compat.h"
+#include "mod_ndb_debug.h"
 #include "result_buffer.h"
 #include "output_format.h"
 
@@ -105,23 +106,16 @@ namespace MySQL {
     }
     else
       _RecAttr = op->getValue(col, 0);
-    /* Special treatment for BIT: let it masquerade as an unsigned int
-       of the appropriate size.
-    */
-    if(type == NdbDictionary::Column::Bit) {
-        if(col->getLength() > 32) 
-            type = NdbDictionary::Column::Bigunsigned;
-        else
-            type = NdbDictionary::Column::Unsigned;
-    }
   }
   
   result::~result() {
+    COV_point("destructor");
     if(contents) delete contents;
   }
   
   
   int result::activateBlob() {    
+    COV_point("activateBlob");
     if(isNull()) return 0;
     contents->read_blob(blob);  
     return 0;
@@ -129,6 +123,7 @@ namespace MySQL {
   
   
   bool result::BLOBisNull() {
+    COV_point("BLOBisNull");
     int is_null = 0;
     blob->getNull(is_null);
     assert(is_null != -1);
@@ -143,75 +138,100 @@ namespace MySQL {
     switch(type) {
         
       case NdbDictionary::Column::Int:
+        COV_point("int");
         return rbuf.out("%d", (int)  rec.int32_value()); 
         
       case NdbDictionary::Column::Unsigned:
       case NdbDictionary::Column::Timestamp:
+        COV_point("unsigned");
         return rbuf.out("%u", (unsigned int) rec.u_32_value());
         
       case NdbDictionary::Column::Varchar:
       case NdbDictionary::Column::Varbinary:
+        COV_point("varchar");
         return MySQL::String(rbuf, rec, char_var, escapes);
         
       case NdbDictionary::Column::Char:
       case NdbDictionary::Column::Binary:
+        COV_point("char");
         return MySQL::String(rbuf, rec, char_fixed, escapes);
         
       case NdbDictionary::Column::Longvarchar:
+        COV_point("longvarchar");
         return MySQL::String(rbuf, rec, char_longvar, escapes);
         
       case NdbDictionary::Column::Float:
+        COV_point("float");
         return rbuf.out("%G", (double) rec.float_value());
         
       case NdbDictionary::Column::Double:
+        COV_point("double");
         return rbuf.out("%G", (double) rec.double_value());
         
       case NdbDictionary::Column::Date:
+        COV_point("date");
         field_to_tm(&tm, rec);
         return rbuf.out("%04d-%02d-%02d",tm.year, tm.month, tm.day);
         
       case NdbDictionary::Column::Time:
+        COV_point("time");
         field_to_tm(&tm, rec);
         return rbuf.out("%s%02d:%02d:%02d", tm.neg ? "-" : "" ,
                         tm.hour, tm.minute, tm.second);
         
       case NdbDictionary::Column::Bigunsigned:
+        COV_point("bigunsigned");
         return rbuf.out("%llu", rec.u_64_value()); 
+ 
+      case NdbDictionary::Column::Bit:
+        COV_point("bit");
+        return rbuf.out("%llu",uint8korr(rec.aRef()));
         
       case NdbDictionary::Column::Smallunsigned:
+        COV_point("smallunsigned");
         return rbuf.out("%hu", (short) rec.u_short_value());
         
       case NdbDictionary::Column::Tinyunsigned:
+        COV_point("tinyunsigned");
         return rbuf.out("%u", (int) rec.u_char_value());
         
       case NdbDictionary::Column::Bigint:
+        COV_point("bigint");
         return rbuf.out("%lld", rec.int64_value());
         
       case NdbDictionary::Column::Smallint:
+        COV_point("smallint");
         return rbuf.out("%hd", (short) rec.short_value());
         
       case NdbDictionary::Column::Tinyint:
+        COV_point("tinyint");
         return rbuf.out("%d", (int) rec.char_value());
         
       case NdbDictionary::Column::Mediumint:
+        COV_point("mediumint");
         return rbuf.out("%d", rec.medium_value());
         
       case NdbDictionary::Column::Mediumunsigned:
+        COV_point("mediumunsigned");
         return rbuf.out("%d", rec.u_medium_value());
         
       case NdbDictionary::Column::Year:
+        COV_point("year");
         return rbuf.out("%04d", 1900 + rec.u_char_value());
         
       case NdbDictionary::Column::Datetime:
+        COV_point("datetime");
         field_to_tm(&tm, rec);
         return rbuf.out("%04d-%02d-%02d %02d:%02d:%02d", tm.year, tm.month, 
                         tm.day, tm.hour, tm.minute, tm.second);
         
       case NdbDictionary::Column::Decimal:
       case NdbDictionary::Column::Decimalunsigned:
+        COV_point("decimal");
         return MySQL::Decimal(rbuf,rec);
         
       case NdbDictionary::Column::Text:
+        COV_point("text");
         if(escapes) 
           escape_string(contents->buff, contents->sz, rbuf, escapes);
         else
@@ -219,6 +239,7 @@ namespace MySQL {
         return;
         
       case NdbDictionary::Column::Blob:
+        COV_point("blob");
         if(escapes) rbuf.out("++ CANNOT ESCAPE BLOB ++");
         else rbuf.out(contents->sz, contents->buff);
         return;
@@ -226,6 +247,7 @@ namespace MySQL {
       case NdbDictionary::Column::Olddecimal:
       case NdbDictionary::Column::Olddecimalunsigned:
       default:
+        COV_point("bad data type");
         return;        
     }
   }

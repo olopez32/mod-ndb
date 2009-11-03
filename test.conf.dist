@@ -44,4 +44,11 @@ Row  row = '<tr> $data$ ... </tr>\n'
 Record data = '<td>$value/x$</td>'
 </ResultFormat>
 
+<ResultFormat "text">
+Format test = '$tab$'
+Scan tab = '==================\n $row$ ... ==================\n'
+Row row  = ' $data$	      ... \n'
+Record data = '$value$' or 'null'
+</ResultFormat>
+
 Include Tests/httpd.conf

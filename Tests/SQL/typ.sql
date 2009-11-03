@@ -37,6 +37,7 @@ INSERT INTO typ2 VALUES
   (5,-900,-900,-900,-900,-900,-900); /* will be (5,-128,0,-900,0,-900,0) */
 
 
+
 CREATE TABLE typ3 (
   i int NOT NULL PRIMARY KEY,
   d1 decimal(8,2),
@@ -49,17 +50,33 @@ INSERT INTO typ3
 VALUES (1, pi(), pi(), pi(), pi() ),
        (2, 1.25, 1234567890.1234, 0, 0 );
 
+CREATE TABLE typ3f (
+   i int not null primary key, 
+   f1 float,
+   f2 float unsigned, 
+   d1 double, 
+   d2 double unsigned
+) engine=ndbcluster;
+
+INSERT INTO typ3f 
+VALUES (1, 3.15, null , -6.00000000000002 , 7.1111112222223 ),
+       (2, -6.6 , 7.7 , null , null );
+
 
 CREATE TABLE typ4 (
   i int not null primary key,
   t time,
   d date,
   dt datetime,
-  ts timestamp
+  y year,
+  ts timestamp,
+  unique index time_idx (t) ,
+  unique index date_idx (d) ,
+  unique index dt_idx (dt) 
 ) engine=ndbcluster;
 
 INSERT INTO typ4 VALUES 
-  (1,'10:30:00','2007-11-01','2007-11-01 10:30:00', 
+  (1,'10:30:00','2007-11-01','2007-11-01 10:30:00', 2007, 
   from_unixtime(1193938200)); 
 
 CREATE TABLE typ5 (
