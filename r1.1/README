@@ -9,7 +9,6 @@ shared libraries.
 
 # ./configure --mysql=/path/to/mysql_config --apxs=/path/to/apxs
 # make
-# make install
 
 Note that this configure script is not GNU Autoconf (which is not required, 
 since it has already been run to build MySQL), but rather a small script which
@@ -17,11 +16,24 @@ can use the "mysql_config" and "apxs" commands to generate an appropriate
 Makefile for mod_ndb.
 
 
+---- BUILDING ON Red Hat Enterprise Linux and similar ---- 
+1) Install httpd-devel using yum
+2) Install the MySQL-Cluster-gpl-devel RPM from dev.mysql.com/downloads
+3) Configure mod_ndb with:  ./configure --apxs=/usr/sbin/apxs
+4) make
+5) See below to start the server and then run the test suite
+
 --- STARTING THE SERVER ---
 
-1) You will need a few available [API] node ids in your MySQL Cluster 
-configuration (one for each httpd process).  If these do not exist, edit
-the cluster configuration file and restart your management server.
+1) You will need some [API] node ids in your MySQL Cluster configuration -- 
+one for each httpd process. 
+
+Add these to the cluster configuration file (config.ini) and restart your 
+management server.
+
+You should be able to run the test suite succesfully with ten of these, even
+using a "prefork" MPM.   But for production use, a multi-threaded MPM such as
+"worker" is recommended.
 
 2) Read over and edit the file "test.conf".  At a minimum, set 
 ndb-connectstring to point to your cluster management server  
@@ -51,6 +63,7 @@ one or more notices in the Apache server log file, such as
 % . lib.test.sh 
 
 # Run the SQL queries to create the test database
+% vi Tests/my.cnf          # set the hostname
 % t.sql 
 
 # Run all tests
@@ -60,7 +73,7 @@ one or more notices in the Apache server log file, such as
 % t.test typ101
 
 
---- BUILD NOTES FOR VARIOUS PLATFORMS ---
+--- OTHER BUILD NOTES FOR VARIOUS PLATFORMS ---
 
 If you have a thread-safe mysql client library, configure mod_ndb with --thread-safe 
 

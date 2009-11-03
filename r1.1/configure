@@ -248,9 +248,18 @@ if test -n "$APXS1"
   fi
 fi
 
-if $MYSQLCFG --version | grep -q '^5.1.' 
- then NDB_PATH=storage/ndb 
- else NDB_PATH=ndb 
+# Platform-specific extra libraries
+OS_LIBS=""
+# Red Hat starting with rhel5 seems to require linking with -lrt
+if test `uname -s` = "Linux" -a -f /etc/redhat-release
+ then
+  OS_LIBS="-lrt"
+fi
+
+# NDB include path is mysql/storage/ndb -- but just mysql/ndb for old mysql 
+if $MYSQLCFG --version | grep -q '^5.0.' 
+ then NDB_PATH=ndb 
+ else NDB_PATH=storage/ndb 
 fi
 
 #### Prepare a test/demo environment 
@@ -300,9 +309,9 @@ echo MY_INC2=$MY_INC/$NDB_PATH
 echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
 if test $LINK_MYSYS -eq 1 
  then 
-   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++"
+   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++ $OS_LIBS"
  else
-   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient"
+   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient $OS_LIBS"
 fi
 echo 
 echo OPT=$OPT
