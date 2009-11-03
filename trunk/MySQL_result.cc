@@ -185,7 +185,7 @@ namespace MySQL {
  
       case NdbDictionary::Column::Bit:
         COV_point("bit");
-        return rbuf.out("%llu",uint8korr(rec.aRef()));
+        return rbuf.out("%llu",ndbapi_bit_flip(rec.u_64_value()));
         
       case NdbDictionary::Column::Smallunsigned:
         COV_point("smallunsigned");
