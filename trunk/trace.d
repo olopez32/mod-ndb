@@ -1,7 +1,12 @@
 #!/usr/sbin/dtrace -F -s 
 
 /* traces calls in mod_ndb.so -- starting in Query() -- 
-   plus entrances into the NDB API   */
+   plus entrances into the NDB API  
+   uses the PID provider
+
+   This can be run with any build; it does not use any static probes
+   so it does not require a "./configure --dtrace"
+*/
 
 /* Usage: trace.d APACHE_PID   */
 
@@ -23,3 +28,4 @@
     /self->trace/                   { self->in_lib++; }
 
  pid$1:mod_ndb:Query*:return        { self->trace = 0; }
+

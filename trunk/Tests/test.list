@@ -25,6 +25,7 @@
 sql000 SQL connection.sql
 typ000 SQL typ.sql
 perf00 SQL perf.sql
+covtab SQL cov.sql
 
 # ------ Data type tests ------
 # typ1: the most common data types (int, unsigned, smallint, char, varchar)
@@ -42,23 +43,52 @@ typ208 f1 typ2?i=6
 typ209 f1 typ2?i=5
 typ210 f1 typ2?i=6 -X DELETE
 
-# typ3 -- decimals 
+# typ3 -- NUMERICS 
+# typ30x -- decimals 
 typ301 f1 typ3?i=1
 typ302 f1 typ3?i=2
 typ303 f1 typ3 -d 'i=3&d1=1.25&d2=2.375&d3=3.5&d4=4.9865' 
 typ304 f1 typ3?i=3 
 typ305 f1 typ3?i=3 -X DELETE
+# typ31x -- floats and doubles
+typ311 f1 typ3f?i=1
+typ312 f1 typ3f?i=2
+typ313 f1 typ3f -d 'i=3&f1=@null&f2=4.4&d1=-5.5&d2=@null'
+typ314 f1 typ3f -d 'i=4&f1=3.66'
+typ315 f1 typ3f?i=3 
+typ316 f1 typ3f?i=4
+typ317 f1 typ3f?i=3 -X DELETE
+typ318 f1 typ3f?i=4 -X DELETE
 
-# typ4 -- times & dates
+# typ4 -- TIMES AND DATES
 typ401 f1 typ4?i=1 
+typ402 f1 typ4 -d 'i=2&t=133000&d=2009-11-01&dt=20091101/13:30:00&y=2009&ts=0'
+typ403 f1 typ4?i=2 
+typ404 f1 typ4/time?x=13:30:00                          # i = 2
+typ405 f1 typ4/date?x=2007-11-01                        # i = 1 
+typ406 f1 typ4/dt?x=20071101103000                      # i = 1
+typ407 f1 typ4/dt?x=2007.11.01.10.30.00                 # i = 1
+typ408 f1 typ4/dt?x=20100301                            # no row found
+typ413 f1 typ4 -d 'i=3&t=-005000&d=1&dt=1&y=1900&ts=0'  # negative time 
+typ414 f1 typ4 -d 'i=4&t=+005030&d=2&dt=2&y=1901&ts=0'  # explicit positive time
+typ415 f1 typ4?i=3
+typ416 f1 typ4?i=4 
+typ417 f1 typ4/time?x=-00:50:00                         # i = 3
+typ422 f1 typ4?i=2 -X DELETE
+typ423 f1 typ4?i=3 -X DELETE
+typ424 f1 typ4?i=4 -X DELETE
+
 
 # typ5: ( i int primary key auto_inc, c int unsigned, unique index c_idx)
 typ501 f1 typ5?i=1&c=1          # 404 -- start with empty table
 typ502 f1 typ5 -d 'i=1&c=1'     # 204 -- insert a tuple
 typ503 f1 typ5?i=1&c=1          # 200 -- get (1,1)
 typ504 f1 typ5?i=1 -d c=@++     # 204 -- c=c+1 
-typ505 f1 typ5?i=1&c=1          # 200 -- get (1,2)
-typ506 f1 typ5?i=1 -X DELETE    # 204 -- delete the row.  empty again.
+typ505 f1 typ5?i=1&c=2          # 200 -- get (1,2)
+typ506 f1 typ5?i=1 -d c=6       # 204 -- set c = 6
+typ507 f1 typ5?i=1 -d c=@--     # 204   ... then c=c-1
+typ508 f1 typ5?i=1&c=5          # 200 -- get (1,5)
+typ509 f1 typ5?i=1 -X DELETE    # 204 -- delete the row.  empty again.
 
 # insert two rows with auto_increment keys, then delete them
 typ511 f1 typ5 -d i=@autoinc -d c=33       # OK 
@@ -73,24 +103,6 @@ typ517 f1 typ5_ls                          # Empty table again.
 typ601 f1 typ6 -d 'i=3&j=4&name=larry'
 typ602 f1 typ6?i=3&j=4
 typ603 f1 typ6?i=3&j=4 -X DELETE
-
-# typ9: (i int primary key, b1 bit(9) not null, b2 bit(17), b3 bit(1) not null) 
-typ901 f1 typ9?id=1
-typ902 f1 typ9?id=2
-typ903 f1 typ9?id=3
-typ904 f1 typ9?id=4
-typ905 f1 typ9?id=5
-typ910 f1 typ9 -d 'i=6&b1=3&b2=8&b3=0'
-typ911 f1 typ9?id=6
-typ912 f1 typ9?id=6 -X DELETE
-typ913 f1 typ9 -d 'i=7&b1=1&b2=2&b3=3&b4=4' 
-typ914 f1 typ9 -d 'i=8&b1=511&b2=131071&b3=1&b4=34359738369'
-typ915 f1 typ9?id=7
-typ916 f1 typ9?id=8
-typ917 f1 typ9?id=7 -X DELETE
-typ918 f1 typ9?id=8 -X DELETE
-
-
 
 # LONGVARCHAR
 typ701 f1 typ7tab   # 404 -- empty table
@@ -115,6 +127,21 @@ typ821 f1 multitext_no_esc?name=user1
 typ822 f1 multitext_no_esc?name=user2
 typ823 f1 multitext_no_esc?name=user3
 
+# typ9: (i int primary key, b1 bit(9) not null, b2 bit(17), b3 bit(1) not null) 
+typ901 f1 typ9?id=1
+typ902 f1 typ9?id=2
+typ903 f1 typ9?id=3
+typ904 f1 typ9?id=4
+typ905 f1 typ9?id=5
+typ910 f1 typ9 -d 'i=6&b1=3&b2=8&b3=0'
+typ911 f1 typ9?id=6
+typ912 f1 typ9?id=6 -X DELETE
+typ913 f1 typ9 -d 'i=7&b1=1&b2=2&b3=3&b4=4' 
+typ914 f1 typ9 -d 'i=8&b1=511&b2=131071&b3=1&b4=34359738369'
+typ915 f1 typ9?id=7
+typ916 f1 typ9?id=8
+typ917 f1 typ9?id=7 -X DELETE
+typ918 f1 typ9?id=8 -X DELETE
 
 ###  --- column and index tests
 col000 SQL col.sql

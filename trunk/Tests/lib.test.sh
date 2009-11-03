@@ -2,7 +2,6 @@
 # All rights reserved. Use is subject to license terms.
 
 #  Test suite control script for mod_ndb
-# unlike "run-test", this can be run from any directory 
 
 [ -d /usr/xpg4/bin ]  && PATH=/usr/xpg4/bin:$PATH
 TESTDIR=`pwd`
@@ -19,11 +18,25 @@ t.huh() {
   echo "t.rec       run test and record results as official"
   echo "t.sql       run SQL queries used to create tables in test suite"
   echo "t.multi     run multi-threaded concurrency test"
+  echo 
+  echo "cov.load    pipe code coverage data into the database"
+  echo "cov.all     view all results from code coverage test"
+  echo "cov.missed  view code coverage points missed by testing"
+}
+
+t.help() {
+  t.huh
 }
 
 t.list() {         # list test cases
   pushd $TESTDIR > /dev/null 
   awk -f runner.awk -v test=$1 -v mode=list test.list
+  popd >  /dev/null
+}
+
+t.idlist() {       # list just the identifiers of test cases
+  pushd $TESTDIR > /dev/null 
+  awk -f runner.awk -v test=$1 -v mode=idlist test.list
   popd >  /dev/null
 }
 
@@ -66,8 +79,12 @@ t.conf() {       # display httpd.conf relevant to a particular test
   
 t.REM() {       # delete a result
   pushd $TESTDIR > /dev/null
-  ./erase.sh $1
-  popd > /dev/null
+  for i in `awk -f runner.awk -v test=$1 -v mode=idlist test.list`
+    do
+      echo "Deleting stored result for test" $i
+      ./erase.sh $i
+ done
+ popd > /dev/null
 }
 
 t.rec() {      # run test and record results as official
@@ -88,3 +105,15 @@ t.multi() {    # run multi-threaded test using "httperf" tool
   popd > /dev/null
 }
 
+cov.load() {   # pipe code coverage data into the database
+  awk -v url="http://localhost:3080/ndb/test/codecov" \
+    -f $TESTDIR/load_json_data.awk | $SHELL
+}
+  
+cov.all() {
+  curl http://localhost:3080/ndb/test/codecov/all
+}
+
+cov.missed() {
+  curl http://localhost:3080/ndb/test/codecov/missed
+}

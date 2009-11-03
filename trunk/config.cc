@@ -688,6 +688,9 @@ namespace config {
 
       /* Syntax check */
       if( (! *word1) || (*word1 == '#')) continue;
+      if(!strcmp(word1,"Encoding")) {
+        
+      }
       if((*word2 == 0) || (ap_ind(word2, '$') != -1))
         return ap_psprintf(cmd->pool,"Syntax error at \"%s\" "
                            "in result format \"%s\"", word1, name);      

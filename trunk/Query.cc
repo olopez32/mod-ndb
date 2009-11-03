@@ -616,7 +616,7 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
             /* to do: else make some note of error */
             break;
           case use_null:
-            eqr = q->data->op->setValue(col->getColumnNo(), 0);
+            eqr = q->data->op->setValue(col->getColumnNo(), (char *) NULL);
             break;
           case use_interpreted: 
             if(mval.interpreted == is_increment) 

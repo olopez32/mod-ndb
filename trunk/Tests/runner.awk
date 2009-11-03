@@ -34,13 +34,18 @@ BEGIN { if(!host) host = "localhost:3080"
      }
   
      if(mode == "sql" && flag_SQL) {
-        printf("mysql --defaults-file=my.cnf < SQL/%s \n\n",$3)
+        printf("echo Running SQL/%s: \n", $3)
+        printf("mysql --defaults-file=my.cnf < SQL/%s || exit \n\n",$3)
         next
      }
      else if(mode == "list") { 
         print 
         next 
      }
+     else if(mode == "idlist") {
+        print $1 
+        next
+    }
      else if(mode == "config") {
         qmark = index($3, "?")                 # e.g. "/item?q=1"   
         pathinf = match($3,/\/[0-9]+$/)        # e.g. "/item/1"

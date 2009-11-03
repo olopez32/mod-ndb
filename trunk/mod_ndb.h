@@ -33,9 +33,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ap_config.h"
 #include "http_log.h"
 
-/* Apache 1.3 / Apache 2 compatibility */
+/* Some mod_ndb headers */
 #include "defaults.h"
 #include "mod_ndb_compat.h"
+#include "mod_ndb_debug.h"
 
 /* NDB headers */
 #include "NdbApi.hpp"
@@ -99,7 +100,6 @@ enum AccessPlan {  /* Ways of executing an NDB query */
 #include "MySQL_value.h"
 #include "MySQL_result.h"
 #include "mod_ndb_config.h"
-
 
 /* The basic architecture of this module:
      A single mod_ndb_process structure for each httpd process

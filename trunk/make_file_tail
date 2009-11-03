@@ -6,18 +6,22 @@ NSQL_Parser.o NSQL_Scanner.o JSON_Parser.o JSON_Scanner.o
 INCLUDES=-I$(APXS_INCLUDEDIR) $(MY_INC1) $(MY_INC2) $(MY_INC3)
 COMPILER_FLAGS=-c $(DEFINE) $(INCLUDES) $(DSO_CC_FLAGS) -Wall $(OPT)
 
+MOD_NDB_O_HEADERS=mod_ndb.h mod_ndb_config.h output_format.h  $(DTRACE_HEADERS)
+
 all: mod_ndb.so httpd.conf 
 
-prep: parsers
+prep: parsers 
 
 parsers: N-SQL/Parser.cpp JSON/Parser.cpp 
 
-
 # Compile
+probes.h: probes.d 
+	dtrace -h -s $<
+	
 .cc.o:
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
-mod_ndb.o: $(MOD_SOURCE) mod_ndb.h mod_ndb_config.h output_format.h
+mod_ndb.o: $(MOD_SOURCE) $(MOD_NDB_O_HEADERS)
 	$(CC) $(COMPILER_FLAGS) -o $@ $(MOD_SOURCE)
 
 # Link
@@ -68,13 +72,16 @@ install: mod_ndb.so
 	$(APXS) -i -n 'ndb' mod_ndb.so
 
 clean:
-	rm -f mod_ndb.so $(OBJECTS) httpd.conf 
+	rm -f mod_ndb.so $(OBJECTS) httpd.conf probes.h
 
 httpd.conf:
 	sed -f template.sed $(TEMPLATE) > httpd.conf
 
 start: httpd.conf
 	$(START_HTTPD)
+	
+single: httpd.conf
+	$(START_HTTPD) -X
         
 stop:
 	$(STOP_HTTPD)

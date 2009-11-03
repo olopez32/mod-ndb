@@ -34,6 +34,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define store24(A,V) int3store(& A, V)
 #endif
 
+/** store(64) is used for NdbDictionary::Column::Bit which the NDB API presents 
+ *  as a "little endian" array of two 32-bit ints
+ */
+#ifdef __i386__
+#define store64(A, V) A = V
+#else
+#define store64(A, V) int8store(& A, V)
+#endif
 
 
 enum mvalue_use {

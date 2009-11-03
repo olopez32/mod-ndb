@@ -45,7 +45,7 @@ public:
   } flag;
   Node *top_node;
   struct symbol *symbol_table[SYM_TAB_SZ];
-  
+  int charset_id;
   output_format(const char *n) : name(n) {}
   Node * symbol(const char *, ap_pool *, Node *);
   const char *compile(ap_pool *);

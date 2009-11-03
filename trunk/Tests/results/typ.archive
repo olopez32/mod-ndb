@@ -202,89 +202,12 @@ __typ305__
 }
 # __END__ typ305
 
-# _BEGIN_ typ401
-r.typ401() {
-  cat <<'__typ401__'
-HTTP/1.1 200 OK
-Content-Length: 94
-ETag: 6fe103afd8f4ce29b1a57f717e111776
-Content-Type: text/plain
 
- { "i":1 , "t":"10:30:00" , "d":"2007-11-01" , "dt":"2007-11-01 10:30:00" , "ts":1193938200 }
-__typ401__
-}
-# __END__ typ401
 
-# _BEGIN_ typ501
-r.typ501() {
-  cat <<'__typ501__'
-HTTP/1.1 404 Not Found
-Content-Length: 24
-Content-Type: text/plain
 
-No data could be found.
-__typ501__
-}
-# __END__ typ501
 
-# _BEGIN_ typ502
-r.typ502() {
-  cat <<'__typ502__'
-HTTP/1.1 204 No Content
-Content-Length: 0
-Content-Type: text/plain
 
-__typ502__
-}
-# __END__ typ502
 
-# _BEGIN_ typ503
-r.typ503() {
-  cat <<'__typ503__'
-HTTP/1.1 200 OK
-Content-Length: 19
-ETag: 8204f0c0f92e6f2c227d0b5c5b802950
-Content-Type: text/plain
-
- { "i":1 , "c":1 }
-__typ503__
-}
-# __END__ typ503
-
-# _BEGIN_ typ504
-r.typ504() {
-  cat <<'__typ504__'
-HTTP/1.1 204 No Content
-Content-Length: 0
-Content-Type: text/plain
-
-__typ504__
-}
-# __END__ typ504
-
-# _BEGIN_ typ505
-r.typ505() {
-  cat <<'__typ505__'
-HTTP/1.1 200 OK
-Content-Length: 19
-ETag: aacd9ff24a08ebee817a1df47d81757e
-Content-Type: text/plain
-
- { "i":1 , "c":2 }
-__typ505__
-}
-# __END__ typ505
-
-# _BEGIN_ typ506
-r.typ506() {
-  cat <<'__typ506__'
-HTTP/1.1 204 No Content
-Content-Length: 0
-Content-Type: text/plain
-
-__typ506__
-}
-# __END__ typ506
 
 # _BEGIN_ typ511
 r.typ511() {
@@ -834,4 +757,401 @@ Content-Type: text/plain
 __typ918__
 }
 # __END__ typ918
+
+# _BEGIN_ typ501
+r.typ501() {
+  cat <<'__typ501__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__typ501__
+}
+# __END__ typ501
+
+# _BEGIN_ typ502
+r.typ502() {
+  cat <<'__typ502__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ502__
+}
+# __END__ typ502
+
+# _BEGIN_ typ503
+r.typ503() {
+  cat <<'__typ503__'
+HTTP/1.1 200 OK
+Content-Length: 19
+ETag: 8204f0c0f92e6f2c227d0b5c5b802950
+Content-Type: text/plain
+
+ { "i":1 , "c":1 }
+__typ503__
+}
+# __END__ typ503
+
+# _BEGIN_ typ504
+r.typ504() {
+  cat <<'__typ504__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ504__
+}
+# __END__ typ504
+
+# _BEGIN_ typ505
+r.typ505() {
+  cat <<'__typ505__'
+HTTP/1.1 200 OK
+Content-Length: 19
+ETag: aacd9ff24a08ebee817a1df47d81757e
+Content-Type: text/plain
+
+ { "i":1 , "c":2 }
+__typ505__
+}
+# __END__ typ505
+
+# _BEGIN_ typ506
+r.typ506() {
+  cat <<'__typ506__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ506__
+}
+# __END__ typ506
+
+# _BEGIN_ typ507
+r.typ507() {
+  cat <<'__typ507__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ507__
+}
+# __END__ typ507
+
+# _BEGIN_ typ508
+r.typ508() {
+  cat <<'__typ508__'
+HTTP/1.1 200 OK
+Content-Length: 19
+ETag: 0fb050e86331bc8d16e23fa03b8d382d
+Content-Type: text/plain
+
+ { "i":1 , "c":5 }
+__typ508__
+}
+# __END__ typ508
+
+# _BEGIN_ typ509
+r.typ509() {
+  cat <<'__typ509__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ509__
+}
+# __END__ typ509
+
+# _BEGIN_ typ401
+r.typ401() {
+  cat <<'__typ401__'
+HTTP/1.1 200 OK
+Content-Length: 105
+ETag: 2ab82adf8667ee0e6d4aa0246b395fe0
+Content-Type: text/plain
+
+ { "i":1 , "t":"10:30:00" , "d":"2007-11-01" , "dt":"2007-11-01 10:30:00" , "y":2007 , "ts":1193938200 }
+__typ401__
+}
+# __END__ typ401
+
+# _BEGIN_ typ402
+r.typ402() {
+  cat <<'__typ402__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ402__
+}
+# __END__ typ402
+
+# _BEGIN_ typ403
+r.typ403() {
+  cat <<'__typ403__'
+HTTP/1.1 200 OK
+Content-Length: 96
+ETag: 32691e01082f24d4220851cf5a5dbfb9
+Content-Type: text/plain
+
+ { "i":2 , "t":"13:30:00" , "d":"2009-11-01" , "dt":"2009-11-01 13:30:00" , "y":2009 , "ts":0 }
+__typ403__
+}
+# __END__ typ403
+
+# _BEGIN_ typ404
+r.typ404() {
+  cat <<'__typ404__'
+HTTP/1.1 200 OK
+Content-Length: 28
+ETag: 5b58e2f80c2612bc4efc6ab933eaf2a5
+Content-Type: text/plain
+
+ { "i":2 , "t":"13:30:00" }
+__typ404__
+}
+# __END__ typ404
+
+# _BEGIN_ typ405
+r.typ405() {
+  cat <<'__typ405__'
+HTTP/1.1 200 OK
+Content-Length: 30
+ETag: d7eb27ef5c0c214a4b9d515a0f9668e2
+Content-Type: text/plain
+
+ { "i":1 , "d":"2007-11-01" }
+__typ405__
+}
+# __END__ typ405
+
+# _BEGIN_ typ406
+r.typ406() {
+  cat <<'__typ406__'
+HTTP/1.1 200 OK
+Content-Length: 40
+ETag: b2c0bc7943393da4d6e956c51ea7fcbe
+Content-Type: text/plain
+
+ { "i":1 , "dt":"2007-11-01 10:30:00" }
+__typ406__
+}
+# __END__ typ406
+
+# _BEGIN_ typ407
+r.typ407() {
+  cat <<'__typ407__'
+HTTP/1.1 200 OK
+Content-Length: 40
+ETag: b2c0bc7943393da4d6e956c51ea7fcbe
+Content-Type: text/plain
+
+ { "i":1 , "dt":"2007-11-01 10:30:00" }
+__typ407__
+}
+# __END__ typ407
+
+# _BEGIN_ typ408
+r.typ408() {
+  cat <<'__typ408__'
+HTTP/1.1 404 Not Found
+Content-Length: 24
+Content-Type: text/plain
+
+No data could be found.
+__typ408__
+}
+# __END__ typ408
+
+# _BEGIN_ typ413
+r.typ413() {
+  cat <<'__typ413__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ413__
+}
+# __END__ typ413
+
+# _BEGIN_ typ414
+r.typ414() {
+  cat <<'__typ414__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ414__
+}
+# __END__ typ414
+
+# _BEGIN_ typ415
+r.typ415() {
+  cat <<'__typ415__'
+HTTP/1.1 200 OK
+Content-Length: 97
+ETag: 55f7df877f2fefbf73a9433d82c62578
+Content-Type: text/plain
+
+ { "i":3 , "t":"-00:50:00" , "d":"0000-00-01" , "dt":"0000-00-00 00:00:01" , "y":1900 , "ts":0 }
+__typ415__
+}
+# __END__ typ415
+
+# _BEGIN_ typ416
+r.typ416() {
+  cat <<'__typ416__'
+HTTP/1.1 200 OK
+Content-Length: 96
+ETag: c8445cf7bc94be7b386721cd86a35d87
+Content-Type: text/plain
+
+ { "i":4 , "t":"00:50:30" , "d":"0000-00-02" , "dt":"0000-00-00 00:00:02" , "y":1901 , "ts":0 }
+__typ416__
+}
+# __END__ typ416
+
+# _BEGIN_ typ417
+r.typ417() {
+  cat <<'__typ417__'
+HTTP/1.1 200 OK
+Content-Length: 29
+ETag: 792281cb4f8c08bb7d109222257590fc
+Content-Type: text/plain
+
+ { "i":3 , "t":"-00:50:00" }
+__typ417__
+}
+# __END__ typ417
+
+# _BEGIN_ typ422
+r.typ422() {
+  cat <<'__typ422__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ422__
+}
+# __END__ typ422
+
+# _BEGIN_ typ423
+r.typ423() {
+  cat <<'__typ423__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ423__
+}
+# __END__ typ423
+
+# _BEGIN_ typ424
+r.typ424() {
+  cat <<'__typ424__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ424__
+}
+# __END__ typ424
+
+# _BEGIN_ typ311
+r.typ311() {
+  cat <<'__typ311__'
+HTTP/1.1 200 OK
+Content-Length: 60
+ETag: de5fe97119e6781a913b51bccde2fc1c
+Content-Type: text/plain
+
+ { "i":1 , "f1":3.15 , "f2":null , "d1":-6 , "d2":7.11111 }
+__typ311__
+}
+# __END__ typ311
+
+# _BEGIN_ typ312
+r.typ312() {
+  cat <<'__typ312__'
+HTTP/1.1 200 OK
+Content-Length: 58
+ETag: 15748ed88afa6049b476e0c1a5ac40ce
+Content-Type: text/plain
+
+ { "i":2 , "f1":-6.6 , "f2":7.7 , "d1":null , "d2":null }
+__typ312__
+}
+# __END__ typ312
+
+# _BEGIN_ typ313
+r.typ313() {
+  cat <<'__typ313__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ313__
+}
+# __END__ typ313
+
+# _BEGIN_ typ314
+r.typ314() {
+  cat <<'__typ314__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ314__
+}
+# __END__ typ314
+
+# _BEGIN_ typ315
+r.typ315() {
+  cat <<'__typ315__'
+HTTP/1.1 200 OK
+Content-Length: 58
+ETag: bbfab18ed5635d32eaf77e1b4313e1e4
+Content-Type: text/plain
+
+ { "i":3 , "f1":null , "f2":4.4 , "d1":-5.5 , "d2":null }
+__typ315__
+}
+# __END__ typ315
+
+# _BEGIN_ typ316
+r.typ316() {
+  cat <<'__typ316__'
+HTTP/1.1 200 OK
+Content-Length: 59
+ETag: 9e8cab291cee508bf4bba8648965d049
+Content-Type: text/plain
+
+ { "i":4 , "f1":3.66 , "f2":null , "d1":null , "d2":null }
+__typ316__
+}
+# __END__ typ316
+
+# _BEGIN_ typ317
+r.typ317() {
+  cat <<'__typ317__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ317__
+}
+# __END__ typ317
+
+# _BEGIN_ typ318
+r.typ318() {
+  cat <<'__typ318__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ318__
+}
+# __END__ typ318
 
