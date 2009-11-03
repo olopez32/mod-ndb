@@ -47,6 +47,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #undef strtoul
 #endif
 
+uint64_t flip64(uint64_t i) {
+  uint64_t h1 = (i & 0xffffffff00000000LL) >> 32 ;
+  uint64_t h2 = (i & 0x00000000ffffffffLL) << 32 ;
+  return ( h1 | h2) ; 
+}
+
 
 void MySQL::value(mvalue &m, ap_pool *p, 
                   const NdbDictionary::Column *col, const char *val) 
@@ -266,7 +272,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
     case NdbDictionary::Column::Bit:
       COV_point("bit");
       m.use_value = use_unsigned_64;
-      store64( m.u.val_unsigned_64, strtoull(val,0,0));
+      m.u.val_unsigned_64 = ndbapi_bit_flip(strtoull(val,0,0));
       return; 
         
     /* Tiny, small, and medium types -- be like mysql: 
