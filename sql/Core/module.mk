@@ -8,7 +8,7 @@ CORE_OBJ := $(patsubst %,${OBJDIR}/%, ${CORE_SRC:%.cc=%.o}) $(OBJDIR)/mod_ndb.o
 # Dependencies        
 
 $(OBJDIR)/handlers.o: handlers.cc mod_ndb.h query_source.h
-$(OBJDIR)/request_body.o: request_body.cc
+$(OBJDIR)/request_body.o: request_body.cc JSON/Parser.cpp
 $(OBJDIR)/Query.o: Query.cc mod_ndb.h mod_ndb_config.h MySQL_value.h \
  MySQL_result.h index_object.h query_source.h
 $(OBJDIR)/Execute.o: Execute.cc mod_ndb.h result_buffer.h output_format.h
