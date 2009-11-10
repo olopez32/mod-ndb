@@ -91,6 +91,8 @@
 		651A217A103DFBEC008EA2A9 /* module.mk */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = module.mk; path = Format/module.mk; sourceTree = "<group>"; };
 		651A217B103DFBEC008EA2A9 /* output_format.cc */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; name = output_format.cc; path = Format/output_format.cc; sourceTree = "<group>"; tabWidth = 2; };
 		651A217C103DFBEC008EA2A9 /* output_format.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = output_format.h; path = Format/output_format.h; sourceTree = "<group>"; tabWidth = 2; };
+		651A2262103E6AF7008EA2A9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		651A2293103F05FC008EA2A9 /* nsql_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; path = nsql_test.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		651A68C20C824B6500EE077F /* test.list */ = {isa = PBXFileReference; fileEncoding = 4; languageSpecificationIdentifier = default; lastKnownFileType = text; name = test.list; path = Tests/test.list; sourceTree = "<group>"; };
 		651A68DF0C824E3500EE077F /* runner.awk */ = {isa = PBXFileReference; fileEncoding = 30; languageSpecificationIdentifier = shell.perl; lastKnownFileType = text; name = runner.awk; path = Tests/runner.awk; sourceTree = "<group>"; };
 		651A69790C826F8D00EE077F /* run-test */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = "run-test"; path = "Tests/run-test"; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 		65AB5C190CD98C0D00DAEACB /* record.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = record.awk; path = Tests/record.awk; sourceTree = "<group>"; };
 		65AB5C470CDA5C3000DAEACB /* erase.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = erase.sh; path = Tests/erase.sh; sourceTree = "<group>"; };
 		65B619D60B8C2E5100F61C8E /* test.conf.dist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test.conf.dist; sourceTree = "<group>"; };
+		65D2445A10A6483100F0F1F9 /* Tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tree.h; sourceTree = "<group>"; };
 		65D86D390FDEC3430097814E /* test_encoding.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = test_encoding.c; path = JSON/test_encoding.c; sourceTree = "<group>"; };
 		65D86E7C0FE2D6590097814E /* trace.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = trace.d; sourceTree = "<group>"; };
 		65D870830FE5BD3B0097814E /* MySQL_result.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MySQL_result.h; sourceTree = "<group>"; };
@@ -157,6 +160,7 @@
 				65D86E7C0FE2D6590097814E /* trace.d */,
 				655CEC250A8C4CA400DB8284 /* make_tail.mk */,
 				65B619D60B8C2E5100F61C8E /* test.conf.dist */,
+				651A2262103E6AF7008EA2A9 /* Makefile */,
 				651A1F48103DAE93008EA2A9 /* Core */,
 				651A2176103DFBD7008EA2A9 /* Format */,
 				65D8B47D0CBD847300BD24E7 /* JSON */,
@@ -174,6 +178,7 @@
 			children = (
 				651A20C0103DBD8E008EA2A9 /* module.mk */,
 				651A1EF9103B4729008EA2A9 /* NSQL.cpp */,
+				651A2293103F05FC008EA2A9 /* nsql_test.cpp */,
 				651A1EED103B4729008EA2A9 /* NSQL */,
 				651A1EFA103B4729008EA2A9 /* Tree */,
 				651A1F2A103B4729008EA2A9 /* Utilities */,
@@ -200,6 +205,8 @@
 		651A1EFA103B4729008EA2A9 /* Tree */ = {
 			isa = PBXGroup;
 			children = (
+				65D2445A10A6483100F0F1F9 /* Tree.h */,
+				651A1F27103B4729008EA2A9 /* TreeConstants.h */,
 				651A1EFC103B4729008EA2A9 /* ANDNode.h */,
 				651A1EFB103B4729008EA2A9 /* ANDNode.cpp */,
 				651A1EFE103B4729008EA2A9 /* BindNode.h */,
@@ -244,7 +251,6 @@
 				651A1F23103B4729008EA2A9 /* Symbol.cpp */,
 				651A1F26103B4729008EA2A9 /* TableNode.h */,
 				651A1F25103B4729008EA2A9 /* TableNode.cpp */,
-				651A1F27103B4729008EA2A9 /* TreeConstants.h */,
 				651A1F28103B4729008EA2A9 /* WhereNode.cpp */,
 				651A1F29103B4729008EA2A9 /* WhereNode.h */,
 			);

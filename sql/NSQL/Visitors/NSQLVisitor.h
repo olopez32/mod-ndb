@@ -26,32 +26,11 @@
 #ifndef NSQLVISITOR_H_
 #define NSQLVISITOR_H_
 
-
-#include "Node.h"
-#include "QueryNode.h"
-#include "SelectNode.h"
-#include "FieldNode.h"
-#include "FromNode.h"
-#include "TableNode.h"
-#include "WhereNode.h"
-#include "ORNode.h"
-#include "ANDNode.h"
-#include "EQNode.h"
-#include "GTENode.h"
-#include "GTNode.h"
-#include "LTENode.h"
-#include "LTNode.h"
-#include "NEQNode.h"
-#include "StarNode.h"
-#include "BindNode.h"
-#include "LiteralNode.h"
-#include "DeleteNode.h"
-#include "OrderNode.h"
+#include "Tree.h"
 
 /**
  * All of these methods do nothing by default
  */
-
 
 class FieldNode;
 class QueryNode;

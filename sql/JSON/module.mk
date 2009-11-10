@@ -1,19 +1,20 @@
 ## JSON/module.mk
 
-JSON_PARS = JSON_Parser.o 
-
-JSON_OBJ = JSON_Parser.o JSON_Scanner.o JSON_encoding.o
-
+JSON_SRC := JSON_encoding.cc
+JSON_COCO_OBJ = $(OBJDIR)/JSON_Parser.o $(OBJDIR)/JSON_Scanner.o
+JSON_OBJ := $(OBJDIR)/JSON_encoding.o $(JSON_COCO_OBJ)
 JSON_TOOL = test_encoding
 
+#### Parser and Scanner rules
 JSON/Parser.cpp: JSON/JSON.atg JSON/Parser.frame JSON/Scanner.frame
 	( cd JSON ; $(COCO) -namespace JSON JSON.atg )
       
-JSON_Parser.o: JSON/Parser.cpp 
+$(OBJDIR)/JSON_Parser.o: JSON/Parser.cpp 
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
         
-JSON_Scanner.o: JSON/Scanner.cpp
+$(OBJDIR)/JSON_Scanner.o: JSON/Scanner.cpp
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
+####  ------------------------
 
 test_encoding: test_encoding.c  
-	$(CC) $< -lreadline -o JSON/$@ 
+	$(CC) $< -lreadline -o $@ 

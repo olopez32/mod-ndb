@@ -1,29 +1,46 @@
 ## NSQL/module.mk
 
-## Required:  NSQL_OBJ, NSQL_PARS, NSQL_INC, and NSQL_TOOL:
+NSQL_COCO_OBJ=$(OBJDIR)/NSQL_Parser.o $(OBJDIR)/NSQL_Scanner.o 
+NSQL_PARS := NSQL/Parser.cpp 
+# NSQL_TOOL := test-sql
 
-NSQL_OBJ=NSQL_Parser.o NSQL_Scanner.o $(TREE_OBJ) $(VIS_OBJ) 
-NSQL_PARS = NSQL/Parser.cpp 
-NSQL_INC=-INSQL -INSQL/Tree -INSQL/Visitors
-NSQL_TOOL = test-sql
+TREE_SRC := ANDNode.cpp	FieldNode.cpp LTNode.cpp ORNode.cpp Symbol.cpp \
+BindNode.cpp FromNode.cpp LiteralNode.cpp OrderNode.cpp	TableNode.cpp \
+DeleteNode.cpp GTENode.cpp NEQNode.cpp QueryNode.cpp WhereNode.cpp \
+EQNode.cpp GTNode.cpp NSQLState.cpp SelectNode.cpp Environment.cpp \
+LTENode.cpp Node.cpp StarNode.cpp
 
-TREE_OBJ := ANDNode.o FieldNode.o LTNode.o ORNode.o \
-Symbol.o BindNode.o FromNode.o LiteralNode.o \
-OrderNode.o TableNode.o DeleteNode.o GTENode.o \
-NEQNode.o QueryNode.o WhereNode.o EQNode.o GTNode.o \
-NSQLState.o SelectNode.o Environment.o LTENode.o \
-Node.o StarNode.o
+VIS_SRC := PrettyPrintVisitor.cpp SemanticCheck.cpp
 
-VIS_OBJ := NSQLVisitor.o PrettyPrintVisitor.o SemanticCheck.o 
+
+# Parser and Scanner .cpp files:
 
 NSQL/Parser.cpp: NSQL/NSQL.atg NSQL/Parser.frame NSQL/Scanner.frame
 	( cd NSQL/NSQL ; $(COCO) -namespace NSQL NSQL.atg ) 
 
-NSQL_Parser.o: NSQL/NSQL/Parser.cpp 
+# Parser & Scanner object files
+$(OBJDIR)/NSQL_Parser.o: NSQL/NSQL/Parser.cpp 
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
-NSQL_Scanner.o: NSQL/NSQL/Scanner.cpp 
+$(OBJDIR)/NSQL_Scanner.o: NSQL/NSQL/Scanner.cpp 
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
-test-sql: DBConnection.o 
+## fixme: hardcoded -lapr-1
+#test-sql: $(NSQL_OBJ) $(NSQL_TEST_OBJ) $(NSQL_LIB) JSON_Scanner.o
+#	$(CC) $^ -lreadline -lapr-1 $(LIBS) -o NSQL/$@ 
+#
+#NSQLtestmain.o: NSQL.cpp
+#	$(CC) $(COMPILER_FLAGS) -INSQL/NSQL -INSQL/Utilities -o $@ $<
+#
+
+
+#--------------------------------------------------
+# Things required by the main makefile:
+## Required:  NSQL_OBJ, NSQL_INC, and NSQL_TOOL:
+NSQL_SRC = $(TREE_SRC) $(VIS_SRC) 
+NSQL_OBJ = $(patsubst %,${OBJDIR}/%, ${NSQL_SRC:%.cpp=%.o}) $(NSQL_COCO_OBJ)
+NSQL_INC := -INSQL -INSQL/Tree -INSQL/Visitors
+#--------------------------------------------------
+
+### ----------------------------------------------------------------------
 

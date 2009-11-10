@@ -321,16 +321,6 @@ Coco/R itself) does not fall under the GNU General Public License.
 
 // string handling, wide character
 
-wchar_t* coco_string_create(const wchar_t* value) {
-	wchar_t* data;
-	int len = 0;
-	if (value) { len = wcslen(value); }
-	data = new wchar_t[len + 1];
-	wcsncpy(data, value, len);
-	data[len] = 0;
-	return data;
-}
-
 wchar_t* coco_string_create(const wchar_t *value , int startIndex, int length) {
 	int len = 0;
 	wchar_t* data;

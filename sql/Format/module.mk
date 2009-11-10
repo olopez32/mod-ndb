@@ -1,9 +1,11 @@
 ## Format/module.mk
 
-FMT_OBJ = format_compiler.o format_dumper.o output_format.o
+FMT_SRC := output_format.cc format_compiler.cc format_dumper.cc
+FMT_OBJ := $(patsubst %,${OBJDIR}/%, ${FMT_SRC:%.cc=%.o})
 
 # Dependencies
 
-output_format.o: output_format.cc output_format.h 
-format_compiler.o: format_compiler.cc output_format.h format_compiler.h
-format_dumper.o: output_format.h format_compiler.h format_dumper.cc
+FMT_HEADERS := output_format.h format_compiler.h 
+$(OBJDIR)/output_format.o: $(FMT_HEADERS)
+$(OBJDIR)/format_compiler.o: $(FMT_HEADERS)
+$(OBJDIR)/format_dumper.o: $(FMT_HEADERS)

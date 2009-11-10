@@ -80,8 +80,7 @@ fail() {
 }
 
 regenerate_makefile() {
- cat make_head.mk Core/module.mk Format/module.mk JSON/module.mk \
-   $NSQL/module.mk make_tail.mk > Makefile
+ cat make_head.mk make_tail.mk > Makefile
 }
 
 
@@ -301,6 +300,9 @@ if test -n "$opt_dtrace" -a `uname -s` = "Darwin"
    DTRACE_HEADERS="probes.h"
 fi
 
+### Where the .o files will go during the build process
+OBJDIR=object-files
+
 #### Prepare a test/demo environment 
 rm -f modules 
 ln -s `$APXS -q LIBEXECDIR` modules
@@ -323,7 +325,6 @@ echo s!@AP_DIR@!`pwd`!
 echo '/#-Other-Modules/r modules_conf'
 echo '/#-Load-Files/r loadfiles_conf'
 ) > template.sed 
-
 # The actual httpd.conf is created by the Makefile.
 
 # Start of the Makefile:
@@ -334,45 +335,51 @@ echo
 echo CC=$CXX
 if test -x /usr/bin/cococpp   # .deb package
  then
-   echo COCO=cococpp
+   echo COCO := cococpp
  else
-   echo COCO=Coco
+   echo COCO := Coco
 fi
-echo DEFINE=$DEFINE
-echo APXS=$APXS
-echo MOD_SOURCE=$MOD_SOURCE
-echo SRCDIR=`pwd`
+echo DEFINE := $DEFINE
+echo APXS := $APXS
+echo MOD_SOURCE := $MOD_SOURCE
+
+echo SRCDIR := `pwd`
 echo
-echo MY_INC1=$MY_INC
-echo MY_INC2=$MY_INC/$NDB_PATH
-echo MY_INC3=$MY_INC/$NDB_PATH/ndbapi
+echo MY_INC1 := $MY_INC
+echo MY_INC2 := $MY_INC/$NDB_PATH
+echo MY_INC3 := $MY_INC/$NDB_PATH/ndbapi
 if test $LINK_MYSYS -eq 1 
  then 
-   echo LIBS="-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++ $OS_LIBS"
+   echo LIBS := "-lndbclient -lmystrings $MY_LIBS -lmysys -lstdc++ $OS_LIBS"
  else
-   echo LIBS="-L$LDSO_PATH -lndbclient -lmysqlclient $OS_LIBS"
+   echo LIBS := "-L$LDSO_PATH -lndbclient -lmysqlclient $OS_LIBS"
 fi
 echo 
-echo OPT=$OPT
-echo APXS_INCLUDEDIR=`$APXS -q INCLUDEDIR` $APRINC
-echo DSO_CC_FLAGS=$dso_cc_fl
-echo DSO_LD_FLAGS=$dso_ld_fl   
+echo OPT := $OPT
+echo APXS_INCLUDEDIR := `$APXS -q INCLUDEDIR` $APRINC
+echo DSO_CC_FLAGS := $dso_cc_fl
+echo DSO_LD_FLAGS := $dso_ld_fl   
 echo
-echo LDSO_PATH=$LDSO_PATH
-echo TEMPLATE=templates/conf_$APACHE_VER
-echo START_HTTPD=$START_APACHE
-echo STOP_HTTPD=$STOP_APACHE
-echo DTRACE_HEADERS=$DTRACE_HEADERS
-
-echo RESTART_HTTPD=$RESTART_APACHE
+echo LDSO_PATH := $LDSO_PATH
+echo TEMPLATE := templates/conf_$APACHE_VER
+echo START_HTTPD := $START_APACHE
+echo STOP_HTTPD := $STOP_APACHE
+echo RESTART_HTTPD := $RESTART_APACHE
+echo DTRACE_HEADERS := $DTRACE_HEADERS
 echo
-echo NSQL = $NSQL
+echo NSQL := $NSQL
 echo 
-echo VPATH = Core Format JSON $NSQL_VPATH
-echo 
+echo VPATH := Core Format JSON $NSQL_VPATH $OBJDIR
+echo OBJDIR := object-files
+echo
 echo all: mod_ndb.so httpd.conf tools
 echo 
 echo prep: parsers
+echo
+echo include Core/module.mk 
+echo include Format/module.mk 
+echo include JSON/module.mk
+echo include $NSQL/module.mk
 echo
 ) > make_head.mk
 
