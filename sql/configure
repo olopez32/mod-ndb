@@ -372,10 +372,6 @@ echo
 echo VPATH := Core Format JSON $NSQL_VPATH $OBJDIR
 echo OBJDIR := object-files
 echo
-echo all: mod_ndb.so httpd.conf tools
-echo 
-echo prep: parsers
-echo
 echo include Core/module.mk 
 echo include Format/module.mk 
 echo include JSON/module.mk
