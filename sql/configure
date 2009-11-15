@@ -101,7 +101,7 @@ do
   case $conf_option in 
     --debug)
       OPT='-g -O0'
-      DEFINE='-DMOD_NDB_DEBUG=1'
+      DEFINE="$DEFINE -DMOD_NDB_DEBUG=1"
       opt_debug="1"
       opt_dtrace="1"
       ;;
@@ -156,6 +156,7 @@ do
       ;;
 ## Developers only -- not for public use
     --old-nsql)
+      DEFINE="$DEFINE -DOLDNSQL"
       NSQL="N-SQL"
       NSQL_VPATH="N-SQL"
       ;;

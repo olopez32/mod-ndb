@@ -44,6 +44,7 @@ test-sql: NSQLtestmain.o  $(NSQL_OBJ) $(NSQL_LIB)
 NSQL_SRC = $(TREE_SRC) $(VIS_SRC) 
 NSQL_OBJ = $(patsubst %,${OBJDIR}/%, ${NSQL_SRC:%.cpp=%.o}) $(NSQL_COCO_OBJ)
 NSQL_INC := -INSQL -INSQL/Tree -INSQL/Visitors
+NSQL_PARS = $(OBJDIR)/NSQL_Parser.o  $(OBJDIR)/NSQL_Scanner.o
 #--------------------------------------------------
 
 ### ----------------------------------------------------------------------

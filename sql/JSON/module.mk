@@ -1,8 +1,8 @@
 ## JSON/module.mk
 
 JSON_SRC := JSON_encoding.cc
-JSON_COCO_OBJ = $(OBJDIR)/JSON_Parser.o $(OBJDIR)/JSON_Scanner.o
-JSON_OBJ := $(OBJDIR)/JSON_encoding.o $(JSON_COCO_OBJ)
+JSON_PARS = $(OBJDIR)/JSON_Parser.o $(OBJDIR)/JSON_Scanner.o
+JSON_OBJ := $(OBJDIR)/JSON_encoding.o $(JSON_PARS)
 JSON_TOOL = test_encoding
 
 #### Parser and Scanner rules
