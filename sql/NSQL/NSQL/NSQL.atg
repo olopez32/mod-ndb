@@ -9,29 +9,9 @@ $CX /* Compiler, NSQL++ */
 
 //DONE: AS before an alias can be optional
 
-#include  "NSQLState.h"
-#include  "FieldNode.h"
-#include  "Node.h"
-#include  "QueryNode.h"
-#include  "SelectNode.h"
-#include "StarNode.h"
-#include  "FromNode.h"
-#include  "TableNode.h"
-#include  "WhereNode.h"
-#include  "ANDNode.h"
-#include  "ORNode.h"
-#include "EQNode.h"
-#include "GTENode.h"
-#include "GTNode.h"
-#include "LTENode.h"
-#include "LTNode.h"
-#include "NEQNode.h"
-#include "LiteralNode.h"
-#include "BindNode.h"
-#include "DeleteNode.h"
-#include "OrderNode.h"
+#include "mod_ndb.h"
+#include "Tree.h"
 
-#include  "TreeConstants.h"
 #include <iostream>
 
 COMPILER NSQL

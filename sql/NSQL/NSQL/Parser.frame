@@ -60,7 +60,7 @@ public:
 	void Warning(int line, int col, const wchar_t *s);
 	void Warning(const wchar_t *s);
 	void Exception(const wchar_t *s);
-        server_rec *http_server;
+    server_rec *http_server;
 
 }; // Errors
 

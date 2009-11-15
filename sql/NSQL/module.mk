@@ -2,7 +2,8 @@
 
 NSQL_COCO_OBJ=$(OBJDIR)/NSQL_Parser.o $(OBJDIR)/NSQL_Scanner.o 
 NSQL_PARS := NSQL/Parser.cpp 
-# NSQL_TOOL := test-sql
+
+NSQL_TOOL := test-sql
 
 TREE_SRC := ANDNode.cpp	FieldNode.cpp LTNode.cpp ORNode.cpp Symbol.cpp \
 BindNode.cpp FromNode.cpp LiteralNode.cpp OrderNode.cpp	TableNode.cpp \
@@ -10,7 +11,7 @@ DeleteNode.cpp GTENode.cpp NEQNode.cpp QueryNode.cpp WhereNode.cpp \
 EQNode.cpp GTNode.cpp NSQLState.cpp SelectNode.cpp Environment.cpp \
 LTENode.cpp Node.cpp StarNode.cpp
 
-VIS_SRC := PrettyPrintVisitor.cpp SemanticCheck.cpp
+VIS_SRC := PrettyPrintVisitor.cpp SemanticCheck.cpp NSQLVisitor.cpp
 
 
 # Parser and Scanner .cpp files:
@@ -26,12 +27,15 @@ $(OBJDIR)/NSQL_Scanner.o: NSQL/NSQL/Scanner.cpp
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
 ## fixme: hardcoded -lapr-1
-#test-sql: $(NSQL_OBJ) $(NSQL_TEST_OBJ) $(NSQL_LIB) JSON_Scanner.o
-#	$(CC) $^ -lreadline -lapr-1 $(LIBS) -o NSQL/$@ 
+#test-sql:  nsql_test.o $(NSQL_OBJ) $(NSQL_LIB) JSON_Scanner.o
+#	$(CC) $(COMPILER_FLAGS) $^ -lreadline -lapr-1 $(LIBS) -o NSQL/$@ 
 #
-#NSQLtestmain.o: NSQL.cpp
-#	$(CC) $(COMPILER_FLAGS) -INSQL/NSQL -INSQL/Utilities -o $@ $<
-#
+
+NSQLtestmain.o: NSQL.cpp
+	$(CC) $(COMPILER_FLAGS) -INSQL/NSQL -INSQL/Utilities -o $@ $<
+
+test-sql: NSQLtestmain.o  $(NSQL_OBJ) $(NSQL_LIB)
+	$(CC) $( $^ -lreadline -lapr-1 $(LIBS) -o $@ 
 
 
 #--------------------------------------------------
