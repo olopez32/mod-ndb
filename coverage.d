@@ -57,9 +57,8 @@ END
    % cd Tests ; . lib.test.sh ; cd ..
   
   Step 1 is to create (or drop and recreate) the code_cov table in MySQL
-  Cluster, where code coverage results will be stored.  Do this using the 
-  command "t.sql covtab" from the test framework.
-   % t.sql covtab 
+  Cluster, where code coverage results will be stored. 
+   % cov.init 
    
   Step 2 is to run the test suite, collect code coverage results from dtrace,
   and load them into the database.  This requires some concurrent work in 
