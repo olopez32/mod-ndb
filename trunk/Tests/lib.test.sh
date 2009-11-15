@@ -19,6 +19,7 @@ t.huh() {
   echo "t.sql       run SQL queries used to create tables in test suite"
   echo "t.multi     run multi-threaded concurrency test"
   echo 
+  echo "cov.init    initialize (or re-initialize) results table"
   echo "cov.load    pipe code coverage data into the database"
   echo "cov.all     view all results from code coverage test"
   echo "cov.missed  view code coverage points missed by testing"
@@ -103,6 +104,10 @@ t.multi() {    # run multi-threaded test using "httperf" tool
   pushd $TESTDIR > /dev/null
   sh concurrent.sh
   popd > /dev/null
+}
+
+cov.init() {
+  t.sql covtab
 }
 
 cov.load() {   # pipe code coverage data into the database

@@ -243,7 +243,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       }
       
       ap_discard_request_body(r);
-      // Allocate an array of NdbRecAttrs for all desired columns.
+      // Allocate an array of result objects for all desired columns.
       // Like anything that will be stored in the ndb_instance, allocate
       // from r->connection->pool, not r->pool
       q->data->result_cols =  (MySQL::result**)
@@ -507,6 +507,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
 
   // Clean up parts of Q that need to be freed
   delete q->idxobj;
+  q->idxobj = 0;
   
   if(response_code == 0) {  
     if(qsource.keep_tx_open) 
