@@ -834,10 +834,11 @@ namespace config {
                                                query_buff, SQL_BUFFER_LEN);
     NSQL::Parser  *parser  = new NSQL::Parser(scanner);
     
-    parser->cmd = cmd;
-    parser->dir = (config::dir *) m;
-    parser->errors->http_server = cmd->server;
-    assert(parser->dir->magic_number = 0xBABECAFE);
+    parser->nsqlTree = new NSQLState();
+    // parser->cmd = cmd;
+    // parser->dir = (config::dir *) m;
+    // parser->errors->http_server = cmd->server;
+    // assert(parser->dir->magic_number = 0xBABECAFE);
 
     parser->Parse();
 

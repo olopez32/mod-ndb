@@ -17,13 +17,12 @@
 		6503B8BE0CA08C9A00490CCC /* col.sql */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = col.sql; path = Tests/SQL/col.sql; sourceTree = "<group>"; };
 		6513067E0B8299CC00A70BDA /* Execute.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Execute.cc; sourceTree = "<group>"; };
 		6514301B0AED7E3F005A3A3C /* mod_ndb_ap13.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mod_ndb_ap13.cc; sourceTree = "<group>"; };
-		651A1EF1103B4729008EA2A9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		651A1EF2103B4729008EA2A9 /* NSQL.atg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NSQL.atg; sourceTree = "<group>"; };
 		651A1EF3103B4729008EA2A9 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
 		651A1EF4103B4729008EA2A9 /* Parser.frame */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Parser.frame; sourceTree = "<group>"; };
 		651A1EF5103B4729008EA2A9 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
 		651A1EF6103B4729008EA2A9 /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scanner.cpp; sourceTree = "<group>"; };
-		651A1EF7103B4729008EA2A9 /* Scanner.frame */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Scanner.frame; sourceTree = "<group>"; };
+		651A1EF7103B4729008EA2A9 /* Scanner.frame */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; fileEncoding = 4; path = Scanner.frame; sourceTree = "<group>"; };
 		651A1EF8103B4729008EA2A9 /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		651A1EF9103B4729008EA2A9 /* NSQL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NSQL.cpp; sourceTree = "<group>"; };
 		651A1EFB103B4729008EA2A9 /* ANDNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ANDNode.cpp; sourceTree = "<group>"; };
@@ -115,6 +114,8 @@
 		657BD1C60B84EFD100A9ED69 /* httpd.conf */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = httpd.conf; path = Tests/httpd.conf; sourceTree = "<group>"; };
 		657BD2930B853B9200A9ED69 /* sort_merge.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = sort_merge.php; path = "example-scripts/sort_merge.php"; sourceTree = "<group>"; };
 		657BD2940B853B9200A9ED69 /* test_note.php */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.php; name = test_note.php; path = "example-scripts/test_note.php"; sourceTree = "<group>"; };
+		6586626D10AF7FFA00E0BB96 /* ConfigVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigVisitor.h; sourceTree = "<group>"; };
+		6586626E10AF7FFA00E0BB96 /* ConfigVisitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConfigVisitor.cpp; sourceTree = "<group>"; };
 		65AB5C180CD81AF700DAEACB /* config.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = config.awk; path = Tests/config.awk; sourceTree = "<group>"; };
 		65AB5C190CD98C0D00DAEACB /* record.awk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = record.awk; path = Tests/record.awk; sourceTree = "<group>"; };
 		65AB5C470CDA5C3000DAEACB /* erase.sh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; name = erase.sh; path = Tests/erase.sh; sourceTree = "<group>"; };
@@ -190,7 +191,6 @@
 		651A1EED103B4729008EA2A9 /* NSQL */ = {
 			isa = PBXGroup;
 			children = (
-				651A1EF1103B4729008EA2A9 /* Makefile */,
 				651A1EF2103B4729008EA2A9 /* NSQL.atg */,
 				651A1EF4103B4729008EA2A9 /* Parser.frame */,
 				651A1EF7103B4729008EA2A9 /* Scanner.frame */,
@@ -271,6 +271,8 @@
 			children = (
 				651A1F2F103B4729008EA2A9 /* NSQLVisitor.h */,
 				651A1F2E103B4729008EA2A9 /* NSQLVisitor.cpp */,
+				6586626D10AF7FFA00E0BB96 /* ConfigVisitor.h */,
+				6586626E10AF7FFA00E0BB96 /* ConfigVisitor.cpp */,
 				651A1F31103B4729008EA2A9 /* PrettyPrintVisitor.h */,
 				651A1F30103B4729008EA2A9 /* PrettyPrintVisitor.cpp */,
 				651A1F33103B4729008EA2A9 /* SemanticCheck.h */,

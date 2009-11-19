@@ -1,9 +1,6 @@
 ## NSQL/module.mk
 
-NSQL_COCO_OBJ=$(OBJDIR)/NSQL_Parser.o $(OBJDIR)/NSQL_Scanner.o 
-NSQL_PARS := NSQL/Parser.cpp 
-
-NSQL_TOOL := test-sql
+NSQL_COCO_OBJ := $(OBJDIR)/NSQL_Parser.o $(OBJDIR)/NSQL_Scanner.o 
 
 TREE_SRC := ANDNode.cpp	FieldNode.cpp LTNode.cpp ORNode.cpp Symbol.cpp \
 BindNode.cpp FromNode.cpp LiteralNode.cpp OrderNode.cpp	TableNode.cpp \
@@ -13,39 +10,54 @@ LTENode.cpp Node.cpp StarNode.cpp
 
 VIS_SRC := PrettyPrintVisitor.cpp SemanticCheck.cpp NSQLVisitor.cpp
 
+TREE_OBJ := $(patsubst %,${OBJDIR}/%, ${TREE_SRC:%.cpp=%.o})
 
+VIS_OBJ  := $(patsubst %,${OBJDIR}/%, ${VIS_SRC:%.cpp=%.o})
+
+#--------------------------------------------------
+# Things required by the main makefile:
+# NSQL_OBJ, NSQL_INC, NSQL_PARS, and NSQL_TOOL
+NSQL_OBJ = $(TREE_OBJ) $(VIS_OBJ) $(NSQL_COCO_OBJ)
+NSQL_INC := -INSQL/NSQL -INSQL/Tree -INSQL/Visitors
+NSQL_PARS := $(OBJDIR)/NSQL_Parser.o  $(OBJDIR)/NSQL_Scanner.o
+NSQL_TOOL := test-sql
+#--------------------------------------------------
+
+
+#--------------------- NSQL Parser and Scanner -------------------
 # Parser and Scanner .cpp files:
-
-NSQL/Parser.cpp: NSQL/NSQL.atg NSQL/Parser.frame NSQL/Scanner.frame
+NSQL/Parser.cpp: NSQL/NSQL.atg NSQL/Parser.frame 
 	( cd NSQL/NSQL ; $(COCO) -namespace NSQL NSQL.atg ) 
 
-# Parser & Scanner object files
+NSQL/Scanner.cpp: NSQL/NSQL.atg NSQL/Scanner.frame
+	( cd NSQL/NSQL ; $(COCO) -namespace NSQL NSQL.atg ) 
+
+# Parser & Scanner object files.
 $(OBJDIR)/NSQL_Parser.o: NSQL/NSQL/Parser.cpp 
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
 $(OBJDIR)/NSQL_Scanner.o: NSQL/NSQL/Scanner.cpp 
+	$(CC) $(COMPILER_FLAGS) -o $@ $<
+### --------------------------------------------------------------
+
+
+
+#--------------------- test tools --------------------------------
+$(OBJDIR)/DBConnection.o: Utilities/DBConnection.cpp
 	$(CC) $(COMPILER_FLAGS) -o $@ $< 
 
-## fixme: hardcoded -lapr-1
-#test-sql:  nsql_test.o $(NSQL_OBJ) $(NSQL_LIB) JSON_Scanner.o
-#	$(CC) $(COMPILER_FLAGS) $^ -lreadline -lapr-1 $(LIBS) -o NSQL/$@ 
-#
+$(OBJDIR)/NSQLtestmain.o: NSQL.cpp 
+	$(CC) $(COMPILER_FLAGS) -INSQL/Utilities -o $@ $<
 
-NSQLtestmain.o: NSQL.cpp
-	$(CC) $(COMPILER_FLAGS) -INSQL/NSQL -INSQL/Utilities -o $@ $<
+$(OBJDIR)/nsql_test.o: nsql_test.cpp
+	$(CC) $(COMPILER_FLAGS) -INSQL/Utilities -o $@ $<
 
-test-sql: NSQLtestmain.o  $(NSQL_OBJ) $(NSQL_LIB)
-	$(CC) $( $^ -lreadline -lapr-1 $(LIBS) -o $@ 
+test-sql-1: NSQLtestmain.o DBConnection.o $(NSQL_OBJ) 
+	$(CC) -lreadline -lapr-1 NSQLtestmain.o $(NSQL_OBJ) -o $@ 
+
+test-sql-2: $(OBJDIR)/nsql_test.o $(NSQL_OBJ) 
+	$(CC) -lreadline -lapr-1 $< $(TREE_OBJ) $(NSQL_COCO_OBJ) -o $@
 
 
-#--------------------------------------------------
-# Things required by the main makefile:
-## Required:  NSQL_OBJ, NSQL_INC, and NSQL_TOOL:
-NSQL_SRC = $(TREE_SRC) $(VIS_SRC) 
-NSQL_OBJ = $(patsubst %,${OBJDIR}/%, ${NSQL_SRC:%.cpp=%.o}) $(NSQL_COCO_OBJ)
-NSQL_INC := -INSQL -INSQL/Tree -INSQL/Visitors
-NSQL_PARS = $(OBJDIR)/NSQL_Parser.o  $(OBJDIR)/NSQL_Scanner.o
-#--------------------------------------------------
-
-### ----------------------------------------------------------------------
+### --------------------------------------------------------------
 

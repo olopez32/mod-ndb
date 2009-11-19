@@ -23,7 +23,7 @@ TOOLS = $(NSQL_TOOL) $(JSON_TOOL) $(FMT_TOOL)
 all: mod_ndb.so httpd.conf tools
 
 clean:
-	rm -f $(NSQL_TEST_OBJ) $(OBJECTS) $(TOOLS) mod_ndb.so httpd.conf 
+	rm -f $(OBJDIR)/*.o $(TOOLS) mod_ndb.so httpd.conf 
 
 prep: parsers
 
