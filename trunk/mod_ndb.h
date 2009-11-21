@@ -114,7 +114,6 @@ struct data_operation {
   NdbIndexScanOperation *scanop;
   unsigned int n_result_cols;
   MySQL::result **result_cols;
-  NdbBlob **blobs;
   char **aliases;
   output_format *fmt;
   struct {
@@ -137,7 +136,6 @@ class ndb_instance {
   config::srv *server_config;
   struct data_operation *data;
   struct {
-    unsigned int has_blob    : 1 ;
     unsigned int aborted     : 1 ;
     unsigned int use_etag    : 1 ;
     unsigned int jsonrequest : 1 ;
@@ -149,7 +147,6 @@ class ndb_instance {
       delete data->result_cols[n];
     bzero(data, n_read_ops * sizeof(struct data_operation));
     n_read_ops    =    0;
-    flag.has_blob =    0;
     flag.aborted  =    0;
     flag.use_etag =    0;
     flag.jsonrequest = 0;

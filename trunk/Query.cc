@@ -178,7 +178,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsource) 
 {
   const NdbDictionary::Dictionary *dict;
-  data_operation local_data_op = { 0, 0, 0, 0, 0, 0};
+  data_operation local_data_op = { 0, 0, 0, 0, 0};
   struct QueryItems Q = 
     { i, 0, 0,            // ndb_instance, tab, idx
       0, -1, 0, 0,        // keys, active_index, idxobj, key_columns_used 
@@ -547,23 +547,6 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
 }
 
 
-inline bool IS_BLOB(const NdbDictionary::Column *c) {
-  return 
-    ((c->getType() == NdbDictionary::Column::Blob) || 
-     (c->getType() == NdbDictionary::Column::Text));
-}
-
-
-inline void set_us_up_the_blobs(request_rec *r, struct QueryItems *q) {
-  q->data->blobs = (NdbBlob **) 
-    ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
-  
-  q->data->flag.has_blob = 1;
-  q->i->flag.has_blob = 1;
-  return;
-}
-
-
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
   char **column_list = dir->visible->items();;
   const NdbDictionary::Column *col;
@@ -575,14 +558,6 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
     col = select_star ? 
       q->tab->getColumn(n) : q->tab->getColumn(column_list[n]);
       q->data->result_cols[n] = new MySQL::result(q->data->op, col);
-    /* BLOB handling */
-    if(IS_BLOB(col)) {
-      if(! q->data->flag.has_blob) set_us_up_the_blobs(r, q);            
-      if(col->getInlineSize()) 
-        q->data->blobs[n] = select_star ? 
-          q->data->op->getBlobHandle(n) : 
-          q->data->op->getBlobHandle(column_list[n]);
-    }
   }
   return 0;
 }
@@ -605,8 +580,6 @@ int set_up_write(request_rec *r, config::dir *dir,
       val = binary_val->string;
       col = q->tab->getColumn(key);
       if(col) {
-        if(IS_BLOB(col)) {          
-        }
         mvalue &mval = q->set_vals[n];
         MySQL::value(mval, r->pool, col, val);
         if(mval.use_value == must_use_binary) {
