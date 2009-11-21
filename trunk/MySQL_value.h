@@ -47,13 +47,14 @@ uint64_t flip64(uint64_t);
 
 enum mvalue_use {
   err_bad_user_value, err_bad_data_type, err_bad_column, 
+  must_use_binary,
   mvalue_is_good,  /* everything greater than this is OK */
   use_char,
   use_signed, use_unsigned, 
   use_64, use_unsigned_64,
   use_float, use_double,
   use_interpreted, use_null,
-  use_autoinc
+  use_autoinc, use_blob
 }; 
 
 enum mvalue_interpreted {
@@ -89,6 +90,7 @@ typedef struct mvalue mvalue;
 namespace MySQL
 { 
   void value(mvalue &, ap_pool *, const NdbDictionary::Column *, const char *);
+  void binary_value(mvalue &, ap_pool *, const NdbDictionary::Column *, len_string *);
 };
 
 

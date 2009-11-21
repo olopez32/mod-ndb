@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "http_config.h"
 #include "mod_ndb_compat.h"
 #include "mod_ndb_debug.h"
+#include "result_buffer.h"
 #include "MySQL_value.h"
 
 // Apache might have disabled strtoul()
@@ -357,20 +358,75 @@ void MySQL::value(mvalue &m, ap_pool *p,
      }
       return;
     
-    /* not implemented */
-    
     case NdbDictionary::Column::Text:
     case NdbDictionary::Column::Blob:
+      COV_point("blob");
+      m.use_value = use_blob;
+      return;
+    
+    case NdbDictionary::Column::Longvarbinary:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:
-      /* Binary, etc. would require multipart/form-data POSTs */
+      COV_point("binary");
+      m.use_value = must_use_binary;
+      return;
+
+    /* not implemented */
+    /* Olddecimal types are just strings.  But you cannot create old decimal
+       columns with MySQL 5, so this is difficult to test. */
     case NdbDictionary::Column::Olddecimal:
     case NdbDictionary::Column::Olddecimalunsigned:
-      /* Olddecimal types are just strings.  But you cannot create old decimal
-         columns with MySQL 5, so this is difficult to test. */
     default:
       COV_point("bad data type");
       m.use_value = err_bad_data_type;
       return;
   }
 }
+
+
+/* binary_value(): Set a binary value.  
+ */
+
+void MySQL::binary_value(mvalue &m, ap_pool *p, const NdbDictionary::Column *col, 
+                         len_string *value) 
+{
+  const unsigned short s_lo = 255;
+  const unsigned short s_hi = 65535 ^ 255; 
+  unsigned char   c_len = 0;
+  unsigned short  s_len = 0;
+  
+  m.use_value = use_char;
+  m.col_len = col->getLength();
+  m.len = (value->len < m.col_len) ? value->len : m.col_len;
+  
+  switch(col->getType()) {    
+        
+      case NdbDictionary::Column::Binary:
+        m.u.val_char = (char *) ap_pcalloc(p, m.col_len);
+        memcpy(m.u.val_char, value->string, m.len);      
+        return;
+        
+      case NdbDictionary::Column::Varbinary:
+        m.col_len += 1;                     /* 1 length-byte */
+        c_len = m.len;                      /* 8-bit unsigned char */
+        m.u.val_char = (char *) ap_palloc(p, m.len + 1);
+        * m.u.val_char = c_len;             /* set the length byte */
+        memcpy(m.u.val_char+1, value->string, m.len);      
+        return;
+        
+      case NdbDictionary::Column::Longvarbinary:
+        m.col_len += 2;                      /* 2 length-bytes */ 
+        s_len = m.len;                       /* 16-bit unsigned short  */
+        m.u.val_char = (char *) ap_palloc(p, s_len + 2);
+        * m.u.val_char     = (char) (s_len & s_lo);
+        * (m.u.val_char+1) = (char) ((s_len & s_hi) >> 8);
+        ap_cpystrn(m.u.val_char+2, value->string, s_len+1);
+        return;
+        
+      default:
+        m.use_value = err_bad_data_type;
+        return;
+  }
+}
+
+

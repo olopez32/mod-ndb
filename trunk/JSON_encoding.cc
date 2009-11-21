@@ -60,8 +60,10 @@ int xval(char c) {
 
 
 /* JSON_unescape(str) 
-   Unescape string in place
+   Unescape string in place.
+   Don't actually rewrite the buffer until something changes.
    Return length of unescaped string.
+   *** The unescaped string will never be longer than the escaped one. ***
 */
 int JSON_unescape(char *str) {
   register char c;
@@ -125,11 +127,12 @@ int JSON_unescape(char *str) {
 }
 
 
-/* JSON_string() 
+/* JSON_string() and JSON_blob()
    Take a token from Coco and an Apache pool.
    Strip the quotes, if there are any. 
 */
-char *JSON_string(ap_pool *my_pool, JSON::Token *tok) {;
+
+len_string *JSON_blob(ap_pool *my_pool, JSON::Token *tok) {
   int len = tok->len;
   wchar_t *start = tok->val;
   if(*start == L'"') start++, len -= 2;
@@ -139,5 +142,10 @@ char *JSON_string(ap_pool *my_pool, JSON::Token *tok) {;
   res[len] = 0;
   
   len = JSON_unescape(res);
-  return res;
+  return new(my_pool) len_string(len, res);
+}
+
+char *JSON_string(ap_pool *my_pool, JSON::Token *tok) {
+  len_string *ls = JSON_blob(my_pool, tok);
+  return (char *) ls->string;
 }
