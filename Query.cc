@@ -64,9 +64,9 @@ struct QueryItems {
   AccessPlan plan;
   PlanMethod *op_setup;
   PlanMethod *op_action;
-  apr_table_t *form_data;
   mvalue *set_vals;
   data_operation *data;
+  query_source *source;
 };  
 
 #include "index_object.h"
@@ -178,7 +178,7 @@ inline void set_key(request_rec *r, short &n, char *value, config::dir *dir,
 int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsource) 
 {
   const NdbDictionary::Dictionary *dict;
-  data_operation local_data_op = { 0, 0, 0, 0, 0};
+  data_operation local_data_op = { 0, 0, 0, 0, 0, 0};
   struct QueryItems Q = 
     { i, 0, 0,            // ndb_instance, tab, idx
       0, -1, 0, 0,        // keys, active_index, idxobj, key_columns_used 
@@ -186,8 +186,9 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       NoPlan,             // execution plan
       Plan::SetupRead,    // setup module
       Plan::Read,         // action module
-      0, 0,               // form_data, set_vals
-      &local_data_op      // data
+      0,                  // set_vals
+      &local_data_op,     // data
+      &qsource            // source
     };
   struct QueryItems *q = &Q;
   const NdbDictionary::Column *ndb_Column;
@@ -253,9 +254,8 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
     case M_POST:
       Q.op_setup = Plan::SetupWrite;
       Q.op_action = Plan::Write;
-      Q.form_data = ap_make_table(r->pool, 6);
       Q.set_vals = (mvalue *) ap_pcalloc(r->pool, dir->updatable->size() * sizeof (mvalue));
-      response_code = qsource.get_form_data(& Q.form_data);
+      response_code = qsource.get_form_data();
       if(response_code != OK) 
         return ndb_handle_error(r, response_code, NULL, NULL);
       /* A POST with no keys is an insert, and  
@@ -348,7 +348,10 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
       response_code = 500;
       goto abort2;
     }
-    if(!(i->tx = i->db->startTransaction())) {  // To do: supply a hint
+    /* If this is a Primary Key query, and the primary key is the distribution
+       key, then you could supply a hint here in an Ndb::Key_part_ptr.
+    */
+    if(!(i->tx = i->db->startTransaction())) { 
       log_err(r->server,"db->startTransaction failed: %s",
                 i->db->getNdbError().message);
       response_code = 500;
@@ -544,6 +547,23 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
 }
 
 
+inline bool IS_BLOB(const NdbDictionary::Column *c) {
+  return 
+    ((c->getType() == NdbDictionary::Column::Blob) || 
+     (c->getType() == NdbDictionary::Column::Text));
+}
+
+
+inline void set_us_up_the_blobs(request_rec *r, struct QueryItems *q) {
+  q->data->blobs = (NdbBlob **) 
+    ap_pcalloc(r->pool, q->data->n_result_cols * sizeof (NdbBlob *));
+  
+  q->data->flag.has_blob = 1;
+  q->i->flag.has_blob = 1;
+  return;
+}
+
+
 int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {  
   char **column_list = dir->visible->items();;
   const NdbDictionary::Column *col;
@@ -554,7 +574,15 @@ int Plan::Read(request_rec *r, config::dir *dir, struct QueryItems *q) {
   for( ; n < q->data->n_result_cols ; n++) {
     col = select_star ? 
       q->tab->getColumn(n) : q->tab->getColumn(column_list[n]);
-    q->data->result_cols[n] = new MySQL::result(q->data->op, col);
+      q->data->result_cols[n] = new MySQL::result(q->data->op, col);
+    /* BLOB handling */
+    if(IS_BLOB(col)) {
+      if(! q->data->flag.has_blob) set_us_up_the_blobs(r, q);            
+      if(col->getInlineSize()) 
+        q->data->blobs[n] = select_star ? 
+          q->data->op->getBlobHandle(n) : 
+          q->data->op->getBlobHandle(column_list[n]);
+    }
   }
   return 0;
 }
@@ -566,17 +594,26 @@ int set_up_write(request_rec *r, config::dir *dir,
   const NdbDictionary::Column *col;
   bool is_interpreted = 0;
   char **column_list = dir->updatable->items();
-  const char *key, *val;
+  const char *key = 0, *val = 0;
+  len_string *binary_val;
 
   // iterate over the updatable columns and set up mvalues for them
   for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
-    val = ap_table_get(q->form_data, key);
-    if(val) {   
+    binary_val = q->source->get_item(key);
+    if(binary_val) {   
+      val = binary_val->string;
       col = q->tab->getColumn(key);
       if(col) {
+        if(IS_BLOB(col)) {          
+        }
         mvalue &mval = q->set_vals[n];
         MySQL::value(mval, r->pool, col, val);
+        if(mval.use_value == must_use_binary) {
+          /* Try again with a binary value */
+          MySQL::binary_value(mval, r->pool, col, binary_val);
+          log_debug(r->server,"Binary update to column %s", key);
+        }
         if(mval.use_value == use_interpreted) {
           is_interpreted = 1;
           log_debug(r->server,"Interpreted update; column %s = [%s]", key,val);
@@ -586,9 +623,11 @@ int set_up_write(request_rec *r, config::dir *dir,
       else log_err(r->server,"AllowUpdate list includes invalid column name %s", key);
     }
   }
-  if(is_insert) return q->data->op->insertTuple();
-  return is_interpreted ? q->data->op->interpretedUpdateTuple() : 
-                          q->data->op->writeTuple();
+  if(is_insert) 
+    return q->data->op->insertTuple();
+  if(is_interpreted) 
+    return q->data->op->interpretedUpdateTuple();
+  return q->data->op->writeTuple();
 }
 
 

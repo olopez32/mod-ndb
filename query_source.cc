@@ -21,6 +21,46 @@
 #include "query_source.h"
 
 
+class BLOB : public apache_object {
+public:
+  const char *name;
+  len_string info;
+  BLOB *next;
+};
+
+
+inline unsigned int do_hash(const char *name) {
+  unsigned int h = 0;
+  for(const char *s = name; *s != 0; s++) h = 37 * h + *s;
+  return h % FORM_TABLE_SIZE;
+}
+
+
+void query_source::set_item(const char *name, const char *pos, size_t sz) {
+  BLOB * blob = new(r->pool) BLOB;
+  unsigned int h = do_hash(name); 
+   
+  blob->name = name;
+  blob->info.len = sz;
+  blob->info.string = pos;
+  blob->next = form_table[h];
+  
+  form_table[h] = blob;
+}
+
+
+len_string * query_source::get_item(const char *name) {
+  BLOB *b;
+  unsigned int h = do_hash(name);  
+  
+  for (b = form_table[h] ; b != 0 ; b = b->next) 
+    if(!strcmp(name, b->name)) 
+      return & b->info;
+
+  return 0;  
+}
+
+
 Apache_subrequest_query_source::Apache_subrequest_query_source(request_rec *req)
 {
   r = req;
@@ -34,7 +74,7 @@ Apache_subrequest_query_source::Apache_subrequest_query_source(request_rec *req)
 }
 
 
-int Apache_subrequest_query_source::get_form_data(apr_table_t **tab) {
+int Apache_subrequest_query_source::get_form_data() {
   const char *subrequest_data = ap_table_get(r->main->notes,"ndb_request_data");
   register const char *c = subrequest_data;
   char *key, *val;
@@ -42,9 +82,14 @@ int Apache_subrequest_query_source::get_form_data(apr_table_t **tab) {
     key = ap_getword(r->pool, (const char **) &val, '=');
     ap_unescape_url(key);
     ap_unescape_url(val);
-    ap_table_merge(*tab, key, val);
+    set_item(key, val);
   }
   ap_table_unset(r->main->notes,"ndb_request_data");
   
   return OK;
 }
+
+
+/*  int HTTP_query_source::get_form_data()  is implemented in 
+    request_body.cc 
+*/
