@@ -65,7 +65,7 @@ extern "C" {
       return HTTP_SERVICE_UNAVAILABLE;
     }
     
-    i->requests++;
+    i->stats.requests++;
     
     if(r->main) 
       qsource = new(r->pool) Apache_subrequest_query_source(r);
@@ -85,7 +85,7 @@ extern "C" {
       log_note(r->server,"Cannot execute batch: ndb_instance *i is null");
       return HTTP_SERVICE_UNAVAILABLE;
     }
-    i->requests++;
+    i->stats.requests++;
     
     return ExecuteAll(r,i);
   }
@@ -148,8 +148,12 @@ extern "C" {
     }
     ap_rprintf(r,"Node Id: %d\n",i->conn->connection->node_id());
     ap_rprintf(r,"\n");
-    ap_rprintf(r,"Requests in:   %u\n", i->requests);
-    ap_rprintf(r,"Errors:        %u\n", i->errors);
+    ap_rprintf(r,"Requests in:        %u\n", i->stats.requests);
+    ap_rprintf(r,"Errors:             %u\n", i->stats.errors);
+    ap_rprintf(r,"Temporary Errors:   %u\n", i->stats.temp_errors);
+    ap_rprintf(r,"Total retry time:   %u ms\n", i->stats.total_retry_ms);
+    ap_rprintf(r,"Retry timeouts hit: %u\n", i->stats.temp_timeouts);
+    
     ap_rprintf(r,"\n");
     ap_rprintf(r,"Endpoints:     %d\n", n_endp);
     
@@ -184,6 +188,9 @@ int ndb_handle_error(request_rec *r, int status,
   switch(status) {
     case 400:
       page.out("Bad request.\n");
+      break;
+    case 403:
+      page.out(msg);
       break;
     case 404:
       page.out(msg ? msg : "No data could be found.\n");

@@ -81,6 +81,7 @@ short key_col_bin_search(char *, config::dir *);
 /* Some very simple modules are fully defined here:
 */
 int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
+  log_debug(r->server,"setup: This is a read.");
   config::index *index = 0;
   switch(q->plan) {
     case Scan:
@@ -110,14 +111,17 @@ int Plan::SetupRead(request_rec *r, config::dir *dir, struct QueryItems *q) {
 }
 
 int Plan::SetupInsert(request_rec *r, config::dir *dir, struct QueryItems *q) { 
+  log_debug(r->server,"setup: This is an insert.");
   return set_up_write(r, dir, q, true);
 }
 
 int Plan::SetupWrite(request_rec *r, config::dir *dir, struct QueryItems *q) { 
+  log_debug(r->server,"setup: This is an update.");
   return set_up_write(r, dir, q, false);
 }
 
 int Plan::SetupDelete(request_rec *r, config::dir *dir, struct QueryItems *q) { 
+  log_debug(r->server,"setup: This is a delete.");
   return q->data->op->deleteTuple(); 
 }
 
@@ -204,7 +208,7 @@ int Query(request_rec *r, config::dir *dir, ndb_instance *i, query_source &qsour
   if(q->tab == 0) { 
     log_err(r->server, "Cannot find table %s in database %s: %s.",
              dir->table,dir->database, dict->getNdbError().message);
-    i->errors++;
+    i->stats.errors++;
     return ndb_handle_error(r, 500, & dict->getNdbError(), "Configuration error.");
   }  
   
@@ -572,7 +576,7 @@ int set_up_write(request_rec *r, config::dir *dir,
   const char *key = 0, *val = 0;
   len_string *binary_val;
 
-  // iterate over the updatable columns and set up mvalues for them
+  // Iterate over the updatable columns and set up mvalues for them
   for(int n = 0; n < dir->updatable->size() ; n++) {
     key = column_list[n];
     binary_val = q->source->get_item(key);
@@ -587,15 +591,18 @@ int set_up_write(request_rec *r, config::dir *dir,
           MySQL::binary_value(mval, r->pool, col, binary_val);
           log_debug(r->server,"Binary update to column %s", key);
         }
+
         if(mval.use_value == use_interpreted) {
           is_interpreted = 1;
           log_debug(r->server,"Interpreted update; column %s = [%s]", key,val);
         }
         else log_debug(r->server,"Updating column %s = %s", key,val);
-      }
+      } // end if(col)
       else log_err(r->server,"AllowUpdate list includes invalid column name %s", key);
-    }
-  }
+    } // end if(binary_val)
+  } // end for()
+  
+  // Call the aproporiate setup on the NdbOperation
   if(is_insert) 
     return q->data->op->insertTuple();
   if(is_interpreted) 
@@ -638,8 +645,17 @@ int Plan::Write(request_rec *r, config::dir *dir, struct QueryItems *q) {
               eqr = q->data->op->subValue(col->getColumnNo(), (Uint32) 1);
             else assert(0);
             break;
+          case use_blob:
+            mval.u.blob_handle = q->data->op->getBlobHandle(col->getName());
+            if(mval.u.blob_handle == 0)
+              log_err(r->server,"Failed getting BlobHandle to set %s", 
+                      col->getName());
+            eqr = mval.u.blob_handle->setValue(mval.binary_info->string, 
+                                               mval.binary_info->len);
+            break;
           default:
-            eqr = q->data->op->setValue(col->getColumnNo(), (const char *) (&mval.u.val_char));
+            eqr = q->data->op->setValue(col->getColumnNo(), 
+                                        (const char *) (&mval.u.val_char));
         }
       } /* if(mval_is_usable) */
       else eqr = -4;

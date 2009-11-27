@@ -157,6 +157,7 @@ namespace MySQL {
         return MySQL::String(rbuf, rec, char_fixed, escapes);
         
       case NdbDictionary::Column::Longvarchar:
+      case NdbDictionary::Column::Longvarbinary:
         COV_point("longvarchar");
         return MySQL::String(rbuf, rec, char_longvar, escapes);
         

@@ -1155,3 +1155,66 @@ __typ318__
 }
 # __END__ typ318
 
+
+
+
+
+# _BEGIN_ typ831
+r.typ831() {
+  cat <<'__typ831__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ831__
+}
+# __END__ typ831
+
+# _BEGIN_ typ832
+r.typ832() {
+  cat <<'__typ832__'
+HTTP/1.1 200 OK
+Content-Length: 35
+ETag: 45e8f2cc89b199b59da458c01c5cd12b
+Content-Type: text/plain
+
+Here_we_have_a_string_of_characters
+__typ832__
+}
+# __END__ typ832
+
+# _BEGIN_ typ833
+r.typ833() {
+  cat <<'__typ833__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ833__
+}
+# __END__ typ833
+
+# _BEGIN_ typ834
+r.typ834() {
+  cat <<'__typ834__'
+HTTP/1.1 200 OK
+Content-Length: 26
+ETag: 21036696e3310264c242fa4c2bbaab9c
+Content-Type: text/plain
+
+Here_is_a_different_string
+__typ834__
+}
+# __END__ typ834
+
+# _BEGIN_ typ835
+r.typ835() {
+  cat <<'__typ835__'
+HTTP/1.1 204 No Content
+Content-Length: 0
+Content-Type: text/plain
+
+__typ835__
+}
+# __END__ typ835
+

@@ -114,7 +114,8 @@ typ706 f1 typ7?id=1 -X DELETE
 typ707 f1 typ7?id=2 -X DELETE
 typ708 f1 typ7?id=3 -X DELETE
 
-# BLOB/TEXT column (raw output)
+### BLOB & TEXT
+# raw output of BLOB
 typ800 SQL typ8.sql
 typ801 f1 typ8?id=1
 typ802 f1 typ8?id=1 -I    # Header only, no response body.
@@ -126,6 +127,16 @@ typ813 f1 multitext?name=user3
 typ821 f1 multitext_no_esc?name=user1
 typ822 f1 multitext_no_esc?name=user2
 typ823 f1 multitext_no_esc?name=user3
+# Insert & Update with a blob
+typ831 f1 typ8 -d 'id=2&doc=Here_we_have_a_string_of_characters'  # insert
+typ832 f1 typ8?id=2
+typ833 f1 typ8?id=2 -d 'doc=Here_is_a_different_string'           # update
+typ834 f1 typ8?id=2
+typ835 f1 typ8?id=2 -X DELETE
+# Insert & update with several blobs
+typ841 f1 multitext -d 'name=user4&text03=_string_3_&text01=_string_1_' # insert
+typ842 f1 multitext?name=user1 
+
 
 # typ9: (i int primary key, b1 bit(9) not null, b2 bit(17), b3 bit(1) not null) 
 typ901 f1 typ9?id=1
@@ -275,3 +286,8 @@ perf15 f1 perf1/item/9991
 perf16 f1 perf1/item/9991 -X DELETE
 perf17 f1 perf1/item/9991 
 
+# Error conditions
+# commenting out err001 due to bug #48973 in 7.0
+#err001 f1 typ8 -d 'doc=Here_we_have_an_error'  # Insert without a key
+# This runs as an insert, but it should be a failed update
+err836 f1 typ8?id=2 -d 'doc=Here_is_a_different_string' # failed update

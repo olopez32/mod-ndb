@@ -152,7 +152,7 @@ void MySQL::value(mvalue &m, ap_pool *p,
       return;
     }
     /* Parse a MySQL date, time, or datetime.  Allow it to be signed.
-       Treat and non-digits as separators, and then treat the rest 
+       Treat non-digits as separators, and then treat the rest 
        as a number. */
     if(*c == '-' || *c == '+') *buf++ = *c++;
     for(register int i = 0 ; i < 62 && *c != 0 ; c++, i++ ) 
@@ -357,17 +357,13 @@ void MySQL::value(mvalue &m, ap_pool *p,
       decimal2bin(&dec, m.u.val_char, prec, scale);
      }
       return;
-    
+
     case NdbDictionary::Column::Text:
-    case NdbDictionary::Column::Blob:
-      COV_point("blob");
-      m.use_value = use_blob;
-      return;
-    
+    case NdbDictionary::Column::Blob:    
     case NdbDictionary::Column::Longvarbinary:
     case NdbDictionary::Column::Varbinary:
     case NdbDictionary::Column::Binary:
-      COV_point("binary");
+      COV_point("set must_use_binary");
       m.use_value = must_use_binary;
       return;
 
@@ -395,18 +391,28 @@ void MySQL::binary_value(mvalue &m, ap_pool *p, const NdbDictionary::Column *col
   unsigned char   c_len = 0;
   unsigned short  s_len = 0;
   
-  m.use_value = use_char;
   m.col_len = col->getLength();
   m.len = (value->len < m.col_len) ? value->len : m.col_len;
   
   switch(col->getType()) {    
+ 
+      case NdbDictionary::Column::Text:
+      case NdbDictionary::Column::Blob:                   
+        COV_point("BLOB");
+        m.use_value = use_blob;
+        m.binary_info = value;
+        return;
         
       case NdbDictionary::Column::Binary:
+        COV_point("Binary");
+        m.use_value = use_char;
         m.u.val_char = (char *) ap_pcalloc(p, m.col_len);
         memcpy(m.u.val_char, value->string, m.len);      
         return;
         
       case NdbDictionary::Column::Varbinary:
+        COV_point("Varbinary");
+        m.use_value = use_char;
         m.col_len += 1;                     /* 1 length-byte */
         c_len = m.len;                      /* 8-bit unsigned char */
         m.u.val_char = (char *) ap_palloc(p, m.len + 1);
@@ -415,6 +421,8 @@ void MySQL::binary_value(mvalue &m, ap_pool *p, const NdbDictionary::Column *col
         return;
         
       case NdbDictionary::Column::Longvarbinary:
+        COV_point("Longvarbinary");
+        m.use_value = use_char;
         m.col_len += 2;                      /* 2 length-bytes */ 
         s_len = m.len;                       /* 16-bit unsigned short  */
         m.u.val_char = (char *) ap_palloc(p, s_len + 2);

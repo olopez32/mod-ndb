@@ -140,8 +140,13 @@ class ndb_instance {
     unsigned int use_etag    : 1 ;
     unsigned int jsonrequest : 1 ;
   } flag;
-  unsigned int requests;
-  unsigned int errors;
+  struct {
+    unsigned int requests;
+    unsigned int errors;
+    unsigned int temp_errors; 
+    unsigned int total_retry_ms;
+    unsigned int temp_timeouts;
+  } stats;
   void cleanup() {
     for(unsigned n = 0 ; n < data->n_result_cols ; n++) 
       delete data->result_cols[n];
