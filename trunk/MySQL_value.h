@@ -78,8 +78,10 @@ struct mvalue {
     unsigned char       val_unsigned_8;
     int16_t             val_16;
     Uint16              val_unsigned_16;
+    NdbBlob *           blob_handle;
   } u;
   size_t len;
+  len_string *binary_info;
   Uint32 col_len;
   mvalue_use use_value;
   mvalue_interpreted interpreted;

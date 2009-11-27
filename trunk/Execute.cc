@@ -42,7 +42,7 @@ inline void milliSleep(int milliseconds){
    set response code, and return 0 on pass-through or 1 on retry
 */
 bool handle_exec_error(request_rec *r, int &response_code, 
-                               const NdbError &error) {  
+                       const char * &error_message, const NdbError &error) {  
   bool stale_dictionary = 0;
   
   // client errors
@@ -50,6 +50,10 @@ bool handle_exec_error(request_rec *r, int &response_code,
     response_code = 404;
   else if(error.classification == NdbError::ConstraintViolation)
     response_code = 409;
+  else if(error.classification == NdbError::ApplicationError) {
+    response_code = 403;    
+    error_message = error.message;
+  }  
   // server errors
   else if(error.classification == NdbError::SchemaError) {
     switch(error.code) {
@@ -61,14 +65,16 @@ bool handle_exec_error(request_rec *r, int &response_code,
         response_code = 500;
         break;
       default:
-        log_err(r->server,"tx execute failed: %s %s", error.message, error.details);
+        log_err(r->server,"tx execute failed due to SchemaError [%d]: %s %s", 
+                error.code, error.message, error.details);
         response_code = 500;
     }
   }
   // misc. server error 
   else {
     response_code = 500;  
-    log_err(r->server,"tx execute failed: %s %s", error.message, error.details);
+    log_err(r->server,"tx execute failed: [%d:%d] %s %s", 
+            error.classification, error.code, error.message, error.details);
   }
   return stale_dictionary;
 }
@@ -82,7 +88,7 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
   int opn;     // operation number
   unsigned int retries = 0, total_wait_time = 0;
   bool apache_notes = 0, must_restart = 0;
-  char *error_message = 0;
+  const char *error_message = 0;
   result_buffer my_results;
   my_results.buff = 0;
   
@@ -118,16 +124,23 @@ int ExecuteAll(request_rec *r, ndb_instance *i) {
     register unsigned int sleep_ms = 5 + ( 2 * retries * retries);
     if(total_wait_time + sleep_ms < i->server_config->max_retry_ms) {
       milliSleep(sleep_ms);  
+      /* local accounting: */
       total_wait_time += sleep_ms;
       retries++;
+      /* global accounting: */
+      i->stats.total_retry_ms += sleep_ms;
+      i->stats.temp_errors++;
+  
       goto exec_commit;
-    }  /* else: */
+    }  /* else: waited too long */
     response_code = 503;
+    i->stats.temp_timeouts++;
     goto cleanup1;
   }
 
   if(i->tx->getNdbError().classification != NdbError::NoError) {
-    must_restart = handle_exec_error(r, response_code, i->tx->getNdbError());
+    must_restart = handle_exec_error(r, response_code, error_message, 
+                                     i->tx->getNdbError());
     goto cleanup1;
   }
   
