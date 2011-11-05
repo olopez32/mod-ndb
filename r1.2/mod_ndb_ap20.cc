@@ -68,7 +68,8 @@ void mod_ndb_child_init(ap_pool *p, server_rec *s) {
     /* Create an instance */
     process.conn.instances[i] = 
       (ndb_instance *) ap_pcalloc(p, sizeof(ndb_instance));
-    Ndb *ndbp = init_instance(& process.conn, process.conn.instances[i], srv,p);
+    Ndb *ndbp = init_instance(& process.conn, process.conn.instances[i], s,
+                              srv, p);
     if(ndbp) n_ok++;
     else n_fail++;
   }
