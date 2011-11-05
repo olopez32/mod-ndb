@@ -26,6 +26,20 @@
 
 /* http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2 */
 
+/*
+*   multipart-body := preamble 1*encapsulation close-delimiter epilogue
+*   encapsulation := delimiter body CRLF
+*   delimiter := "--" boundary CRLF
+*   close-delimiter := "--" boudary "--"
+*   preamble := <ignore>
+*   epilogue := <ignore>
+*   body := header-part CRLF body-part
+*   header-part := 1*header CRLF
+*   header := header-name ":" header-value
+*   header-name := <printable ascii characters except ":">
+*   header-value := <any ascii characters except CR & LF>
+*   body-data := <arbitrary data>
+*/
 
 bool get_attribute(ap_pool *pool, const char *header, 
                    const char *attrib, size_t attr_len, char **value) {
